@@ -1,0 +1,85 @@
+%button-base {
+    padding: 0.5rem 1.61rem;
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 1.4rem;
+    font-weight: 500;
+    font-family: map-get($fonts, "body");
+    transition: 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    min-width: 1rem;
+    align-items: center;
+    justify-content: center;
+
+&:hover {
+        font-weight: 800;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+}
+/* Los botones */
+a {
+    font-family:map-get($fonts, "body" );
+    font-size: 1.4rem;
+    text-decoration: none;
+    color: map-get($colors, "secondary" );
+    transition: 0.2s;
+    position: relative;
+    min-width: 1rem;
+    align-items: center;
+    justify-content: center;
+    top: 5px;
+    }
+    a:hover {
+    font-weight: 800;
+    }
+
+    .dropdown-toggle {
+        margin-top: -.5rem;
+        background: none;
+        border: none;
+        font-family: map-get($fonts, "body" );
+        font-size: 1.4rem;
+        color: map-get($colors,"secondary" );
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: 0.2s;
+        
+
+        &::after {
+        content: "";
+        width: 1rem;
+        height: 1rem;
+        margin-left: 0.5rem;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23383d47"><path d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7a.9959.9959 0 010-1.41c.39-.38 1.03-.39 1.42 0z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        transition: transform 0.3s ease;
+        }
+
+        &[aria-expanded="true"]::after {
+        transform: rotate(180deg);
+        }
+
+        &:hover {
+        font-weight: 800;
+        }
+    }
+
+.cta-button {
+    @extend %button-base;
+    background-color: map-get($colors, "primary");
+    color: map-get($colors, "secondary");
+    border: none;
+}
+
+.cta-button-1 {
+    @extend %button-base;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: map-get($colors, "text");
+    border: solid 1px map-get($colors, "text");
+    backdrop-filter: blur(3px);
+}

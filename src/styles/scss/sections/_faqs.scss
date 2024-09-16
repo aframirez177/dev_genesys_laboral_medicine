@@ -1,0 +1,144 @@
+.faqs {
+    padding: 6rem 2rem;
+    background-color: map-get($colors, "background");
+
+    &__container {
+        max-width: 120rem;
+        margin: 0 auto;
+    }
+
+    &__title {
+        font-size: 3.6rem;
+        color: map-get($colors, "secondary");
+        text-align: center;
+        margin-bottom: 2rem;
+        font-family: map-get($fonts, "title");
+        font-weight: 800;
+    }
+
+    &__description {
+        font-size: 1.8rem;
+        color: map-get($colors, "text");
+        text-align: center;
+        margin-bottom: 5rem;
+        font-family: map-get($fonts, "body");
+        max-width: 80rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 2rem;
+
+        @include respond-to("tablet") {
+        grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    &__item {
+        border-radius: 0.8rem;
+        overflow: hidden;
+        transition: box-shadow 0.3s ease;
+
+        &:hover {
+        box-shadow: 0 0.4rem 1.5rem rgba(0, 0, 0, 0.15);
+        }
+    }
+
+    &__question {
+        padding: 2rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: map-get($fonts, "title");
+        font-size: 1.8rem;
+        color: map-get($colors, "secondary");
+        transition: background-color 0.3s ease, color 0.3s ease;
+
+        &::after {
+        content: "";
+        width: 4rem;
+        height: 4rem;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23383d47"><path d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7a.9959.9959 0 010-1.41c.39-.38 1.03-.39 1.42 0z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        transition: transform 0.3s ease;
+        }
+
+        &--active {
+        background-color: map-get($colors, "primary");
+        color: white;
+
+        &::after {
+            transform: rotate(180deg);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffffff"><path d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7a.9959.9959 0 010-1.41c.39-.38 1.03-.39 1.42 0z"/></svg>');
+        }
+        }
+    }
+
+    &__answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease, padding 0.5s ease;
+        font-family: map-get($fonts, "title");
+        font-size: 1.6rem;
+        color: map-get($colors, "text");
+        padding: 0 2rem;
+
+        &--active {
+        max-height: 50rem;
+        padding: 2rem;
+        margin-bottom: 2.5rem;
+        }
+    }
+
+    &__contact {
+        text-align: center;
+        margin-top: 6rem;
+        padding: 4rem 2rem;
+    }
+
+    &__contact-title {
+        font-size: 2.8rem;
+        color: map-get($colors, "secondary");
+        margin-bottom: 1.5rem;
+        font-family: map-get($fonts, "title");
+        font-weight: 800;
+    }
+
+    &__contact-description {
+        font-size: 1.8rem;
+        color: map-get($colors, "text");
+        margin-bottom: 3rem;
+        font-family: map-get($fonts, "body");
+        max-width: 60rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    &__contact-button {
+        display: inline-block;
+        padding: 1.5rem 3rem;
+        background-color: map-get($colors, "primary");
+        color: white;
+        text-decoration: none;
+        border-radius: 5rem;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        font-family: map-get($fonts, "body");
+        font-size: 1.8rem;
+        font-weight: 500;
+
+        &:hover {
+        background-color: darken(map-get($colors, "primary"), 10%);
+        transform: translateY(-3px);
+        }
+
+        &:active {
+        transform: translateY(-1px);
+        }
+    }
+}

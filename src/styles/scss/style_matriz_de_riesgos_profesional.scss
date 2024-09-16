@@ -1,0 +1,25 @@
+// Base
+@import 'base/variables';
+@import 'base/mixins';
+@import 'base/reset';
+@import 'base/typography';
+
+// Components
+@import 'components/buttons';
+@import 'components/dropdown';
+@import 'components/whatsapp';
+
+// Layout
+@import 'layout/header';
+@import 'layout/footer';
+
+// Sections
+@import 'sections/hero-matriz-de-riesgos-profesional';
+@import 'sections/program-description';
+@import 'sections/clients';
+@import 'sections/faqs';
+@import 'sections/location';
+
+// Utilities
+@import 'utilities/helpers';
+@import 'utilities/animations';

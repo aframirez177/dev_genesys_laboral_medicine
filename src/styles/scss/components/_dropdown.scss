@@ -1,0 +1,110 @@
+.dropdown {
+    position: relative;
+    display: inline-block;
+    margin-top: 0.7rem;
+
+    .dropdown-toggle {
+        background: none;
+        border: none;
+        font-family: map-get($fonts, "body");
+        font-size: 1.4rem;
+        color: map-get($colors, "secondary");
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: 0.2s;
+
+    &::after {
+        content: "";
+        width: 1rem;
+        height: 1rem;
+        margin-left: 0.5rem;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23383d47"><path d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7a.9959.9959 0 010-1.41c.39-.38 1.03-.39 1.42 0z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        transition: transform 0.3s ease;
+        }
+
+        &[aria-expanded="true"]::after {
+        transform: rotate(180deg);
+        }
+
+        &:hover {
+        font-weight: 800;
+        }
+    }
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 12rem;
+    background-color: map-get($colors, "background");
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 2rem 0;
+
+    &[aria-hidden="false"] {
+        display: block;
+    }
+
+    .dropdown-menu-content {
+        max-width: 590px;
+        margin: 0 6.5rem;
+        padding: 0 2rem;
+    }
+
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        flex: 0 0 calc(25% - 1rem);
+        margin: 3rem 1rem;
+        min-width: 250px;
+        height: 2rem;
+
+    a {
+        color: map-get($colors, "secondary");
+        text-decoration: none;
+        display: block;
+        padding: 0.5rem 1rem;
+        transition: 0.2s;
+        border-radius: 4px;
+
+        &:hover {
+            color: map-get($colors, "primary");
+            font-weight: 800;
+            background-color: rgba(map-get($colors, "primary"), 0.1);
+        }
+        }
+    }
+}
+
+@include respond-to("mobile") {
+    .dropdown-menu {
+        position: static;
+        box-shadow: none;
+        padding: 1rem 0;
+
+        .dropdown-menu-content {
+        padding: 0 1rem;
+        }
+
+        ul {
+        flex-direction: column;
+        }
+
+        li {
+        flex: 0 0 100%;
+        }
+    }
+}

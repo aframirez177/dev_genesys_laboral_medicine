@@ -1,0 +1,79 @@
+.section-clientes {
+    background-color: white;
+    padding: 2rem 5%;
+    overflow: hidden;
+
+    h2 {
+        text-align: center;
+        font-family: map-get($fonts, "title");
+        font-weight: 800;
+        font-size: 4rem;
+        margin: 0;
+    }
+
+    p {
+        text-align: center;
+        font-family: map-get($fonts, "body");
+        font-size: 1.5rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
+        margin: 0;
+    }
+
+    .clients {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        overflow-x: auto;
+        padding: 1.5rem 0;
+        margin: 2vw 0 40px;
+        height: 30rem;
+        @include hide-scrollbar;
+    }
+
+    .client-card {
+        flex: 0 0 auto;
+        width: 13rem;
+        height: 15rem;
+        margin: 0 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+
+    &.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    img {
+        margin-top: 0;
+        align-items: center;
+        max-width: 10rem;
+        max-height: fit-content;
+        object-fit: fill;
+        filter: grayscale(1%);
+        transition: filter 0.3s ease;
+            @include respond-to("tablet") {
+            filter: grayscale(100%);
+            }
+    }
+        &:hover {
+        transform: scale(1.05);
+
+        img {
+            filter: grayscale(1%);
+            }
+        }
+
+        p {
+        font-size: 1.2rem;
+        margin-top: 10px;
+        font-weight: 800;
+        text-align: center;
+        }
+    }
+}

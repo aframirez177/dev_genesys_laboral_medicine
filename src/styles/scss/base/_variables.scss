@@ -1,0 +1,37 @@
+// Colors
+$colors: (
+    "primary": #5dc4af,
+    "secondary": #383d47,
+    "text": #2d3238,
+    "background": #f3f0f0,
+    "alternative": #fff27d,
+);
+
+// Auxiliary colors
+$aux-colors: (
+    1: #cbe3f3,
+    2: #fee6fc,
+    3: #fdf8cd,
+    4: #c7f9ff,
+    5: #d8fff1,
+    6: #ffefd2,
+);
+
+// Fonts
+$fonts: (
+    "title": (
+        "Poppins",
+        sans-serif,
+    ),
+    "body": (
+        "Raleway",
+        sans-serif,
+    ),
+);
+
+// Breakpoints
+$breakpoints: (
+    "mobile": 400px,
+    "tablet": 955px,
+    "desktop": 1080px,
+);

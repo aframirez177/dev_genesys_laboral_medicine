@@ -1,0 +1,119 @@
+.whatsapp {
+    &-button {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 90px;
+        height: 90px;
+        background-color: #25d366;
+        border-radius: 50%;
+        @include flex-center;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        transition: transform 0.5s ease;
+
+        &:hover {
+        transform: scale(1.16);
+        }
+
+        img {
+        width: 70px;
+        height: auto;
+        object-fit: fill;
+        }
+    }
+
+    &-popup {
+        display: none;
+        position: fixed;
+        bottom: 140px;
+        right: 50px;
+        width: 300px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+    }
+}
+
+.popup {
+    &-header {
+        background-color: #075e54;
+        color: white;
+        padding: 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    &-content {
+        padding: 15px;
+    }
+}
+
+.advisor {
+    &-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    &-info {
+        flex-grow: 1;
+
+        h3,
+        p {
+        margin: 0;
+        }
+    }
+}
+
+#close-popup {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.start-chat-button {
+    @include flex-center;
+    width: 100%;
+    padding: 10px;
+    background-color: #25d366;
+    color: white;
+    border: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    cursor: pointer;
+
+    img {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+    }
+}
+
+@include respond-to("mobile") {
+    .whatsapp {
+        &-button {
+        width: 5.1rem;
+        height: 5.1rem;
+        img {
+            scale: 130%;
+        }
+        }
+
+        &-popup {
+        width: 250px;
+        }
+    }
+
+    .whatsapp-icon {
+        width: 40px;
+        height: 40px;
+    }
+}

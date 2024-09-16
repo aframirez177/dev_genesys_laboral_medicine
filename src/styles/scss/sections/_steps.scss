@@ -1,0 +1,115 @@
+.steps {
+    margin-top: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 1rem;
+
+    .step-card {
+        background-color: #fff2fe;
+        border-radius: 12px;
+        padding: 1rem;
+        max-width: 210px;
+        height: 220px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin: 3rem 1rem;
+        hyphens: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0.1;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+
+        h3 {
+        color: map-get($colors, "primary");
+        position: absolute;
+        top: -40px;
+        transform: translateY(-25%);
+        transform-origin: left center;
+        white-space: nowrap;
+        font-size: 28px;
+        font-family: map-get($fonts, "title");
+        font-weight: 800;
+        text-align: center;
+        transition: 0.2s;
+        }
+
+        h4 {
+        font-family: map-get($fonts, "body");
+        font-size: 11px;
+        color: map-get($colors, "alternative");
+        background-color: map-get($colors, "primary");
+        border-radius: 23px;
+        padding: 10px 10px;
+        position: absolute;
+        top: -20px;
+        text-align: center;
+        width: 150px;
+        transition: 0.2s;
+        }
+
+        p {
+        position: relative;
+        font-family: map-get($fonts, "body");
+        font-weight: 500;
+        padding: 0;
+        height: max-content;
+        text-align: center;
+        transition: 0.2s;
+        width: 60%;
+        font-size: 1.4rem;
+        top: 15%;
+        transform: translateY(-50%);
+        }
+
+        .cta-button {
+        position: absolute;
+        margin-top: 60%;
+        font-family: map-get($fonts, "title");
+        font-size: 12px;
+        padding: 7px;
+        height: 40px;
+        width: 150px;
+        border-radius: 12px;
+        background-color: map-get($colors, "alternative");
+        color: map-get($colors, "text");
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: 0.2s;
+        }
+
+        &:hover {
+            box-shadow: 0 10px 20px map-get($colors, "text");
+            background-color: map-get($colors, "primary");
+            
+            h3 {
+            font-size: 40px;
+            top: -65px;
+        }
+
+        h4 {
+            background-color: map-get($colors, "alternative");
+            color: map-get($colors, "text");
+        }
+
+        p {
+            color: map-get($colors, "alternative");
+            font-weight: 800;
+        }
+        }
+        
+        &.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        &:hover{
+            transform: translateY(-25px);
+            
+        }
+    }
+}

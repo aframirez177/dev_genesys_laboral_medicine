@@ -1,0 +1,24 @@
+h1{
+    font-size: 3.5rem;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: map-get($fonts, "title");
+    line-height: 1.2;
+    font-weight: 800;
+    color: map-get($colors, "secondary");
+}
+
+p {
+    font-size: 1.6rem;
+    margin: 2.5rem 0;
+    font-weight: 500;
+}
+
+.green {
+    color: map-get($colors, "primary");
+}

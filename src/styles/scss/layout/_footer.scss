@@ -1,0 +1,119 @@
+.site-footer {
+    background-color: #5c8578;
+    color: map-get($colors, "background");
+    padding: 3rem 1rem;
+    font-family: map-get($fonts, "body");
+
+    .footer-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: baseline;
+        gap: 0;
+
+        a,
+        p,
+        h4 {
+        font-size: 1.3rem;
+        }
+    }
+
+    .footer-section {
+        flex: 1;
+        min-width: 28rem;
+        max-width: 30rem;
+        margin: 1rem;
+
+        h3 {
+        color: map-get($colors, "primary");
+        font-family: map-get($fonts, "title");
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        }
+
+        ul {
+        list-style-type: none;
+        padding: 0;
+
+        li {
+            margin-bottom: 0.5rem;
+
+            a {
+            color: map-get($colors, "background");
+            text-decoration: none;
+            transition: color 0.3s ease;
+
+            &:hover {
+                color: map-get($colors, "primary");
+            }
+            }
+        }
+        }
+    }
+
+    .certification-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+        gap: 2rem;
+        margin: 2rem 0.5rem;
+        justify-content: baseline;
+    }
+
+    .certification-img {
+        width: 110%;
+        height: auto;
+        margin: 0.3rem;
+        object-fit: scale-down;
+    }
+
+    .footer-section-contact-info {
+        min-width: 28rem;
+        max-width: 30rem;
+        margin: 1rem;
+
+        h3,
+        h4 {
+        color: map-get($colors, "primary");
+        margin: 1rem 0;
+        }
+
+        a {
+        color: map-get($colors, "background");
+        }
+    }
+
+    .footer-bottom {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        font-size: 0.9rem;
+        color: #d0d0d0;
+
+        a {
+        font-weight: 800;
+        color: map-get($colors, "alternative");
+        }
+    }
+
+    .footer-logos {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 1rem;
+
+        .footer-logo {
+        height: auto;
+        width: 20rem;
+        object-fit: fill;
+        }
+
+        .disclaimer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 500px;
+        }
+    }
+}
