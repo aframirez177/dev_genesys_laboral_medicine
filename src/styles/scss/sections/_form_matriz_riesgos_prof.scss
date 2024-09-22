@@ -1,31 +1,105 @@
-.cargo-card {
-    background-color: #f5f5f5;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
+.matriz-riesgos-section {
+    padding: 2rem 1rem;
+    background-color: map-get($colors, "background");
 
-    h3 {
-        color: #333;
-        margin-bottom: 15px;
+    @include respond-to('tablet') {
+        padding: 4rem 2rem;
     }
 
-    .input-group {
-        margin-bottom: 15px;
+    h2 {
+        font-size: 2.4rem;
+        color: map-get($colors, "secondary");;
+        text-align: center;
+        margin-bottom: 1rem;
 
-        input[type="text"], 
-        input[type="number"], 
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
+        @include respond-to('tablet') {
+            font-size: 3.6rem;
+        }
+
+        .green {
+            color: map-get($colors, "primary");
         }
     }
 
-    .toggle-switch {
-        display: inline-block;
+    .subtitle {
+        font-size: 1.6rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+}
+
+#matrizRiesgosForm {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cargo-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+
+    .cargo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background-color: map-get($colors, "alternative");
+        color: #ffffff;
+
+        h3 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+    }
+
+    .cargo-content {
+        padding: 1.5rem;
+    }
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1.4rem;
+
+        &:focus {
+            outline: none;
+            border-color: map-get($colors, "primary");
+        }
+    }
+
+    textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+}
+
+.rutinaria-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+
+    .switch {
         position: relative;
+        display: inline-block;
         width: 60px;
         height: 34px;
 
@@ -34,16 +108,16 @@
             width: 0;
             height: 0;
 
-            &:checked + label .toggle-slider {
-                background-color: #2196F3;
+            &:checked + .slider {
+                background-color:map-get($colors, "primary");
             }
 
-            &:checked + label .toggle-slider:before {
+            &:checked + .slider:before {
                 transform: translateX(26px);
             }
         }
 
-        label {
+        .slider {
             position: absolute;
             cursor: pointer;
             top: 0;
@@ -54,7 +128,7 @@
             transition: .4s;
             border-radius: 34px;
 
-            .toggle-slider {
+            &:before {
                 position: absolute;
                 content: "";
                 height: 26px;
@@ -65,107 +139,159 @@
                 transition: .4s;
                 border-radius: 50%;
             }
-
-            .toggle-text {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                font-size: 12px;
-                
-                &:first-of-type {
-                    left: 10px;
-                }
-
-                &:last-of-type {
-                    right: 10px;
-                }
-            }
         }
     }
+}
 
-    .riesgos-accordion {
-        .accordion-btn {
-            background-color: #f1f1f1;
-            color: #444;
-            cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            text-align: left;
+.workers-count {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .number-input {
+        display: flex;
+        align-items: center;
+
+        button {
+            width: 30px;
+            height: 30px;
+            background-color: map-get($colors, "primary");
+            color: #ffffff;
             border: none;
-            outline: none;
-            transition: 0.4s;
+            border-radius: 50%;
+            font-size: 1.6rem;
+            cursor: pointer;
 
             &:hover {
-                background-color: #ddd;
-            }
-
-            &.active {
-                background-color: #ccc;
+                background-color: map-get($colors, "secondary");
             }
         }
 
-        .accordion-content {
-            padding: 0 18px;
-            background-color: white;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.2s ease-out;
+        input {
+            width: 50px;
+            text-align: center;
+            margin: 0 10px;
+        }
+    }
+}
+
+.riesgos-accordion {
+    .accordion-btn {
+        background-color: #f1f1f1;
+        color: map-get($colors, "secondary");;
+        cursor: pointer;
+        padding: 1rem;
+        width: 100%;
+        text-align: left;
+        border: none;
+        outline: none;
+        transition: 0.4s;
+        font-size: 1.4rem;
+
+        &:hover {
+            background-color: #ddd;
+        }
+
+        &.active {
+            background-color: #ccc;
         }
     }
 
-    .slider-group {
-        margin-bottom: 20px;
+    .accordion-content {
+        padding: 0 1rem;
+        background-color: white;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.2s ease-out;
 
-        .custom-slider {
-            appearance: none;
-            width: 100%;
-            height: 15px;
-            border-radius: 5px;
-            background: #d3d3d3;
-            outline: none;
-            opacity: 0.7;
-            transition: opacity .2s;
-
-            &:hover {
-                opacity: 1;
-            }
-
-            &::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 25px;
-                height: 25px;
-                border-radius: 50%;
-                background: #4CAF50;
-                cursor: pointer;
-            }
-
-            &::-moz-range-thumb {
-                width: 25px;
-                height: 25px;
-                border-radius: 50%;
-                background: #4CAF50;
-                cursor: pointer;
-            }
-        }
-
-        .slider-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-            font-size: 12px;
-            color: #666;
+        &.active {
+            max-height: 500px;
         }
     }
+}
 
-    .medidas-intervencion {
-        textarea {
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            resize: vertical;
-        }
+.custom-slider {
+    appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background:map-get($colors, "primary");
+        cursor: pointer;
+    }
+
+    &::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: map-get($colors, "primary");
+        cursor: pointer;
+    }
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    color: map-get($colors, "secondary");;
+}
+
+.medidas-intervencion {
+    textarea {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+
+.cta-button, .cta-button-1 {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.6rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    @include respond-to('tablet') {
+        width: auto;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+.cta-button {
+    background-color: map-get($colors, "primary");;
+    color: #ffffff;
+
+    &:hover {
+        background-color: map-get($colors, "primary");;
+    }
+}
+
+.cta-button-1 {
+    background-color: transparent;
+    border: 1px solid map-get($colors, "secondary");;
+    color: map-get($colors, "secondary");;
+    margin-bottom: 1rem;
+
+    &:hover {
+        background-color: map-get($colors, "secondary");
+        color: #ffffff;
     }
 }

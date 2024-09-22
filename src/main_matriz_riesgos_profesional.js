@@ -1,5 +1,4 @@
 import './js/matriz_de_riesgos_profesional.js'
-import './styles/scss/main.scss';
 import './styles/scss/style_matriz_de_riesgos_profesional.scss'
 
 
