@@ -5,6 +5,20 @@ $colors: (
     "text": #2d3238,
     "background": #f3f0f0,
     "alternative": #fff27d,
+    "input-bg": #ffffff,              // Fondo de inputs y textareas
+    "input-border": #cccccc,          // Borde de los inputs y textareas
+    "placeholder": #999999,           // Color para placeholders
+    "header-bg": #f1f1f1,             // Fondo para la cabecera del cargo
+    "border-color": #dddddd,          // Color para bordes generales
+    "accordion-header-bg": #e6e6e6,   // Fondo para la cabecera de los acordeones
+    "accordion-border": #cccccc,      // Borde de los acordeones
+    "success": #4caf50,               // Verde para niveles bajos
+    "warning": #ffeb3b,               // Amarillo para niveles medios
+    "atention": #ff9800,
+    "danger": #f44336,                // Rojo para niveles altos
+    "text-dark": #2d3238,             // Color para el texto en cabeceras oscuras
+    "text-light": #ffffff             // Color para el texto en cabeceras claras
+
 );
 
 // Auxiliary colors

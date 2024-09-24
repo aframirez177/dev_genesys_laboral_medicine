@@ -1,176 +1,591 @@
-// matriz_de_riesgos_profesional.js
+// src/js/components/form_matriz_riesgos_prof.js
+import canecaIcon from '../../assets/images/caneca.svg';
 
-let cargos = [];
-let cargoId = 0;
+import axios from 'axios';
 
-const riesgos = {
-    "Físico": ["GES Ruido", "GES Vibraciones", "GES Temperaturas extremas", "GES Radiaciones ionizantes", "GES Radiaciones no ionizantes", "GES Iluminación deficiente", "GES Presiones anormales"],
-    "Químico": ["GES Gases y vapores", "GES Polvos inorgánicos", "GES Polvos orgánicos", "GES Humos metálicos", "GES Líquidos (nieblas y rocíos)", "GES Solventes"],
-    "Biológico": ["GES Virus", "GES Bacterias", "GES Hongos", "GES Ricketsias", "GES Parásitos", "GES Picaduras/mordeduras"],
-    "Biomecánico": ["GES Posturas prolongadas", "GES Movimientos repetitivos", "GES Manipulación manual de cargas", "GES Esfuerzo"],
-    "Psicosocial": ["GES Gestión organizacional", "GES Características del grupo social de trabajo", "GES Condiciones de la tarea", "GES Interface persona-tarea", "GES Jornada de trabajo"],
-    "Condiciones de seguridad": ["GES Mecánico", "GES Eléctrico", "GES Locativo", "GES Tecnológico", "GES Accidentes de tránsito", "GES Públicos", "GES Trabajo en alturas", "GES Espacios confinados"],
-    "Fenómenos naturales": ["GES Sismo", "GES Terremoto", "GES Vendaval", "GES Inundación", "GES Derrumbe"]
-};
+// Función para inicializar el formulario de Matriz de Riesgos Profesional
+export function initializeForm() {
+    const cargoContainer = document.getElementById('cargoContainer');
+    const addCargoBtn = document.getElementById('addCargoBtn');
+    const matrizRiesgosForm = document.getElementById('matrizRiesgosForm');
 
-function createCargoHTML(cargo) {
-    return `
-        <div class="cargo-card" id="cargo-${cargo.id}">
-            <div class="cargo-header">
-                <h3>Cargo #${cargo.id}</h3>
-                <button type="button" class="toggle-btn" onclick="toggleCargo(${cargo.id})">-</button>
-            </div>
-            <div class="cargo-content">
-                <div class="input-group">
-                    <input type="text" id="nombre-${cargo.id}" placeholder="Ingresa el Cargo #${cargo.id}">
-                    <div class="rutinaria-toggle">
-                        <span>Sus tareas son rutinarias?</span>
-                        <label class="switch">
-                            <input type="checkbox" id="rutinaria-${cargo.id}">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="proceso-${cargo.id}" placeholder="Ingresa área o proceso al área">
-                </div>
-                <div class="input-group">
-                    <textarea id="tareas-${cargo.id}" placeholder="Cuéntanos un poco sobre las tareas que tiene este cargo."></textarea>
-                </div>
-                <div class="input-group workers-count">
-                    <label for="numTrabajadores-${cargo.id}"># de trabajadores en el cargo:</label>
-                    <div class="number-input">
-                        <button type="button" onclick="changeWorkers(${cargo.id}, -1)">-</button>
-                        <input type="number" id="numTrabajadores-${cargo.id}" min="1" value="1" readonly>
-                        <button type="button" onclick="changeWorkers(${cargo.id}, 1)">+</button>
-                    </div>
-                </div>
-                
-                <div class="riesgos-section">
-                    <h4>Selecciona los riesgos a los que se expone tu (cargo ${cargo.id})</h4>
-                    <div class="riesgos-accordion">
-                        ${Object.keys(riesgos).map(tipo => `
-                            <button class="accordion-btn" onclick="toggleAccordion(this)">${tipo}</button>
-                            <div class="accordion-content">
-                                ${riesgos[tipo].map(ges => `
-                                    <div class="checkbox-group">
-                                        <input type="checkbox" id="${ges}-${cargo.id}" name="riesgos-${cargo.id}" value="${ges}">
-                                        <label for="${ges}-${cargo.id}">${ges}</label>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
+    let cargoCount = 0;
 
-                <div class="sliders-section">
-                    <div class="slider-group">
-                        <label>Nivel de Deficiencia del control de riesgos</label>
-                        <input type="range" id="nivelDeficiencia-${cargo.id}" min="0" max="10" step="2" class="custom-slider" oninput="updateSliderValue(this)">
-                        <div class="slider-labels">
-                            <span>Todo esta bajo control</span>
-                            <span>Hay peligro(s) inminente(s)</span>
-                        </div>
-                    </div>
-                    <div class="slider-group">
-                        <label>Nivel de exposición a los riesgos</label>
-                        <input type="range" id="nivelExposicion-${cargo.id}" min="1" max="4" class="custom-slider" oninput="updateSliderValue(this)">
-                        <div class="slider-labels">
-                            <span>Exposición esporádica</span>
-                            <span>Exposición Continua</span>
-                        </div>
-                    </div>
-                    <div class="slider-group">
-                        <label>Nivel de consecuencias del riesgo</label>
-                        <input type="range" id="nivelConsecuencias-${cargo.id}" min="10" max="100" step="10" class="custom-slider" oninput="updateSliderValue(this)">
-                        <div class="slider-labels">
-                            <span>Leve</span>
-                            <span>Mortal o catastrófico</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="medidas-intervencion">
-                    <textarea id="eliminacion-${cargo.id}" placeholder="Cuéntanos un poco sobre las medidas que tomarás para sustituir las fuentes de riesgo."></textarea>
-                    <textarea id="controlIngenieria-${cargo.id}" placeholder="Cuéntanos un poco sobre las medidas que tomarás en infraestructura para eliminar fuentes de riesgo."></textarea>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-function addCargo() {
-    cargoId++;
-    const newCargo = { id: cargoId };
-    cargos.push(newCargo);
-    const cargoHTML = createCargoHTML(newCargo);
-    document.getElementById('cargosContainer').insertAdjacentHTML('beforeend', cargoHTML);
-}
-
-function toggleCargo(id) {
-    const cargoContent = document.querySelector(`#cargo-${id} .cargo-content`);
-    const toggleBtn = document.querySelector(`#cargo-${id} .toggle-btn`);
-    cargoContent.classList.toggle('hidden');
-    toggleBtn.textContent = cargoContent.classList.contains('hidden') ? '+' : '-';
-}
-
-function toggleAccordion(button) {
-    button.classList.toggle("active");
-    const content = button.nextElementSibling;
-    if (content.style.maxHeight) {
-        content.style.maxHeight = null;
-    } else {
-        content.style.maxHeight = content.scrollHeight + "px";
+    // Función debounce (definida antes de su uso)
+    function debounce(func, wait = 300) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
     }
-}
 
-function updateSliderValue(slider) {
-    const value = slider.value;
-    const min = slider.min;
-    const max = slider.max;
-    const percentage = ((value - min) / (max - min)) * 100;
-    slider.style.background = `linear-gradient(to right, #5dc4af 0%, #5dc4af ${percentage}%, #d3d3d3 ${percentage}%, #d3d3d3 100%)`;
-}
+    // Función para guardar datos en localStorage
+    function saveData() {
+        const cargosData = gatherFormData();
+        localStorage.setItem('matrizRiesgosData', JSON.stringify(cargosData));
+    }
 
-function changeWorkers(cargoId, change) {
-    const input = document.getElementById(`numTrabajadores-${cargoId}`);
-    let value = parseInt(input.value) + change;
-    value = Math.max(1, value); // Asegura que el valor mínimo sea 1
-    input.value = value;
-}
+    // Función para recopilar datos del formulario
+    function gatherFormData() {
+        const cargosData = [];
+        const cargoDivs = cargoContainer.querySelectorAll('.cargo');
+        cargoDivs.forEach(cargoDiv => {
+            const cargoNameInput = cargoDiv.querySelector('input[name="cargoName"]');
+            const areaInput = cargoDiv.querySelector('input[name="area"]');
+            const trabajadoresInput = cargoDiv.querySelector('input[name="numTrabajadores"]');
+            const descripcionTareas = cargoDiv.querySelector('textarea[name="descripcionTareas"]').value;
 
-async function submitForm(event) {
-    event.preventDefault();
-    
-    const formData = cargos.map(cargo => ({
-        nombre: document.getElementById(`nombre-${cargo.id}`).value,
-        rutinaria: document.getElementById(`rutinaria-${cargo.id}`).checked,
-        proceso: document.getElementById(`proceso-${cargo.id}`).value,
-        tareas: document.getElementById(`tareas-${cargo.id}`).value,
-        numTrabajadores: document.getElementById(`numTrabajadores-${cargo.id}`).value,
-        riesgos: Array.from(document.querySelectorAll(`#cargo-${cargo.id} input[type="checkbox"]:checked`)).map(cb => cb.value),
-        nivelDeficiencia: document.getElementById(`nivelDeficiencia-${cargo.id}`).value,
-        nivelExposicion: document.getElementById(`nivelExposicion-${cargo.id}`).value,
-        nivelConsecuencias: document.getElementById(`nivelConsecuencias-${cargo.id}`).value,
-        medidasIntervencion: {
-            eliminacion: document.getElementById(`eliminacion-${cargo.id}`).value,
-            sustitucion: document.getElementById(`sustitucion-${cargo.id}`).value,
-            controlIngenieria: document.getElementById(`controlIngenieria-${cargo.id}`).value
+            const toggles = {};
+            ['tareasRutinarias', 'manipulaAlimentos', 'trabajaAlturas', 'trabajaEspaciosConfinados'].forEach(name => {
+                toggles[name] = cargoDiv.querySelector(`input[name="${name}"]`).checked;
+            });
+
+            const gesCheckboxes = cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]');
+            const gesSeleccionados = [];
+            gesCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    gesSeleccionados.push(checkbox.value);
+                }
+            });
+            const medidas = [];
+            cargoDiv.querySelectorAll('.medidas-section textarea').forEach((textarea, index) => {
+                medidas[index] = textarea.value;
+            });
+
+            const niveles = {};
+            cargoDiv.querySelectorAll('.nivel').forEach(nivelDiv => {
+                const nivelName = nivelDiv.querySelector('label').textContent.trim().split(':')[0].toLowerCase();
+                const selectedBar = nivelDiv.querySelector('.barra.selected');
+                niveles[nivelName] = selectedBar ? selectedBar.dataset.nivel : null;
+            });
+
+            cargosData.push({
+                cargoName: cargoNameInput.value.trim(),
+                area: areaInput.value.trim(),
+                numTrabajadores: trabajadoresInput.value,
+                descripcionTareas: descripcionTareas,
+                ...toggles,
+                gesSeleccionados: gesSeleccionados,
+                medidas: medidas,
+                niveles: niveles
+            });
+        });
+        return cargosData;
+    }
+
+    // Función para validar el formulario
+    function validateForm() {
+        let isValid = true;
+        const cargoDivs = cargoContainer.querySelectorAll('.cargo');
+        cargoDivs.forEach(cargoDiv => {
+            const cargoNameInput = cargoDiv.querySelector('input[name="cargoName"]');
+            const areaInput = cargoDiv.querySelector('input[name="area"]');
+            const trabajadoresInput = cargoDiv.querySelector('input[name="numTrabajadores"]');
+            if (!cargoNameInput.value.trim()) {
+                alert('Por favor, ingrese el nombre del cargo.');
+                isValid = false;
+            }
+            if (!areaInput.value.trim()) {
+                alert('Por favor, ingrese el área del cargo.');
+                isValid = false;
+            }
+            if (!trabajadoresInput.value || trabajadoresInput.value < 1) {
+                alert('Por favor, ingrese un número válido de trabajadores.');
+                isValid = false;
+            }
+            // Validaciones adicionales aquí
+        });
+        return isValid;
+    }
+
+    // Función para obtener la lista de GES según el riesgo
+    function getGesListByRiesgo(riesgo) {
+        const gesLists = {
+            'Físico': ['Ruido', 'Vibraciones', 'Temperaturas Extremas', 'Radiaciones Ionizantes', 'Radiaciones No Ionizantes'],
+            'Químico': ['Gases', 'Vapores', 'Polvos', 'Humos', 'Neblinas'],
+            'Biológico': ['Virus', 'Bacterias', 'Hongos', 'Parásitos'],
+            'Ergonómico': ['Posturas Forzadas', 'Movimientos Repetitivos', 'Manipulación Manual de Cargas'],
+            'Psicosocial': ['Estrés', 'Violencia Laboral', 'Jornadas Excesivas'],
+            'Mecánico': ['Golpes y Cortes', 'Caídas', 'Proyección de Partículas'],
+            'Eléctrico': ['Contacto Directo', 'Contacto Indirecto', 'Arco Eléctrico']
+        };
+        return gesLists[riesgo] || [];
+    }
+
+    // Función para actualizar el resumen de GES
+    function updateGesResumen(cargoDiv) {
+        const gesResumenDiv = cargoDiv.querySelector('.ges-resumen');
+        if (!gesResumenDiv) {
+            console.error('gesResumenDiv no encontrado en el DOM');
+            return;
         }
-    }));
 
-    try {
-        const response = await axios.post('https://tu-api-endpoint.com/matriz-riesgos', formData);
-        console.log('Respuesta del servidor:', response.data);
-        alert('Matriz de Riesgos generada con éxito. Revisa tu correo electrónico para más detalles.');
-    } catch (error) {
-        console.error('Error al enviar los datos:', error);
-        alert('Hubo un error al generar la Matriz de Riesgos. Por favor, intenta de nuevo.');
+        const gesCheckboxes = cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]');
+        const selectedGes = [];
+        gesCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                selectedGes.push(checkbox.value);
+            }
+        });
+
+        gesResumenDiv.innerHTML = ''; // Limpiar contenido anterior
+
+        if (selectedGes.length > 0) {
+            selectedGes.forEach(ges => {
+                const gesItem = document.createElement('div');
+                gesItem.classList.add('ges-resumen-item');
+
+                const checkMark = document.createElement('span');
+                checkMark.classList.add('check-mark');
+                checkMark.textContent = '✓';
+
+                const gesText = document.createElement('span');
+                gesText.textContent = ges;
+
+                gesItem.appendChild(checkMark);
+                gesItem.appendChild(gesText);
+
+                gesResumenDiv.appendChild(gesItem);
+            });
+        } else {
+            gesResumenDiv.textContent = 'No se han seleccionado GES.';
+        }
     }
-}
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('addCargoBtn').addEventListener('click', addCargo);
-    document.getElementById('matrizRiesgosForm').addEventListener('submit', submitForm);
-    addCargo(); // Añadir el primer cargo automáticamente
-});
+    // Función para oscurecer o aclarar un color (usada para el icono de expandir)
+    function shadeColor(color, percent) {
+        let f = parseInt(color.slice(1), 16),
+            t = percent < 0 ? 0 : 255,
+            p = percent < 0 ? percent * -1 : percent,
+            R = f >> 16,
+            G = f >> 8 & 0x00FF,
+            B = f & 0x0000FF;
+        return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
+    }
+
+    // Función para agregar un nuevo cargo (definida después de las funciones utilizadas dentro)
+    function addCargo(cargoData = {}, isDefault = false) {
+        cargoCount++;
+
+        const cargoDiv = document.createElement('div');
+        cargoDiv.classList.add('cargo');
+
+        // Sección 1: Encabezado
+        const cargoHeader = document.createElement('div');
+        cargoHeader.classList.add('cargo-header');
+
+        // Lado izquierdo del encabezado
+        const headerLeft = document.createElement('div');
+        headerLeft.classList.add('header-left');
+
+        // Etiqueta de área
+        const areaLabel = document.createElement('div');
+        areaLabel.classList.add('area-label');
+        areaLabel.textContent = cargoData.area || 'Área';
+
+        // Título del cargo
+        const cargoTitle = document.createElement('h3');
+        cargoTitle.classList.add('cargo-title');
+        cargoTitle.textContent = cargoData.cargoName || `Cargo #${cargoCount}`;
+
+        headerLeft.appendChild(areaLabel);
+        headerLeft.appendChild(cargoTitle);
+
+        // Lado derecho del encabezado
+        const headerRight = document.createElement('div');
+        headerRight.classList.add('header-right');
+
+        // Contenedor de número de trabajadores con botones - y +
+        const trabajadoresContainer = document.createElement('div');
+        trabajadoresContainer.classList.add('trabajadores-container');
+
+        const minusBtn = document.createElement('button');
+        minusBtn.type = 'button';
+        minusBtn.classList.add('minus-btn');
+        minusBtn.textContent = '-';
+
+        const trabajadoresInput = document.createElement('input');
+        trabajadoresInput.type = 'number';
+        trabajadoresInput.name = 'numTrabajadores';
+        trabajadoresInput.min = '1';
+        trabajadoresInput.value = cargoData.numTrabajadores || '1';
+        trabajadoresInput.readOnly = true;
+
+        const plusBtn = document.createElement('button');
+        plusBtn.type = 'button';
+        plusBtn.classList.add('plus-btn');
+        plusBtn.textContent = '+';
+
+        minusBtn.addEventListener('click', () => {
+            if (parseInt(trabajadoresInput.value) > 1) {
+                trabajadoresInput.value = parseInt(trabajadoresInput.value) - 1;
+                saveData();
+            }
+        });
+
+        plusBtn.addEventListener('click', () => {
+            trabajadoresInput.value = parseInt(trabajadoresInput.value) + 1;
+            saveData();
+        });
+
+        trabajadoresContainer.appendChild(minusBtn);
+        trabajadoresContainer.appendChild(trabajadoresInput);
+        trabajadoresContainer.appendChild(plusBtn);
+
+        // Botón de minimizar
+        const minimizeBtn = document.createElement('button');
+        minimizeBtn.type = 'button';
+        minimizeBtn.classList.add('minimize-btn');
+        minimizeBtn.innerHTML = '-'; // Inicia con el icono de menos
+        minimizeBtn.addEventListener('click', () => {
+            cargoBody.classList.toggle('hidden');
+            minimizeBtn.innerHTML = cargoBody.classList.contains('hidden') ? '+' : '-';
+        });
+
+        // Botón de eliminar cargo
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.classList.add('delete-btn');
+        
+
+        // Añadir icono de caneca (inserta tu SVG aquí)
+        const trashIcon = document.createElement('img');
+        trashIcon.src = canecaIcon;
+        trashIcon.alt = 'Eliminar';
+        trashIcon.classList.add('trash-icon');
+        deleteBtn.prepend(trashIcon);
+
+        if (isDefault) {
+            deleteBtn.disabled = true;
+        }
+        deleteBtn.addEventListener('click', () => {
+            if (cargoCount > 1) {
+                if (confirm('¿Está seguro de que desea eliminar este cargo?')) {
+                    cargoDiv.remove();
+                    cargoCount--;
+                    saveData();
+                }
+            } else {
+                alert('No puede eliminar el último cargo.');
+            }
+        });
+
+        headerRight.appendChild(trabajadoresContainer);
+        headerRight.appendChild(minimizeBtn);
+        headerRight.appendChild(deleteBtn);
+
+        cargoHeader.appendChild(headerLeft);
+        cargoHeader.appendChild(headerRight);
+
+        // Sección 2: Cuerpo del cargo
+        const cargoBody = document.createElement('div');
+        cargoBody.classList.add('cargo-body');
+
+        // Sección de Información General
+        const infoGeneralSection = document.createElement('div');
+        infoGeneralSection.classList.add('info-general-section');
+
+        // Input para el nombre del cargo
+        const cargoNameInput = document.createElement('input');
+        cargoNameInput.type = 'text';
+        cargoNameInput.name = 'cargoName';
+        cargoNameInput.placeholder = 'Ingresa el nombre del cargo';
+        cargoNameInput.value = cargoData.cargoName || '';
+
+        // Actualizar el título del cargo dinámicamente
+        cargoNameInput.addEventListener('input', debounce(() => {
+            cargoTitle.textContent = cargoNameInput.value || `Cargo #${cargoCount}`;
+            saveData();
+        }, 300));
+
+        // Input para el área
+        const areaInput = document.createElement('input');
+        areaInput.type = 'text';
+        areaInput.name = 'area';
+        areaInput.placeholder = 'Ingresa el área';
+        areaInput.value = cargoData.area || '';
+
+        // Actualizar la etiqueta de área dinámicamente
+        areaInput.addEventListener('input', debounce(() => {
+            areaLabel.textContent = areaInput.value || 'Área';
+            saveData();
+        }, 300));
+
+        // Descripción de las tareas
+        const tareasTextarea = document.createElement('textarea');
+        tareasTextarea.name = 'descripcionTareas';
+        tareasTextarea.placeholder = 'Describe las tareas de este cargo';
+        tareasTextarea.value = cargoData.descripcionTareas || '';
+        tareasTextarea.addEventListener('input', debounce(saveData, 300));
+
+        infoGeneralSection.appendChild(cargoNameInput);
+        infoGeneralSection.appendChild(areaInput);
+        infoGeneralSection.appendChild(tareasTextarea);
+
+        // Sección de Toggles
+        const togglesSection = document.createElement('div');
+        togglesSection.classList.add('toggles-section');
+
+        const toggles = [
+            { label: '¿Las tareas son rutinarias?', name: 'tareasRutinarias' },
+            { label: '¿Manipula alimentos?', name: 'manipulaAlimentos' },
+            { label: '¿Trabaja en alturas?', name: 'trabajaAlturas' },
+            { label: '¿Trabaja en espacios confinados?', name: 'trabajaEspaciosConfinados' }
+        ];
+
+        toggles.forEach(toggle => {
+            const toggleDiv = document.createElement('div');
+            toggleDiv.classList.add('toggle');
+
+            const toggleLabel = document.createElement('label');
+            toggleLabel.textContent = toggle.label;
+
+            const toggleInput = document.createElement('input');
+            toggleInput.type = 'checkbox';
+            toggleInput.name = toggle.name;
+            toggleInput.checked = cargoData[toggle.name] || false;
+            toggleInput.addEventListener('change', saveData);
+
+            const toggleSlider = document.createElement('span');
+            toggleSlider.classList.add('slider');
+
+            // Añadir etiquetas "Sí" y "No"
+            const toggleYes = document.createElement('span');
+            toggleYes.classList.add('toggle-yes');
+            toggleYes.textContent = 'Sí';
+
+            const toggleNo = document.createElement('span');
+            toggleNo.classList.add('toggle-no');
+            toggleNo.textContent = 'No';
+
+            const toggleWrapper = document.createElement('label');
+            toggleWrapper.classList.add('switch');
+            toggleWrapper.appendChild(toggleInput);
+            toggleWrapper.appendChild(toggleSlider);
+            toggleWrapper.appendChild(toggleYes);
+            toggleWrapper.appendChild(toggleNo);
+
+            toggleDiv.appendChild(toggleLabel);
+            toggleDiv.appendChild(toggleWrapper);
+
+            togglesSection.appendChild(toggleDiv);
+        });
+
+        // Sección de Riesgos y GES
+        const riesgosSection = document.createElement('div');
+        riesgosSection.classList.add('riesgos-section');
+
+        const riesgos = ['Físico', 'Químico', 'Biológico', 'Ergonómico', 'Psicosocial', 'Mecánico', 'Eléctrico'];
+        const riesgoColors = {
+            'Físico': '#cbe3f3',
+            'Químico': '#fee6fc',
+            'Biológico': '#fdf8cd',
+            'Ergonómico': '#c7f9ff',
+            'Psicosocial': '#d8fff1',
+            'Mecánico': '#ffefd2',
+            'Eléctrico': '#e6e6e6'
+        };
+
+        const riesgosDiv = document.createElement('div');
+        riesgosDiv.classList.add('riesgos');
+
+        riesgos.forEach(riesgo => {
+            const riesgoDiv = document.createElement('div');
+            riesgoDiv.classList.add('riesgo');
+
+            const riesgoHeader = document.createElement('button');
+            riesgoHeader.type = 'button';
+            riesgoHeader.classList.add('riesgo-header');
+            riesgoHeader.textContent = `Riesgo ${riesgo}`;
+            riesgoHeader.style.backgroundColor = riesgoColors[riesgo];
+            riesgoHeader.setAttribute('aria-expanded', 'false');
+
+            // Icono de +/-
+            const expandIcon = document.createElement('span');
+            expandIcon.classList.add('expand-icon');
+            expandIcon.textContent = '+';
+            expandIcon.style.color = shadeColor(riesgoColors[riesgo], -20); // Color más saturado
+
+            riesgoHeader.appendChild(expandIcon);
+
+            const riesgoContent = document.createElement('div');
+            riesgoContent.classList.add('riesgo-content');
+
+            // GES específicos para cada tipo de riesgo
+            const gesList = getGesListByRiesgo(riesgo);
+
+            gesList.forEach(ges => {
+                const gesCheckbox = document.createElement('input');
+                gesCheckbox.type = 'checkbox';
+                gesCheckbox.name = `ges${cargoCount}`;
+                gesCheckbox.value = `${riesgo} - ${ges}`;
+
+                if (cargoData.gesSeleccionados && cargoData.gesSeleccionados.includes(`${riesgo} - ${ges}`)) {
+                    gesCheckbox.checked = true;
+                }
+
+                gesCheckbox.addEventListener('change', () => {
+                    updateGesResumen(cargoDiv);
+                    saveData();
+                });
+
+                const gesLabel = document.createElement('label');
+                gesLabel.textContent = ges;
+
+                const gesItemDiv = document.createElement('div');
+                gesItemDiv.classList.add('ges-item');
+                gesItemDiv.appendChild(gesCheckbox);
+                gesItemDiv.appendChild(gesLabel);
+
+                riesgoContent.appendChild(gesItemDiv);
+            });
+
+            riesgoHeader.addEventListener('click', () => {
+                const expanded = riesgoHeader.getAttribute('aria-expanded') === 'true' || false;
+                riesgoHeader.setAttribute('aria-expanded', !expanded);
+                riesgoContent.classList.toggle('active');
+                expandIcon.textContent = expanded ? '+' : '-';
+            });
+
+            riesgoDiv.appendChild(riesgoHeader);
+            riesgoDiv.appendChild(riesgoContent);
+
+            riesgosDiv.appendChild(riesgoDiv);
+        });
+
+        riesgosSection.appendChild(riesgosDiv);
+
+        // Resumen de GES seleccionados
+        const gesResumenDiv = document.createElement('div');
+        gesResumenDiv.classList.add('ges-resumen');
+
+        // Sección de Barras de Niveles
+        const nivelesSection = document.createElement('div');
+        nivelesSection.classList.add('niveles-section');
+
+        const niveles = [
+            { nombre: 'deficiencia', etiqueta: 'Nivel de Deficiencia de Control del Riesgo' },
+            { nombre: 'exposicion', etiqueta: 'Nivel de Exposición a los Riesgos' },
+            { nombre: 'consecuencia', etiqueta: 'Nivel de Consecuencia del Riesgo' }
+        ];
+
+        niveles.forEach(nivel => {
+            const nivelDiv = document.createElement('div');
+            nivelDiv.classList.add('nivel');
+
+            const nivelLabel = document.createElement('label');
+            nivelLabel.textContent = `${nivel.etiqueta}: `;
+            nivelDiv.appendChild(nivelLabel);
+
+            const barrasDiv = document.createElement('div');
+            barrasDiv.classList.add('barras');
+
+            const nivelesRiesgo = ['Muy Bajo', 'Bajo', 'Medio', 'Alto'];
+            const colores = ['#4caf50', '#ffeb3b', '#ff9800', '#f44336'];
+
+            nivelesRiesgo.forEach((nivelRiesgo, index) => {
+                const barra = document.createElement('div');
+                barra.classList.add('barra');
+                barra.style.backgroundColor = colores[index];
+                barra.dataset.nivel = nivelRiesgo;
+                barra.setAttribute('tabindex', '0');
+                barra.setAttribute('role', 'button');
+                barra.setAttribute('aria-label', nivelRiesgo);
+
+                if (cargoData.niveles && cargoData.niveles[nivel.nombre] === nivelRiesgo) {
+                    barra.classList.add('selected');
+                }
+
+                const checkIcon = document.createElement('span');
+                checkIcon.classList.add('check-icon');
+                checkIcon.textContent = '✓';
+                barra.appendChild(checkIcon);
+
+                barra.addEventListener('click', () => {
+                    nivelDiv.querySelectorAll('.barra').forEach(b => b.classList.remove('selected'));
+                    barra.classList.add('selected');
+                    saveData();
+                });
+
+                barrasDiv.appendChild(barra);
+            });
+
+            nivelDiv.appendChild(barrasDiv);
+            nivelesSection.appendChild(nivelDiv);
+        });
+
+        // Sección de Acciones a Tomar
+        const medidasSection = document.createElement('div');
+        medidasSection.classList.add('medidas-section');
+
+        const medidasTitles = [
+            'Medidas para eliminar riesgos',
+            'Medidas que tomarás para sustituir fuentes de riesgos',
+            'Medidas que tomarás en infraestructura para eliminar fuentes de riesgo'
+        ];
+
+        medidasTitles.forEach((titulo, index) => {
+            const medidaTextarea = document.createElement('textarea');
+            medidaTextarea.name = `medida${index + 1}`;
+            medidaTextarea.placeholder = titulo;
+            medidaTextarea.value = cargoData.medidas ? cargoData.medidas[index] || '' : '';
+            medidaTextarea.addEventListener('input', debounce(saveData, 300));
+
+            medidasSection.appendChild(medidaTextarea);
+        });
+
+        // Añadir secciones al cuerpo del cargo en el orden correcto
+        cargoBody.appendChild(infoGeneralSection);
+        cargoBody.appendChild(togglesSection);
+        cargoBody.appendChild(riesgosSection);
+        cargoBody.appendChild(gesResumenDiv);
+        cargoBody.appendChild(nivelesSection);
+        cargoBody.appendChild(medidasSection);
+
+        // Añadir encabezado y cuerpo al div del cargo
+        cargoDiv.appendChild(cargoHeader);
+        cargoDiv.appendChild(cargoBody);
+
+        cargoContainer.appendChild(cargoDiv);
+
+        // Ahora que gesResumenDiv está en el DOM, inicializa el resumen de GES
+        updateGesResumen(cargoDiv);
+    }
+
+    // Cargar datos guardados en localStorage
+    const savedData = JSON.parse(localStorage.getItem('matrizRiesgosData')) || [];
+    if (savedData.length > 0) {
+        savedData.forEach((cargoData, index) => {
+            addCargo(cargoData, index === 0);
+        });
+    } else {
+        // Añadir el primer cargo por defecto (no se puede eliminar)
+        addCargo({}, true);
+    }
+
+    // Evento para agregar un nuevo cargo
+    addCargoBtn.addEventListener('click', () => {
+        addCargo();
+    });
+
+    // Envío del formulario
+    matrizRiesgosForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Validar el formulario
+        if (validateForm()) {
+            // Recopilar datos del formulario
+            const formData = gatherFormData();
+            // Enviar datos usando Axios
+            axios.post('/submit', formData)
+                .then(response => {
+                    alert('Matriz de Riesgos enviada correctamente.');
+                    localStorage.removeItem('matrizRiesgosData');
+                })
+                .catch(error => {
+                    alert('Hubo un error al enviar la Matriz de Riesgos.');
+                    console.error(error);
+                });
+        }
+    });
+}

@@ -63,7 +63,8 @@
         }
 
         @for $i from 1 through 6 {
-        &:nth-child(#{$i}) {
+            &:nth-child(#{$i}) {
+            background-color: map-get($aux-colors, $i);
             @if $i % 2 == 0 {
             text-align: right;
             justify-content: right;
@@ -80,7 +81,6 @@
             text-align: left;
             }
 
-            background-color: map-get($aux-colors, $i);
         }
         }
     }

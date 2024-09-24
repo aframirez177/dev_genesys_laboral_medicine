@@ -1,15 +1,17 @@
+// src/js/matriz_de_riesgos_profesional.js
+
 import { initDropdown } from './components/dropdown.js';
 import { initCardVisibility } from './components/cardVisibility.js';
 import { initMap } from './components/map.js';
 import { initWhatsApp } from './components/whatsapp.js';
 import { initFAQ } from './components/faq.js';
 import { initHamburgerMenu } from './components/hamburgerMenu.js';
-import { initCalculator } from './components/calculator.js';
 import { initClients } from './components/clients.js';
+import { initializeForm } from './components/form_matriz_riesgos_prof.js';
 import { addHoverEffect, smoothScroll } from './utils/animations.js';
-import { initMatrizRiesgos } from './components/form_matriz_riesgos_prof.js';
 
-import '../styles/scss/style_matriz_de_riesgos_profesional.scss'  // Ajusta la ruta a donde esté tu archivo principal SCSS
+import '../styles/scss/style_matriz_de_riesgos_profesional.scss';
+
 
 
 function initApp() {
@@ -19,9 +21,9 @@ function initApp() {
     initWhatsApp();
     initFAQ();
     initHamburgerMenu();
-    initCalculator();
     initClients();
-    initMatrizRiesgos();
+    initializeForm();
+
 
     // Añadir efecto hover a las imágenes de certificación
     const certImages = document.querySelectorAll('.certification-img');
