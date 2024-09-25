@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gndx/dev_genesys_laboral_medicine.git"
+    "url": "git+https://github.com/aframirez177/dev_genesys_laboral_medicine.git"
   },
   "keywords": [
     "javascript",
@@ -21,9 +21,9 @@
   "author": "alvaro ramirez <af.ramirez1772@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gndx/dev_genesys_laboral_medicine/issues"
+    "url": "https://github.com/aframirez177/dev_genesys_laboral_medicine/issues"
   },
-  "homepage": "https://github.com/gndx/dev_genesys_laboral_medicine#readme",
+  "homepage": "https://github.com/aframirez177/dev_genesys_laboral_medicine#readme",
   "devDependencies": {
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
