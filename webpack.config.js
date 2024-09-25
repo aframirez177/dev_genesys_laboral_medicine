@@ -28,7 +28,7 @@ module.exports = {
             },
         },
         {
-            test: /\.css|scss$/i,
+            test: /\.(css|scss)$/i,
             use: [MiniCssExtractPlugin.loader,'css-loader','sass-loader'
             ],
         },
@@ -39,6 +39,18 @@ module.exports = {
                 filename: 'assets/images/[name][ext][query]'
             }
         },
+        {
+            test: /\.(woff|woff2)$/,
+            use: {
+                loader: 'file-loader',
+                options: {
+                name: '[name].[ext]',
+                outputPath: 'assets/fonts',  // En el sistema de archivos: dist/assets/fonts
+                publicPath: '/assets/fonts', // En el navegador: http://tu-dominio.com/assets/fonts
+                }
+            }
+        }
+    
         ],
     },
     plugins: [
