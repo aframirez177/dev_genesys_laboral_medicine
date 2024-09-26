@@ -5,7 +5,7 @@
     font-size: 1.4rem;
     font-weight: 500;
     font-family: map-get($fonts, "body");
-    transition: 0.2s;
+    transition: 0.2s, font-weight 0.3s ease;
     text-decoration: none;
     display: inline-block;
     min-width: 1rem;
@@ -24,7 +24,7 @@ a {
     font-size: 1.4rem;
     text-decoration: none;
     color: map-get($colors, "secondary" );
-    transition: 0.2s;
+    transition: 0.2s, font-weight 0.3s ease;
     position: relative;
     min-width: 1rem;
     align-items: center;
@@ -45,7 +45,7 @@ a {
         cursor: pointer;
         display: flex;
         align-items: center;
-        transition: 0.2s;
+        transition: 0.2s, font-weight 0.3s ease;
         
 
         &::after {

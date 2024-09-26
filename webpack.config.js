@@ -42,14 +42,17 @@ module.exports = {
         {
             test: /\.(woff|woff2)$/,
             use: {
-                loader: 'file-loader',
+                loader: 'url-loader',
                 options: {
-                name: '[name].[ext]',
-                outputPath: 'assets/fonts',  // En el sistema de archivos: dist/assets/fonts
-                publicPath: '/assets/fonts', // En el navegador: http://tu-dominio.com/assets/fonts
+                    limit: 10000,
+                    mimetype: 'application/font-woff',
+                    name: "[name].[ext]",
+                    outputPath: 'assets/fonts',
+                    publicPath: '/assets/fonts',
+                    esModule: false,
                 }
             }
-        }
+        }, 
     
         ],
     },

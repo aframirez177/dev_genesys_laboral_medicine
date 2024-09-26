@@ -11,6 +11,18 @@
     font-weight: 500;
     font-style: normal;
 }
+@font-face {
+    font-family: 'Poppins';
+    src: url('../../assets/fonts/poppins-v21-latin-600.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Poppins';
+    src: url('../../assets/fonts/poppins-v21-latin-700.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
 
 @font-face {
     font-family: 'Poppins';
@@ -30,6 +42,20 @@
     font-family: 'Raleway';
     src: url('../../assets/fonts/raleway-v34-latin-500.woff2') format('woff2');
     font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Raleway';
+    src: url('../../assets/fonts/raleway-v34-latin-600.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Raleway';
+    src: url('../../assets/fonts/raleway-v34-latin-700.woff2') format('woff2');
+    font-weight: 800;
     font-style: normal;
 }
 
