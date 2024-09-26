@@ -1,14 +1,15 @@
 %button-base {
     padding: 0.5rem 1.61rem;
-    border-radius: 18px;
+    border-radius: 34px;
     cursor: pointer;
-    font-size: 1.4rem;
+    font-size: 1.8rem;
     font-weight: 500;
     font-family: map-get($fonts, "body");
     @include smooth-weight-transition();
     text-decoration: none;
     display: inline-block;
     min-width: 1rem;
+    height: 4.3rem;
     align-items: center;
     justify-content: center;
 
@@ -30,18 +31,18 @@ a {
     min-width: 1rem;
     align-items: center;
     justify-content: center;
-    top: 5px;
+    top: 15px;
     }
     a:hover {
     font-weight: 800;
     }
 
     .dropdown-toggle {
-        margin-top: -.5rem;
+        margin-top: .5rem;
         background: none;
         border: none;
         font-family: map-get($fonts, "body" );
-        font-size: 1.4rem;
+        font-size: 1.6rem;
         color: map-get($colors,"secondary" );
         cursor: pointer;
         display: flex;
