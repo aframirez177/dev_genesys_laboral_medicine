@@ -3,7 +3,94 @@ import canecaIcon from '../../assets/images/caneca.svg';
 
 import axios from 'axios';
 
-// Función para inicializar el formulario de Matriz de Riesgos Profesional
+// Función para simular la respuesta de la API
+function mockApiResponse(data) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log('Datos enviados a la API:', JSON.stringify(data, null, 2));
+            const procesados = procesarDatos(data);
+            resolve({
+            status: 200,
+            data: {
+                message: 'Datos recibidos y procesados correctamente',
+                matrizRiesgos: procesados.matrizRiesgos,
+                profesiograma: procesados.profesiograma
+            }
+            });
+        }, 1000);
+        });
+    }
+
+// Función para procesar los datos
+function procesarDatos(data) {
+    console.log('Datos recibidos para procesar:', JSON.stringify(data, null, 2));
+    const matrizRiesgos = [];
+    const profesiograma = [];
+    
+        data.forEach(cargo => {
+        const nivelDeficiencia = getNivelDeficiencia(cargo.niveles.deficiencia);
+        const nivelExposicion = getNivelExposicion(cargo.niveles.exposicion);
+        const nivelConsecuencia = getNivelConsecuencia(cargo.niveles.consecuencia);
+    
+        const nivelProbabilidad = nivelDeficiencia * nivelExposicion;
+        const nivelRiesgo = nivelProbabilidad * nivelConsecuencia;
+    
+        matrizRiesgos.push({
+            cargo: cargo.cargoName,
+            area: cargo.area,
+            riesgos: cargo.gesSeleccionados,
+            nivelRiesgo: nivelRiesgo,
+            interpretacion: getInterpretacionRiesgo(nivelRiesgo)
+        });
+    
+        profesiograma.push({
+            cargo: cargo.cargoName,
+            area: cargo.area,
+            descripcionTareas: cargo.descripcionTareas,
+            riesgos: cargo.gesSeleccionados,
+            medidasPreventivas: cargo.medidas
+        });
+        });
+    
+        return { matrizRiesgos, profesiograma };
+    }
+    
+    // Funciones auxiliares para obtener los valores numéricos
+    function getNivelDeficiencia(nivel) {
+        const valores = { 'Muy Alto': 10, 'Alto': 6, 'Medio': 2, 'Bajo': 0 };
+        return valores[nivel] || 0;
+    }
+    
+    function getNivelExposicion(nivel) {
+        const valores = { 'Continua': 4, 'Frecuente': 3, 'Ocasional': 2, 'Esporádica': 1 };
+        return valores[nivel] || 0;
+    }
+    
+    function getNivelConsecuencia(nivel) {
+        const valores = { 'Mortal o Catastrófico': 100, 'Muy Grave': 60, 'Grave': 25, 'Leve': 10 };
+        return valores[nivel] || 0;
+    }
+    function getInterpretacionRiesgo(nivelRiesgo) {
+        if (nivelRiesgo >= 600) return 'I';
+        if (nivelRiesgo >= 150) return 'II';
+        if (nivelRiesgo >= 40) return 'III';
+        return 'IV';
+    }
+
+// Función para mostrar los resultados
+    function mostrarResultados(data) {
+        const resultadosDiv = document.createElement('div');
+        resultadosDiv.innerHTML = `
+        <h3>Matriz de Riesgos</h3>
+        <pre>${JSON.stringify(data.matrizRiesgos, null, 2)}</pre>
+        <h3>Profesiograma</h3>
+        <pre>${JSON.stringify(data.profesiograma, null, 2)}</pre>
+        `;
+        document.body.appendChild(resultadosDiv);
+    }
+    
+
+    // Función para inicializar el formulario de Matriz de Riesgos Profesional
 export function initializeForm() {
     const cargoContainer = document.getElementById('cargoContainer');
     const addCargoBtn = document.getElementById('addCargoBtn');
@@ -102,13 +189,14 @@ export function initializeForm() {
     // Función para obtener la lista de GES según el riesgo
     function getGesListByRiesgo(riesgo) {
         const gesLists = {
-            'Físico': ['Ruido', 'Vibraciones', 'Temperaturas Extremas', 'Radiaciones Ionizantes', 'Radiaciones No Ionizantes'],
-            'Químico': ['Gases', 'Vapores', 'Polvos', 'Humos', 'Neblinas'],
-            'Biológico': ['Virus', 'Bacterias', 'Hongos', 'Parásitos'],
-            'Ergonómico': ['Posturas Forzadas', 'Movimientos Repetitivos', 'Manipulación Manual de Cargas'],
-            'Psicosocial': ['Estrés', 'Violencia Laboral', 'Jornadas Excesivas'],
+            'Físico': ['Ruido', 'Vibraciones', 'Temperaturas Extremas', 'Radiaciones Ionizantes', 'Radiaciones No Ionizantes', 'Iluminacion deficiente', 'Presiones anormales'],
+            'Químico': ['Gases', 'Vapores', 'Polvos', 'Humos', 'Liquidos', 'Solventes'],
+            'Biológico': ['Virus', 'Bacterias', 'Hongos', 'Parásitos', 'Picaduras/Mordeduras'],
+            'Ergonómico': ['Posturas prolongadas', 'Movimientos Repetitivos', 'Manipulación Manual de Cargas', 'Esfuerzo'],
+            'Psicosocial': ['Gestion organizaciona','Estrés', 'Violencia Laboral', 'Jornadas Excesivas', 'Sobrecarga laboral'],
             'Mecánico': ['Golpes y Cortes', 'Caídas', 'Proyección de Partículas'],
-            'Eléctrico': ['Contacto Directo', 'Contacto Indirecto', 'Arco Eléctrico']
+            'Eléctrico': ['Contacto Directo', 'Contacto Indirecto', 'Arco Eléctrico'],
+            'Seguridad':['Maquinaria/Herramienta','Electrico','Locativo', 'Técnologico', 'Accidentes de transto', 'Inseguridad publica']
         };
         return gesLists[riesgo] || [];
     }
@@ -376,7 +464,7 @@ export function initializeForm() {
         const riesgosSection = document.createElement('div');
         riesgosSection.classList.add('riesgos-section');
 
-        const riesgos = ['Físico', 'Químico', 'Biológico', 'Ergonómico', 'Psicosocial', 'Mecánico', 'Eléctrico'];
+        const riesgos = ['Físico', 'Químico', 'Biológico', 'Ergonómico', 'Psicosocial', 'Mecánico', 'Eléctrico','Seguridad'];
         const riesgoColors = {
             'Físico': '#cbe3f3',
             'Químico': '#fee6fc',
@@ -384,7 +472,8 @@ export function initializeForm() {
             'Ergonómico': '#c7f9ff',
             'Psicosocial': '#d8fff1',
             'Mecánico': '#ffefd2',
-            'Eléctrico': '#e6e6e6'
+            'Eléctrico': '#e6e6e6',
+            'Seguridad':'#fee6fc'
         };
 
         const riesgosDiv = document.createElement('div');
@@ -505,6 +594,7 @@ export function initializeForm() {
                 barra.addEventListener('click', () => {
                     nivelDiv.querySelectorAll('.barra').forEach(b => b.classList.remove('selected'));
                     barra.classList.add('selected');
+                    cargoData.niveles[nivel.nombre] = nivelRiesgo;
                     saveData();
                 });
 
@@ -570,22 +660,21 @@ export function initializeForm() {
     });
 
     // Envío del formulario
-    matrizRiesgosForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        // Validar el formulario
-        if (validateForm()) {
-            // Recopilar datos del formulario
+    matrizRiesgosForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (validateForm()) {
             const formData = gatherFormData();
-            // Enviar datos usando Axios
-            axios.post('/submit', formData)
-                .then(response => {
-                    alert('Matriz de Riesgos enviada correctamente.');
-                    localStorage.removeItem('matrizRiesgosData');
-                })
-                .catch(error => {
-                    alert('Hubo un error al enviar la Matriz de Riesgos.');
-                    console.error(error);
-                });
-        }
-    });
+            try {
+                // Usa mockApiResponse en lugar de axios.post
+                const response = await mockApiResponse(formData);
+                console.log('Respuesta de la API:', response.data);
+                mostrarResultados(response.data);
+                alert('Matriz de Riesgos y Profesiograma generados correctamente.');
+                localStorage.removeItem('matrizRiesgosData');
+            } catch (error) {
+                alert('Hubo un error al procesar los datos.');
+                console.error(error);
+            }
+            }
+        });
 }
