@@ -5,7 +5,7 @@
     font-size: 1.4rem;
     font-weight: 500;
     font-family: map-get($fonts, "body");
-    transition: 0.2s, font-weight 0.3s ease;
+    @include smooth-weight-transition();
     text-decoration: none;
     display: inline-block;
     min-width: 1rem;
@@ -13,8 +13,9 @@
     justify-content: center;
 
 &:hover {
+        @include smooth-weight-transition();
         font-weight: 800;
-        transform: translateY(-3px);
+        transform: translateY(-3px), scale(110%);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 }
@@ -24,7 +25,7 @@ a {
     font-size: 1.4rem;
     text-decoration: none;
     color: map-get($colors, "secondary" );
-    transition: 0.2s, font-weight 0.3s ease;
+    @include smooth-weight-transition();
     position: relative;
     min-width: 1rem;
     align-items: center;
@@ -45,7 +46,7 @@ a {
         cursor: pointer;
         display: flex;
         align-items: center;
-        transition: 0.2s, font-weight 0.3s ease;
+        @include smooth-weight-transition();
         
 
         &::after {

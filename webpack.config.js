@@ -41,19 +41,11 @@ module.exports = {
         },
         {
             test: /\.(woff|woff2)$/,
-            use: {
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    mimetype: 'application/font-woff',
-                    name: "[name].[ext]",
-                    outputPath: 'assets/fonts',
-                    publicPath: '/assets/fonts',
-                    esModule: false,
-                }
+            type: 'asset/resource', // Cambiamos a asset/resource para manejar fuentes
+            generator: {
+                filename: 'assets/fonts/[name][ext][query]', // Mantenemos la estructura de carpetas
             }
-        }, 
-    
+        }
         ],
     },
     plugins: [
@@ -142,7 +134,7 @@ module.exports = {
                     from: path.resolve(__dirname, 'src', 'assets/images'),
                     to: 'assets/images'
                 },
-
+                // Eliminamos la copia de fuentes de aquí
             ]
         })
     ],
