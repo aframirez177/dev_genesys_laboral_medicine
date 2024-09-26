@@ -116,15 +116,16 @@ p {
 
 .cta-button-1, .cta-button {
   padding: 0.5rem 1.61rem;
-  border-radius: 18px;
+  border-radius: 34px;
   cursor: pointer;
-  font-size: 1.4rem;
+  font-size: 1.8rem;
   font-weight: 500;
   font-family: "Raleway", sans-serif;
   transition: opacity 0.3s ease;
   text-decoration: none;
   display: inline-block;
   min-width: 1rem;
+  height: 4.3rem;
   align-items: center;
   justify-content: center;
 }
@@ -146,7 +147,7 @@ a {
   min-width: 1rem;
   align-items: center;
   justify-content: center;
-  top: 5px;
+  top: 15px;
 }
 
 a:hover {
@@ -154,11 +155,11 @@ a:hover {
 }
 
 .dropdown-toggle {
-  margin-top: -0.5rem;
+  margin-top: 0.5rem;
   background: none;
   border: none;
   font-family: "Raleway", sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   color: #383d47;
   cursor: pointer;
   display: flex;
