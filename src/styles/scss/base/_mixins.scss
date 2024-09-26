@@ -69,5 +69,5 @@
         }
         
         @mixin smooth-weight-transition($duration: 0.3s) {
-            transition: opacity $duration ease;
+            transition: transform $duration ease;
         }
