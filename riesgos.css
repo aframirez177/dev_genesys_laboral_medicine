@@ -30,61 +30,61 @@ img {
 
 @font-face {
   font-family: "Poppins";
-  src: url(11e4b5f572038eaefe85.woff2) format("woff2");
+  src: url(assets/fonts/poppins-v21-latin-regular.woff2) format("woff2");
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
   font-family: "Poppins";
-  src: url(6d9a33ccac28094e1c18.woff2) format("woff2");
+  src: url(assets/fonts/poppins-v21-latin-500.woff2) format("woff2");
   font-weight: 500;
   font-style: normal;
 }
 @font-face {
   font-family: "Poppins";
-  src: url(f76de28d9e64e6b59335.woff2) format("woff2");
+  src: url(assets/fonts/poppins-v21-latin-600.woff2) format("woff2");
   font-weight: 600;
   font-style: normal;
 }
 @font-face {
   font-family: "Poppins";
-  src: url(450f5cf6a19a824c76fb.woff2) format("woff2");
+  src: url(assets/fonts/poppins-v21-latin-700.woff2) format("woff2");
   font-weight: 700;
   font-style: normal;
 }
 @font-face {
   font-family: "Poppins";
-  src: url(6512b1ebe2918dca1b01.woff2) format("woff2");
+  src: url(assets/fonts/poppins-v21-latin-800.woff2) format("woff2");
   font-weight: 800;
   font-style: normal;
 }
 @font-face {
   font-family: "Raleway";
-  src: url(ef35e2e541a4ed430231.woff2) format("woff2");
+  src: url(assets/fonts/raleway-v34-latin-regular.woff2) format("woff2");
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
   font-family: "Raleway";
-  src: url(d06ca6b01dc835210dfd.woff2) format("woff2");
+  src: url(assets/fonts/raleway-v34-latin-500.woff2) format("woff2");
   font-weight: 500;
   font-style: normal;
 }
 @font-face {
   font-family: "Raleway";
-  src: url(36066c494f1c7e493bae.woff2) format("woff2");
+  src: url(assets/fonts/raleway-v34-latin-600.woff2) format("woff2");
   font-weight: 800;
   font-style: normal;
 }
 @font-face {
   font-family: "Raleway";
-  src: url(c2a06de0bab2b09e993c.woff2) format("woff2");
+  src: url(assets/fonts/raleway-v34-latin-700.woff2) format("woff2");
   font-weight: 800;
   font-style: normal;
 }
 @font-face {
   font-family: "Raleway";
-  src: url(f4895e2bba6f733f3c49.woff2) format("woff2");
+  src: url(assets/fonts/raleway-v34-latin-800.woff2) format("woff2");
   font-weight: 800;
   font-style: normal;
 }
@@ -121,7 +121,7 @@ p {
   font-size: 1.4rem;
   font-weight: 500;
   font-family: "Raleway", sans-serif;
-  transition: 0.2s, font-weight 0.3s ease;
+  transition: opacity 0.3s ease;
   text-decoration: none;
   display: inline-block;
   min-width: 1rem;
@@ -129,8 +129,9 @@ p {
   justify-content: center;
 }
 .cta-button-1:hover, .cta-button:hover {
+  transition: opacity 0.3s ease;
   font-weight: 800;
-  transform: translateY(-3px);
+  transform: translateY(-3px), scale(110%);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -140,7 +141,7 @@ a {
   font-size: 1.4rem;
   text-decoration: none;
   color: #383d47;
-  transition: 0.2s, font-weight 0.3s ease;
+  transition: opacity 0.3s ease;
   position: relative;
   min-width: 1rem;
   align-items: center;
@@ -162,7 +163,7 @@ a:hover {
   cursor: pointer;
   display: flex;
   align-items: center;
-  transition: 0.2s, font-weight 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 .dropdown-toggle::after {
   content: "";

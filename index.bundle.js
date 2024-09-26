@@ -16,7 +16,7 @@
   \**********************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _src_js_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../src/js/main.js */ \"./src/js/main.js\");\n/* harmony import */ var _styles_scss_main_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles/scss/main.scss */ \"./src/styles/scss/main.scss\");\n\n\n\n//# sourceURL=webpack://dev_genesys_laboral_medicine/./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _src_js_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../src/js/main.js */ \"./src/js/main.js\");\n\n\n//# sourceURL=webpack://dev_genesys_laboral_medicine/./src/index.js?");
 
 /***/ }),
 
