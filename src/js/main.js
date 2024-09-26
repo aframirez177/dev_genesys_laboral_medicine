@@ -1,6 +1,6 @@
 import { initDropdown } from './components/dropdown.js';
 import { initCardVisibility } from './components/cardVisibility.js';
-import { initMap } from './components/map.js';
+import { initMap } from './components/lazyMap.js';
 import { initWhatsApp } from './components/whatsapp.js';
 import { initFAQ } from './components/faq.js';
 import { initHamburgerMenu } from './components/hamburgerMenu.js';
