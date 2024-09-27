@@ -2,7 +2,7 @@
     padding: 0.5rem 1.61rem;
     border-radius: 34px;
     cursor: pointer;
-    font-size: 1.7rem;
+    font-size: 1.4rem;
     font-weight: 500;
     font-family: map-get($fonts, "body");
     @include smooth-weight-transition();
@@ -24,7 +24,7 @@
 /* Los botones */
 a {
     font-family:map-get($fonts, "body" );
-    font-size: 1.7rem;
+    font-size: 1.4rem;
     text-decoration: none;
     color: map-get($colors, "secondary" );
     @include smooth-weight-transition();
@@ -46,7 +46,7 @@ a {
         background: none;
         border: none;
         font-family: map-get($fonts, "body" );
-        font-size: 2rem;
+        font-size: 1.5rem;
         color: map-get($colors,"secondary" );
         cursor: pointer;
         display: flex;
