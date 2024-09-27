@@ -1,3 +1,5 @@
+import logoNegro from '../../assets/images/logo_negro_maps.png'; // Ajusta la ruta según tu estructura
+
 export function initMap() {
     const mapContainer = document.getElementById('map-container');
     const mapButtons = document.querySelectorAll('.map-button');
@@ -22,9 +24,18 @@ export function initMap() {
             zoom: 14
         });
 
+        // Definir el icono personalizado
+        const customMarker = {
+            url: logoNegro, // Usa la imagen importada
+            scaledSize: new google.maps.Size(50, 50), // Ajusta el tamaño
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(25, 25),
+        };
+
         new google.maps.Marker({
             position: { lat, lng },
             map: map,
+            icon: customMarker,
             title: 'Nuestra ubicación'
         });
     }

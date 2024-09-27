@@ -118,45 +118,38 @@ export function initializeForm() {
         const cargosData = [];
         const cargoDivs = cargoContainer.querySelectorAll('.cargo');
         cargoDivs.forEach(cargoDiv => {
-            const cargoNameInput = cargoDiv.querySelector('input[name="cargoName"]');
-            const areaInput = cargoDiv.querySelector('input[name="area"]');
-            const trabajadoresInput = cargoDiv.querySelector('input[name="numTrabajadores"]');
-            const descripcionTareas = cargoDiv.querySelector('textarea[name="descripcionTareas"]').value;
-
-            const toggles = {};
+            const cargoData = {
+                cargoName: cargoDiv.querySelector('input[name="cargoName"]').value.trim(),
+                area: cargoDiv.querySelector('input[name="area"]').value.trim(),
+                numTrabajadores: cargoDiv.querySelector('input[name="numTrabajadores"]').value,
+                descripcionTareas: cargoDiv.querySelector('textarea[name="descripcionTareas"]').value,
+                niveles: {},
+                gesSeleccionados: [],
+                medidas: []
+            };
+            // recopilar toggles //
             ['tareasRutinarias', 'manipulaAlimentos', 'trabajaAlturas', 'trabajaEspaciosConfinados'].forEach(name => {
-                toggles[name] = cargoDiv.querySelector(`input[name="${name}"]`).checked;
+                cargoData[name] = cargoDiv.querySelector(`input[name="${name}"]`).checked;
             });
-
+            // recopilar GES seleccionados //
             const gesCheckboxes = cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]');
-            const gesSeleccionados = [];
-            gesCheckboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    gesSeleccionados.push(checkbox.value);
-                }
+            // recopilar Ges seleccionados //
+            cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]:checked').forEach(checkbox => {
+                cargoData.gesSeleccionados.push(checkbox.value);
             });
-            const medidas = [];
-            cargoDiv.querySelectorAll('.medidas-section textarea').forEach((textarea, index) => {
-                medidas[index] = textarea.value;
+            //recopilar medidas//
+            cargoDiv.querySelectorAll('.medidas-section textarea').forEach(textarea => {
+                cargoData.medidas.push(textarea.value);
             });
 
-            const niveles = {};
+            // Recopilar niveles
             cargoDiv.querySelectorAll('.nivel').forEach(nivelDiv => {
                 const nivelName = nivelDiv.querySelector('label').textContent.trim().split(':')[0].toLowerCase();
                 const selectedBar = nivelDiv.querySelector('.barra.selected');
-                niveles[nivelName] = selectedBar ? selectedBar.dataset.nivel : null;
+                cargoData.niveles[nivelName] = selectedBar ? selectedBar.dataset.nivel : null;
             });
 
-            cargosData.push({
-                cargoName: cargoNameInput.value.trim(),
-                area: areaInput.value.trim(),
-                numTrabajadores: trabajadoresInput.value,
-                descripcionTareas: descripcionTareas,
-                ...toggles,
-                gesSeleccionados: gesSeleccionados,
-                medidas: medidas,
-                niveles: niveles
-            });
+            cargosData.push(cargoData);
         });
         return cargosData;
     }
@@ -193,7 +186,7 @@ export function initializeForm() {
             'Químico': ['Gases', 'Vapores', 'Polvos', 'Humos', 'Liquidos', 'Solventes'],
             'Biológico': ['Virus', 'Bacterias', 'Hongos', 'Parásitos', 'Picaduras/Mordeduras'],
             'Ergonómico': ['Posturas prolongadas', 'Movimientos Repetitivos', 'Manipulación Manual de Cargas', 'Esfuerzo'],
-            'Psicosocial': ['Gestion organizaciona','Estrés', 'Violencia Laboral', 'Jornadas Excesivas', 'Sobrecarga laboral'],
+            'Psicosocial': ['Gestion organizacional','Estrés', 'Violencia Laboral', 'Jornadas Excesivas', 'Sobrecarga laboral'],
             'Mecánico': ['Golpes y Cortes', 'Caídas', 'Proyección de Partículas'],
             'Eléctrico': ['Contacto Directo', 'Contacto Indirecto', 'Arco Eléctrico'],
             'Seguridad':['Maquinaria/Herramienta','Electrico','Locativo', 'Técnologico', 'Accidentes de transto', 'Inseguridad publica']
@@ -678,3 +671,4 @@ export function initializeForm() {
             }
         });
 }
+
