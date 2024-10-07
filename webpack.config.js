@@ -9,7 +9,8 @@ const TerserPlugin = require('terser-webpack-plugin');
 module.exports = {
     entry: {
         index: './src/index.js',
-        riesgos: './src/main_matriz_riesgos_profesional.js'
+        riesgos: './src/main_matriz_riesgos_profesional.js',
+        profesiograma:'./src/main_profesiograma.js',
         
     },
     output: {

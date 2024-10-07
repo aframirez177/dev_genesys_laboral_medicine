@@ -1,7 +1,3 @@
-.service-info {
-    display: flex;
-    flex-direction: column;
-
 .program-description {
     @include flex-center;
     flex-wrap: wrap;
@@ -26,9 +22,4 @@
         text-align: left;
         padding: 2rem;
     }
-}
-    .cta-button-1 {
-        max-width: 600px;
-    }
-
 }
