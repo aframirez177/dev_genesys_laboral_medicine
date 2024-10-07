@@ -25,6 +25,7 @@
 a {
     font-family:map-get($fonts, "body" );
     font-size: 1.4rem;
+    font-weight: 500;
     text-decoration: none;
     color: map-get($colors, "secondary" );
     @include smooth-weight-transition();
@@ -32,7 +33,7 @@ a {
     min-width: 1rem;
     align-items: center;
     justify-content: center;
-    top: 15px;
+    top: 18px;
     }
     a:hover {
     font-weight: 800;

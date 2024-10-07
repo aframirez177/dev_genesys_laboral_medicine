@@ -7,7 +7,7 @@ import { initWhatsApp } from './components/whatsapp.js';
 import { initFAQ } from './components/faq.js';
 import { initHamburgerMenu } from './components/hamburgerMenu.js';
 import { initClients } from './components/clients.js';
-import { initializeForm } from './components/form_matriz_riesgos_prof.js';
+/* import { initializeForm } from './components/form_matriz_riesgos_prof.js'; */
 import { addHoverEffect, smoothScroll } from './utils/animations.js';
 
 import '../styles/scss/style_matriz_de_riesgos_profesional.scss';
