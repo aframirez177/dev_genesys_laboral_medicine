@@ -11,6 +11,7 @@ module.exports = {
         index: './src/index.js',
         riesgos: './src/main_matriz_riesgos_profesional.js',
         profesiograma:'./src/main_profesiograma.js',
+        examenes:'./src/main_examenes_medicos_ocupacionales.js'
         
     },
     output: {
@@ -82,6 +83,11 @@ module.exports = {
         inject: true,
         template: './public/pages/examen_medico_escolar.html',
         filename: './pages/examen_medico_escolar.html',
+        }),
+        new HtmlWebpackPlugin({
+        inject: true,
+        template: './public/pages/Examenes_medicos_ocupacionales.html',
+        filename: './pages/Examenes_medicos_ocupacionales.html',
         }),
         new HtmlWebpackPlugin({
         inject: true,

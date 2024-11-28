@@ -3,6 +3,10 @@
 import canecaIcon from '../../assets/images/caneca.svg';
 import axios from 'axios';
 
+// Importar Swiper y los módulos necesarios
+import Swiper from 'swiper/bundle';
+import 'swiper/css/bundle';
+
 // Función para simular la respuesta de la API
 function mockApiResponse(data) {
     return new Promise((resolve) => {
@@ -169,14 +173,98 @@ export function initializeForm() {
     // Función para obtener la lista de GES según el riesgo
     function getGesListByRiesgo(riesgo) {
         const gesLists = {
-            'Físico': ['Ruido', 'Vibraciones', 'Temperaturas Extremas', 'Radiaciones Ionizantes', 'Radiaciones No Ionizantes', 'Iluminación deficiente', 'Presiones anormales'],
-            'Químico': ['Gases', 'Vapores', 'Polvos', 'Humos', 'Líquidos', 'Solventes'],
-            'Biológico': ['Virus', 'Bacterias', 'Hongos', 'Parásitos', 'Picaduras/Mordeduras'],
-            'Ergonómico': ['Posturas prolongadas', 'Movimientos Repetitivos', 'Manipulación Manual de Cargas', 'Esfuerzo'],
-            'Psicosocial': ['Gestión organizacional', 'Estrés', 'Violencia Laboral', 'Jornadas Excesivas', 'Sobrecarga laboral'],
-            'Mecánico': ['Golpes y Cortes', 'Caídas', 'Proyección de Partículas'],
-            'Eléctrico': ['Contacto Directo', 'Contacto Indirecto', 'Arco Eléctrico'],
-            'Seguridad': ['Maquinaria/Herramienta', 'Eléctrico', 'Locativo', 'Tecnológico', 'Accidentes de tránsito', 'Inseguridad pública']
+            'Mecánico': [
+                'Caídas al mismo nivel',
+                'Caídas de altura',
+                'Posibilidad de atrapamiento',
+                'Posibilidad de ser golpeado por objetos que caen o en movimiento',
+                'Posibilidad de proyección de partículas o fluidos a presión',
+                'Posibilidad de perforación o de punzonamiento',
+                'Posibilidad de corte o seccionamiento'
+            ],
+            'Eléctrico': [
+                'Alta tensión debido a instalaciones eléctricas locativas y estáticas',
+                'Media tensión debido a instalaciones eléctricas locativas y estáticas',
+                'Baja tensión debido a instalaciones eléctricas locativas y estáticas',
+                'Electricidad estática'
+            ],
+            'Físico': [
+                'Iluminación deficiente',
+                'Iluminación en exceso',
+                'Presiones anormales',
+                'Radiaciones ionizantes',
+                'Radiaciones no ionizantes',
+                'Ruido',
+                'Temperaturas extremas: calor',
+                'Temperaturas extremas: frío',
+                'Vibraciones mano-cuerpo',
+                'Vibraciones cuerpo completo',
+                'Cambios bruscos de temperatura',
+                'Humedad Relativa (Vapor de agua)'
+            ],
+            'Químico': [
+                'Exposición a gases vapores humos polvos no tóxicos',
+                'Exposición a gases vapores humos polvos tóxicos',
+                'Exposición sustancias químicas líquidas tóxicas',
+                'Exposición sustancias químicas líquidas no tóxicas',
+                'Exposición a sustancias químicas que generan efectos en el organismo'
+            ],
+            'Biológico': [
+                'Presencia de animales/vectores transmisores de enfermedad',
+                'Exposición a material contaminado o con riesgo biológico',
+                'Manipulación de alimentos'
+            ],
+            'Biomecánico': [
+                'Manejo de cargas mayores a 25 Kg (Hombres)',
+                'Manejo de cargas mayores a 12.5 Kg (Mujeres)',
+                'Adopción de posturas nocivas',
+                'Movimientos repetitivos (6 o más por minuto)',
+                'Diseño del puesto de trabajo inadecuado',
+                'Posturas prolongadas y/o incorrectas'
+            ],
+            'Factores Humanos': [
+                'Competencias no definidas para el cargo',
+                'Actos inseguros observados'
+            ],
+            'Psicosocial': [
+                'Atención de público',
+                'Monotonía/repetitividad de funciones',
+                'Trabajo bajo presión'
+            ],
+            'Locativo': [
+                'Almacenamiento inadecuado',
+                'Condiciones inadecuadas de orden y aseo',
+                'Condiciones del piso',
+                'Escaleras y barandas inadecuadas o mal estado',
+                'Condiciones de las instalaciones'
+            ],
+            'Natural': [
+                'Deslizamientos',
+                'Inundación',
+                'Sismo - Terremotos',
+                'Tormentas eléctricas',
+                'Lluvias granizadas'
+            ],
+            'Seguridad': [
+                'Secuestros',
+                'Amenazas',
+                'Hurtos - Robos - Atracos',
+                'Accidente de Tránsito',
+                'Desorden público - Atentados',
+                'Extorsión'
+            ],
+            'Otros Riesgos': [
+                'Trabajos en caliente',
+                'Explosión',
+                'Incendio'
+            ],
+            'Saneamiento Básico': [
+                'Sin disponibilidad de agua potable'
+            ],
+            'Salud Pública': [
+                'Enfermedades endémicas',
+                'Mordedura y Picadura de Animales'
+            ]
         };
         return gesLists[riesgo] || [];
     }
@@ -189,12 +277,10 @@ export function initializeForm() {
             return;
         }
 
-        const gesCheckboxes = cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]');
+        const gesCheckboxes = cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]:checked');
         const selectedGes = [];
         gesCheckboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                selectedGes.push(checkbox.value);
-            }
+            selectedGes.push(checkbox.value);
         });
 
         gesResumenDiv.innerHTML = ''; // Limpiar contenido anterior
@@ -219,17 +305,6 @@ export function initializeForm() {
         } else {
             gesResumenDiv.textContent = 'No se han seleccionado GES.';
         }
-    }
-
-    // Función para oscurecer o aclarar un color (usada para el icono de expandir)
-    function shadeColor(color, percent) {
-        let f = parseInt(color.slice(1), 16),
-            t = percent < 0 ? 0 : 255,
-            p = percent < 0 ? percent * -1 : percent,
-            R = f >> 16,
-            G = f >> 8 & 0x00FF,
-            B = f & 0x0000FF;
-        return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
     }
 
     // Función para agregar un nuevo cargo
@@ -444,49 +519,67 @@ export function initializeForm() {
             togglesSection.appendChild(toggleDiv);
         });
 
-        // Sección de Riesgos y GES
+        // Sección de Riesgos y GES (Implementada como carrusel)
         const riesgosSection = document.createElement('div');
         riesgosSection.classList.add('riesgos-section');
 
-        const riesgos = ['Físico', 'Químico', 'Biológico', 'Ergonómico', 'Psicosocial', 'Mecánico', 'Eléctrico', 'Seguridad'];
+        const riesgos = [
+            'Mecánico',
+            'Eléctrico',
+            'Físico',
+            'Químico',
+            'Biológico',
+            'Biomecánico',
+            'Factores Humanos',
+            'Psicosocial',
+            'Locativo',
+            'Natural',
+            'Seguridad',
+            'Otros Riesgos',
+            'Saneamiento Básico',
+            'Salud Pública'
+        ];
+
         const riesgoColors = {
-            'Físico': '#cbe3f3',
-            'Químico': '#fee6fc',
-            'Biológico': '#fdf8cd',
-            'Ergonómico': '#c7f9ff',
-            'Psicosocial': '#d8fff1',
-            'Mecánico': '#ffefd2',
-            'Eléctrico': '#e6e6e6',
-            'Seguridad': '#fee6fc'
+            'Mecánico': '#cbe3f3',
+            'Eléctrico': '#fee6fc',
+            'Físico': '#fdf8cd',
+            'Químico': '#c7f9ff',
+            'Biológico': '#d8fff1',
+            'Biomecánico': '#d8fff1',
+            'Factores Humanos': '#ffefd2',
+            'Psicosocial': '#e6e6e6',
+            'Locativo': '#fee6fc',
+            'Natural': '#fee6fc',
+            'Seguridad': '#fee6fc',
+            'Otros Riesgos': '#fee6fc',
+            'Saneamiento Básico': '#fee6fc',
+            'Salud Pública': '#fee6fc'
         };
 
-        const riesgosDiv = document.createElement('div');
-        riesgosDiv.classList.add('riesgos');
+        // Crear contenedor Swiper
+        const swiperContainer = document.createElement('div');
+        swiperContainer.classList.add('swiper', 'riesgos-swiper');
+
+        const swiperWrapper = document.createElement('div');
+        swiperWrapper.classList.add('swiper-wrapper');
 
         riesgos.forEach(riesgo => {
-            const riesgoDiv = document.createElement('div');
-            riesgoDiv.classList.add('riesgo');
+            const swiperSlide = document.createElement('div');
+            swiperSlide.classList.add('swiper-slide');
+            swiperSlide.style.backgroundColor = riesgoColors[riesgo];
 
-            const riesgoHeader = document.createElement('button');
-            riesgoHeader.type = 'button';
-            riesgoHeader.classList.add('riesgo-header');
-            riesgoHeader.textContent = `Riesgo ${riesgo}`;
-            riesgoHeader.style.backgroundColor = riesgoColors[riesgo];
-            riesgoHeader.setAttribute('aria-expanded', 'false');
+            const slideContent = document.createElement('div');
+            slideContent.classList.add('slide-content');
 
-            // Icono de +/-
-            const expandIcon = document.createElement('span');
-            expandIcon.classList.add('expand-icon');
-            expandIcon.textContent = '+';
-            expandIcon.style.color = shadeColor(riesgoColors[riesgo], -20); // Color más saturado
-
-            riesgoHeader.appendChild(expandIcon);
-
-            const riesgoContent = document.createElement('div');
-            riesgoContent.classList.add('riesgo-content');
+            const riesgoTitle = document.createElement('h3');
+            riesgoTitle.textContent = `Riesgo ${riesgo}`;
 
             // GES específicos para cada tipo de riesgo
             const gesList = getGesListByRiesgo(riesgo);
+
+            const gesListDiv = document.createElement('div');
+            gesListDiv.classList.add('ges-list');
 
             gesList.forEach(ges => {
                 const gesCheckbox = document.createElement('input');
@@ -511,23 +604,48 @@ export function initializeForm() {
                 gesItemDiv.appendChild(gesCheckbox);
                 gesItemDiv.appendChild(gesLabel);
 
-                riesgoContent.appendChild(gesItemDiv);
+                gesListDiv.appendChild(gesItemDiv);
             });
 
-            riesgoHeader.addEventListener('click', () => {
-                const expanded = riesgoHeader.getAttribute('aria-expanded') === 'true' || false;
-                riesgoHeader.setAttribute('aria-expanded', !expanded);
-                riesgoContent.classList.toggle('active');
-                expandIcon.textContent = expanded ? '+' : '-';
-            });
+            slideContent.appendChild(riesgoTitle);
+            slideContent.appendChild(gesListDiv);
 
-            riesgoDiv.appendChild(riesgoHeader);
-            riesgoDiv.appendChild(riesgoContent);
-
-            riesgosDiv.appendChild(riesgoDiv);
+            swiperSlide.appendChild(slideContent);
+            swiperWrapper.appendChild(swiperSlide);
         });
 
-        riesgosSection.appendChild(riesgosDiv);
+        swiperContainer.appendChild(swiperWrapper);
+
+        // Botones de navegación
+        const swiperButtonNext = document.createElement('div');
+        swiperButtonNext.classList.add('swiper-button-next');
+
+        const swiperButtonPrev = document.createElement('div');
+        swiperButtonPrev.classList.add('swiper-button-prev');
+
+        // Paginación
+        const swiperPagination = document.createElement('div');
+        swiperPagination.classList.add('swiper-pagination');
+
+        swiperContainer.appendChild(swiperButtonNext);
+        swiperContainer.appendChild(swiperButtonPrev);
+        swiperContainer.appendChild(swiperPagination);
+
+        riesgosSection.appendChild(swiperContainer);
+
+        // Inicializar Swiper
+        const swiper = new Swiper(swiperContainer, {
+            navigation: {
+                nextEl: swiperButtonNext,
+                prevEl: swiperButtonPrev,
+            },
+            pagination: {
+                el: swiperPagination,
+                clickable: true,
+            },
+            slidesPerView: 1,
+            spaceBetween: 10,
+        });
 
         // Resumen de GES seleccionados
         const gesResumenDiv = document.createElement('div');
@@ -563,7 +681,6 @@ export function initializeForm() {
                         value: 10,
                         descripcion: 'Se ha(n) detectado peligro(s) que determina(n) como posible la generación de incidentes o consecuencias muy significativas, o la eficacia del conjunto de medidas preventivas existentes respecto al riesgo es nula o no existe, o ambos.'
                     }
-
                 ]
             },
             {
@@ -575,7 +692,6 @@ export function initializeForm() {
                         value: 1,
                         descripcion: 'La situación de exposición se presenta de manera eventual.'
                     },
-                    
                     {
                         label: 'Ocasional (EO)',
                         value: 2,
@@ -591,7 +707,6 @@ export function initializeForm() {
                         value: 4,
                         descripcion: 'La situación de exposición se presenta sin interrupción o varias veces con tiempo prolongado durante la jornada laboral.'
                     }
-
                 ]
             },
             {
@@ -613,12 +728,11 @@ export function initializeForm() {
                         value: 60,
                         descripcion: 'Lesiones o enfermedades graves irreparables (incapacidad permanente, parcial o invalidez).'
                     },
-
                     {
                         label: 'Mortal (M)',
                         value: 100,
                         descripcion: 'Pueden ocurrir resultados mortales.'
-                    },
+                    }
                 ]
             }
         ];
@@ -637,7 +751,7 @@ export function initializeForm() {
             barrasDiv.classList.add('barras');
 
             // Colores para las barras (del riesgo más alto al más bajo)
-            const colores = ['#4caf50','#ffeb3b','#ff9800', '#f44336'];
+            const colores = ['#4caf50', '#ffeb3b', '#ff9800', '#f44336'];
 
             nivel.opciones.forEach((opcion, index) => {
                 const barra = document.createElement('div');
@@ -758,6 +872,7 @@ export function initializeForm() {
     // Evento para agregar un nuevo cargo
     addCargoBtn.addEventListener('click', () => {
         addCargo();
+        saveData();
     });
 
     // Envío del formulario
