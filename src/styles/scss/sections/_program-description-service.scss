@@ -1,0 +1,36 @@
+.service-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+.program-description {
+    @include flex-center;
+    flex-wrap: wrap;
+    padding: 2rem;
+
+
+    h2 {
+        max-width: 420px;
+        margin-left: 1rem;
+        font-size: 4rem;
+        font-family: map-get($fonts, "title");
+        text-align: left;
+        padding: 0;
+        line-height: 100%;
+    }
+
+    .descripcion {
+        max-width: 400px;
+        margin: 0;
+        font-family: map-get($fonts, "body");
+        font-size: 18px;
+        text-align: left;
+        padding: 2rem;
+    }
+}
+    .cta-button-1 {
+        max-width: 600px;
+        margin: 2.5rem;
+    }
+
+}
