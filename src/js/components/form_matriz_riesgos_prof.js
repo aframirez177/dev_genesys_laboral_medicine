@@ -821,7 +821,7 @@ export function initializeForm() {
         });
 
         // Sección de Acciones a Tomar
-        const medidasSection = document.createElement('div');
+/*         const medidasSection = document.createElement('div');
         medidasSection.classList.add('medidas-section');
 
         const medidasTitles = [
@@ -838,7 +838,7 @@ export function initializeForm() {
             medidaTextarea.addEventListener('input', debounce(saveData, 300));
 
             medidasSection.appendChild(medidaTextarea);
-        });
+        }); */
 
         // Añadir secciones al cuerpo del cargo en el orden correcto
         cargoBody.appendChild(infoGeneralSection);
@@ -846,7 +846,7 @@ export function initializeForm() {
         cargoBody.appendChild(riesgosSection);
         cargoBody.appendChild(gesResumenDiv);
         cargoBody.appendChild(nivelesSection);
-        cargoBody.appendChild(medidasSection);
+/*         cargoBody.appendChild(medidasSection); */
 
         // Añadir encabezado y cuerpo al div del cargo
         cargoDiv.appendChild(cargoHeader);
