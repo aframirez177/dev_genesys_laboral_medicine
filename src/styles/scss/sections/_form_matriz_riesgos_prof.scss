@@ -1,535 +1,555 @@
 // src/styles/scss/sections/_form_matriz_riesgos_prof.scss
 
-.matriz-riesgos-section {
-  max-width: 1024px;
-  margin: 0 auto;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  h2 {
-    font-family: map-get($fonts, 'title');
-    font-size: 3rem;
-    color: map-get($colors, 'secondary');
-    text-align: center;
-    max-width: 600px;
-
-    @include respond-to('tablet') {
-      font-size: 2.5rem;
-    }
-
-    @include respond-to('desktop') {
-      font-size: 3rem;
-    }
-  }
-
-  .subtitle {
-    font-family: map-get($fonts, 'title');
-    font-size: 2rem;
-    color: map-get($colors, 'secondary');
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .cta-button,
-  .cta-button-1 {
-    @include button();
-  }
-
-  #cargoContainer {
-    margin-top: 20px;
+#matrizRiesgosForm {
+    display: flex;
+    flex-direction: column;
+}
+    .matriz-riesgos-section {
+    max-width: 1024px;
+    margin: 0 auto;
+    justify-content: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-items: center;
-    align-self: center;
-  }
 
-  .cargo {
-    align-self: center;
-    border: 1px solid map-get($colors, 'border-color');
-    margin-bottom: 20px;
-    border-radius: 5px;
-    overflow: hidden;
-    max-width: 380px;
-    min-width: 290px;
-    width: 100%;
-
-    .cargo-header {
-      background-color: map-get($colors, 'input-border');
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    h2 {
+      font-family: map-get($fonts, 'title');
+      font-size: 3rem;
+      color: map-get($colors, 'secondary');
+      text-align: center;
       max-width: 600px;
-      min-width: 270px;
 
-      .header-left {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-
-        .area-label {
-          font-size: 1rem;
-          color: map-get($colors, 'text');
-          font-family: map-get($fonts, 'body');
-        }
-
-        .cargo-title {
-          font-family: map-get($fonts, 'title');
-          font-size: 1.8rem;
-          color: map-get($colors, 'text');
-
-          @include respond-to('tablet') {
-            font-size: 2rem;
-          }
-
-          @include respond-to('desktop') {
-            font-size: 2.5rem;
-          }
-        }
+      @include respond-to('tablet') {
+        font-size: 2.5rem;
       }
 
-      .header-right {
-        display: flex;
-        align-items: center;
-
-        .trabajadores-container {
-          display: flex;
-          align-items: center;
-          margin-right: 10px;
-
-          button {
-            margin: 0 5px;
-            @include button-small();
-          }
-
-          input[name='numTrabajadores'] {
-            width: 43px;
-            text-align: center;
-            padding: 5px;
-            border: 1px solid map-get($colors, 'input-border');
-            border-radius: 25px;
-            background-color: map-get($colors, 'input-bg');
-            color: map-get($colors, 'text');
-            font-family: map-get($fonts, 'body');
-          }
-        }
-
-        .minimize-btn {
-          margin-left: 5px;
-          @include button-small();
-        }
-
-        .delete-btn {
-          margin-left: 5px;
-          background-color: red;
-          color: #fff;
-          @include button-small();
-
-          .trash-icon {
-            width: 3rem;
-            height: 3rem;
-          }
-        }
+      @include respond-to('desktop') {
+        font-size: 3rem;
       }
     }
 
-    .cargo-body {
-      padding: 10px;
+    .subtitle {
+      font-family: map-get($fonts, 'title');
+      font-size: 2rem;
+      color: map-get($colors, 'secondary');
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-      &.hidden {
-        display: none;
-      }
+    .cta-button,
+    .cta-button-1 {
+      @include button();
+    }
 
-      .info-general-section {
+    #cargoContainer {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-items: center;
+      align-self: center;
+    }
+
+    .cargo {
+      align-self: center;
+      border: 1px solid map-get($colors, 'border-color');
+      margin-bottom: 20px;
+      border-radius: 5px;
+      overflow: hidden;
+      max-width: 380px;
+      min-width: 290px;
+      width: 100%;
+
+      .cargo-header {
+        background-color: map-get($colors, 'input-border');
+        padding: 10px;
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 600px;
+        min-width: 270px;
 
-        input[type='text'],
-        textarea {
-          width: 100%;
-          max-width: 380px;
-          padding: 10px;
-          border: 1px solid map-get($colors, 'input-border');
-          border-radius: 5px;
-          background-color: map-get($colors, 'input-bg');
-          color: map-get($colors, 'text');
-          margin-bottom: 10px;
-          font-family: map-get($fonts, 'body');
-        }
-      }
-
-      .toggles-section {
-        position: relative;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-        max-width: 380px;
-        justify-items: center;
-        left: 1.5rem;
-    
-        .toggle {
-          width: 50%;
-          margin-bottom: 10px;
+        .header-left {
           display: flex;
-          align-items: center;
-          justify-items: center;
-    
-          label {
-            flex: 1;
-            margin-bottom: 0;
+          flex-direction: column;
+          align-items: flex-start;
+
+          .area-label {
+            font-size: 1rem;
             color: map-get($colors, 'text');
             font-family: map-get($fonts, 'body');
-            font-size: 1.3rem;
-            text-align: left;
           }
-    
-          .switch {
-            position: relative;
-            display: inline-block;
-            width: 41px;
-            height: 23px;
-            margin-left: 10px;
-            flex-shrink: 0;
-            align-content: center;
-            justify-content: center;
-    
-            input {
-              opacity: 0;
-              width: 0;
-              height: 0;
-            }
-    
-            .slider {
-              position: absolute;
-              cursor: pointer;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              background-color: #ccc;
-              transition: 0.4s;
-              border-radius: 20px;
-              width: 45px;
-              height: 24px;
-              scale: 120%;
 
-    
-              &::before {
-                position: absolute;
-                content: '';
-                height: 19px;
-                width: 19px;
-                left: 3px;
-                top: 2px;
-                background-color: white;
-                transition: 0.4s;
-                border-radius: 50%;
-              }
-    
-              &::after {
-                content: 'No';
-                position: absolute;
-                right: 5px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #fff;
-                font-size: 12px;
-                font-family: map-get($fonts, 'body');
-              }
+          .cargo-title {
+            font-family: map-get($fonts, 'title');
+            font-size: 1.3rem;
+            color: map-get($colors, 'text');
+
+            @include respond-to('tablet') {
+              font-size: 1.5rem;
             }
-    
-            input:checked + .slider {
-              background-color: map-get($colors, 'primary');
+
+            @include respond-to('desktop') {
+              font-size: 1.5rem;
             }
-    
-            input:checked + .slider::before {
-              transform: translateX(20px);
+          }
+        }
+
+        .header-right {
+          display: flex;
+          align-items: center;
+
+          .trabajadores-container {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+
+            button {
+              margin: 0 5px;
+              @include button-small();
             }
-    
-            input:checked + .slider::after {
-              content: 'Si';
-              left: 5px;
-              right: auto;
-              transform: translateY(-50%);
+
+            input[name='numTrabajadores'] {
+              width: 43px;
+              text-align: center;
+              padding: 5px;
+              border: 1px solid map-get($colors, 'input-border');
+              border-radius: 25px;
+              background-color: map-get($colors, 'input-bg');
+              color: map-get($colors, 'text');
+              font-family: map-get($fonts, 'body');
+            }
+          }
+
+          .minimize-btn {
+            margin-left: 5px;
+            @include button-small();
+          }
+
+          .delete-btn {
+            margin-left: 5px;
+            background-color: red;
+            color: #fff;
+            @include button-small();
+
+            .trash-icon {
+              width: 3rem;
+              height: 3rem;
             }
           }
         }
       }
-    
 
-      .riesgos-section {
-        margin-top: 20px;
-        max-width: 380px;
+      .cargo-body {
+        padding: 10px;
 
-        // Inicio de la modificación: reemplazo de acordeones por carrusel
+        &.hidden {
+          display: none;
+        }
 
-        .swiper {
-          width: 100%;
-          position: relative;
-          padding: 3rem;
+        .info-general-section {
+          display: flex;
+          flex-direction: column;
 
-          .swiper-wrapper {
-            align-items: stretch;
-          }
-
-          .swiper-slide {
+          input[type='text'],
+          textarea {
             width: 100%;
-            height: auto !important;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 16px;
-            box-sizing: border-box;
-            overflow-y: auto;
+            max-width: 380px;
+            padding: 10px;
+            border: 1px solid map-get($colors, 'input-border');
+            border-radius: 5px;
+            background-color: map-get($colors, 'input-bg');
+            color: map-get($colors, 'text');
+            margin-bottom: 10px;
+            font-family: map-get($fonts, 'body');
+          }
+        }
 
-            .slide-content {
-              width: 100%;
-
-              h3 {
-                text-align: center;
-                font-size: 1.8rem;
-                margin-bottom: 12px;
-                color: map-get($colors, 'secondary');
+        .toggles-section {
+          position: relative;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          margin-bottom: 20px;
+          max-width: 380px;
+          justify-items: center;
+          left: 1.5rem;
+      
+          .toggle {
+            width: 50%;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-items: center;
+      
+            label {
+              flex: 1;
+              margin-bottom: 0;
+              color: map-get($colors, 'text');
+              font-family: map-get($fonts, 'body');
+              font-size: 1.3rem;
+              text-align: left;
+            }
+      
+            .switch {
+              position: relative;
+              display: inline-block;
+              width: 41px;
+              height: 23px;
+              margin-left: 10px;
+              flex-shrink: 0;
+              align-content: center;
+              justify-content: center;
+      
+              input {
+                opacity: 0;
+                width: 0;
+                height: 0;
               }
+      
+              .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: 0.4s;
+                border-radius: 20px;
+                width: 45px;
+                height: 24px;
+                scale: 120%;
 
-              .ges-list {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                max-height: 200px;
-                overflow-y: auto;
-                margin-bottom: 15px;
+      
+                &::before {
+                  position: absolute;
+                  content: '';
+                  height: 19px;
+                  width: 19px;
+                  left: 3px;
+                  top: 2px;
+                  background-color: white;
+                  transition: 0.4s;
+                  border-radius: 50%;
+                }
+      
+                &::after {
+                  content: 'No';
+                  position: absolute;
+                  right: 5px;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  color: #fff;
+                  font-size: 12px;
+                  font-family: map-get($fonts, 'body');
+                }
+              }
+      
+              input:checked + .slider {
+                background-color: map-get($colors, 'primary');
+              }
+      
+              input:checked + .slider::before {
+                transform: translateX(20px);
+              }
+      
+              input:checked + .slider::after {
+                content: 'Si';
+                left: 5px;
+                right: auto;
+                transform: translateY(-50%);
+              }
+            }
+          }
+        }
+      
 
-                .ges-item {
+        .riesgos-section {
+          margin-top: 20px;
+          max-width: 380px;
+
+          // Inicio de la modificación: reemplazo de acordeones por carrusel
+
+          .swiper {
+            width: 100%;
+            position: relative;
+            padding: 3rem;
+
+            .swiper-wrapper {
+              align-items: stretch;
+            }
+
+            .swiper-slide {
+              width: 100%;
+              height: auto !important;
+              background-color: #fff;
+              border: 1px solid #ccc;
+              border-radius: 10px;
+              padding: 16px;
+              box-sizing: border-box;
+              overflow-y: auto;
+
+              .slide-content {
+                width: 100%;
+
+                h3 {
+                  text-align: center;
+                  font-size: 1.8rem;
+                  margin-bottom: 12px;
+                  color: map-get($colors, 'secondary');
+                }
+
+                .ges-list {
                   display: flex;
-                  align-items: center;
-                  margin-bottom: 8px;
+                  flex-direction: column;
+                  align-items: flex-start;
+                  max-height: 200px;
+                  overflow-y: auto;
+                  margin-bottom: 15px;
 
-                  input[type='checkbox'] {
-                    width: 15px;
-                    height: 15px;
-                    margin-right: 8px;
-                    flex-shrink: 0;
-                  }
+                  .ges-item {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 8px;
 
-                  label {
-                    font-size: 1.1rem;
-                    color: map-get($colors, 'text');
+                    input[type='checkbox'] {
+                      width: 15px;
+                      height: 15px;
+                      margin-right: 8px;
+                      flex-shrink: 0;
+                    }
+
+                    label {
+                      font-size: 1.1rem;
+                      color: map-get($colors, 'text');
+                    }
                   }
                 }
               }
             }
-          }
 
-          .swiper-button-next,
-          .swiper-button-prev {
-            color: map-get($colors, 'secondary');
-            width: 30px;
-            height: 30px;
-            background-color: #ccc;
-            border-radius: 50%;
+            .swiper-button-next,
+            .swiper-button-prev {
+              color: map-get($colors, 'secondary');
+              width: 30px;
+              height: 30px;
+              background-color: #ccc;
+              border-radius: 50%;
 
-            &:after {
-              font-size: 1.4rem;
+              &:after {
+                font-size: 1.4rem;
+              }
+            }
+
+            .swiper-button-next {
+              right: 5px;
+            }
+
+            .swiper-button-prev {
+              left: 5px;
+            }
+
+            .swiper-pagination {
+              bottom: 5px;
+              display: flex;
+              justify-content: center;
+              gap: 8px;
+
+              .swiper-pagination-bullet {
+                width: 8px;
+                height: 8px;
+                background-color: map-get($colors, 'secondary');
+                opacity: 1;
+              }
+
+              .swiper-pagination-bullet-active {
+                background-color: map-get($colors, 'primary');
+              }
             }
           }
 
-          .swiper-button-next {
-            right: 5px;
-          }
+          // Fin de la modificación
+        }
 
-          .swiper-button-prev {
-            left: 5px;
-          }
+        .ges-resumen {
+          margin: 5px;
+          font-size: 1rem;
+          color: map-get($colors, 'text');
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          max-width: 350px;
 
-          .swiper-pagination {
-            bottom: 5px;
+          .ges-resumen-item {
             display: flex;
-            justify-content: center;
-            gap: 8px;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 5px;
 
-            .swiper-pagination-bullet {
-              width: 8px;
-              height: 8px;
-              background-color: map-get($colors, 'secondary');
-              opacity: 1;
-            }
-
-            .swiper-pagination-bullet-active {
-              background-color: map-get($colors, 'primary');
+            .check-mark {
+              color: map-get($colors, 'primary');
+              margin-right: 5px;
             }
           }
         }
 
-        // Fin de la modificación
+        .niveles-section {
+          margin-top: 20px;
+
+          .nivel {
+            margin-bottom: 10px;
+
+            label {
+              display: block;
+              font-weight: bold;
+              margin-bottom: 5px;
+              font-family: map-get($fonts, 'title');
+              font-size: 1.3rem;
+            }
+
+            .barras {
+              display: flex;
+              max-width: 380px;
+
+              .barra {
+                flex: 1;
+                height: 25px;
+                cursor: pointer;
+                position: relative;
+                transition: transform 0.2s, box-shadow 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &:first-child {
+                  border-top-left-radius: 30px;
+                  border-bottom-left-radius: 30px;
+                }
+
+                &:last-child {
+                  border-top-right-radius: 30px;
+                  border-bottom-right-radius: 30px;
+                }
+
+                &:hover {
+                  transform: scale(1.1);
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                  z-index: 1;
+                }
+
+                &.selected {
+                  border: 2px solid #000;
+                  z-index: 2;
+                }
+
+                .check-icon {
+                  display: none;
+                  font-size: 1.5rem;
+                  color: #fff;
+                }
+
+                &.selected .check-icon {
+                  display: block;
+                }
+              }
+            }
+          }
+        }
+
+        .medidas-section {
+          margin-top: 20px;
+          max-width: 380px;
+
+          textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid map-get($colors, 'input-border');
+            border-radius: 5px;
+            background-color: map-get($colors, 'input-bg');
+            color: map-get($colors, 'text');
+            margin-bottom: 10px;
+            font-family: map-get($fonts, 'body');
+          }
+        }
+      }
+    }
+
+    // Estilos Responsivos
+    @include respond-to('tablet') {
+      .cargo-header {
+        flex-wrap: nowrap;
       }
 
-      .ges-resumen {
-        margin: 5px;
-        font-size: 1rem;
-        color: map-get($colors, 'text');
+      .cargo-body {
+        display: flex;
+        flex-direction: column;
+        justify-items: center;
+
+        .info-general-section {
+          flex-direction: row;
+          justify-content: space-between;
+
+          input[type='text'],
+          textarea {
+            width: 48%;
+
+            &:last-child {
+              width: 100%;
+            }
+          }
+        }
+
+        .toggles-section {
+          justify-content: space-between;
+
+          .toggle {
+            width: 48%;
+          }
+        }
+      }
+    }
+
+    @include respond-to('tablet') {
+      #cargoContainer{
+        max-width: 1280px;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        justify-content: flex-start;
-        max-width: 350px;
+        justify-content: center;
+        
+        .cargo{
+          margin: 2rem;
+          align-self: baseline;
 
-        .ges-resumen-item {
-          display: flex;
-          align-items: center;
-          justify-content: flex-start;
-          margin-bottom: 5px;
-
-          .check-mark {
-            color: map-get($colors, 'primary');
-            margin-right: 5px;
-          }
-        }
-      }
-
-      .niveles-section {
-        margin-top: 20px;
-
-        .nivel {
-          margin-bottom: 10px;
-
-          label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-family: map-get($fonts, 'title');
-            font-size: 1.3rem;
-          }
-
-          .barras {
-            display: flex;
-            max-width: 380px;
-
-            .barra {
-              flex: 1;
-              height: 25px;
-              cursor: pointer;
-              position: relative;
-              transition: transform 0.2s, box-shadow 0.2s;
+            .cargo-body {
               display: flex;
-              align-items: center;
-              justify-content: center;
-
-              &:first-child {
-                border-top-left-radius: 30px;
-                border-bottom-left-radius: 30px;
-              }
-
-              &:last-child {
-                border-top-right-radius: 30px;
-                border-bottom-right-radius: 30px;
-              }
-
-              &:hover {
-                transform: scale(1.1);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                z-index: 1;
-              }
-
-              &.selected {
-                border: 2px solid #000;
-                z-index: 2;
-              }
-
-              .check-icon {
+              flex-direction: column;
+              &.hidden {
                 display: none;
-                font-size: 1.5rem;
-                color: #fff;
               }
 
-              &.selected .check-icon {
-                display: block;
+            .info-general-section {
+              flex-direction: column;
+              justify-content: space-between;
+
+              input[type='text'],
+              textarea {
+                width: 100%;
+
+                &:last-child {
+                  width: 100%;
+                }
               }
+            }
+
+            .toggles-section {
+              justify-content: space-between;
             }
           }
         }
       }
-
-      .medidas-section {
-        margin-top: 20px;
-        max-width: 380px;
-
-        textarea {
-          width: 100%;
-          min-height: 100px;
-          padding: 10px;
-          border: 1px solid map-get($colors, 'input-border');
-          border-radius: 5px;
-          background-color: map-get($colors, 'input-bg');
-          color: map-get($colors, 'text');
-          margin-bottom: 10px;
-          font-family: map-get($fonts, 'body');
-        }
-      }
     }
   }
-
-  // Estilos Responsivos
-  @include respond-to('tablet') {
-    .cargo-header {
-      flex-wrap: nowrap;
-    }
-
-    .cargo-body {
-      display: flex;
-      flex-direction: column;
-      justify-items: center;
-
-      .info-general-section {
-        flex-direction: row;
-        justify-content: space-between;
-
-        input[type='text'],
-        textarea {
-          width: 48%;
-
-          &:last-child {
-            width: 100%;
-          }
-        }
-      }
-
-      .toggles-section {
-        justify-content: space-between;
-
-        .toggle {
-          width: 48%;
-        }
-      }
-    }
-  }
-
-  @include respond-to('desktop') {
-    .cargo-body {
-      display: flex;
-      flex-direction: column;
-
-      .info-general-section {
-        flex-direction: row;
-        justify-content: space-between;
-
-        input[type='text'],
-        textarea {
-          width: 48%;
-
-          &:last-child {
-            width: 100%;
-          }
-        }
-      }
-
-      .toggles-section {
-        justify-content: space-between;
-      }
-    }
-  }
-}
