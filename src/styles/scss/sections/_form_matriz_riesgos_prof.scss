@@ -513,38 +513,46 @@
     }
 
     @include respond-to('tablet') {
-      #cargoContainer{
+      #cargoContainer {
         max-width: 1280px;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(300px, 1fr));
+        gap: 4rem;
+        margin: 0 auto;
+        padding: 2rem;
         
-        .cargo{
-          margin: 2rem;
-          align-self: baseline;
-
-            .cargo-body {
-              display: flex;
-              flex-direction: column;
-              &.hidden {
-                display: none;
-              }
-
+        // Centrar único elemento cuando solo hay un cargo
+        > .cargo:first-child:last-child {
+          grid-column: 1 / -1;
+          justify-self: center;
+          max-width: 500px;
+        }
+        
+        .cargo {
+          align-self: start; // Equivalente a baseline en flex
+          
+          .cargo-body {
+            display: flex;
+            flex-direction: column;
+            
+            &.hidden {
+              display: none;
+            }
+    
             .info-general-section {
               flex-direction: column;
               justify-content: space-between;
-
+    
               input[type='text'],
               textarea {
                 width: 100%;
-
+    
                 &:last-child {
                   width: 100%;
                 }
               }
             }
-
+    
             .toggles-section {
               justify-content: space-between;
             }
