@@ -53,7 +53,7 @@ function procesarDatos(data) {
             area: cargo.area,
             descripcionTareas: cargo.descripcionTareas,
             riesgos: cargo.gesSeleccionados,
-            medidasPreventivas: cargo.medidas
+
         });
     });
 
@@ -115,7 +115,7 @@ export function initializeForm() {
                 descripcionTareas: cargoDiv.querySelector('textarea[name="descripcionTareas"]').value,
                 niveles: {},
                 gesSeleccionados: [],
-                medidas: []
+/*                 medidas: [] */
             };
             // Recopilar toggles
             ['tareasRutinarias', 'manipulaAlimentos', 'trabajaAlturas', 'trabajaEspaciosConfinados'].forEach(name => {
@@ -126,9 +126,9 @@ export function initializeForm() {
                 cargoData.gesSeleccionados.push(checkbox.value);
             });
             // Recopilar medidas
-            cargoDiv.querySelectorAll('.medidas-section textarea').forEach(textarea => {
+/*             cargoDiv.querySelectorAll('.medidas-section textarea').forEach(textarea => {
                 cargoData.medidas.push(textarea.value);
-            });
+            }); */
 
             // Recopilar niveles
             cargoDiv.querySelectorAll('.nivel').forEach(nivelDiv => {

@@ -7,7 +7,7 @@
     .footer-content {
         display: flex;
         flex-wrap: wrap;
-        justify-content: baseline;
+        justify-content: center;
         gap: 0;
 
         a,
@@ -19,8 +19,8 @@
 
     .footer-section {
         flex: 1;
-        min-width: 28rem;
-        max-width: 30rem;
+        min-width: 26rem;
+        max-width: 20rem;
         margin: 1rem;
 
         h3 {
@@ -52,9 +52,8 @@
 
     .certification-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
-        gap: 2rem;
-        margin: 2rem 0.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+        gap: 0.5rem;
         justify-content: baseline;
     }
 

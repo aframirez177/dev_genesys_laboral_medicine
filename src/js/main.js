@@ -1,24 +1,29 @@
-import { initDropdown } from './components/dropdown.js';
+/* import { initDropdown } from './components/dropdown.js'; */
+import { initMenu} from './components/menuComponent.js';
 import { initCardVisibility } from './components/cardVisibility.js';
 import { initMap } from './components/lazyMap.js';
 import { initWhatsApp } from './components/whatsapp.js';
 import { initFAQ } from './components/faq.js';
-import { initHamburgerMenu } from './components/hamburgerMenu.js';
-import { initCalculator } from './components/calculator.js';
+/* import { initHamburgerMenu } from './components/hamburgerMenu.js'; */
+/* import { initCalculator } from './components/calculator.js'; */
 import { initClients } from './components/clients.js';
+import { initFooter } from './components/footerInit.js';
 import { addHoverEffect, smoothScroll } from './utils/animations.js';
 import '../styles/scss/main.scss';  // Ajusta la ruta a donde esté tu archivo principal SCSS
 
 
 function initApp() {
-    initDropdown();
+    /* initDropdown(); */
     initCardVisibility();
     initMap();
     initWhatsApp();
     initFAQ();
-    initHamburgerMenu();
-    initCalculator();
+    /* initHamburgerMenu(); */
+    /* initCalculator(); */
     initClients();
+    initMenu();
+    initFooter();
+    
 
     // Añadir efecto hover a las imágenes de certificación
     const certImages = document.querySelectorAll('.certification-img');

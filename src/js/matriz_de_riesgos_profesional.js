@@ -1,28 +1,27 @@
 // src/js/matriz_de_riesgos_profesional.js
-
-import { initDropdown } from './components/dropdown.js';
+/* import { initMenu} from './components/menuComponent.js';
 import { initCardVisibility } from './components/cardVisibility.js';
 import { initMap } from './components/map.js';
 import { initWhatsApp } from './components/whatsapp.js';
 import { initFAQ } from './components/faq.js';
-import { initHamburgerMenu } from './components/hamburgerMenu.js';
 import { initClients } from './components/clients.js';
 import { initializeForm } from './components/form_matriz_riesgos_prof.js';
 import { addHoverEffect, smoothScroll } from './utils/animations.js';
+import { initFooter } from './components/footerInit.js';
 
 import '../styles/scss/style_matriz_de_riesgos_profesional.scss';
 
 
 
 function initApp() {
-    initDropdown();
+    initMenu();
     initCardVisibility();
     initMap();
     initWhatsApp();
     initFAQ();
-    initHamburgerMenu();
     initClients();
     initializeForm();
+    initFooter();
 
 
     // Añadir efecto hover a las imágenes de certificación
@@ -44,4 +43,4 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
 } else {
     initApp();
-}
+} */

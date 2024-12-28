@@ -1,5 +1,5 @@
-.background-container-inicio {
-    background-image: url("../../assets/images/foto_inicio_hero_background.webp");
+.background-container {
+/*     background-image: url("../../assets/images/foto_inicio_hero_background.webp"); */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -37,4 +37,15 @@
         }
         }
     }
+}
+.background-container-inicio {
+    background-image: url("../../assets/images/foto_inicio_hero_background.webp");
+}
+
+.background-container-matriz-de-riesgos-profesional {
+    background-image: url("../../assets/images/foto_matriz_de_riesgos_profesional_hero_background.webp");
+}
+
+.background-container-profesiograma {
+    background-image: url("../../assets/images/foto_profesiograma_hero_background.webp");
 }

@@ -8,6 +8,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
     entry: {
+        main:'./src/main.js',            // Chunk común para todas las páginas 
         index: './src/index.js',
         riesgos: './src/main_matriz_riesgos_profesional.js',
         profesiograma:'./src/main_profesiograma.js',
@@ -54,7 +55,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-        chunks: ['index'],
+        chunks: ['main','index'],
         inject: true,
         template: './public/index.html',
         filename: './index.html',
@@ -105,7 +106,7 @@ module.exports = {
         filename: './pages/Informacion_legal.html',
         }),
         new HtmlWebpackPlugin({
-        chunks:['riesgos'],
+        chunks:['main','riesgos'],
         inject: true,
         template: './public/pages/Matriz_de_riesgos_profesional.html',
         filename: './pages/Matriz_de_riesgos_profesional.html',
@@ -116,6 +117,7 @@ module.exports = {
         filename: './pages/Nosotros.html',
         }),
         new HtmlWebpackPlugin({
+        chunks:['main','profesiograma'],
         inject: true,
         template: './public/pages/Profesiograma.html',
         filename: './pages/Profesiograma.html',
