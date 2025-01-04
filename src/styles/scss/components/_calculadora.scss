@@ -1,0 +1,434 @@
+// _calculator.scss
+
+// Mixin para checkbox personalizado
+@mixin custom-checkbox {
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    appearance: none;
+    border: 2px solid map-get($colors, "primary");
+    border-radius: 0.4rem;
+    position: relative;
+    transition: all 0.2s ease;
+
+    &:checked {
+        background-color: map-get($colors, "primary");
+
+        &::after {
+            content: "✓";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.4rem;
+        }
+    }
+    }
+
+    .calculator {
+    width: 100%;
+    max-width: 120rem;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: map-get($colors, "background");
+    border-radius: 1.5rem;
+    box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.1);
+
+    &-header {
+        text-align: center;
+        margin-bottom: 3rem;
+
+        h1 {
+            font-family: map-get($fonts, "title");
+            font-size: 2.8rem;
+            color: map-get($colors, "secondary");
+            line-height: 1.3;
+            
+            @include respond-to("tablet") {
+                font-size: 3.2rem;
+            }
+        }
+    }
+
+    &-body {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+
+        @include respond-to("tablet") {
+            flex-direction: row;
+        }
+    }
+
+    &-form {
+        flex: 1;
+        
+        .section-calculator {
+            padding: 2rem;
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.05);
+        }
+    }
+
+    .container-input-group {
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background-color: map-get($colors, "background");
+        border-radius: 0.8rem;
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+
+            input[type="text"] {
+                flex: 1;
+                min-width: 20rem;
+                padding: 1rem;
+                border: 1px solid map-get($colors, "input-border");
+                border-radius: 0.5rem;
+                font-family: map-get($fonts, "body");
+                font-size: 1.4rem;
+
+                &:focus {
+                    outline: none;
+                    border-color: map-get($colors, "primary");
+                }
+            }
+        }
+
+        .trabajadores-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+
+            label {
+                font-size: 1.4rem;
+                color: map-get($colors, "text");
+            }
+
+            input[type="number"] {
+                width: 8rem;
+                padding: 0.8rem;
+                border: 1px solid map-get($colors, "input-border");
+                border-radius: 0.5rem;
+                text-align: center;
+                appearance: textfield;
+
+                &::-webkit-inner-spin-button,
+                &::-webkit-outer-spin-button {
+                    appearance: none;
+                }
+            }
+        }
+    }
+
+    .exam-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+        gap: 1.5rem;
+        padding: 1rem;
+
+        .checkbox-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 0.8rem;
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: translateY(-0.3rem);
+                box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.1);
+            }
+
+            label {
+                font-family: map-get($fonts, "body");
+                font-size: 1.4rem;
+                font-weight: 600;
+                color: map-get($colors, "secondary");
+            }
+
+            input[type="checkbox"] {
+                @include custom-checkbox;
+            }
+        }
+    }
+
+    &-summary {
+        flex: 1;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.05);
+
+        @include respond-to("tablet") {
+            position: sticky;
+            top: 2rem;
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+            @include hide-scrollbar;
+        }
+
+        .exam-description {
+            margin-bottom: 2rem;
+
+            h3 {
+                font-size: 2rem;
+                color: map-get($colors, "secondary");
+                font-family: map-get($fonts, "title");
+                margin-bottom: 1rem;
+            }
+
+            p {
+                font-size: 1.4rem;
+                color: map-get($colors, "text");
+                line-height: 1.5;
+            }
+        }
+
+        .exam-price {
+            font-size: 2.4rem;
+            color: map-get($colors, "primary");
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .package-summary {
+            .package-item {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+                background-color: map-get($colors, "background");
+                border-radius: 0.8rem;
+
+                h4 {
+                    font-size: 1.8rem;
+                    color: map-get($colors, "secondary");
+                    margin-bottom: 1rem;
+                }
+
+                p {
+                    font-size: 1.4rem;
+                    color: map-get($colors, "text");
+                    margin-bottom: 0.5rem;
+                }
+            }
+        }
+
+        .discount-options {
+            margin: 2rem 0;
+            padding: 2rem;
+            background-color: lighten(map-get($colors, "primary"), 42%);
+            border-radius: 1rem;
+
+            .discount-option {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem 0;
+                border-bottom: 1px solid rgba(map-get($colors, "secondary"), 0.1);
+                &.info-only {
+                    background-color: lighten(map-get($colors, "primary"), 45%);
+                    padding: 1rem;
+                    border-radius: 0.6rem;
+                    
+                    .discount-text {
+                        font-size: 1.4rem;
+                        color: map-get($colors, "secondary");
+                        
+                        span {
+                            font-weight: 700;
+                            color: map-get($colors, "primary");
+                        }
+                    }
+                }
+                
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                label {
+                    font-size: 1.4rem;
+                    color: map-get($colors, "secondary");
+                }
+
+                input[type="checkbox"] {
+                    @include custom-checkbox;
+                }
+            }
+        }
+
+        .total {
+            margin-top: 3rem;
+            padding: 2rem;
+            background-color: lighten(map-get($colors, "primary"), 35%);
+            border-radius: 0.8rem;
+
+            p {
+                &:first-child {
+                    font-size: 1.6rem;
+                    color: map-get($colors, "secondary");
+                    margin-bottom: 1rem;
+                }
+
+                &.total-price {
+                    font-size: 3.2rem;
+                    font-weight: 700;
+                    color: map-get($colors, "primary");
+                    text-align: center;
+                }
+            }
+        }
+
+        .btn-download {
+            width: 100%;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: map-get($colors, "primary");
+            color: white;
+            font-size: 1.6rem;
+            border: none;
+            border-radius: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:hover {
+                background-color: darken(map-get($colors, "primary"), 10%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+        }
+    }
+}
+
+.cargo {
+    margin-bottom: 2rem;
+    background-color: white;
+    border-radius: 0.8rem;
+    box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.05);
+
+    .cargo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid map-get($colors, "input-border");
+
+        .cargo-name {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            font-size: 1.6rem;
+            font-family: map-get($fonts, "title");
+            color: map-get($colors, "secondary");
+
+            &:focus {
+                outline: none;
+            }
+        }
+
+        .cargo-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+
+            input[type="number"] {
+                width: 8rem;
+                padding: 0.8rem;
+                border: 1px solid map-get($colors, "input-border");
+                border-radius: 0.5rem;
+                text-align: center;
+                font-size: 1.4rem;
+            }
+
+            button {
+                width: 3rem;
+                height: 3rem;
+                border-radius: 50%;
+                border: none;
+                background-color: map-get($colors, "background");
+                color: map-get($colors, "secondary");
+                font-size: 1.8rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background-color: map-get($colors, "primary");
+                    color: white;
+                }
+
+                &.delete-cargo {
+                    background-color: #ff4444;
+                    color: white;
+
+                    &:hover {
+                        background-color: darken(#ff4444, 10%);
+                    }
+                }
+            }
+        }
+    }
+
+    .cargo-body {
+        padding: 2rem;
+        transition: all 0.3s ease-in-out;
+        max-height: 1000px;
+        opacity: 1;
+        overflow: hidden;
+
+        h4 {
+            font-size: 1.6rem;
+            color: map-get($colors, "secondary");
+            margin-bottom: 2rem;
+            font-family: map-get($fonts, "title");
+        }
+
+        .exam-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+
+            .checkbox-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 1rem;
+                background-color: white;
+                border-radius: 0.8rem;
+                transition: all 0.3s ease;
+                border: 1px solid map-get($colors, "input-border");
+
+                &:hover {
+                    transform: translateY(-0.3rem);
+                    box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.1);
+                }
+
+                label {
+                    font-family: map-get($fonts, "body");
+                    font-size: 1.4rem;
+                    font-weight: 600;
+                    color: map-get($colors, "secondary");
+                }
+
+                input[type="checkbox"] {
+                    @include custom-checkbox;
+                }
+            }
+        }
+
+        &.hidden {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin: 0;
+        }
+    }
+}

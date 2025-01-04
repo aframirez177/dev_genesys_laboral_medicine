@@ -1,0 +1,222 @@
+.
+├── ./LICENSE
+├── ./README.md
+├── ./estructura.txt
+├── ./package-lock.json
+├── ./package.json
+├── ./public
+│   ├── ./public/index.html
+│   └── ./public/pages
+│       ├── ./public/pages/Analisis_de_puesto_de_trabajo.html
+│       ├── ./public/pages/Bateria_de_riesgo_psicosocial.html
+│       ├── ./public/pages/Blog.html
+│       ├── ./public/pages/Blogs.html
+│       ├── ./public/pages/Contacto.html
+│       ├── ./public/pages/Examenes_medicos_ocupacionales.html
+│       ├── ./public/pages/Genesys_BI.html
+│       ├── ./public/pages/Informacion_financiera.html
+│       ├── ./public/pages/Informacion_legal.html
+│       ├── ./public/pages/Matriz_de_riesgos_profesional.html
+│       ├── ./public/pages/Nosotros.html
+│       ├── ./public/pages/Perdida_de_capacidad_laboral.html
+│       ├── ./public/pages/Profesiograma.html
+│       ├── ./public/pages/SST.html
+│       ├── ./public/pages/Servicios.html
+│       ├── ./public/pages/examen_medico_escolar.html
+│       └── ./public/pages/resultados.html
+├── ./src
+│   ├── ./src/assets
+│   │   ├── ./src/assets/fonts
+│   │   │   ├── ./src/assets/fonts/poppins-v21-latin-500.woff2
+│   │   │   ├── ./src/assets/fonts/poppins-v21-latin-500italic.woff2
+│   │   │   ├── ./src/assets/fonts/poppins-v21-latin-600.woff2
+│   │   │   ├── ./src/assets/fonts/poppins-v21-latin-700.woff2
+│   │   │   ├── ./src/assets/fonts/poppins-v21-latin-800.woff2
+│   │   │   ├── ./src/assets/fonts/poppins-v21-latin-800italic.woff2
+│   │   │   ├── ./src/assets/fonts/poppins-v21-latin-italic.woff2
+│   │   │   ├── ./src/assets/fonts/poppins-v21-latin-regular.woff2
+│   │   │   ├── ./src/assets/fonts/raleway-v34-latin-500.woff2
+│   │   │   ├── ./src/assets/fonts/raleway-v34-latin-500italic.woff2
+│   │   │   ├── ./src/assets/fonts/raleway-v34-latin-600.woff2
+│   │   │   ├── ./src/assets/fonts/raleway-v34-latin-700.woff2
+│   │   │   ├── ./src/assets/fonts/raleway-v34-latin-800.woff2
+│   │   │   ├── ./src/assets/fonts/raleway-v34-latin-800italic.woff2
+│   │   │   ├── ./src/assets/fonts/raleway-v34-latin-italic.woff2
+│   │   │   └── ./src/assets/fonts/raleway-v34-latin-regular.woff2
+│   │   └── ./src/assets/images
+│   │       ├── ./src/assets/images/Distintivos
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO FONAUDIOLOGIA.png
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO FONAUDIOLOGIA.webp
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO FONAUDIOLOGIA.webp:Zone.Identifier
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO MEDICINATRABAJO.png
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO MEDICINATRABAJO.webp
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO MEDICINATRABAJO.webp:Zone.Identifier
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO OPTOMETRIA.png
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO OPTOMETRIA.webp
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO OPTOMETRIA.webp:Zone.Identifier
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO PSICOLIGIA.png
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO PSICOLIGIA.webp
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO PSICOLIGIA.webp:Zone.Identifier
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO TERARPIARESP.png
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO TERARPIARESP.webp
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO TERARPIARESP.webp:Zone.Identifier
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO TOMA MUESTRAS.png
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO TOMA MUESTRAS.webp
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVO TOMA MUESTRAS.webp:Zone.Identifier
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVOS_DHSS seguridad y salud en el trabajo.png
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVOS_DHSS seguridad y salud en el trabajo.webp
+│   │       │   ├── ./src/assets/images/Distintivos/DISTINTIVOS_DHSS seguridad y salud en el trabajo.webp:Zone.Identifier
+│   │       │   ├── ./src/assets/images/Distintivos/Distintivo-FONOAUDIOLOGÍA.svg
+│   │       │   ├── ./src/assets/images/Distintivos/Distintivo-MEDICINA DEL TRABAJO.svg
+│   │       │   ├── ./src/assets/images/Distintivos/Distintivo-OPTOMETRIA.svg
+│   │       │   ├── ./src/assets/images/Distintivos/Distintivo-PSICOLOGIA.svg
+│   │       │   ├── ./src/assets/images/Distintivos/Distintivo-SEGURIDAD Y SALUD EN EL TRABAJO.svg
+│   │       │   ├── ./src/assets/images/Distintivos/Distintivo-TERAPIA RESPIRATORIA.svg
+│   │       │   └── ./src/assets/images/Distintivos/Distintivo-TOMA DE MUESTRAS DE LABORATORIO CLÍNICO.svg
+│   │       ├── ./src/assets/images/Donde_Encontrarnos
+│   │       │   ├── ./src/assets/images/Donde_Encontrarnos/Google-Maps-Logo.png
+│   │       │   ├── ./src/assets/images/Donde_Encontrarnos/Moovit_logo.png
+│   │       │   ├── ./src/assets/images/Donde_Encontrarnos/Moovit_logo.svg
+│   │       │   ├── ./src/assets/images/Donde_Encontrarnos/Waze_logo_2022.png
+│   │       │   ├── ./src/assets/images/Donde_Encontrarnos/Waze_logo_2022.svg
+│   │       │   └── ./src/assets/images/Donde_Encontrarnos/google-maps-logo.svg
+│   │       ├── ./src/assets/images/Logo_compuesto_fullcolor_horizontal_negro@2x.png
+│   │       ├── ./src/assets/images/Nuestros_clientes
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 1.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 1.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 10.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 10.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 11.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 11.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 12.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 12.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 13.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 13.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 14.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 14.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 15.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 15.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 16.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 16.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 17.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 17.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 18.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 19.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 19.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 2.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 2.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 3.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 3.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 4.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 4.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 5.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 5.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 6.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 6.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 7.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 7.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 8.png
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 8.svg
+│   │       │   ├── ./src/assets/images/Nuestros_clientes/Recurso 9.png
+│   │       │   └── ./src/assets/images/Nuestros_clientes/Recurso 9.svg
+│   │       ├── ./src/assets/images/Servicios medicos
+│   │       │   ├── ./src/assets/images/Servicios medicos/logo-audiometria.svg
+│   │       │   ├── ./src/assets/images/Servicios medicos/logo-electrocardiograma.svg
+│   │       │   ├── ./src/assets/images/Servicios medicos/logo-espirometria.svg
+│   │       │   ├── ./src/assets/images/Servicios medicos/logo-medicina.svg
+│   │       │   ├── ./src/assets/images/Servicios medicos/logo-optometria.svg
+│   │       │   ├── ./src/assets/images/Servicios medicos/logo-psicologia.svg
+│   │       │   └── ./src/assets/images/Servicios medicos/logo-toma-muestras.svg
+│   │       ├── ./src/assets/images/caneca.svg
+│   │       ├── ./src/assets/images/foto_examenes_medicos_ocupacionales_hero_background.webp
+│   │       ├── ./src/assets/images/foto_inicio_hero_background.png
+│   │       ├── ./src/assets/images/foto_inicio_hero_background.webp
+│   │       ├── ./src/assets/images/foto_matriz_de_riesgos_profesional_hero_background.webp
+│   │       ├── ./src/assets/images/foto_profesiograma_hero_background.jpg
+│   │       ├── ./src/assets/images/foto_profesiograma_hero_background.webp
+│   │       ├── ./src/assets/images/icon_doctora.svg
+│   │       ├── ./src/assets/images/icon_heart.svg
+│   │       ├── ./src/assets/images/logo_claro_vectores.svg
+│   │       ├── ./src/assets/images/logo_color_vectores.svg
+│   │       ├── ./src/assets/images/logo_icono_color_vectores_fabicon.svg
+│   │       ├── ./src/assets/images/logo_negro_maps.png
+│   │       ├── ./src/assets/images/logo_negro_vectores.svg
+│   │       ├── ./src/assets/images/logo_sns.png
+│   │       ├── ./src/assets/images/logo_sns.svg
+│   │       ├── ./src/assets/images/logo_solo_fabicon.png
+│   │       ├── ./src/assets/images/og_image.PNG
+│   │       ├── ./src/assets/images/patron_fondo.png
+│   │       ├── ./src/assets/images/render_dorctor_patient.webp
+│   │       ├── ./src/assets/images/viñeta.svg
+│   │       ├── ./src/assets/images/whatsapp-line-icon.png
+│   │       └── ./src/assets/images/whatsapp-line-icon.svg
+│   ├── ./src/index.js
+│   ├── ./src/js
+│   │   ├── ./src/js/Examenes_medicos_ocupacionales.js
+│   │   ├── ./src/js/components
+│   │   │   ├── ./src/js/components/calculadora.js
+│   │   │   ├── ./src/js/components/calculator.js
+│   │   │   ├── ./src/js/components/cardVisibility.js
+│   │   │   ├── ./src/js/components/clients.js
+│   │   │   ├── ./src/js/components/dropdown.js
+│   │   │   ├── ./src/js/components/faq.js
+│   │   │   ├── ./src/js/components/footerInit.js
+│   │   │   ├── ./src/js/components/footerInitPages.js
+│   │   │   ├── ./src/js/components/form_matriz_riesgos_prof.js
+│   │   │   ├── ./src/js/components/hamburgerMenu.js
+│   │   │   ├── ./src/js/components/lazyMap.js
+│   │   │   ├── ./src/js/components/map.js
+│   │   │   ├── ./src/js/components/menuComponent.js
+│   │   │   └── ./src/js/components/whatsapp.js
+│   │   ├── ./src/js/main.js
+│   │   ├── ./src/js/matriz_de_riesgos_profesional.js
+│   │   ├── ./src/js/profesiograma.js
+│   │   └── ./src/js/utils
+│   │       └── ./src/js/utils/animations.js
+│   ├── ./src/main.js
+│   ├── ./src/main_examenes_medicos_ocupacionales.js
+│   ├── ./src/main_matriz_riesgos_profesional.js
+│   ├── ./src/main_profesiograma.js
+│   ├── ./src/styles
+│   │   └── ./src/styles/scss
+│   │       ├── ./src/styles/scss/_media-queries.scss
+│   │       ├── ./src/styles/scss/_myfile.scss
+│   │       ├── ./src/styles/scss/base
+│   │       │   ├── ./src/styles/scss/base/_mixins.scss
+│   │       │   ├── ./src/styles/scss/base/_reset.scss
+│   │       │   ├── ./src/styles/scss/base/_typography.scss
+│   │       │   └── ./src/styles/scss/base/_variables.scss
+│   │       ├── ./src/styles/scss/components
+│   │       │   ├── ./src/styles/scss/components/_buttons.scss
+│   │       │   ├── ./src/styles/scss/components/_calculadora.scss
+│   │       │   ├── ./src/styles/scss/components/_dropdown.scss
+│   │       │   └── ./src/styles/scss/components/_whatsapp.scss
+│   │       ├── ./src/styles/scss/index.scss
+│   │       ├── ./src/styles/scss/layout
+│   │       │   ├── ./src/styles/scss/layout/_footer.scss
+│   │       │   └── ./src/styles/scss/layout/_header.scss
+│   │       ├── ./src/styles/scss/main.scss
+│   │       ├── ./src/styles/scss/sections
+│   │       │   ├── ./src/styles/scss/sections/_clients.scss
+│   │       │   ├── ./src/styles/scss/sections/_faqs.scss
+│   │       │   ├── ./src/styles/scss/sections/_form_matriz_riesgos_prof.scss
+│   │       │   ├── ./src/styles/scss/sections/_hero-examenes-medicos-ocupacionales.scss
+│   │       │   ├── ./src/styles/scss/sections/_hero-matriz-de-riesgos-profesional.scss
+│   │       │   ├── ./src/styles/scss/sections/_hero-profesiograma.scss
+│   │       │   ├── ./src/styles/scss/sections/_hero.scss
+│   │       │   ├── ./src/styles/scss/sections/_location.scss
+│   │       │   ├── ./src/styles/scss/sections/_program-description-service.scss
+│   │       │   ├── ./src/styles/scss/sections/_program-description.scss
+│   │       │   ├── ./src/styles/scss/sections/_sst-services.scss
+│   │       │   ├── ./src/styles/scss/sections/_steps.scss
+│   │       │   └── ./src/styles/scss/sections/_women-leaders.scss
+│   │       ├── ./src/styles/scss/style_examenes_medicos_ocupacionales.scss
+│   │       ├── ./src/styles/scss/style_matriz_de_riesgos_profesional.scss
+│   │       ├── ./src/styles/scss/style_profesiograma.scss
+│   │       └── ./src/styles/scss/utilities
+│   │           ├── ./src/styles/scss/utilities/_animations.scss
+│   │           └── ./src/styles/scss/utilities/_helpers.scss
+│   └── ./src/utils
+│       └── ./src/utils/getData.js
+└── ./webpack.config.js
+

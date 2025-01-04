@@ -6,21 +6,15 @@
 @import 'base/typography';
 
 // Components
-@import 'components/buttons';
-@import 'components/dropdown';
-@import 'components/whatsapp';
+@import 'components/calculadora';
 
-// Layout
-@import 'layout/header';
-@import 'layout/footer';
 
 // Sections
-@import 'sections/hero-examenes-medicos-ocupacionales';
 @import 'sections/program-description-service';
 @import 'sections/clients';
 @import 'sections/faqs';
 @import 'sections/location';
-/* @import 'sections/form_matriz_riesgos_prof'; */
+
 
 // Utilities
 @import 'utilities/helpers';

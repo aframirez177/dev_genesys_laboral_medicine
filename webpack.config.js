@@ -86,6 +86,7 @@ module.exports = {
         filename: './pages/examen_medico_escolar.html',
         }),
         new HtmlWebpackPlugin({
+        chunks:['main','examenes'],
         inject: true,
         template: './public/pages/Examenes_medicos_ocupacionales.html',
         filename: './pages/Examenes_medicos_ocupacionales.html',
