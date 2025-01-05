@@ -36,7 +36,141 @@ const formatUtils = {
             fullName: 'EXAMEN MEDICO OSTEOMUSCULAR CON ENFASIS EN ALTURAS',
             description: 'Evaluación específica para trabajo en alturas, incluyendo valoración del sistema vestibular y neurológico.',
             basePrice: 33000
-        }
+        },
+        AUD: {
+            code: 'AUD',
+            fullName: 'AUDIOMETRIA',
+            description: 'Mide la capacidad auditiva para identificar posibles pérdidas auditivas causadas por ruido ocupacional.',
+            basePrice: 16450
+          },
+          ESP: {
+              code: 'ESP',
+              fullName: 'ESPIROMETRÍA',
+              description: 'Evalúa la función pulmonar, detectando enfermedades respiratorias que puedan ser causadas o agravadas por el trabajo.',
+              basePrice: 16450
+          },
+          OPTO: {
+              code: 'OPTO',
+              fullName: 'OPTOMETRÍA',
+              description: 'Examina la salud visual y detecta problemas que puedan afectar el desempeño laboral o ser resultado de la exposición a riesgos en el trabajo.',
+              basePrice: 16450
+          },
+          VIS: {
+              code: 'VIS',
+              fullName: 'VISIOMETRÍA',
+              description: 'Mide la agudeza visual y otras capacidades visuales importantes para el trabajo.',
+              basePrice: 11900
+          },
+          ECG: {
+              code: 'ECG',
+              fullName: 'ELECTROCARDIOGRAMA',
+              description: 'Registra la actividad eléctrica del corazón para detectar enfermedades cardíacas.',
+              basePrice: 29400
+          },
+          RXC: {
+              code: 'RXC',
+              fullName: 'RAYOS X DE COLUMNA',
+              description: 'Obtiene imágenes de la columna vertebral para identificar lesiones o condiciones que puedan afectar la salud del trabajador.',
+              basePrice: 49000
+          },
+          PSM: {
+              code: 'PSM',
+              fullName: 'PRUEBA PSICOSENSOMETRICA',
+              description: 'Evalúa habilidades sensoriales y motoras importantes para ciertas tareas laborales.',
+              basePrice: 30800
+          },
+          PST: {
+              code: 'PST',
+              fullName: 'PRUEBA PSICOTECNICA',
+              description: 'Mide aptitudes y habilidades cognitivas relevantes para el desempeño laboral.',
+              basePrice: 24500
+          },
+          GLI: {
+              code: 'GLI',
+              fullName: 'GLICEMIA',
+              description: 'Mide los niveles de azúcar en sangre para identificar diabetes u otras condiciones metabólicas.',
+              basePrice: 10500
+          },
+          CH: {
+              code: 'CH',
+              fullName: 'CUADRO HEMATICO',
+              description: 'Cuadro Hematico',
+              basePrice: 9800
+          },
+          PL: {
+              code: 'PL',
+              fullName: 'PERFIL LIPÍDICO',
+              description: 'Mide los niveles de colesterol y triglicéridos para evaluar el riesgo cardiovascular.',
+              basePrice: 22400
+          },
+          PAS: {
+              code: 'PAS',
+              fullName: 'PRUEBA DE ALCOHOL EN SALIVA',
+              description: 'Detectan consumo reciente de alcohol.',
+              basePrice: 28000
+          },
+          PE: {
+              code: 'PE',
+              fullName: 'PRUEBA DE EMBARAZO',
+              description: 'Confirma o descarta un embarazo.',
+              basePrice: 12600
+          },
+          PSP: {
+              code: 'PSP',
+              fullName: 'PRUEBA DE SUSTANCIAS PSICOACTIVAS',
+              description: 'Detectan el consumo de drogas.',
+              basePrice: 23800
+          },
+          TGO: {
+              code: 'TGO',
+              fullName: 'TRANSAMINASAS TGO',
+              description: 'Evalúan la función hepática. Colesterol: Mide los niveles de colesterol en sangre.',
+              basePrice: 12600
+          },
+          TGP: {
+              code: 'TGP',
+              fullName: 'TRANSAMINASAS TGP',
+              description: 'Evalúan la función hepática. Colesterol: Mide los niveles de colesterol en sangre.',
+              basePrice: 12600
+          },
+          TRI: {
+              code: 'TRI',
+              fullName: 'TRIGLICÉRIDOS',
+              description: 'Mide los niveles de triglicéridos en sangre.',
+              basePrice: 10500
+          },
+          COL: {
+              code: 'COL',
+              fullName: 'COLESTEROL',
+              description: 'Mide los niveles de colesterol en sangre.',
+              basePrice: 10500
+          },
+          COP: {
+              code: 'COP',
+              fullName: 'COPROLOGICO',
+              description: 'Coprologico',
+              basePrice: 9800
+          },
+          LEP: {
+              code: 'LEP',
+              fullName: 'LEPTOSPIRA',
+              description: 'Leptospira',
+              basePrice: 80500
+          },
+          BRU: {
+              code: 'BRU',
+              fullName: 'BRUCELA',
+              description: 'Brucela',
+              basePrice: 80500
+          },
+          TOX: {
+              code: 'TOX',
+              fullName: 'TOXOPLASMA',
+              description: 'Toxoplasma',
+              basePrice: 40600
+          }
+
+
         // Aquí irían los demás exámenes según la configuración proporcionada
     };
 
@@ -334,10 +468,6 @@ const formatUtils = {
                             placeholder="Ingresa el nombre del cargo"
                             value="Cargo ${id}">
                         <div class="cargo-controls">
-                            <input type="number" 
-                                class="num-trabajadores" 
-                                min="1" 
-                                value="1">
                             <button class="toggle-cargo">
                                 ${isExpanded ? '-' : '+'}
                             </button>
@@ -349,6 +479,13 @@ const formatUtils = {
                             <h4>Selecciona los exámenes requeridos:</h4>
                             <div class="exam-grid">
                                 ${examCheckboxes}
+                            </div>
+                            <div class="numero-trabajadores">
+                            <h4># de trabajadores en el cargo:</h4>
+                            <input type="number" 
+                                class="num-trabajadores" 
+                                min="1" 
+                                value="1">
                             </div>
                         </div>
                     </div>
