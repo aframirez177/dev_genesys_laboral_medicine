@@ -470,7 +470,7 @@ const formatUtils = {
                                 value="Cargo ${id}">
                             <div class="cargo-controls">
                             <div class="numero-trabajadores">
-                            <h4># de trabajadores:</h4>
+                            <h4>trabajadores:</h4>
                             <input type="number" 
                                 class="num-trabajadores" 
                                 min="1" 

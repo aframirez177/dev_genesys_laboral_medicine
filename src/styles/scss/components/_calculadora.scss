@@ -109,11 +109,9 @@
                 height: 3rem;
                 justify-content: center;
                 text-align: center;
-                padding-top: 1.2rem;
-                padding-bottom: 1.2rem;
                 border: none;
                 border-radius: 1.5rem;
-                font-size: 1.4rem;
+                font-size: 1.2rem;
                 font-family: map-get($fonts, "title");
                 background-color: map-get($colors,"background");
 
@@ -130,14 +128,14 @@
                 justify-content: space-around;
                 h4{
                     max-width: 40rem;
-                    font-size: 1.1rem;
+                    font-size: 1rem;
                     margin-top: 1rem;
                 }
             }
                 input[type="number"] {
                     margin-left: 0.4rem;
                     height: 3rem;
-                    width: 6rem;
+                    width: 5.7rem;
                     padding: 0.8rem;
                     border: 1px solid map-get($colors, "input-border");
                     border-radius: 1.2rem;
@@ -191,7 +189,7 @@
                 height: 2rem;
                 font-size: 2rem;
                 padding-bottom: 3rem;
-                right: -8px;
+                right: -3px;
                 background-color: #ff4444;
                 color: white;
 
