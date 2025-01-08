@@ -466,11 +466,10 @@ const formatUtils = {
                         <div class="cargo-header">
                             <input type="text" 
                                 class="cargo-name" 
-                                placeholder="Ingresa el nombre del cargo"
-                                value="Cargo ${id}">
+                                placeholder="Acá el nombre del cargo"
+                                value="">
                             <div class="cargo-controls">
                             <div class="numero-trabajadores">
-                            <h4>trabajadores:</h4>
                             <input type="number" 
                                 class="num-trabajadores" 
                                 min="1" 
