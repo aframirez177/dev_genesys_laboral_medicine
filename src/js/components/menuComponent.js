@@ -5,16 +5,24 @@
  * Genera dinámicamente el header, menú de navegación y menús desplegables.
  */
 export function initMenu() {
+    const isGitHubPages = window.location.hostname.includes('github.io');
+    
     // Detectar si estamos en index o en una subpágina
-    const isIndex = window.location.pathname.endsWith('/dist/') || 
-                   window.location.pathname.endsWith('/dist/index.html');
+    const isIndex = isGitHubPages ?
+        (window.location.pathname.endsWith('/dev_genesys_laboral_medicine/') ||
+         window.location.pathname.endsWith('/dev_genesys_laboral_medicine/index.html')) :
+        (window.location.pathname.endsWith('/dist/') || 
+         window.location.pathname.endsWith('/dist/index.html'));
     
     // Configurar rutas base según la ubicación
-    const basePath = isIndex ? '.' : '..';
+    const basePath = isGitHubPages ? '/dev_genesys_laboral_medicine' : (isIndex ? '.' : '..');
     const pagesPath = isIndex ? 'pages' : '.';
+    
+    
     
     // Configuración centralizada del menú
     const menuConfig = {
+        
         logo: {
             src: `${basePath}/assets/images/logo_color_vectores.svg`,
             alt: "Genesys Logo",
