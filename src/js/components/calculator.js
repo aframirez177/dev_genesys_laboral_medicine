@@ -462,30 +462,33 @@ const formatUtils = {
             // Retornar la estructura completa del cargo
             return `
                 <div class="cargo" data-cargo-id="${id}">
-                    <div class="cargo-header">
-                        <input type="text" 
-                            class="cargo-name" 
-                            placeholder="Ingresa el nombre del cargo"
-                            value="Cargo ${id}">
-                        <div class="cargo-controls">
-                            <button class="toggle-cargo">
-                                ${isExpanded ? '-' : '+'}
-                            </button>
-                            ${id !== 1 ? '<button class="delete-cargo">×</button>' : ''}
+                    <div class="cargo-encabezado">
+                        <div class="cargo-header">
+                            <input type="text" 
+                                class="cargo-name" 
+                                placeholder="Ingresa el nombre del cargo"
+                                value="Cargo ${id}">
+                            <div class="cargo-controls">
+                            <div class="numero-trabajadores">
+                            <h4># de trabajadores:</h4>
+                            <input type="number" 
+                                class="num-trabajadores" 
+                                min="1" 
+                                value="1">
+                            </div>
+                                <button class="toggle-cargo">
+                                    ${isExpanded ? '-' : '+'}
+                                
+                            </div>
                         </div>
+                        </button>
+                                ${id !== 1 ? '<button class="delete-cargo">×</button>' : ''}
                     </div>
                     <div class="cargo-body ${isExpanded ? '' : 'hidden'}">
                         <div class="exam-selector">
                             <h4>Selecciona los exámenes requeridos:</h4>
                             <div class="exam-grid">
                                 ${examCheckboxes}
-                            </div>
-                            <div class="numero-trabajadores">
-                            <h4># de trabajadores en el cargo:</h4>
-                            <input type="number" 
-                                class="num-trabajadores" 
-                                min="1" 
-                                value="1">
                             </div>
                         </div>
                     </div>

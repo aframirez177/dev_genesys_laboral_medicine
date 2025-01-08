@@ -59,19 +59,27 @@
     &-body {
         display: flex;
         flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
         gap: 3rem;
 
 
         @include respond-to("tablet") {
             flex-direction: row;
+            align-items: self-start;
         }
     }
 
     &-form {
         flex: 1;
+        max-width: 50rem;
+        align-items: center;
         
         .section-calculator {
-            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.2rem;
         }
     }
 
@@ -81,7 +89,10 @@
     }
     .cargo {
         margin-bottom: 2rem;
-    
+    .cargo-encabezado{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
         .cargo-header {
             display: flex;
             justify-content: space-between;
@@ -98,10 +109,11 @@
                 height: 3rem;
                 justify-content: center;
                 text-align: center;
-                padding: 1.2rem;
+                padding-top: 1.2rem;
+                padding-bottom: 1.2rem;
                 border: none;
                 border-radius: 1.5rem;
-                font-size: 1.6rem;
+                font-size: 1.4rem;
                 font-family: map-get($fonts, "title");
                 background-color: map-get($colors,"background");
 
@@ -111,11 +123,31 @@
 
                 }
             }
-    
+            .numero-trabajadores{
+                display: flex;
+                flex-direction: row;
+                flex-wrap:nowrap;
+                justify-content: space-around;
+                h4{
+                    max-width: 40rem;
+                    font-size: 1.1rem;
+                    margin-top: 1rem;
+                }
+            }
+                input[type="number"] {
+                    margin-left: 0.4rem;
+                    height: 3rem;
+                    width: 6rem;
+                    padding: 0.8rem;
+                    border: 1px solid map-get($colors, "input-border");
+                    border-radius: 1.2rem;
+                    text-align: center;
+                    font-size: 1.4rem;
+                }
             .cargo-controls {
                 display: flex;
                 align-items: center;
-                gap: 1rem;
+                
     
                 button {
                     position: relative;
@@ -136,19 +168,39 @@
                         background-color: map-get($colors, "primary");
                         color: white;
                     }
-    
-                    &.delete-cargo {
-                        background-color: #ff4444;
-                        color: white;
-    
-                        &:hover {
-                            background-color: darken(#ff4444, 10%);
-                        }
-                    }
                 }
             }
         }
-    
+        button {
+            position: relative;
+            right: -0.7rem;
+            width: 3.8rem;
+            height: 3rem;
+            border-radius: 50%;
+            border: none;
+            background-color: map-get($colors, "background");
+            color: map-get($colors, "secondary");
+            font-size: 2.5rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding-bottom: 3.8rem;
+            &.delete-cargo {
+                top: .8rem;
+                width: 3rem;
+                height: 2rem;
+                font-size: 2rem;
+                padding-bottom: 3rem;
+                right: -8px;
+                background-color: #ff4444;
+                color: white;
+
+                &:hover {
+                    background-color: darken(#ff4444, 10%);
+                }
+            }
+        }
+    }
         .cargo-body {
             padding: 2rem;
             transition: all 0.3s ease-in-out;
@@ -204,27 +256,7 @@
                 padding-bottom: 0;
                 margin: 0;
             }
-            .numero-trabajadores{
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: flex-end;
-                h4{
-                    max-width: 25rem;
-                    font-size: 1.6rem;
-                    margin-top: 1rem;
-                }
-            }
-                input[type="number"] {
-                    margin-left: 2rem;
-                    height: 4rem;
-                    width: 8rem;
-                    padding: 0.8rem;
-                    border: 1px solid map-get($colors, "input-border");
-                    border-radius: 1.2rem;
-                    text-align: center;
-                    font-size: 1.8rem;
-                }
+
         }
     }
 
@@ -265,10 +297,9 @@
 
     &-summary {
         flex: 1;
-        padding: 2rem;
-        background-color: white;
-        border-radius: 1rem;
-        box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.05);
+        min-width: none;
+        max-width: 480px;
+
 
         @include respond-to("tablet") {
             position: sticky;
@@ -332,7 +363,6 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 1rem 0;
                 border-bottom: 1px solid rgba(map-get($colors, "secondary"), 0.1);
                 &.info-only {
                     background-color: lighten(map-get($colors, "primary"), 45%);
@@ -405,6 +435,28 @@
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             }
         }
+    }
+}
+.btn-add {
+    align-self: center;
+    justify-self: center;
+    width: 100%;
+    margin-top: 1.8rem;
+    padding: 2rem;
+    font-family: map-get($fonts, "Poppins");
+    font-weight: 800;
+    background-color: map-get($colors, "primary");
+    color:map-get($colors, "secondary");
+    font-size: 1.6rem;
+    border: none;
+    border-radius: 5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: darken(map-get($colors, "primary"), 10%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 }
 
