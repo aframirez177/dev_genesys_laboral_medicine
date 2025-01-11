@@ -300,6 +300,8 @@
         flex: 1;
         min-width: none;
         max-width: 480px;
+        margin-bottom: 5rem;
+        padding: 2rem;
 
 
         @include respond-to("tablet") {
@@ -313,7 +315,7 @@
             margin-bottom: 2rem;
 
             h3 {
-                font-size: 2rem;
+                font-size: 3.5rem;
                 color: map-get($colors, "secondary");
                 font-family: map-get($fonts, "title");
                 margin-bottom: 1rem;
@@ -327,23 +329,48 @@
         }
 
         .exam-price {
-            font-size: 2.4rem;
-            color: map-get($colors, "primary");
-            font-weight: 700;
-            margin-bottom: 2rem;
+            align-items: end;
+            justify-content: right;
+            font-weight: 800;
+            margin-right: 2rem;
+            
+            
+            #examPrice{
+                text-align: right;
+                font-size: 1.6rem;
+                font-family: map-get($fonts, "title");
+                color: map-get($colors, "secondary");
+                font-weight: 800;
+            }
+            .min-price{
+                font-size: 2.4rem;
+                font-family: map-get($fonts, "title");
+                color: map-get($colors, "primary");
+                font-weight: 800;
+            }
         }
 
         .package-summary {
             .package-item {
+                text-align: right;
+                background-color: map-get($colors, "background");
                 padding: 1.5rem;
                 margin-bottom: 1.5rem;
-                background-color: map-get($colors, "background");
                 border-radius: 0.8rem;
-
-                h4 {
-                    font-size: 1.8rem;
-                    color: map-get($colors, "secondary");
-                    margin-bottom: 1rem;
+                display: flex;
+                flex-direction: row;
+                box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.1);
+                
+                justify-content: space-between;
+                .package-header{
+                    max-width: 250px;
+                    h4 {
+                        font-size: 1.8rem;
+                        color: map-get($colors, "secondary");
+                        margin-bottom: 1rem;
+                        max-width: 25rem;
+                        text-align: left;
+                    }
                 }
 
                 p {
@@ -351,23 +378,69 @@
                     color: map-get($colors, "text");
                     margin-bottom: 0.5rem;
                 }
+                .valor-item{
+                    display: flex;
+                    flex-direction: column;
+                    justify-content:space-between;
+
+                    .valor-label{
+                        font-size: 1.2rem;
+                        font-family: map-get($fonts, "title");
+                        color: map-get($colors, "secondary");
+                        font-weight: 500;
+                    }
+                    .valor-monto{
+                        text-align: right;
+                        font-size: 3rem;
+                        font-family: map-get($fonts, "title");
+                        color: map-get($colors, "primary");
+                        font-weight: 800;
+                    }
+                }
             }
         }
 
         .discount-options {
-            margin: 2rem 0;
             padding: 2rem;
             background-color: lighten(map-get($colors, "primary"), 42%);
             border-radius: 1rem;
 
+            .discount-header{
+                max-width: 300px;
+                font-size: 3rem;
+                font-family: map-get($fonts, "title");
+                color: map-get($colors, "primary");
+                font-weight: 800;
+            }
+            .discount-description{
+                max-width: 250px;
+                font-size: 1.3rem;
+                font-family: map-get($fonts, "body");
+                color: map-get($colors, "secondary");
+                font-weight: 500;
+            }
+            .discount-value{
+                max-width: 300px;
+                font-size: 3rem;
+                font-family: map-get($fonts, "title");
+                color: map-get($colors, "primary");
+                font-weight: 800;
+            }
+            
             .discount-option {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 border-bottom: 1px solid rgba(map-get($colors, "secondary"), 0.1);
+                .discount-info{
+
+                    max-width: 230px;
+                }
                 &.info-only {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
                     background-color: lighten(map-get($colors, "primary"), 45%);
-                    padding: 1rem;
                     border-radius: 0.6rem;
                     
                     .discount-text {
@@ -379,6 +452,17 @@
                             color: map-get($colors, "primary");
                         }
                     }
+                }
+                #discount2 {
+                    margin-top: 3rem;
+                    width: 3rem;
+                    height: 3rem;
+                    cursor: pointer;
+                    appearance: none;
+                    border: 2px solid map-get($colors, "primary");
+                    border-radius: 0.4rem;
+                    position: relative;
+                    transition: all 0.2s ease;
                 }
                 
                 &:last-child {
@@ -397,20 +481,28 @@
         }
 
         .total {
-            margin-top: 3rem;
+            margin-top: 2rem;
+            border-top: 5px solid rgba(106, 212, 176, 0.948);
             padding: 2rem;
-            background-color: lighten(map-get($colors, "primary"), 35%);
-            border-radius: 0.8rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+
+
 
             p {
                 &:first-child {
-                    font-size: 1.6rem;
+                    max-width: 150px;
+                    font-size: 2rem;
                     color: map-get($colors, "secondary");
+                    font-family: map-get($fonts, "title");
+                    font-weight: 800;
                     margin-bottom: 1rem;
                 }
 
                 &.total-price {
-                    font-size: 3.2rem;
+                    font-size: 3rem;
                     font-weight: 700;
                     color: map-get($colors, "primary");
                     text-align: center;
@@ -437,6 +529,9 @@
             }
         }
     }
+    p{
+        margin: 0.5rem 0;
+    }
 }
 .btn-add {
     align-self: center;
@@ -461,3 +556,36 @@
     }
 }
 
+.restore-banner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 0.8rem;
+
+    .banner-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 2rem;
+
+        .banner-message {
+            max-width: 300px;
+            font-size: 1.6rem;
+            color: map-get($colors, "secondary");
+        }
+
+        .banner-actions {
+            display: flex;
+            gap: 1rem;
+
+            button {
+                padding: 1rem 2rem;
+                font-size: 1.4rem;
+            }
+        }
+    }
+}

@@ -226,23 +226,26 @@ const formatUtils = {
             
             if (hasSavedData) {
                 const state = JSON.parse(localStorage.getItem(STORAGE_CONFIG.KEY));
-                const lastUpdate = new Date(state.lastUpdate).toLocaleString();
-                const numCargos = state.cargos.length;
+                const lastUpdate = new Date(state.lastUpdate);
+                const hoursAgo = Math.floor((new Date() - lastUpdate) / (1000 * 60 * 60));
                 
-                const shouldRestore = confirm(
-                    `Encontramos una cotización guardada con ${numCargos} cargo(s)\n` +
-                    `Última actualización: ${lastUpdate}\n\n` +
-                    '¿Desea continuar con la cotización guardada?\n\n' +
-                    'Seleccione "Aceptar" para continuar con la cotización guardada\n' +
-                    'Seleccione "Cancelar" para comenzar una nueva'
-                );
+                const banner = this.container.querySelector('.restore-banner');
+                const message = banner.querySelector('.banner-message');
+                message.textContent = `Encontramos una cotización guardada con ${state.cargos.length} cargo(s) de hace ${hoursAgo} hora(s)`;
+                
+                banner.style.display = 'block';
         
-                if (shouldRestore) {
+                // Agregar event listeners para los botones del banner
+                banner.querySelector('.btn-restore').addEventListener('click', () => {
                     this.restoreState();
-                } else {
+                    banner.style.display = 'none';
+                });
+        
+                banner.querySelector('.btn-new').addEventListener('click', () => {
                     localStorage.removeItem(STORAGE_CONFIG.KEY);
                     this.addFirstCargo();
-                }
+                    banner.style.display = 'none';
+                });
             } else {
                 // Si no hay datos guardados, agregar el primer cargo
                 this.addFirstCargo();
@@ -310,6 +313,15 @@ const formatUtils = {
          */
         generateCalculatorHTML() {
             return `
+                <div class="restore-banner" style="display: none;">
+                    <div class="banner-content">
+                        <div class="banner-message"></div>
+                        <div class="banner-actions">
+                            <button class="btn-restore cta-button">Continuar con esta cotización</button>
+                            <button class="btn-new cta-button-1">Crear nueva cotización</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="calculator-header">
                     <h1>Genera una cotización personalizada de los exámenes médicos ocupacionales para tu equipo de trabajo</h1>
                 </div>
@@ -337,7 +349,7 @@ const formatUtils = {
                                     <div class="discount-header">
                                         <span class="discount-title">Queremos apoyar el desarrollo</span>
                                     </div>
-                                    <p class="discount-description">Por el tamaño de tu empresa tienes un beneficio</p>
+                                    <p class="discount-description">Por el tamaño de tu empresa tienes un beneficio de:</p>
                                 </div>
                                 <div class="discount-value" id="discount-percentage">-5%</div>
                             </div>
@@ -780,12 +792,33 @@ const formatUtils = {
                 return false;
             }
         }
+        // Agregar este método justo antes de saveState()
+        shouldSaveState() {
+            // Verificar el primer cargo
+            const firstCargo = this.cargos[0];
+            if (!firstCargo || !firstCargo.name || firstCargo.name === `Cargo ${firstCargo.id}`) {
+                return false;
+            }
+            if (firstCargo.selectedExams.size === 0) {
+                return false;
+            }
 
+            // Si hay más cargos, verificar que tengan nombres válidos
+            const additionalCargos = this.cargos.slice(1);
+            return additionalCargos.every(cargo => 
+                cargo.name && cargo.name !== `Cargo ${cargo.id}`
+            );
+        }
         /**
          * Guarda el estado actual de la calculadora en localStorage
          * @private
          */
         saveState() {
+
+            if (!this.shouldSaveState()) {
+                return;
+            }
+
             const state = {
                 cargos: this.cargos.map(cargo => ({
                     id: cargo.id,
