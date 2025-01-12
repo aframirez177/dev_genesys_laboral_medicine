@@ -4,6 +4,8 @@
  * Módulo de utilidades para el formateo de moneda
  * Proporciona funciones helper para formatear valores monetarios
  */
+import { initContactForm } from './informacion_de_contacto.js';
+
 const formatUtils = {
     /**
      * Formatea un número a moneda colombiana
@@ -933,25 +935,35 @@ const formatUtils = {
          * @private
          */
         async downloadQuotation() {
+            const contactForm = initContactForm({
+                googleFormsUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSfPF3gwfHJtBTVjTyotqTgky39adkKMhwz_AG-G0Hd6iDtBug/formResponse',
+                googleSheetsUrl: 'https://script.google.com/macros/s/AKfycbyLelEsDZq-6kbmDwnw7CSMxEKQVjuZnMUConHwMU4extYoi_iOeU4gLPYBHim_04RF/exec',
+                onSuccess: (formData) => {
+                    this.generateAndDownloadFile();
+                },
+                onError: (error) => {
+                    console.error('Error en el formulario:', error);
+                    alert('Hubo un error al procesar su solicitud. Por favor intente nuevamente.');
+                }
+            });
+        
+            contactForm.showForm(); // Primero muestra el formulario
+        }
+        
+        // Método separado para la generación y descarga
+        async generateAndDownloadFile() {
             try {
-                // Generar contenido de la cotización
                 const content = this.generateQuotationContent();
-                
-                // Crear blob con el contenido
                 const blob = new Blob([content], { type: 'text/plain' });
-                
-                // Crear URL y link de descarga
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = `cotizacion_examenes_${new Date().toISOString().split('T')[0]}.txt`;
                 
-                // Simular click y limpiar
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
-                
             } catch (error) {
                 console.error('Error al generar la cotización:', error);
                 alert('Hubo un error al generar la cotización. Por favor intente nuevamente.');

@@ -1,0 +1,131 @@
+// src/styles/scss/components/_contact-form.scss
+
+.contact-form-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 2rem;
+
+    .modal-content {
+        background-color: white;
+        border-radius: 1rem;
+        max-width: 600px;
+        margin: 2rem auto;
+        position: relative;
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    .modal-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid map-get($colors, "border-color");
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: map-get($colors, "secondary");
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: map-get($colors, "text");
+            transition: color 0.2s;
+
+            &:hover {
+                color: map-get($colors, "primary");
+            }
+        }
+    }
+
+    .contact-form {
+        padding: 2rem;
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            width: 100%;
+
+            label {
+                display: block;
+                font-size: 1.4rem;
+                margin-bottom: 0.5rem;
+                color: map-get($colors, "text");
+                font-weight: 500;
+            }
+
+            input, select {
+                width: 100%;
+                padding: 1rem;
+                border: 1px solid map-get($colors, "border-color");
+                border-radius: 0.5rem;
+                font-size: 1.4rem;
+                transition: border-color 0.2s;
+
+                &:focus {
+                    outline: none;
+                    border-color: map-get($colors, "primary");
+                }
+
+                &:invalid {
+                    border-color: #ff4444;
+                }
+            }
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+
+            @include respond-to("mobile") {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .form-group {
+                flex: 1;
+                margin-bottom: 0;
+            }
+        }
+
+        .actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+
+            button {
+                min-width: 120px;
+                padding: 1rem 2rem;
+
+                &:disabled {
+                    opacity: 0.7;
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-10%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
