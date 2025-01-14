@@ -3,6 +3,7 @@
 #matrizRiesgosForm {
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
     .matriz-riesgos-section {
     max-width: 1024px;
@@ -37,8 +38,10 @@
     }
 
     .cta-button,
-    .cta-button-1 {
-      @include button();
+    .cta-button-1 {      
+      width: 250px;
+      margin-bottom: 2rem;
+      font-weight: 800;
     }
 
     #cargoContainer {

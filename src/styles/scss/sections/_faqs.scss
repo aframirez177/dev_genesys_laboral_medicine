@@ -88,6 +88,7 @@
         font-size: 1.6rem;
         color: map-get($colors, "text");
         padding: 0 2rem;
+        margin-bottom: 2rem;
 
         &--active {
         max-height: 50rem;

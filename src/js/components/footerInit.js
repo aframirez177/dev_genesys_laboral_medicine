@@ -6,12 +6,18 @@
  * servicios, información de empresa y contacto.
  */
 export function initFooter() {
+    const isGitHubPages = window.location.hostname.includes('github.io');
+    
     // Detectar si estamos en index o en una subpágina
-    const isIndex = window.location.pathname.endsWith('/dist/') || 
-                    window.location.pathname.endsWith('/dist/index.html');
+    const isIndex = isGitHubPages ?
+        (window.location.pathname.endsWith('/dev_genesys_laboral_medicine/') ||
+         window.location.pathname.endsWith('/dev_genesys_laboral_medicine/index.html')) :
+        (window.location.pathname.endsWith('/dist/') || 
+         window.location.pathname.endsWith('/dist/index.html'));
     
     // Configurar rutas base según la ubicación
-    const basePath = isIndex ? '.' : '..';
+    const basePath = isGitHubPages ? '/dev_genesys_laboral_medicine' : (isIndex ? '.' : '..');
+    const pagesPath = isIndex ? 'pages' : '.';
 
     // Configuración centralizada del footer
     const footerConfig = {
@@ -69,11 +75,11 @@ export function initFooter() {
             phone: "+57 304 2014236",
             schedule: {
                 weekday: "Lunes a Viernes: 6 am a 3 pm",
-                weekend: "Sábados, Domingos y Festivos: 6 am a 12m"
+                weekend: "Sábados: 6 am a 12m"
             },
             commercial: {
-                weekday: "Lunes a Viernes: 7 am a 4 pm",
-                weekend: "Sábados, Domingos y Festivos: 9 am a 3 pm"
+                weekday: "Lunes a Viernes: 6 am a 3 pm",
+                weekend: "Sábados: 6 am a 12 pm"
             },
             whatsapp: "+57 3205803048"
         },

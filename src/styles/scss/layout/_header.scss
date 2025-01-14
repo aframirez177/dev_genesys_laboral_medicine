@@ -29,8 +29,8 @@ header {
         width: 45px;
         margin-left: auto;
         position: relative;
-        top: -7px;
-        right: 25px;
+        top: 9px;
+        right: 50px;
         z-index: 11;
         @include respond-to("tablet") {
         display: none;
@@ -198,20 +198,84 @@ header {
     .off-screen-menu {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
     background-color: #93ddc2ed;
     position: fixed;
     top: 0;
     height: 100vh;
-    width: 150px;
-    right: -150px;
-    padding-top: 100px;
+    width: 200px;
+    right: -210px;
+    padding-top: 80px;
     justify-self: right;
     align-items: center;
     transition: 0.3s ease;
     border-radius: 16px;
     box-shadow: 0 10px 16px #3d434c7f;
     z-index: 6;
+
+        .mobile-services {
+            width: 100%;
+            
+            .mobile-services-toggle {
+                width: 100%;
+                padding: 1rem;
+                font-family: map-get($fonts, "body");
+                font-size: 1.4rem;
+                font-weight: 500;
+                color: map-get($colors, "secondary");
+                background: none;
+                border: none;
+                text-align: center;
+                cursor: pointer;
+                transition: 0.2s;
+
+                &:hover {
+                    color: map-get($colors, "primary");
+                    font-weight: 800;
+                }
+            }
+
+            .mobile-services-content {
+                display: none;
+                padding-left: 2rem;
+
+                &.active {
+                    position: relative;
+                    bottom: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    background-color: #aae4cfed;
+                    transition: .3s ease;
+                }
+
+                .mobile-service-item {
+                    display: flex;
+                    align-items: center;
+                    
+                    max-width: 140px;
+
+                    svg {
+                        display: none;
+                    }
+
+                    a {
+                        top: 8px;
+                        color: map-get($colors, "secondary");
+                        text-decoration: none;
+                        font-size: 1.2rem;
+                        transition: 0.2s;
+                        text-align: left;
+                        max-width: 140px;
+                        padding-bottom: 1.6rem;                        
+                        
+                        &:hover {
+                            color: map-get($colors, "primary");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     .off-screen-menu.active {

@@ -131,7 +131,17 @@ export function initMenu() {
                 ${menuConfig.mainNav.map(item => 
                     `<a href="${item.href}">${item.text}</a>`
                 ).join('')}
-                <a href="${menuConfig.logo.homeLink}">Servicios</a>
+                <div class="mobile-services">
+                    <button class="mobile-services-toggle">Servicios</button>
+                    <div class="mobile-services-content">
+                        ${menuConfig.services.map(service => `
+                            <div class="mobile-service-item">
+                                ${service.icon}
+                                <a href="${service.href}">${service.text}</a>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
                 ${menuConfig.ctaButtons.map(btn => 
                     `<button class="${btn.className}">${btn.text}</button>`
                 ).join('')}
@@ -203,6 +213,16 @@ export function initMenu() {
                     dropdownToggle.setAttribute('aria-expanded', 'false');
                     servicesMenu.setAttribute('aria-hidden', 'true');
                 }
+            });
+        }
+
+            // Comportamiento del menú de servicios móvil
+        const mobileServicesToggle = document.querySelector('.mobile-services-toggle');
+        const mobileServicesContent = document.querySelector('.mobile-services-content');
+        
+        if (mobileServicesToggle && mobileServicesContent) {
+            mobileServicesToggle.addEventListener('click', function() {
+                mobileServicesContent.classList.toggle('active');
             });
         }
     }
