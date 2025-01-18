@@ -1,4 +1,12 @@
-.steps {
+.service-bennefit{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    h2{
+        font-size: 3rem;
+    }
+}
+.exams-cards {
     margin-top: 5rem;
     display: flex;
     justify-content: center;
@@ -6,11 +14,11 @@
     flex-wrap: wrap;
     padding: 1rem;
 
-    .step-card {
+    .exam {
         background-color: #fff2fe;
         border-radius: 12px;
         padding: 1rem;
-        max-width: 210px;
+        min-width: 320px;
         height: 220px;
         text-align: center;
         position: relative;
@@ -40,32 +48,37 @@
         transition: 0.2s;
         }
 
-        h4 {
+        ul {
         font-family: map-get($fonts, "body");
         font-size: 11px;
         color: map-get($colors, "alternative");
-        background-color: map-get($colors, "primary");
         border-radius: 23px;
         padding: 10px 10px;
         position: absolute;
         top: -20px;
         text-align: center;
-        width: 150px;
+        width: 320px;
         transition: 0.2s;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
         }
 
-        p {
+        li {
         position: relative;
         font-family: map-get($fonts, "body");
         font-weight: 500;
-        padding: 0;
+        padding: 2rem;
+        border-radius: 5rem;
+        background-color: map-get($colors, "primary");
         height: max-content;
         text-align: center;
         transition: 0.2s;
-        width: 60%;
+        width: 40%;
         font-size: 1.4rem;
         top: 15%;
-        transform: translateY(-50%);
+        margin: 1rem;
+        text-align: left;
         }
 
         .cta-button {
@@ -92,12 +105,12 @@
             top: -65px;
         }
 
-        h4 {
+        ul {
             background-color: map-get($colors, "alternative");
             color: map-get($colors, "text");
         }
 
-        p {
+        li {
             color: map-get($colors, "alternative");
             font-weight: 800;
         }
@@ -114,10 +127,4 @@
     }
 }
 
-.steps-services{
-    padding: 3rem;
-    h3{
-        white-space: pre-wrap;
-        font-size: 28px;
-    }
-}
+

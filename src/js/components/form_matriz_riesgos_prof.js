@@ -25,40 +25,44 @@ function mockApiResponse(data) {
     });
 }
 
-// Función para procesar los datos
-function procesarDatos(data) {
-    console.log('Datos recibidos para procesar:', JSON.stringify(data, null, 2));
-    const matrizRiesgos = [];
-    const profesiograma = [];
-
-    data.forEach(cargo => {
-        // Obtener los valores numéricos de los niveles
-        const nivelDeficiencia = cargo.niveles.deficiencia ? cargo.niveles.deficiencia.value : 0;
-        const nivelExposicion = cargo.niveles.exposicion ? cargo.niveles.exposicion.value : 0;
-        const nivelConsecuencia = cargo.niveles.consecuencia ? cargo.niveles.consecuencia.value : 0;
-
-        const nivelProbabilidad = nivelDeficiencia * nivelExposicion;
-        const nivelRiesgo = nivelProbabilidad * nivelConsecuencia;
-
-        matrizRiesgos.push({
-            cargo: cargo.cargoName,
-            area: cargo.area,
-            riesgos: cargo.gesSeleccionados,
-            nivelRiesgo: nivelRiesgo,
-            interpretacion: getInterpretacionRiesgo(nivelRiesgo)
-        });
-
-        profesiograma.push({
-            cargo: cargo.cargoName,
-            area: cargo.area,
-            descripcionTareas: cargo.descripcionTareas,
-            riesgos: cargo.gesSeleccionados,
-
-        });
-    });
-
-    return { matrizRiesgos, profesiograma };
-}
+        // Función para procesar los datos
+        function procesarDatos(data) {
+            console.log('Datos recibidos:', JSON.stringify(data, null, 2));
+            const matrizRiesgos = [];
+            const profesiograma = [];
+        
+            data.forEach(cargo => {
+                matrizRiesgos.push({
+                    cargo: cargo.cargoName,
+                    area: cargo.area,
+                    zona: cargo.zona,
+                    descripcionTareas: cargo.descripcionTareas,
+                    caracteristicas: {
+                        tareasRutinarias: cargo.tareasRutinarias,
+                        manipulaAlimentos: cargo.manipulaAlimentos,
+                        trabajaAlturas: cargo.trabajaAlturas,
+                        trabajaEspaciosConfinados: cargo.trabajaEspaciosConfinados
+                    },
+                    gesSeleccionados: cargo.gesSeleccionados
+                });
+        
+                profesiograma.push({
+                    cargo: cargo.cargoName,
+                    area: cargo.area,
+                    zona: cargo.zona,
+                    descripcionTareas: cargo.descripcionTareas,
+                    caracteristicas: {
+                        tareasRutinarias: cargo.tareasRutinarias,
+                        manipulaAlimentos: cargo.manipulaAlimentos,
+                        trabajaAlturas: cargo.trabajaAlturas,
+                        trabajaEspaciosConfinados: cargo.trabajaEspaciosConfinados
+                    },
+                    gesSeleccionados: cargo.gesSeleccionados
+                });
+            });
+        
+            return { matrizRiesgos, profesiograma };
+        }
 
 // Función para interpretar el nivel de riesgo
 function getInterpretacionRiesgo(nivelRiesgo) {
@@ -107,41 +111,60 @@ export function initializeForm() {
     function gatherFormData() {
         const cargosData = [];
         const cargoDivs = cargoContainer.querySelectorAll('.cargo');
+        
         cargoDivs.forEach(cargoDiv => {
             const cargoData = {
                 cargoName: cargoDiv.querySelector('input[name="cargoName"]').value.trim(),
                 area: cargoDiv.querySelector('input[name="area"]').value.trim(),
+                zona: cargoDiv.querySelector('input[name="zona"]').value.trim(),
                 numTrabajadores: cargoDiv.querySelector('input[name="numTrabajadores"]').value,
                 descripcionTareas: cargoDiv.querySelector('textarea[name="descripcionTareas"]').value,
-                niveles: {},
-                gesSeleccionados: [],
-/*                 medidas: [] */
+                gesSeleccionados: []
             };
-            // Recopilar toggles
+    
+            // Recopilar toggles 
             ['tareasRutinarias', 'manipulaAlimentos', 'trabajaAlturas', 'trabajaEspaciosConfinados'].forEach(name => {
                 cargoData[name] = cargoDiv.querySelector(`input[name="${name}"]`).checked;
             });
-            // Recopilar GES seleccionados
+    
+            // Recopilar GES y sus datos asociados
             cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]:checked').forEach(checkbox => {
-                cargoData.gesSeleccionados.push(checkbox.value);
+                const riesgoValue = checkbox.value;
+                try {
+                    // Obtener controles existentes
+                    const controlesData = {
+                        fuente: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || 'Ninguno',
+                        medio: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || 'Ninguno',
+                        individuo: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || 'Ninguno'
+                    };
+    
+                    // Obtener niveles
+                    const nivelesInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-niveles]`);
+                    let niveles = {};
+                    if (nivelesInput && nivelesInput.value) {
+                        try {
+                            niveles = JSON.parse(nivelesInput.value);
+                        } catch (e) {
+                            console.error('Error parsing niveles:', e);
+                            niveles = {};
+                        }
+                    }
+    
+                    const [riesgo, ges] = riesgoValue.split(' - ');
+                    cargoData.gesSeleccionados.push({
+                        riesgo: riesgo,
+                        ges: ges,
+                        controles: controlesData,
+                        niveles: niveles
+                    });
+                } catch (e) {
+                    console.error('Error processing GES:', riesgoValue, e);
+                }
             });
-            // Recopilar medidas
-/*             cargoDiv.querySelectorAll('.medidas-section textarea').forEach(textarea => {
-                cargoData.medidas.push(textarea.value);
-            }); */
-
-            // Recopilar niveles
-            cargoDiv.querySelectorAll('.nivel').forEach(nivelDiv => {
-                const nivelName = nivelDiv.dataset.nivelNombre;
-                const selectedBar = nivelDiv.querySelector('.barra.selected');
-                cargoData.niveles[nivelName] = selectedBar ? {
-                    value: parseInt(selectedBar.dataset.nivel),
-                    label: selectedBar.dataset.label
-                } : null;
-            });
-
+    
             cargosData.push(cargoData);
         });
+    
         return cargosData;
     }
 
@@ -166,8 +189,27 @@ export function initializeForm() {
                 isValid = false;
             }
             // Validaciones adicionales aquí
+            const zonaInput = cargoDiv.querySelector('input[name="zona"]');
+            if (!zonaInput.value.trim()) {
+                alert('Por favor, ingrese la zona o lugar de trabajo.');
+                isValid = false;
+            }
         });
         return isValid;
+    }
+
+
+    function updateNiveles(riesgoValue, cargoDiv, niveles) {
+        let nivelesInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-niveles]`);
+        if (!nivelesInput) {
+            nivelesInput = document.createElement('input');
+            nivelesInput.type = 'hidden';
+            nivelesInput.dataset.riesgo = riesgoValue;
+            nivelesInput.dataset.niveles = true;
+            cargoDiv.appendChild(nivelesInput);
+        }
+        nivelesInput.value = JSON.stringify(niveles);
+        saveData();
     }
 
     // Función para obtener la lista de GES según el riesgo
@@ -270,42 +312,42 @@ export function initializeForm() {
     }
 
     // Función para actualizar el resumen de GES
-    function updateGesResumen(cargoDiv) {
-        const gesResumenDiv = cargoDiv.querySelector('.ges-resumen');
-        if (!gesResumenDiv) {
-            console.error('gesResumenDiv no encontrado en el DOM');
-            return;
-        }
-
-        const gesCheckboxes = cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]:checked');
-        const selectedGes = [];
-        gesCheckboxes.forEach(checkbox => {
-            selectedGes.push(checkbox.value);
-        });
-
-        gesResumenDiv.innerHTML = ''; // Limpiar contenido anterior
-
-        if (selectedGes.length > 0) {
-            selectedGes.forEach(ges => {
-                const gesItem = document.createElement('div');
-                gesItem.classList.add('ges-resumen-item');
-
-                const checkMark = document.createElement('span');
-                checkMark.classList.add('check-mark');
-                checkMark.textContent = '✓';
-
-                const gesText = document.createElement('span');
-                gesText.textContent = ges;
-
-                gesItem.appendChild(checkMark);
-                gesItem.appendChild(gesText);
-
-                gesResumenDiv.appendChild(gesItem);
+        function updateGesResumen(cargoDiv) {
+            const gesResumenDiv = cargoDiv.querySelector('.ges-resumen');
+            if (!gesResumenDiv) {
+                console.error('gesResumenDiv no encontrado en el DOM');
+                return;
+            }
+        
+            const gesCheckboxes = cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]:checked');
+            const selectedGes = [];
+            gesCheckboxes.forEach(checkbox => {
+                selectedGes.push(checkbox.value);
             });
-        } else {
-            gesResumenDiv.textContent = 'No se han seleccionado GES.';
+        
+            gesResumenDiv.innerHTML = '';
+        
+            if (selectedGes.length > 0) {
+                selectedGes.forEach(ges => {
+                    const gesItem = document.createElement('div');
+                    gesItem.classList.add('ges-resumen-item');
+        
+                    const checkMark = document.createElement('span');
+                    checkMark.classList.add('check-mark');
+                    checkMark.textContent = '✓';
+        
+                    const gesText = document.createElement('span');
+                    gesText.textContent = ges;
+        
+                    gesItem.appendChild(checkMark);
+                    gesItem.appendChild(gesText);
+        
+                    gesResumenDiv.appendChild(gesItem);
+                });
+            } else {
+                gesResumenDiv.textContent = 'No se han seleccionado GES.';
+            }
         }
-    }
 
     // Función para agregar un nuevo cargo
     function addCargo(cargoData = {}, isDefault = false) {
@@ -459,6 +501,13 @@ export function initializeForm() {
             saveData();
         }, 300));
 
+        // Input para la zona/lugar
+        const zonaInput = document.createElement('input');
+        zonaInput.type = 'text';
+        zonaInput.name = 'zona';
+        zonaInput.placeholder = 'Ingresa la zona o lugar de trabajo';
+        zonaInput.value = cargoData.zona || '';
+
         // Descripción de las tareas
         const tareasTextarea = document.createElement('textarea');
         tareasTextarea.name = 'descripcionTareas';
@@ -468,6 +517,7 @@ export function initializeForm() {
 
         infoGeneralSection.appendChild(cargoNameInput);
         infoGeneralSection.appendChild(areaInput);
+        infoGeneralSection.appendChild(zonaInput);
         infoGeneralSection.appendChild(tareasTextarea);
 
         // Sección de Toggles
@@ -564,6 +614,281 @@ export function initializeForm() {
         const swiperWrapper = document.createElement('div');
         swiperWrapper.classList.add('swiper-wrapper');
 
+            // Agregamos la función para crear y mostrar el popup:
+            // Reemplaza la función showControlesPopup existente con esta nueva versión
+            function showControlesPopup(riesgoValue, cargoDiv, checkbox) {
+                // Eliminar popup existente si hay uno
+                const existingPopup = document.querySelector('.controles-popup');
+                if (existingPopup) {
+                    existingPopup.remove();
+                }
+
+                // Extraer el riesgo y el GES del valor del checkbox
+                const [riesgo, ges] = riesgoValue.split(' - ');
+
+                // Crear el popup
+                const popup = document.createElement('div');
+                popup.classList.add('controles-popup');
+                
+                // Estructura del popup
+                popup.innerHTML = `
+                    <div class="popup-header">
+                        <h4>${ges}</h4>
+                        <span class="riesgo-label">${riesgo}</span>
+                        <button class="close-popup">&times;</button>
+                    </div>
+                    <div class="popup-content">
+                        <!-- Sección de Controles Existentes -->
+                        <div class="controles-section">
+                            <h5>Controles Existentes</h5>
+                            <div class="control-group">
+                                <label>Fuente:</label>
+                                <input type="text" name="control-fuente" 
+                                    data-riesgo="${riesgoValue}" data-tipo="fuente"
+                                    placeholder="Ninguno" 
+                                    value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || ''}">
+                            </div>
+                            <div class="control-group">
+                                <label>Medio:</label>
+                                <input type="text" name="control-medio"
+                                    data-riesgo="${riesgoValue}" data-tipo="medio"
+                                    placeholder="Ninguno"
+                                    value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || ''}">
+                            </div>
+                            <div class="control-group">
+                                <label>Individuo:</label>
+                                <input type="text" name="control-individuo"
+                                    data-riesgo="${riesgoValue}" data-tipo="individuo"
+                                    placeholder="Ninguno"
+                                    value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || ''}">
+                            </div>
+                        </div>
+
+                        <!-- Sección de Niveles -->
+                        <div class="niveles-section">
+                            <h5>Evaluación de Niveles</h5>
+                            ${generateNivelesHTML(riesgoValue, cargoDiv)}
+                        </div>
+                    </div>
+                `;
+
+                // Posicionar el popup
+                const checkboxRect = checkbox.getBoundingClientRect();
+                popup.style.position = 'absolute';
+                popup.style.top = `${window.scrollY + checkboxRect.top}px`;
+                popup.style.left = `${checkboxRect.right + 20}px`;
+
+                // Eventos
+                const closeBtn = popup.querySelector('.close-popup');
+                closeBtn.addEventListener('click', () => {
+                    popup.remove();
+                });
+
+                // Manejar inputs de controles
+                const inputs = popup.querySelectorAll('.control-group input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => {
+                        const tipo = input.name.split('-')[1];
+                        let controlInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="${tipo}"]`);
+                        
+                        if (!controlInput) {
+                            controlInput = document.createElement('input');
+                            controlInput.type = 'hidden';
+                            controlInput.dataset.riesgo = riesgoValue;
+                            controlInput.dataset.tipo = tipo;
+                            cargoDiv.appendChild(controlInput);
+                        }
+                        
+                        controlInput.value = input.value || 'Ninguno';
+                        saveData();
+                    });
+                });
+
+                // Manejar selección de niveles
+                const barras = popup.querySelectorAll('.barra');
+                barras.forEach(barra => {
+                    barra.addEventListener('click', () => {
+                        const nivelDiv = barra.closest('.nivel');
+                        const nivelName = nivelDiv.dataset.nivelNombre;
+                        
+                        nivelDiv.querySelectorAll('.barra').forEach(b => b.classList.remove('selected'));
+                        barra.classList.add('selected');
+                
+                        // Guardar el nivel seleccionado
+                        const nivelesData = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-niveles]`);
+                        const niveles = nivelesData ? JSON.parse(nivelesData.value || '{}') : {};
+                        
+                        niveles[nivelName] = {
+                            value: parseInt(barra.dataset.nivel),
+                            label: barra.dataset.label
+                        };
+                
+                        updateNiveles(riesgoValue, cargoDiv, niveles);
+                        updateGesResumen(cargoDiv);
+                    });
+                    // Tooltips para las barras
+                    barra.addEventListener('mouseenter', (e) => {
+                        const tooltip = document.createElement('div');
+                        tooltip.classList.add('tooltip');
+                        tooltip.textContent = barra.dataset.descripcion;
+                        document.body.appendChild(tooltip);
+
+                        function positionTooltip(event) {
+                            tooltip.style.left = event.pageX + 10 + 'px';
+                            tooltip.style.top = event.pageY + 10 + 'px';
+                        }
+
+                        positionTooltip(e);
+                        barra.addEventListener('mousemove', positionTooltip);
+
+                        barra.addEventListener('mouseleave', () => {
+                            document.body.removeChild(tooltip);
+                            barra.removeEventListener('mousemove', positionTooltip);
+                        }, { once: true });
+                    });
+                });
+
+                // Click fuera para cerrar
+                document.addEventListener('click', (e) => {
+                    if (!popup.contains(e.target) && !checkbox.contains(e.target)) {
+                        popup.remove();
+                    }
+                });
+
+                document.body.appendChild(popup);
+            }
+
+            // Función auxiliar para generar el HTML de los niveles
+            function generateNivelesHTML(riesgoValue, cargoDiv) {
+                const niveles = [
+                    {
+                        nombre: 'deficiencia',
+                        etiqueta: 'Nivel de Deficiencia',
+                        opciones: [
+                            {
+                                label: 'Bajo (B)',
+                                value: 0,
+                                descripcion: 'No se ha detectado consecuencia alguna, o la eficacia del conjunto de medidas preventivas existentes es alta.',
+                                color: '#4caf50'
+                            },
+                            {
+                                label: 'Medio (M)',
+                                value: 2,
+                                descripcion: 'Se han detectado peligros que pueden dar lugar a consecuencias poco significativas.',
+                                color: '#ffeb3b'
+                            },
+                            {
+                                label: 'Alto (A)',
+                                value: 6,
+                                descripcion: 'Se ha(n) detectado algún(os) peligro(s) que pueden dar lugar a consecuencias significativa(s).',
+                                color: '#ff9800'
+                            },
+                            {
+                                label: 'Muy Alto (MA)',
+                                value: 10,
+                                descripcion: 'Se han detectado peligros que determinan como muy posible la generación de incidentes.',
+                                color: '#f44336'
+                            }
+                        ]
+                    },
+                    {
+                        nombre: 'exposicion',
+                        etiqueta: 'Nivel de Exposición',
+                        opciones: [
+                            {
+                                label: 'Esporádica (EE)',
+                                value: 1,
+                                descripcion: 'La situación de exposición se presenta de manera eventual.',
+                                color: '#4caf50'
+                            },
+                            {
+                                label: 'Ocasional (EO)',
+                                value: 2,
+                                descripcion: 'La situación de exposición se presenta alguna vez durante la jornada laboral y por un periodo de tiempo corto.',
+                                color: '#ffeb3b'
+                            },
+                            {
+                                label: 'Frecuente (EF)',
+                                value: 3,
+                                descripcion: 'La situación de exposición se presenta varias veces durante la jornada laboral por tiempos cortos.',
+                                color: '#ff9800'
+                            },
+                            {
+                                label: 'Continua (EC)',
+                                value: 4,
+                                descripcion: 'La situación de exposición se presenta sin interrupción o varias veces con tiempo prolongado durante la jornada laboral.',
+                                color: '#f44336'
+                            }
+                        ]
+                    },
+                    {
+                        nombre: 'consecuencia',
+                        etiqueta: 'Nivel de Consecuencia',
+                        opciones: [
+                            {
+                                label: 'Leve (L)',
+                                value: 10,
+                                descripcion: 'Lesiones o enfermedades que no requieren incapacidad.',
+                                color: '#4caf50'
+                            },
+                            {
+                                label: 'Grave (G)',
+                                value: 25,
+                                descripcion: 'Lesiones o enfermedades con incapacidad laboral temporal.',
+                                color: '#ffeb3b'
+                            },
+                            {
+                                label: 'Muy Grave (MG)',
+                                value: 60,
+                                descripcion: 'Lesiones o enfermedades graves irreparables.',
+                                color: '#ff9800'
+                            },
+                            {
+                                label: 'Mortal (M)',
+                                value: 100,
+                                descripcion: 'Muerte.',
+                                color: '#f44336'
+                            }
+                        ]
+                    }
+                ];
+
+                return niveles.map(nivel => `
+                    <div class="nivel" data-nivel-nombre="${nivel.nombre}">
+                        <label>${nivel.etiqueta}</label>
+                        <div class="barras">
+                            ${nivel.opciones.map(opcion => `
+                                <div class="barra${getNivelSeleccionado(riesgoValue, nivel.nombre, opcion.value, cargoDiv) ? ' selected' : ''}"
+                                    style="background-color: ${opcion.color}"
+                                    data-nivel="${opcion.value}"
+                                    data-label="${opcion.label}"
+                                    data-descripcion="${opcion.descripcion}"
+                                    tabindex="0"
+                                    role="button"
+                                    aria-label="${opcion.label}">
+                                    <span class="barra-label">${opcion.label}</span>
+                                    <span class="check-icon">✓</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Función auxiliar para determinar si un nivel está seleccionado
+            function getNivelSeleccionado(riesgoValue, nivelNombre, valor, cargoDiv) {
+                const nivelesData = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-niveles]`);
+                if (!nivelesData) return false;
+                
+                try {
+                    const niveles = JSON.parse(nivelesData.value);
+                    return niveles[nivelNombre]?.value === valor;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+
         riesgos.forEach(riesgo => {
             const swiperSlide = document.createElement('div');
             swiperSlide.classList.add('swiper-slide');
@@ -581,6 +906,8 @@ export function initializeForm() {
             const gesListDiv = document.createElement('div');
             gesListDiv.classList.add('ges-list');
 
+
+
             gesList.forEach(ges => {
                 const gesCheckbox = document.createElement('input');
                 gesCheckbox.type = 'checkbox';
@@ -592,9 +919,14 @@ export function initializeForm() {
                 }
 
                 gesCheckbox.addEventListener('change', () => {
+                    if (gesCheckbox.checked) {
+                        showControlesPopup(gesCheckbox.value, cargoDiv, gesCheckbox);
+                    }
                     updateGesResumen(cargoDiv);
                     saveData();
                 });
+
+                
 
                 const gesLabel = document.createElement('label');
                 gesLabel.textContent = ges;
@@ -651,201 +983,12 @@ export function initializeForm() {
         const gesResumenDiv = document.createElement('div');
         gesResumenDiv.classList.add('ges-resumen');
 
-        // Sección de Barras de Niveles
-        const nivelesSection = document.createElement('div');
-        nivelesSection.classList.add('niveles-section');
-
-        // Definición de los niveles y sus opciones
-        const niveles = [
-            {
-                nombre: 'deficiencia',
-                etiqueta: 'Nivel de Deficiencia de Control del Riesgo',
-                opciones: [
-                    {
-                        label: 'Bajo (B)',
-                        value: 0,
-                        descripcion: 'No se ha detectado consecuencia alguna, o la eficacia del conjunto de medidas preventivas existentes es alta, o ambos. El riesgo está controlado.'
-                    },
-                    {
-                        label: 'Medio (M)',
-                        value: 2,
-                        descripcion: 'Se han detectado peligros que pueden dar lugar a consecuencias poco significativas o de menor importancia, o la eficacia del conjunto de medidas preventivas existentes es moderada, o ambos.'
-                    },
-                    {
-                        label: 'Alto (A)',
-                        value: 6,
-                        descripcion: 'Se ha(n) detectado algún(os) peligro(s) que pueden dar lugar a consecuencias significativa(s), o la eficacia del conjunto de medidas preventivas existentes es baja, o ambos.'
-                    },
-                    {
-                        label: 'Muy Alto (MA)',
-                        value: 10,
-                        descripcion: 'Se ha(n) detectado peligro(s) que determina(n) como posible la generación de incidentes o consecuencias muy significativas, o la eficacia del conjunto de medidas preventivas existentes respecto al riesgo es nula o no existe, o ambos.'
-                    }
-                ]
-            },
-            {
-                nombre: 'exposicion',
-                etiqueta: 'Nivel de Exposición a los Riesgos',
-                opciones: [
-                    {
-                        label: 'Esporádica (EE)',
-                        value: 1,
-                        descripcion: 'La situación de exposición se presenta de manera eventual.'
-                    },
-                    {
-                        label: 'Ocasional (EO)',
-                        value: 2,
-                        descripcion: 'La situación de exposición se presenta alguna vez durante la jornada laboral y por un periodo de tiempo corto.'
-                    },
-                    {
-                        label: 'Frecuente (EF)',
-                        value: 3,
-                        descripcion: 'La situación de exposición se presenta varias veces durante la jornada laboral por tiempos cortos.'
-                    },
-                    {
-                        label: 'Continua (EC)',
-                        value: 4,
-                        descripcion: 'La situación de exposición se presenta sin interrupción o varias veces con tiempo prolongado durante la jornada laboral.'
-                    }
-                ]
-            },
-            {
-                nombre: 'consecuencia',
-                etiqueta: 'Nivel de Consecuencia del Riesgo',
-                opciones: [
-                    {
-                        label: 'Leve (L)',
-                        value: 10,
-                        descripcion: 'Lesiones o enfermedades que no requieren incapacidad.'
-                    },
-                    {
-                        label: 'Grave (G)',
-                        value: 25,
-                        descripcion: 'Lesiones o enfermedades con incapacidad laboral temporal (ILT).'
-                    },
-                    {
-                        label: 'Muy Grave (MG)',
-                        value: 60,
-                        descripcion: 'Lesiones o enfermedades graves irreparables (incapacidad permanente, parcial o invalidez).'
-                    },
-                    {
-                        label: 'Mortal (M)',
-                        value: 100,
-                        descripcion: 'Pueden ocurrir resultados mortales.'
-                    }
-                ]
-            }
-        ];
-
-        // Generar las barras de niveles
-        niveles.forEach(nivel => {
-            const nivelDiv = document.createElement('div');
-            nivelDiv.classList.add('nivel');
-            nivelDiv.dataset.nivelNombre = nivel.nombre;
-
-            const nivelLabel = document.createElement('label');
-            nivelLabel.textContent = nivel.etiqueta;
-            nivelDiv.appendChild(nivelLabel);
-
-            const barrasDiv = document.createElement('div');
-            barrasDiv.classList.add('barras');
-
-            // Colores para las barras (del riesgo más alto al más bajo)
-            const colores = ['#4caf50', '#ffeb3b', '#ff9800', '#f44336'];
-
-            nivel.opciones.forEach((opcion, index) => {
-                const barra = document.createElement('div');
-                barra.classList.add('barra');
-                barra.style.backgroundColor = colores[index];
-                barra.dataset.nivel = opcion.value; // Valor numérico
-                barra.dataset.label = opcion.label; // Etiqueta
-                barra.dataset.descripcion = opcion.descripcion; // Descripción
-                barra.setAttribute('tabindex', '0');
-                barra.setAttribute('role', 'button');
-                barra.setAttribute('aria-label', opcion.label);
-
-                // Mostrar como seleccionado si corresponde
-                if (cargoData.niveles && cargoData.niveles[nivel.nombre] && cargoData.niveles[nivel.nombre].value == opcion.value) {
-                    barra.classList.add('selected');
-                }
-
-                const barraLabel = document.createElement('span');
-                barraLabel.classList.add('barra-label');
-                barraLabel.textContent = opcion.label;
-
-                const checkIcon = document.createElement('span');
-                checkIcon.classList.add('check-icon');
-                checkIcon.textContent = '✓';
-
-                barra.appendChild(barraLabel);
-                barra.appendChild(checkIcon);
-
-                // Evento de selección
-                barra.addEventListener('click', () => {
-                    nivelDiv.querySelectorAll('.barra').forEach(b => b.classList.remove('selected'));
-                    barra.classList.add('selected');
-                    cargoData.niveles[nivel.nombre] = {
-                        value: opcion.value,
-                        label: opcion.label
-                    };
-                    saveData();
-                });
-
-                // Evento para mostrar descripción en tooltip al hacer hover
-                barra.addEventListener('mouseenter', (e) => {
-                    const tooltip = document.createElement('div');
-                    tooltip.classList.add('tooltip');
-                    tooltip.textContent = opcion.descripcion;
-                    document.body.appendChild(tooltip);
-
-                    function positionTooltip(event) {
-                        tooltip.style.left = event.pageX + 10 + 'px';
-                        tooltip.style.top = event.pageY + 10 + 'px';
-                    }
-
-                    positionTooltip(e);
-
-                    barra.addEventListener('mousemove', positionTooltip);
-
-                    barra.addEventListener('mouseleave', () => {
-                        document.body.removeChild(tooltip);
-                        barra.removeEventListener('mousemove', positionTooltip);
-                    }, { once: true });
-                });
-
-                barrasDiv.appendChild(barra);
-            });
-
-            nivelDiv.appendChild(barrasDiv);
-            nivelesSection.appendChild(nivelDiv);
-        });
-
-        // Sección de Acciones a Tomar
-/*         const medidasSection = document.createElement('div');
-        medidasSection.classList.add('medidas-section');
-
-        const medidasTitles = [
-            'Medidas para eliminar riesgos',
-            'Medidas que tomarás para sustituir fuentes de riesgos',
-            'Medidas que tomarás en infraestructura para eliminar fuentes de riesgo'
-        ];
-
-        medidasTitles.forEach((titulo, index) => {
-            const medidaTextarea = document.createElement('textarea');
-            medidaTextarea.name = `medida${index + 1}`;
-            medidaTextarea.placeholder = titulo;
-            medidaTextarea.value = cargoData.medidas ? cargoData.medidas[index] || '' : '';
-            medidaTextarea.addEventListener('input', debounce(saveData, 300));
-
-            medidasSection.appendChild(medidaTextarea);
-        }); */
-
-        // Añadir secciones al cuerpo del cargo en el orden correcto
+        
         cargoBody.appendChild(infoGeneralSection);
         cargoBody.appendChild(togglesSection);
         cargoBody.appendChild(riesgosSection);
         cargoBody.appendChild(gesResumenDiv);
-        cargoBody.appendChild(nivelesSection);
+
 /*         cargoBody.appendChild(medidasSection); */
 
         // Añadir encabezado y cuerpo al div del cargo
@@ -876,21 +1019,31 @@ export function initializeForm() {
     });
 
     // Envío del formulario
-    matrizRiesgosForm.addEventListener('submit', async (e) => {
+    async function handleSubmit(e) {
         e.preventDefault();
-        if (validateForm()) {
+        if (!validateForm()) return;
+    
+        try {
             const formData = gatherFormData();
-            try {
-                // Usa mockApiResponse en lugar de axios.post
-                const response = await mockApiResponse(formData);
-                console.log('Respuesta de la API:', response.data);
-                mostrarResultados(response.data);
-                alert('Matriz de Riesgos y Profesiograma generados correctamente.');
-                localStorage.removeItem('matrizRiesgosData');
-            } catch (error) {
-                alert('Hubo un error al procesar los datos.');
-                console.error(error);
+            console.log('Datos recopilados:', formData);
+    
+            // Validar que hay al menos un GES seleccionado
+            const hasGES = formData.some(cargo => cargo.gesSeleccionados.length > 0);
+            if (!hasGES) {
+                alert('Debe seleccionar al menos un GES para continuar.');
+                return;
             }
+    
+            const response = await mockApiResponse(formData);
+            console.log('Respuesta de la API:', response.data);
+            mostrarResultados(response.data);
+            alert('Matriz de Riesgos y Profesiograma generados correctamente.');
+            localStorage.removeItem('matrizRiesgosData');
+        } catch (error) {
+            console.error('Error al procesar el formulario:', error);
+            alert('Hubo un error al procesar los datos.');
         }
-    });
+    }
+    
+    matrizRiesgosForm.addEventListener('submit', handleSubmit);
 }
