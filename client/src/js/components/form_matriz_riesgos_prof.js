@@ -2,6 +2,7 @@
 
 import canecaIcon from '../../assets/images/caneca.svg';
 import axios from 'axios';
+import { initContactForm } from './informacion_de_contacto.js';
 
 // Importar Swiper y los módulos necesarios
 import Swiper from 'swiper/bundle';
@@ -165,7 +166,9 @@ export function initializeForm() {
             cargosData.push(cargoData);
         });
     
-        return cargosData;
+        return {
+            cargos: cargosData
+        };
     }
 
     // Función para validar el formulario
@@ -1019,29 +1022,59 @@ export function initializeForm() {
     });
 
     // Envío del formulario
+    const API_URL = 'http://localhost:3000';
     async function handleSubmit(e) {
         e.preventDefault();
         if (!validateForm()) return;
     
         try {
+            // Recopilamos los datos del formulario
             const formData = gatherFormData();
-            console.log('Datos recopilados:', formData);
+            console.log('Datos que se enviarán al servidor:', JSON.stringify(formData, null, 2));
+
+                    // Verificamos que los datos tengan la estructura correcta antes de enviar
+                    if (!formData.cargos || !Array.isArray(formData.cargos) || formData.cargos.length === 0) {
+                        throw new Error('Debe incluir al menos un cargo con sus datos');
+                    }
+
     
-            // Validar que hay al menos un GES seleccionado
-            const hasGES = formData.some(cargo => cargo.gesSeleccionados.length > 0);
-            if (!hasGES) {
-                alert('Debe seleccionar al menos un GES para continuar.');
-                return;
+            // Enviamos directamente al endpoint de generación de matriz
+            const response = await fetch('http://localhost:3000/api/matriz-riesgos/generar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                },
+                body: JSON.stringify(formData)
+            });
+    
+            if (!response.ok) {
+                            // Intentamos obtener más información sobre el error
+            const errorText = await response.text();
+            console.error('Error del servidor:', {
+                status: response.status,
+                statusText: response.statusText,
+                errorDetails: errorText
+            });
+            throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
             }
     
-            const response = await mockApiResponse(formData);
-            console.log('Respuesta de la API:', response.data);
-            mostrarResultados(response.data);
-            alert('Matriz de Riesgos y Profesiograma generados correctamente.');
-            localStorage.removeItem('matrizRiesgosData');
+            // Descargamos el archivo Excel generado
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'matriz-riesgos.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+    
+            alert('¡Matriz de riesgos generada exitosamente!');
+            
         } catch (error) {
-            console.error('Error al procesar el formulario:', error);
-            alert('Hubo un error al procesar los datos.');
+            console.error('Error detallado:', error);
+            alert(`Error al generar la matriz: ${error.message}`);
         }
     }
     

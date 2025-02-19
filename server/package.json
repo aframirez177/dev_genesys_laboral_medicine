@@ -1,0 +1,38 @@
+{
+    "name": "genesys-server",
+    "version": "1.0.0",
+    "description": "Backend para Genesys Laboral Medicine",
+    "main": "src/app.js",
+    "type": "module",
+    "scripts": {
+        "clean": "node ../scripts/clean-ports.js",
+        "clean:win": "netstat -ano | findstr :3000 && taskkill /F /PID <PID>",
+        "start": "node src/app.js",
+        "dev": "nodemon src/app.js",
+        "server:dev": "nodemon",
+        "client:dev": "cd client && npm run dev",
+        "test": "jest",
+        "lint": "eslint .",
+        "build": "npm run client:build && npm run server:build",
+        "client:build": "cd client && npm run build",
+        "server:build": "cd server && npm run build"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "compression": "^1.7.4",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.7",
+        "exceljs": "^4.4.0",
+        "express": "^4.21.2",
+        "express-rate-limit": "^7.1.5",
+        "helmet": "^7.1.0",
+        "joi": "^17.11.0",
+        "jsonwebtoken": "^9.0.2",
+        "morgan": "^1.10.0",
+        "mysql2": "^3.6.5"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "nodemon": "^3.0.2"
+    }
+}
