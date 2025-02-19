@@ -11,6 +11,7 @@ export async function generarMatrizExcel(datosFormulario) {
     worksheet.columns = [
         { header: 'Proceso', key: 'proceso', width: 20 },
         { header: 'Proceso/Zona/Lugar', key: 'zona', width: 20 },
+        { header: 'Actividades', key: 'actividades', width: 25 },
         { header: 'Actividades/Tareas', key: 'tareas', width: 25 },
         { header: 'Rutinario (Si/No)', key: 'rutinario', width: 15 },
         { header: 'Peligro - Descripción', key: 'peligro', width: 30 },
@@ -61,6 +62,7 @@ export async function generarMatrizExcel(datosFormulario) {
             worksheet.addRow({
                 proceso: cargo.area,
                 zona: cargo.zona,
+                actividades: cargo.cargoName,
                 tareas: cargo.descripcionTareas,
                 rutinario: cargo.tareasRutinarias ? 'Si' : 'No',
                 peligro: ges.ges,
