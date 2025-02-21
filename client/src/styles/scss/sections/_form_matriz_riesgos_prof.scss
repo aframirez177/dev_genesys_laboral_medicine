@@ -663,3 +663,35 @@
         }
     }
 }
+
+.restore-banner {
+  background-color: #e0f7fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 15px;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  .banner-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .banner-message {
+          font-family: map-get($fonts, "body");
+          font-size: 1.4rem;
+          color: map-get($colors, "secondary");
+      }
+
+      .banner-actions {
+          display: flex;
+          gap: 10px;
+          justify-content: flex-end;
+
+          button {
+              padding: 8px 16px;
+              font-size: 1.2rem;
+          }
+      }
+  }
+}

@@ -93,6 +93,56 @@ export function initializeForm() {
 
     let cargoCount = 0;
 
+    // Estructura para almacenar valores históricos
+    const historicalValues = {
+        cargos: new Set(),
+        areas: new Set(),
+        zonas: new Set(),
+        controles: {
+            fuente: new Set(),
+            medio: new Set(),
+            individuo: new Set()
+        }
+    };
+    
+    // Recuperar valores históricos del localStorage si existen
+    try {
+        const savedHistorical = localStorage.getItem('historicalValues');
+        if (savedHistorical) {
+            const parsed = JSON.parse(savedHistorical);
+            historicalValues.cargos = new Set(parsed.cargos);
+            historicalValues.areas = new Set(parsed.areas);
+            historicalValues.zonas = new Set(parsed.zonas);
+            historicalValues.controles.fuente = new Set(parsed.controles.fuente);
+            historicalValues.controles.medio = new Set(parsed.controles.medio);
+            historicalValues.controles.individuo = new Set(parsed.controles.individuo);
+        }
+    } catch (error) {
+        console.error('Error loading historical values:', error);
+    }
+
+    //funcion helper
+
+    function createDatalist(id, values) {
+        let datalist = document.getElementById(id);
+        if (!datalist) {
+            datalist = document.createElement('datalist');
+            datalist.id = id;
+            document.body.appendChild(datalist);
+        }
+        datalist.innerHTML = Array.from(values)
+            .map(value => `<option value="${value}">`)
+            .join('');
+        return datalist;
+    }
+    
+    function updateDatalist(input, values, datalistId) {
+        const datalist = createDatalist(datalistId, values);
+        input.setAttribute('list', datalistId);
+    }
+
+
+
     // Función debounce
     function debounce(func, wait = 300) {
         let timeout;
@@ -105,7 +155,32 @@ export function initializeForm() {
     // Función para guardar datos en localStorage
     function saveData() {
         const cargosData = gatherFormData();
+        
+        // Guardar datos del formulario
         localStorage.setItem('matrizRiesgosData', JSON.stringify(cargosData));
+        
+        // Guardar valores históricos
+        const historicalToSave = {
+            cargos: Array.from(historicalValues.cargos),
+            areas: Array.from(historicalValues.areas),
+            zonas: Array.from(historicalValues.zonas),
+            controles: {
+                fuente: Array.from(historicalValues.controles.fuente),
+                medio: Array.from(historicalValues.controles.medio),
+                individuo: Array.from(historicalValues.controles.individuo)
+            }
+        };
+        
+        // Añadir timestamp para manejo de expiración (48 horas)
+        historicalToSave.timestamp = Date.now();
+        
+        localStorage.setItem('historicalValues', JSON.stringify(historicalToSave));
+    }
+
+    // Función auxiliar para verificar expiración
+    function checkExpiration(timestamp) {
+        const HOURS_48 = 48 * 60 * 60 * 1000; // 48 horas en milisegundos
+        return Date.now() - timestamp > HOURS_48;
     }
 
     // Función para recopilar datos del formulario
@@ -484,12 +559,22 @@ export function initializeForm() {
         cargoNameInput.name = 'cargoName';
         cargoNameInput.placeholder = 'Ingresa el nombre del cargo';
         cargoNameInput.value = cargoData.cargoName || '';
+        updateDatalist(cargoNameInput, historicalValues.cargos, 'cargos-datalist');
 
-        // Actualizar el título del cargo dinámicamente
-        cargoNameInput.addEventListener('input', debounce(() => {
+        // Actualizar título mientras escribe
+        cargoNameInput.addEventListener('input', () => {
             cargoTitle.textContent = cargoNameInput.value || `Cargo #${cargoCount}`;
+            updateDatalist(cargoNameInput, historicalValues.cargos, 'cargos-datalist');
+        });
+
+        // Guardar cuando pierde el foco
+        cargoNameInput.addEventListener('blur', () => {
+            if (cargoNameInput.value.trim()) {
+                historicalValues.cargos.add(cargoNameInput.value.trim());
+                updateDatalist(cargoNameInput, historicalValues.cargos, 'cargos-datalist');
+            }
             saveData();
-        }, 300));
+        });
 
         // Input para el área
         const areaInput = document.createElement('input');
@@ -497,12 +582,22 @@ export function initializeForm() {
         areaInput.name = 'area';
         areaInput.placeholder = 'Ingresa el área';
         areaInput.value = cargoData.area || '';
+        updateDatalist(areaInput, historicalValues.areas, 'areas-datalist');
 
-        // Actualizar la etiqueta de área dinámicamente
-        areaInput.addEventListener('input', debounce(() => {
+        // Actualizar etiqueta mientras escribe
+        areaInput.addEventListener('input', () => {
             areaLabel.textContent = areaInput.value || 'Área';
+            updateDatalist(areaInput, historicalValues.areas, 'areas-datalist');
+        });
+
+        // Guardar cuando pierde el foco
+        areaInput.addEventListener('blur', () => {
+            if (areaInput.value.trim()) {
+                historicalValues.areas.add(areaInput.value.trim());
+                updateDatalist(areaInput, historicalValues.areas, 'areas-datalist');
+            }
             saveData();
-        }, 300));
+        });
 
         // Input para la zona/lugar
         const zonaInput = document.createElement('input');
@@ -510,6 +605,21 @@ export function initializeForm() {
         zonaInput.name = 'zona';
         zonaInput.placeholder = 'Ingresa la zona o lugar de trabajo';
         zonaInput.value = cargoData.zona || '';
+        updateDatalist(zonaInput, historicalValues.zonas, 'zonas-datalist');
+
+        // Actualizar sugerencias mientras escribe
+        zonaInput.addEventListener('input', () => {
+            updateDatalist(zonaInput, historicalValues.zonas, 'zonas-datalist');
+        });
+
+        // Guardar cuando pierde el foco
+        zonaInput.addEventListener('blur', () => {
+            if (zonaInput.value.trim()) {
+                historicalValues.zonas.add(zonaInput.value.trim());
+                updateDatalist(zonaInput, historicalValues.zonas, 'zonas-datalist');
+            }
+            saveData();
+        });
 
         // Descripción de las tareas
         const tareasTextarea = document.createElement('textarea');
@@ -617,149 +727,197 @@ export function initializeForm() {
         const swiperWrapper = document.createElement('div');
         swiperWrapper.classList.add('swiper-wrapper');
 
-            // Agregamos la función para crear y mostrar el popup:
-            // Reemplaza la función showControlesPopup existente con esta nueva versión
-            function showControlesPopup(riesgoValue, cargoDiv, checkbox) {
-                // Eliminar popup existente si hay uno
-                const existingPopup = document.querySelector('.controles-popup');
-                if (existingPopup) {
-                    existingPopup.remove();
-                }
-
-                // Extraer el riesgo y el GES del valor del checkbox
-                const [riesgo, ges] = riesgoValue.split(' - ');
-
-                // Crear el popup
-                const popup = document.createElement('div');
-                popup.classList.add('controles-popup');
-                
-                // Estructura del popup
-                popup.innerHTML = `
-                    <div class="popup-header">
-                        <h4>${ges}</h4>
-                        <span class="riesgo-label">${riesgo}</span>
-                        <button class="close-popup">&times;</button>
-                    </div>
-                    <div class="popup-content">
-                        <!-- Sección de Controles Existentes -->
-                        <div class="controles-section">
-                            <h5>Controles Existentes</h5>
-                            <div class="control-group">
-                                <label>Fuente:</label>
-                                <input type="text" name="control-fuente" 
-                                    data-riesgo="${riesgoValue}" data-tipo="fuente"
-                                    placeholder="Ninguno" 
-                                    value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || ''}">
-                            </div>
-                            <div class="control-group">
-                                <label>Medio:</label>
-                                <input type="text" name="control-medio"
-                                    data-riesgo="${riesgoValue}" data-tipo="medio"
-                                    placeholder="Ninguno"
-                                    value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || ''}">
-                            </div>
-                            <div class="control-group">
-                                <label>Individuo:</label>
-                                <input type="text" name="control-individuo"
-                                    data-riesgo="${riesgoValue}" data-tipo="individuo"
-                                    placeholder="Ninguno"
-                                    value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || ''}">
-                            </div>
-                        </div>
-
-                        <!-- Sección de Niveles -->
-                        <div class="niveles-section">
-                            <h5>Evaluación de Niveles</h5>
-                            ${generateNivelesHTML(riesgoValue, cargoDiv)}
-                        </div>
-                    </div>
-                `;
-
-                // Posicionar el popup
-                const checkboxRect = checkbox.getBoundingClientRect();
-                popup.style.position = 'absolute';
-                popup.style.top = `${window.scrollY + checkboxRect.top}px`;
-                popup.style.left = `${checkboxRect.right + 20}px`;
-
-                // Eventos
-                const closeBtn = popup.querySelector('.close-popup');
-                closeBtn.addEventListener('click', () => {
-                    popup.remove();
-                });
-
-                // Manejar inputs de controles
-                const inputs = popup.querySelectorAll('.control-group input');
-                inputs.forEach(input => {
-                    input.addEventListener('input', () => {
-                        const tipo = input.name.split('-')[1];
-                        let controlInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="${tipo}"]`);
-                        
-                        if (!controlInput) {
-                            controlInput = document.createElement('input');
-                            controlInput.type = 'hidden';
-                            controlInput.dataset.riesgo = riesgoValue;
-                            controlInput.dataset.tipo = tipo;
-                            cargoDiv.appendChild(controlInput);
-                        }
-                        
-                        controlInput.value = input.value || 'Ninguno';
-                        saveData();
-                    });
-                });
-
-                // Manejar selección de niveles
-                const barras = popup.querySelectorAll('.barra');
-                barras.forEach(barra => {
-                    barra.addEventListener('click', () => {
-                        const nivelDiv = barra.closest('.nivel');
-                        const nivelName = nivelDiv.dataset.nivelNombre;
-                        
-                        nivelDiv.querySelectorAll('.barra').forEach(b => b.classList.remove('selected'));
-                        barra.classList.add('selected');
-                
-                        // Guardar el nivel seleccionado
-                        const nivelesData = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-niveles]`);
-                        const niveles = nivelesData ? JSON.parse(nivelesData.value || '{}') : {};
-                        
-                        niveles[nivelName] = {
-                            value: parseInt(barra.dataset.nivel),
-                            label: barra.dataset.label
-                        };
-                
-                        updateNiveles(riesgoValue, cargoDiv, niveles);
-                        updateGesResumen(cargoDiv);
-                    });
-                    // Tooltips para las barras
-                    barra.addEventListener('mouseenter', (e) => {
-                        const tooltip = document.createElement('div');
-                        tooltip.classList.add('tooltip');
-                        tooltip.textContent = barra.dataset.descripcion;
-                        document.body.appendChild(tooltip);
-
-                        function positionTooltip(event) {
-                            tooltip.style.left = event.pageX + 10 + 'px';
-                            tooltip.style.top = event.pageY + 10 + 'px';
-                        }
-
-                        positionTooltip(e);
-                        barra.addEventListener('mousemove', positionTooltip);
-
-                        barra.addEventListener('mouseleave', () => {
-                            document.body.removeChild(tooltip);
-                            barra.removeEventListener('mousemove', positionTooltip);
-                        }, { once: true });
-                    });
-                });
-
-                // Click fuera para cerrar
-                document.addEventListener('click', (e) => {
-                    if (!popup.contains(e.target) && !checkbox.contains(e.target)) {
-                        popup.remove();
-                    }
-                });
-
-                document.body.appendChild(popup);
+        
+        
+        function createDatalist(id, values) {
+            let datalist = document.getElementById(id);
+            if (!datalist) {
+                datalist = document.createElement('datalist');
+                datalist.id = id;
+                document.body.appendChild(datalist);
             }
+            datalist.innerHTML = Array.from(values)
+                .map(value => `<option value="${value}">`)
+                .join('');
+            return datalist;
+        }
+        
+        function updateDatalist(input, values, datalistId) {
+            const datalist = createDatalist(datalistId, values);
+            input.setAttribute('list', datalistId);
+        }
+        
+        // Agregamos la función para crear y mostrar el popup:
+        // función showControlesPopup existente con esta nueva versión
+        
+        function showControlesPopup(riesgoValue, cargoDiv, checkbox) {
+            // Eliminar popup existente si hay uno
+            const existingPopup = document.querySelector('.controles-popup');
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+        
+            // Extraer el riesgo y el GES del valor del checkbox
+            const [riesgo, ges] = riesgoValue.split(' - ');
+        
+            // Crear el popup
+            const popup = document.createElement('div');
+            popup.classList.add('controles-popup');
+            
+            // Asegurar que existen los datalists
+            createDatalist('fuente-datalist', historicalValues.controles.fuente);
+            createDatalist('medio-datalist', historicalValues.controles.medio);
+            createDatalist('individuo-datalist', historicalValues.controles.individuo);
+        
+            // Estructura del popup
+            popup.innerHTML = `
+                <div class="popup-header">
+                    <h4>${ges}</h4>
+                    <span class="riesgo-label">${riesgo}</span>
+                    <button class="close-popup">&times;</button>
+                </div>
+                <div class="popup-content">
+                    <div class="controles-section">
+                        <h5>Controles Existentes</h5>
+                        <div class="control-group">
+                            <label>Fuente:</label>
+                            <input type="text" 
+                                name="control-fuente" 
+                                data-riesgo="${riesgoValue}" 
+                                data-tipo="fuente"
+                                placeholder="Ninguno" 
+                                list="fuente-datalist"
+                                value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || ''}">
+                        </div>
+                        <div class="control-group">
+                            <label>Medio:</label>
+                            <input type="text" 
+                                name="control-medio"
+                                data-riesgo="${riesgoValue}" 
+                                data-tipo="medio"
+                                placeholder="Ninguno"
+                                list="medio-datalist"
+                                value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || ''}">
+                        </div>
+                        <div class="control-group">
+                            <label>Individuo:</label>
+                            <input type="text" 
+                                name="control-individuo"
+                                data-riesgo="${riesgoValue}" 
+                                data-tipo="individuo"
+                                placeholder="Ninguno"
+                                list="individuo-datalist"
+                                value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || ''}">
+                        </div>
+                    </div>
+        
+                    <!-- Sección de Niveles -->
+                    <div class="niveles-section">
+                        <h5>Evaluación de Niveles</h5>
+                        ${generateNivelesHTML(riesgoValue, cargoDiv)}
+                    </div>
+                </div>`;
+        
+            // Posicionar el popup
+            const checkboxRect = checkbox.getBoundingClientRect();
+            popup.style.position = 'absolute';
+            popup.style.top = `${window.scrollY + checkboxRect.top}px`;
+            popup.style.left = `${checkboxRect.right + 20}px`;
+        
+            // Configurar eventos
+            const closeBtn = popup.querySelector('.close-popup');
+            closeBtn.addEventListener('click', () => {
+                popup.remove();
+            });
+        
+            // Configurar eventos para los inputs de controles
+            const inputs = popup.querySelectorAll('.control-group input');
+inputs.forEach(input => {
+    // Mostrar sugerencias mientras escribe (sin guardar)
+    input.addEventListener('input', () => {
+        const tipo = input.name.split('-')[1];
+        updateDatalist(input, historicalValues.controles[tipo], `${tipo}-datalist`);
+    });
+
+            // Guardar solo cuando el input pierde el foco
+            input.addEventListener('blur', () => {
+                const tipo = input.name.split('-')[1];
+                let controlInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="${tipo}"]`);
+                
+                if (!controlInput) {
+                    controlInput = document.createElement('input');
+                    controlInput.type = 'hidden';
+                    controlInput.dataset.riesgo = riesgoValue;
+                    controlInput.dataset.tipo = tipo;
+                    cargoDiv.appendChild(controlInput);
+                }
+                
+                const value = input.value.trim();
+                if (value && value !== 'Ninguno') {
+                    // Actualizar valores históricos
+                    historicalValues.controles[tipo].add(value);
+                    // Actualizar datalist correspondiente
+                    updateDatalist(input, historicalValues.controles[tipo], `${tipo}-datalist`);
+                }
+                
+                controlInput.value = value || 'Ninguno';
+                saveData();
+            });
+        });
+        
+            // Configurar las barras de niveles y sus eventos
+            const barras = popup.querySelectorAll('.barra');
+            barras.forEach(barra => {
+                barra.addEventListener('click', () => {
+                    const nivelDiv = barra.closest('.nivel');
+                    const nivelName = nivelDiv.dataset.nivelNombre;
+                    
+                    nivelDiv.querySelectorAll('.barra').forEach(b => b.classList.remove('selected'));
+                    barra.classList.add('selected');
+            
+                    const nivelesData = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-niveles]`);
+                    const niveles = nivelesData ? JSON.parse(nivelesData.value || '{}') : {};
+                    
+                    niveles[nivelName] = {
+                        value: parseInt(barra.dataset.nivel),
+                        label: barra.dataset.label
+                    };
+            
+                    updateNiveles(riesgoValue, cargoDiv, niveles);
+                    updateGesResumen(cargoDiv);
+                });
+        
+                // Tooltips para las barras
+                barra.addEventListener('mouseenter', (e) => {
+                    const tooltip = document.createElement('div');
+                    tooltip.classList.add('tooltip');
+                    tooltip.textContent = barra.dataset.descripcion;
+                    document.body.appendChild(tooltip);
+        
+                    function positionTooltip(event) {
+                        tooltip.style.left = event.pageX + 10 + 'px';
+                        tooltip.style.top = event.pageY + 10 + 'px';
+                    }
+        
+                    positionTooltip(e);
+                    barra.addEventListener('mousemove', positionTooltip);
+        
+                    barra.addEventListener('mouseleave', () => {
+                        document.body.removeChild(tooltip);
+                        barra.removeEventListener('mousemove', positionTooltip);
+                    }, { once: true });
+                });
+            });
+        
+            // Click fuera para cerrar
+            document.addEventListener('click', (e) => {
+                if (!popup.contains(e.target) && !checkbox.contains(e.target)) {
+                    popup.remove();
+                }
+            });
+        
+            document.body.appendChild(popup);
+        }
 
             // Función auxiliar para generar el HTML de los niveles
             function generateNivelesHTML(riesgoValue, cargoDiv) {
