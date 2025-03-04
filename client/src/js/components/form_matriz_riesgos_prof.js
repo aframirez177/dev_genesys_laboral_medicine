@@ -1,89 +1,17 @@
 // src/js/components/form_matriz_riesgos_prof.js
 
 import canecaIcon from '../../assets/images/caneca.svg';
-import axios from 'axios';
-import { initContactForm } from './informacion_de_contacto.js';
+
 
 // Importar Swiper y los módulos necesarios
 import Swiper from 'swiper/bundle';
 import 'swiper/css/bundle';
 
-// Función para simular la respuesta de la API
-function mockApiResponse(data) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            console.log('Datos enviados a la API:', JSON.stringify(data, null, 2));
-            const procesados = procesarDatos(data);
-            resolve({
-                status: 200,
-                data: {
-                    message: 'Datos recibidos y procesados correctamente',
-                    matrizRiesgos: procesados.matrizRiesgos,
-                    profesiograma: procesados.profesiograma
-                }
-            });
-        }, 1000);
-    });
-}
 
-        // Función para procesar los datos
-        function procesarDatos(data) {
-            console.log('Datos recibidos:', JSON.stringify(data, null, 2));
-            const matrizRiesgos = [];
-            const profesiograma = [];
-        
-            data.forEach(cargo => {
-                matrizRiesgos.push({
-                    cargo: cargo.cargoName,
-                    area: cargo.area,
-                    zona: cargo.zona,
-                    descripcionTareas: cargo.descripcionTareas,
-                    caracteristicas: {
-                        tareasRutinarias: cargo.tareasRutinarias,
-                        manipulaAlimentos: cargo.manipulaAlimentos,
-                        trabajaAlturas: cargo.trabajaAlturas,
-                        trabajaEspaciosConfinados: cargo.trabajaEspaciosConfinados
-                    },
-                    gesSeleccionados: cargo.gesSeleccionados
-                });
-        
-                profesiograma.push({
-                    cargo: cargo.cargoName,
-                    area: cargo.area,
-                    zona: cargo.zona,
-                    descripcionTareas: cargo.descripcionTareas,
-                    caracteristicas: {
-                        tareasRutinarias: cargo.tareasRutinarias,
-                        manipulaAlimentos: cargo.manipulaAlimentos,
-                        trabajaAlturas: cargo.trabajaAlturas,
-                        trabajaEspaciosConfinados: cargo.trabajaEspaciosConfinados
-                    },
-                    gesSeleccionados: cargo.gesSeleccionados
-                });
-            });
-        
-            return { matrizRiesgos, profesiograma };
-        }
 
-// Función para interpretar el nivel de riesgo
-function getInterpretacionRiesgo(nivelRiesgo) {
-    if (nivelRiesgo >= 600) return 'I';
-    if (nivelRiesgo >= 150) return 'II';
-    if (nivelRiesgo >= 40) return 'III';
-    return 'IV';
-}
 
-// Función para mostrar los resultados
-function mostrarResultados(data) {
-    const resultadosDiv = document.createElement('div');
-    resultadosDiv.innerHTML = `
-        <h3>Matriz de Riesgos</h3>
-        <pre>${JSON.stringify(data.matrizRiesgos, null, 2)}</pre>
-        <h3>Profesiograma</h3>
-        <pre>${JSON.stringify(data.profesiograma, null, 2)}</pre>
-    `;
-    document.body.appendChild(resultadosDiv);
-}
+
+
 
 // Función para inicializar el formulario de Matriz de Riesgos Profesional
 export function initializeForm() {
