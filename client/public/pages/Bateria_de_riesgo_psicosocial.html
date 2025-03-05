@@ -3,89 +3,73 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <!-- Título mejorado para SEO -->
-        <title>
-            melos baterias pa mi gente | Optometría | Audiometria | Pruebas psicologicas | Examenes de laboratorio | y mucho mas en Salud y Seguridad en el Trabajo
-        </title>
+        <title>Genesys - Batería de Riesgos Psicosociales | Evaluación Laboral</title>
         
-        <!--metadatos para SEO-->
-        <meta
-        name="description"
-        content="Genesys ofrece examenes medicos laboales Salud y Seguridad en el Trabajo (SST).| EXAMEN DE - INGRESO - EGRESO - PERIODICOS | Optometría | Audiometria | Pruebas psicologicas | Examenes de laboratorio |Cumple con todos los requisitos legales y mejora el bienestar laboral de tu empresa."
-        />
-        <meta
-        name="keywords"
-        content="SST, Optometría, Audiometría, Exámenes de laboratorio, Examen medico, Examen osteomuscular, Exámenes Médicos Ocupacionales, Seguridad en el Trabajo"
-        />
+        <!-- Metadatos SEO -->
+        <meta name="description" content="Evalúa los riesgos psicosociales en el trabajo con nuestra batería de pruebas. Diagnóstico rápido y efectivo para el bienestar laboral." />
+        <meta name="keywords" content="riesgos psicosociales, salud laboral, estrés laboral, evaluación psicosocial, bienestar laboral" />
         <meta name="robots" content="index-follow" />
-        <meta name="googlebot" content="index-follow" />
-        
-        <!-- Fabicon-->
-        <link
-        rel="icon"
-        type="image/svg+xml"
-        href="../assets/images/logo_icono_color_vectores_fabicon.svg"
-        sizes="16x10 32x20"
-        />
 
-        <!-- Datos estructurados para SEO -->
+        <link rel="icon" type="image/svg+xml" href="../assets/images/logo_icono_color_vectores_fabicon.svg" sizes="16x10 32x20" />
+
         <script type="application/ld+json">
         {
-        "@context": "https://schema.org"
-        "@type": "LocalBusiness",
-        "name": "Genesys SST",
-        "image": "https://www.genesyssst.com/assets/logo_color_vectores.svg",
-        "description": "Examenes medico laborales en Bogotá (SST) | ingreso | egreso | periodicos",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Calle 86 A # 23-12",
-            "addressLocality": "Bogotá",
-            "addressRegion": "Cundinamarca",
-            "postalCode": "110111",
-            "addressCountry": "CO"
-        },
-        "telephone": "+573205803048",
-        "url": "https://www.genesyslm.com.co"
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Genesys SST",
+            "telephone": "+573205803048",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Calle 86 A # 23-12",
+                "addressLocality": "Bogotá"
+            },
+            "url": "https://www.genesyslm.com.co"
         }
         </script>
     </head>
 
     <body>
         <main class="background-container background-bateria-de-riesgo-psicosocial">
-        <!-- aca va el header -->
-        <section class="hero">
-            <div class="hero-content">
-                <h1>
-                    Agenda tus<span class="green"> exámenes médicos ocupacionales</span> en minutos <span class="green">sin complicaciones</span>
-                </h1>
-            <p class="intro">
-                Cotiza y programa tus exámenes médicos ocupacionales de forma inmediata. 
-                Precios transparentes, proceso ágil y red médica certificada en toda Colombia. 
-                Cumple con la normatividad mientras cuidas la salud de tu equipo.
-            </p>
-            <button class="cta-button">Empieza aquí</button>
-            </div>
-        </section>
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Evalúa los <span class="green">riesgos psicosociales</span> en tu empresa en minutos</h1>
+                    <p>La buena gestion de los riesgos sociales permite crear ambientes más saludables, mejorar el desempeño y proteger la salud mental de los empleados. ¡Evalúa, actúa y transforma tu organización!.</p>
+                    <button class="cta-button">Comenzar Evaluación</button>
+                </div>
+            </section>
         </main>
         <section class=service-info>
             <section class="program-description">
                 <h2>
-                    Realizamos tus <span class="green">exámenes médicos ocupacionales</span> entregamos tus resultados en menos de <span class="green">24 horas</span> usando tecnología avanzada
+                    Realiza la <span class="green">evaluación de riesgos psicosociales</span> en tu empresa <span class="green">en solo minutos</span> 
+                    <span>usando tecnología de IA</span>
                 </h2>
                 <p class="descripcion">
-                    Ofrecemos todos los exámenes médicos ocupacionales que tu empresa necesita: ingreso, periódicos, egreso, trabajo en alturas y más. Combina la eficiencia de la tecnología con la experiencia de profesionales certificados para garantizar la salud de tus trabajadores y el cumplimiento normativo.
+                    Evalúa los riesgos psicosociales en el trabajo rápidamente con nuestra avanzada batería de pruebas. 
+                    Identifica factores de riesgo que afectan la salud mental y el bienestar de tus colaboradores, y toma decisiones 
+                    informadas para mejorar el ambiente laboral. Cumple con las normativas y garantiza un entorno laboral saludable, 
+                    evitando sanciones y promoviendo el bienestar de tus empleados.
                 </p>
             </section>
                 <button type="submit" class="cta-button-1">
-                    Cotiza en minutos acá!
+                    Solicita tu cotización en minutos aquí!
                 </button>
         </section>
 
+        <section class="bateria-psicosocial-section">
+            <h2>Realiza la Evaluación de Riesgos Psicosociales</h2>
+            <form id="bateriaPsicosocialForm">
+                <div id="preguntasContainer"></div>
+                <button type="submit" class="submit-button">Enviar Evaluación</button>
+            </form>
+        </section>
 
+        <section id="resultados" class="resultados">
+            <!-- Aquí se mostrarán los resultados -->
+        </section>
 
+        <script src="../src/main_bateria_de_riesgo_psicosocial.js"></script>
         
-
-
   <section class="section-clientes">
             <h2>Nuestros clientes</h2>
             <p>Estos son algunos de nuestros casos de exito</p>

@@ -1,0 +1,50 @@
+// Base
+@import 'base/variables';
+@import 'base/mixins';
+@import 'base/reset';
+@import 'base/typography';
+
+// Components
+@import "components/buttons";
+@import "components/dropdown";
+@import "components/whatsapp";
+
+// Components
+@import "layout/header";
+@import "layout/footer";
+
+// Sections
+@import 'sections/program-description-service';
+@import "sections/hero";
+@import "sections/clients";
+@import "sections/faqs";
+@import "sections/location";
+@import 'sections/exams';
+
+// Utilities
+@import "utilities/helpers";
+@import "utilities/animations";
+
+.background-bateria-psicosocial {
+    background-color: #f5f5f5;
+    padding: 40px 0;
+}
+
+.bateria-psicosocial-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.submit-button {
+    background-color: #008f39;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
