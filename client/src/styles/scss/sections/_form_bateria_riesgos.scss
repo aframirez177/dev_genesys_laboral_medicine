@@ -1,0 +1,200 @@
+// src/styles/scss/sections/_form_bateria_riesgo_psicosocial.scss
+
+.bateria-psicosocial-section {
+    max-width: 1024px;
+    margin: 0 auto;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+  
+    h2 {
+      font-family: map-get($fonts, 'title');
+      font-size: 3rem;
+      color: map-get($colors, 'secondary');
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 3rem;
+  
+      @include respond-to('tablet') {
+        font-size: 2.5rem;
+      }
+  
+      @include respond-to('desktop') {
+        font-size: 3rem;
+      }
+    }
+  
+    #bateriaPsicosocialForm {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  
+    #preguntasContainer {
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+  
+    .form-group {
+      margin-bottom: 2rem;
+      width: 100%;
+  
+      label {
+        display: block;
+        font-family: map-get($fonts, 'body');
+        font-size: 1.6rem;
+        font-weight: 500;
+        color: map-get($colors, 'text');
+        margin-bottom: 1rem;
+      }
+  
+      // Estilo para toggles en lugar de select
+      .toggle-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+  
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 60px;
+          height: 34px;
+          margin-left: auto;
+  
+          input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+  
+            &:checked + .slider {
+              background-color: map-get($colors, 'primary');
+  
+              &:before {
+                transform: translateX(26px);
+              }
+  
+              &:after {
+                content: 'Sí';
+                left: 10px;
+                right: auto;
+              }
+            }
+          }
+  
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+  
+            &:before {
+              position: absolute;
+              content: "";
+              height: 26px;
+              width: 26px;
+              left: 4px;
+              bottom: 4px;
+              background-color: white;
+              transition: .4s;
+              border-radius: 50%;
+            }
+  
+            &:after {
+              content: 'No';
+              position: absolute;
+              right: 10px;
+              bottom: 8px;
+              color: white;
+              font-size: 12px;
+              font-family: map-get($fonts, 'body');
+            }
+          }
+        }
+      }
+  
+      // Estilos para el select original
+      select {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid map-get($colors, 'input-border');
+        border-radius: 5px;
+        background-color: map-get($colors, 'input-bg');
+        color: map-get($colors, 'text');
+        font-family: map-get($fonts, 'body');
+        font-size: 1.4rem;
+        transition: border-color 0.3s ease;
+  
+        &:focus {
+          outline: none;
+          border-color: map-get($colors, 'primary');
+        }
+      }
+    }
+  
+    .submit-button {
+      background-color: map-get($colors, 'primary');
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 1rem 2rem;
+      font-family: map-get($fonts, 'body');
+      font-size: 1.6rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      margin-top: 1rem;
+  
+      &:hover {
+        background-color: darken(map-get($colors, 'primary'), 10%);
+        transform: translateY(-3px);
+      }
+  
+      &:active {
+        transform: translateY(-1px);
+      }
+    }
+  }
+  
+  .resultados {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: lighten(map-get($colors, 'primary'), 40%);
+    border-radius: 10px;
+    border-left: 4px solid map-get($colors, 'primary');
+  
+    p {
+      font-family: map-get($fonts, 'body');
+      font-size: 1.8rem;
+      color: map-get($colors, 'secondary');
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+  
+  // Estilos responsivos
+  @include respond-to('tablet') {
+    .bateria-psicosocial-section {
+      padding: 3rem;
+    }
+  }
+  
+  @include respond-to('desktop') {
+    .bateria-psicosocial-section {
+      padding: 4rem;
+    }
+  }
