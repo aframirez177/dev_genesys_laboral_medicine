@@ -19,13 +19,37 @@ export function initializeForm() {
         label.htmlFor = pregunta.id;
         label.textContent = pregunta.texto;
 
-        const select = document.createElement('select');
-        select.id = pregunta.id;
-        select.name = pregunta.id;
-        select.innerHTML = `<option value="0">No</option><option value="1">Sí</option>`;
+        // Crear el contenedor para el toggle
+        const toggleContainer = document.createElement('div');
+        toggleContainer.classList.add('toggle-container');
 
+        // Crear el label para el switch
+        const switchLabel = document.createElement('label');
+        switchLabel.classList.add('switch');
+
+        // Crear el input checkbox
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = pregunta.id;
+        input.name = pregunta.id;
+        input.value = "0"; // Por defecto será "No"
+        
+        // Cuando se cambia, actualizar el valor
+        input.addEventListener('change', (e) => {
+            input.value = e.target.checked ? "1" : "0";
+        });
+
+        // Crear el slider
+        const slider = document.createElement('span');
+        slider.classList.add('slider');
+
+        // Añadir todo junto
+        switchLabel.appendChild(input);
+        switchLabel.appendChild(slider);
+        toggleContainer.appendChild(switchLabel);
+        
         div.appendChild(label);
-        div.appendChild(select);
+        div.appendChild(toggleContainer);
         preguntasContainer.appendChild(div);
     });
 
@@ -37,6 +61,12 @@ export function initializeForm() {
             score += parseInt(document.getElementById(pregunta.id).value);
         });
 
-        resultadosDiv.innerHTML = `<p>Resultado: ${score > 2 ? "Alto Riesgo Psicosocial" : "Riesgo Controlado"}</p>`;
+        resultadosDiv.innerHTML = `
+            <p>Resultado: ${score > 2 ? "Alto Riesgo Psicosocial" : "Riesgo Controlado"}</p>
+            <p>Puntuación: ${score} de 4</p>
+        `;
+        
+        // Hacer scroll al resultado
+        resultadosDiv.scrollIntoView({ behavior: 'smooth' });
     });
 }

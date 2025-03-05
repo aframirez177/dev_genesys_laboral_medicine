@@ -68,7 +68,7 @@ module.exports = {
         filename: './pages/Analisis_de_puesto_de_trabajo.html',
         }),
         new HtmlWebpackPlugin({
-        chunks: ['main'],
+        chunks: ['main', 'bateriaPsicosocial'],
         inject: true,
         template: './public/pages/Bateria_de_riesgo_psicosocial.html',
         filename: './pages/Bateria_de_riesgo_psicosocial.html',
