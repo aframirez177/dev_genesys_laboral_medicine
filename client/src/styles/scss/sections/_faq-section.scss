@@ -18,7 +18,7 @@
       width: 100%;
 
       h2 {
-        font-size: 2.5rem; // Tamaño de fuente para títulos
+        font-size: 3.1rem; // Tamaño de fuente para títulos
         font-family: map-get($fonts, "title");
         color: map-get($colors, "text"); // Color de texto principal
         line-height: 120%; // Mejoramos el interlineado
@@ -27,7 +27,7 @@
 
       .faq-description {
         font-family: map-get($fonts, "body");
-        font-size: 1.1rem; // Tamaño de fuente ligeramente mayor
+        font-size: 1.5rem; // Tamaño de fuente ligeramente mayor
         color: map-get($colors, "text"); // Color de texto principal
         line-height: 1.6; // Mejoramos el interlineado
         margin-bottom: 1rem; // Espacio debajo del párrafo
