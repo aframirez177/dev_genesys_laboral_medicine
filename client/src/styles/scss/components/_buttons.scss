@@ -1,3 +1,4 @@
+// Base para todos los botones
 %button-base {
     padding: 0.5rem 1.61rem;
     border-radius: 34px;
@@ -40,7 +41,7 @@ a {
     transform: scale(105%);
     @include smooth-weight-transition();
     }
-
+    // Botón desplegable (dropdown)
     .dropdown-toggle {
         font-weight: 400;
         margin-top: .5rem;
@@ -75,7 +76,7 @@ a {
         font-weight: 800;
         }
     }
-
+// Botón de llamado a la acción (CTA)
 .cta-button {
     @extend %button-base;
     background-color: map-get($colors, "primary");
@@ -83,7 +84,7 @@ a {
     border: none;
     @include smooth-weight-transition();
 }
-
+// Botón de CTA alternativo
 .cta-button-1 {
     @extend %button-base;
     background-color: rgba(255, 255, 255, 0.1);
