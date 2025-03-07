@@ -1,3 +1,4 @@
+// Estilos base para la sección de descripción
 .program-description {
     display: flex;
     justify-content: space-evenly;
@@ -5,7 +6,7 @@
     flex-wrap: wrap;
     padding: 2rem;
 
-
+// Título de la sección
     h2 {
         max-width: 420px;
         margin-left: 1rem;
@@ -16,6 +17,7 @@
         line-height: 100%;
     }
 
+  // Descripción de la sección  
     .descripcion {
         max-width: 650px;
         margin: 0;

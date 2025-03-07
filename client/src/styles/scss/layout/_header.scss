@@ -85,7 +85,7 @@ header {
     position: relative;
     display: inline-block;
     margin-top: 0.7rem;
-
+    // Botón del dropdown
     .dropdown-toggle {
         background: none;
         border: none;
@@ -118,7 +118,7 @@ header {
         }
     }
     }
-
+    // Menú desplegable
     .dropdown-menu {
     display: none;
     position: absolute;
