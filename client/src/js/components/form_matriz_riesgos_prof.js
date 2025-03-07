@@ -232,29 +232,87 @@ function cleanupHistoricalValues() {
     function validateForm() {
         let isValid = true;
         const cargoDivs = cargoContainer.querySelectorAll('.cargo');
+        const gesIncompletos = [];
+        
         cargoDivs.forEach(cargoDiv => {
             const cargoNameInput = cargoDiv.querySelector('input[name="cargoName"]');
             const areaInput = cargoDiv.querySelector('input[name="area"]');
             const trabajadoresInput = cargoDiv.querySelector('input[name="numTrabajadores"]');
+            const zonaInput = cargoDiv.querySelector('input[name="zona"]');
+            
+            // Validación de campos básicos
             if (!cargoNameInput.value.trim()) {
                 alert('Por favor, ingrese el nombre del cargo.');
                 isValid = false;
+                return;
             }
             if (!areaInput.value.trim()) {
                 alert('Por favor, ingrese el área del cargo.');
                 isValid = false;
+                return;
             }
             if (!trabajadoresInput.value || trabajadoresInput.value < 1) {
                 alert('Por favor, ingrese un número válido de trabajadores.');
                 isValid = false;
+                return;
             }
-            // Validaciones adicionales aquí
-            const zonaInput = cargoDiv.querySelector('input[name="zona"]');
             if (!zonaInput.value.trim()) {
                 alert('Por favor, ingrese la zona o lugar de trabajo.');
                 isValid = false;
+                return;
             }
+            
+            // Validación de niveles para cada GES seleccionado
+            const gesCheckboxes = cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]:checked');
+            if (gesCheckboxes.length === 0) {
+                alert('Debe seleccionar al menos un GES para el cargo ' + cargoNameInput.value);
+                isValid = false;
+                return;
+            }
+            
+            // Revisar cada GES seleccionado para validar sus niveles
+            gesCheckboxes.forEach(checkbox => {
+                const riesgoValue = checkbox.value;
+                const nivelesInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-niveles]`);
+                
+                if (!nivelesInput || !nivelesInput.value) {
+                    gesIncompletos.push({
+                        cargo: cargoNameInput.value,
+                        ges: riesgoValue
+                    });
+                    isValid = false;
+                    return;
+                }
+                
+                try {
+                    const niveles = JSON.parse(nivelesInput.value);
+                    if (!niveles.deficiencia || !niveles.exposicion || !niveles.consecuencia) {
+                        gesIncompletos.push({
+                            cargo: cargoNameInput.value,
+                            ges: riesgoValue
+                        });
+                        isValid = false;
+                    }
+                } catch (e) {
+                    gesIncompletos.push({
+                        cargo: cargoNameInput.value,
+                        ges: riesgoValue
+                    });
+                    isValid = false;
+                }
+            });
         });
+        
+        // Mostrar mensaje de error si hay GES incompletos
+        if (gesIncompletos.length > 0) {
+            let mensaje = 'Debe completar todos los niveles (deficiencia, exposición y consecuencia) para los siguientes GES:\n\n';
+            gesIncompletos.forEach(item => {
+                mensaje += `• Cargo: ${item.cargo}, GES: ${item.ges}\n`;
+            });
+            mensaje += '\nHaga clic en cada GES seleccionado para completar sus niveles.';
+            alert(mensaje);
+        }
+        
         return isValid;
     }
 
@@ -372,42 +430,81 @@ function cleanupHistoricalValues() {
     }
 
     // Función para actualizar el resumen de GES
-        function updateGesResumen(cargoDiv) {
-            const gesResumenDiv = cargoDiv.querySelector('.ges-resumen');
-            if (!gesResumenDiv) {
-                console.error('gesResumenDiv no encontrado en el DOM');
-                return;
-            }
-        
-            const gesCheckboxes = cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]:checked');
-            const selectedGes = [];
-            gesCheckboxes.forEach(checkbox => {
-                selectedGes.push(checkbox.value);
-            });
-        
-            gesResumenDiv.innerHTML = '';
-        
-            if (selectedGes.length > 0) {
-                selectedGes.forEach(ges => {
-                    const gesItem = document.createElement('div');
-                    gesItem.classList.add('ges-resumen-item');
-        
-                    const checkMark = document.createElement('span');
-                    checkMark.classList.add('check-mark');
-                    checkMark.textContent = '✓';
-        
-                    const gesText = document.createElement('span');
-                    gesText.textContent = ges;
-        
-                    gesItem.appendChild(checkMark);
-                    gesItem.appendChild(gesText);
-        
-                    gesResumenDiv.appendChild(gesItem);
-                });
-            } else {
-                gesResumenDiv.textContent = 'No se han seleccionado GES.';
-            }
+    function updateGesResumen(cargoDiv) {
+        const gesResumenDiv = cargoDiv.querySelector('.ges-resumen');
+        if (!gesResumenDiv) {
+            console.error('gesResumenDiv no encontrado en el DOM');
+            return;
         }
+    
+        const gesCheckboxes = cargoDiv.querySelectorAll('input[type="checkbox"][name^="ges"]:checked');
+        const selectedGes = [];
+        gesCheckboxes.forEach(checkbox => {
+            selectedGes.push(checkbox.value);
+        });
+    
+        gesResumenDiv.innerHTML = '';
+    
+        if (selectedGes.length > 0) {
+            selectedGes.forEach(ges => {
+                const gesItem = document.createElement('div');
+                gesItem.classList.add('ges-resumen-item');
+    
+                // Verificar si este GES tiene todos sus niveles completos
+                const nivelesInput = cargoDiv.querySelector(`[data-riesgo="${ges}"][data-niveles]`);
+                let nivelesCompletos = false;
+                
+                if (nivelesInput && nivelesInput.value) {
+                    try {
+                        const niveles = JSON.parse(nivelesInput.value);
+                        nivelesCompletos = niveles.deficiencia && niveles.exposicion && niveles.consecuencia;
+                    } catch (e) {
+                        nivelesCompletos = false;
+                    }
+                }
+    
+                // Crear icono check con color según estado
+                const checkMark = document.createElement('span');
+                checkMark.classList.add('check-mark');
+                if (nivelesCompletos) {
+                    checkMark.classList.add('complete');
+                    checkMark.textContent = '✓';
+                } else {
+                    checkMark.classList.add('incomplete');
+                    checkMark.textContent = '!';
+                }
+    
+                const gesText = document.createElement('span');
+                gesText.textContent = ges;
+                
+                // Si los niveles no están completos, agrega un tooltip y una clase
+                if (!nivelesCompletos) {
+                    gesItem.classList.add('incomplete-ges');
+                    gesItem.title = 'Falta completar los niveles de este GES';
+                } else {
+                    gesItem.classList.add('complete-ges');
+                    gesItem.title = 'Niveles completos';
+                }
+                
+                // Hacer que el GES sea clickeable para abrir el popup
+                gesItem.style.cursor = 'pointer';
+                gesItem.addEventListener('click', () => {
+                    // Encontrar el checkbox correspondiente
+                    const checkbox = cargoDiv.querySelector(`input[value="${ges}"]`);
+                    if (checkbox) {
+                        showControlesPopup(ges, cargoDiv, checkbox);
+                    }
+                });
+    
+                gesItem.appendChild(checkMark);
+                gesItem.appendChild(gesText);
+    
+                gesResumenDiv.appendChild(gesItem);
+            });
+        } else {
+            gesResumenDiv.textContent = 'No se han seleccionado GES.';
+        }
+    }
 
     // Función para agregar un nuevo cargo
     function addCargo(cargoData = {}, isDefault = false) {
@@ -754,6 +851,7 @@ cargoNameInput.addEventListener('blur', () => {
                     <h4>${ges}</h4>
                     <span class="riesgo-label">${riesgo}</span>
                     <button class="close-popup">&times;</button>
+                    
                 </div>
                 <div class="popup-content">
                     <div class="controles-section">

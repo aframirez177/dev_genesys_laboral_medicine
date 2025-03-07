@@ -376,27 +376,52 @@
         }
 
         .ges-resumen {
-          margin: 5px;
-          font-size: 1rem;
-          color: map-get($colors, 'text');
-          display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
-          justify-content: flex-start;
-          max-width: 350px;
-
           .ges-resumen-item {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            margin-bottom: 5px;
-
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            padding: 5px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            &.incomplete-ges {
+              background-color: rgba(255, 235, 59, 0.1);
+              border-left: 3px solid #ffeb3b;
+            }
+            
+            &.complete-ges {
+              background-color: rgba(76, 175, 80, 0.1);
+              border-left: 3px solid #4caf50;
+            }
+            
             .check-mark {
-              color: map-get($colors, 'primary');
-              margin-right: 5px;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              margin-right: 8px;
+              text-align: center;
+              font-size: 12px;
+              
+              &.complete {
+                background-color: #4caf50;
+                color: white;
+              }
+              
+              &.incomplete {
+                background-color: #ffeb3b;
+                color: #333;
+                font-weight: bold;
+              }
             }
           }
         }
+        
 
 
 
@@ -520,6 +545,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        
 
         h4 {
             margin: 0;
