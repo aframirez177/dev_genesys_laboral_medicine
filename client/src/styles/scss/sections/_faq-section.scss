@@ -1,4 +1,68 @@
+// Clase para primera pregunta 
+.faq-bateria {
+  display: flex;
+  flex-direction: column; // Usamos flexbox para organizar los elementos
+  align-items: center; // Centramos verticalmente los elementos
+  justify-content: space-between; // Espacio entre la imagen y el texto
+  max-width: 1200px; // Ancho máximo del section (puedes ajustarlo)
+  width: 100%; // Ocupa el 100% del ancho disponible
+  margin: 0 auto; // Centramos el section horizontalmente
+  padding: 2rem; // Padding interno
+  background-color: #ECF0E8; // Color de fondo
+
+  .image-content {
+      width: 40%; // Ancho del contenedor de la imagen
+      img {
+          width: 100%; // La imagen ocupa el 100% del contenedor
+          height: auto; // Altura automática para mantener la proporción
+          aspect-ratio: 1 / 1; // Hace que la imagen sea cuadrada
+          object-fit: cover; // Asegura que la imagen cubra el espacio sin deformarse
+      }
+  }
+
+  .faq-bateria-container {
+      width: 55%; // Ancho del contenedor de texto
+      .text-container {
+          h2 {
+              font-family: map-get($fonts, "title");
+              font-size: 2.6rem;
+              color: map-get($colors, "secondary");
+              font-weight: 800;
+              margin: 0 0 1rem 0; // Margen inferior para separar del párrafo
+          }
+
+          p {
+              font-size: 1.1rem;
+              line-height: 150%;
+              font-weight: 500;
+              margin: 0; // Eliminamos el margen superior
+          }
+      }
+  }
+}
+
+@include respond-to("tablet") {
+    .faq-bateria {
+        
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      }
+
+      .text-content {
+      width: 50%;
+      }
+
+      .image-content {
+      width: 45%;
+      }
+  }
+
+
+
 // Clase para listas
+
 .faq-section {
   display: flex;
   flex-direction: column;
