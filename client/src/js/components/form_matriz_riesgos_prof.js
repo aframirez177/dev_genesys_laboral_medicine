@@ -80,12 +80,25 @@ export function initializeForm() {
         };
     }
 
-    // Función para guardar datos en localStorage
-    function saveData() {
-        const cargosData = gatherFormData();
-        
-        // Guardar datos del formulario
-        localStorage.setItem('matrizRiesgosData', JSON.stringify(cargosData));
+// Función para guardar datos en localStorage con manejo de expiración
+function saveData() {
+    // Solo guardar si hay datos significativos
+    if (!shouldSaveState()) {
+        return;
+    }
+    
+    const cargosData = gatherFormData();
+    
+    // Crear objeto con timestamp para control de expiración (72 horas)
+    const saveObject = {
+        cargos: cargosData.cargos,
+        timestamp: Date.now(),
+        lastUpdate: new Date().toISOString()
+    };
+    
+    try {
+        localStorage.setItem('matrizRiesgosData', JSON.stringify(saveObject));
+        console.log('Estado guardado exitosamente:', new Date().toLocaleTimeString());
         
         // Guardar valores históricos
         const historicalToSave = {
@@ -96,21 +109,62 @@ export function initializeForm() {
                 fuente: Array.from(historicalValues.controles.fuente),
                 medio: Array.from(historicalValues.controles.medio),
                 individuo: Array.from(historicalValues.controles.individuo)
-            }
+            },
+            timestamp: Date.now() // Añadir timestamp también a los valores históricos
         };
         
-        // Añadir timestamp para manejo de expiración (48 horas)
-        historicalToSave.timestamp = Date.now();
-        
         localStorage.setItem('historicalValues', JSON.stringify(historicalToSave));
+    } catch (error) {
+        console.error('Error al guardar estado:', error);
     }
+}
 
-    // Función auxiliar para verificar expiración
-    function checkExpiration(timestamp) {
-        const HOURS_48 = 48 * 60 * 60 * 1000; // 48 horas en milisegundos
-        return Date.now() - timestamp > HOURS_48;
+// Función para determinar si se debe guardar el estado
+// Evita guardar datos insignificantes (formularios vacíos)
+function shouldSaveState() {
+    // Verificar el primer cargo
+    const firstCargo = cargoContainer.querySelector('.cargo');
+    if (!firstCargo) return false;
+    
+    const cargoNameInput = firstCargo.querySelector('input[name="cargoName"]');
+    if (!cargoNameInput || !cargoNameInput.value.trim()) {
+        return false;
     }
+    
+    // Verificar si hay algún GES seleccionado
+    const hasGesSelected = firstCargo.querySelector('input[type="checkbox"][name^="ges"]:checked');
+    if (!hasGesSelected) {
+        return false;
+    }
+    
+    return true;
+}
 
+// Función para verificar si los datos guardados han expirado (72 horas)
+function checkExpiration(timestamp) {
+    if (!timestamp) return true; // Sin timestamp, considerar expirado
+    
+    const HOURS_72 = 72 * 60 * 60 * 1000; // 72 horas en milisegundos
+    const timeElapsed = Date.now() - timestamp;
+    
+    return timeElapsed > HOURS_72;
+}
+
+// Función para verificar expiración de valores históricos
+function cleanupHistoricalValues() {
+    try {
+        const saved = localStorage.getItem('historicalValues');
+        if (!saved) return;
+        
+        const data = JSON.parse(saved);
+        if (data.timestamp && checkExpiration(data.timestamp)) {
+            console.log('Valores históricos expirados, limpiando...');
+            localStorage.removeItem('historicalValues');
+        }
+    } catch (error) {
+        console.error('Error al limpiar valores históricos:', error);
+    }
+}
     // Función para recopilar datos del formulario
     function gatherFormData() {
         const cargosData = [];
@@ -481,28 +535,25 @@ export function initializeForm() {
         const infoGeneralSection = document.createElement('div');
         infoGeneralSection.classList.add('info-general-section');
 
-        // Input para el nombre del cargo
-        const cargoNameInput = document.createElement('input');
-        cargoNameInput.type = 'text';
-        cargoNameInput.name = 'cargoName';
-        cargoNameInput.placeholder = 'Ingresa el nombre del cargo';
-        cargoNameInput.value = cargoData.cargoName || '';
-        updateDatalist(cargoNameInput, historicalValues.cargos, 'cargos-datalist');
+// Input para el nombre del cargo
+const cargoNameInput = document.createElement('input');
+cargoNameInput.type = 'text';
+cargoNameInput.name = 'cargoName';
+cargoNameInput.placeholder = 'Ingresa el nombre del cargo';
+cargoNameInput.value = cargoData.cargoName || '';
 
-        // Actualizar título mientras escribe
-        cargoNameInput.addEventListener('input', () => {
-            cargoTitle.textContent = cargoNameInput.value || `Cargo #${cargoCount}`;
-            updateDatalist(cargoNameInput, historicalValues.cargos, 'cargos-datalist');
-        });
+// Actualizar el título del cargo mientras escribe
+cargoNameInput.addEventListener('input', () => {
+    cargoTitle.textContent = cargoNameInput.value || `Cargo #${cargoCount}`;
+});
 
-        // Guardar cuando pierde el foco
-        cargoNameInput.addEventListener('blur', () => {
-            if (cargoNameInput.value.trim()) {
-                historicalValues.cargos.add(cargoNameInput.value.trim());
-                updateDatalist(cargoNameInput, historicalValues.cargos, 'cargos-datalist');
-            }
-            saveData();
-        });
+// Guardar cuando pierde el foco
+cargoNameInput.addEventListener('blur', () => {
+    if (cargoNameInput.value.trim()) {
+        historicalValues.cargos.add(cargoNameInput.value.trim());
+    }
+    saveData();
+});
 
         // Input para el área
         const areaInput = document.createElement('input');
@@ -768,29 +819,30 @@ inputs.forEach(input => {
     });
 
             // Guardar solo cuando el input pierde el foco
-            input.addEventListener('blur', () => {
-                const tipo = input.name.split('-')[1];
-                let controlInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="${tipo}"]`);
-                
-                if (!controlInput) {
-                    controlInput = document.createElement('input');
-                    controlInput.type = 'hidden';
-                    controlInput.dataset.riesgo = riesgoValue;
-                    controlInput.dataset.tipo = tipo;
-                    cargoDiv.appendChild(controlInput);
-                }
-                
-                const value = input.value.trim();
-                if (value && value !== 'Ninguno') {
-                    // Actualizar valores históricos
-                    historicalValues.controles[tipo].add(value);
-                    // Actualizar datalist correspondiente
-                    updateDatalist(input, historicalValues.controles[tipo], `${tipo}-datalist`);
-                }
-                
-                controlInput.value = value || 'Ninguno';
-                saveData();
-            });
+            // En la función showControlesPopup, dentro del evento blur de cada input de control:
+input.addEventListener('blur', () => {
+    const tipo = input.name.split('-')[1];
+    let controlInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="${tipo}"]`);
+    
+    if (!controlInput) {
+        controlInput = document.createElement('input');
+        controlInput.type = 'hidden';
+        controlInput.dataset.riesgo = riesgoValue;
+        controlInput.dataset.tipo = tipo;
+        cargoDiv.appendChild(controlInput);
+    }
+    
+    const value = input.value.trim();
+    if (value && value !== 'Ninguno') {
+        // Actualizar valores históricos
+        historicalValues.controles[tipo].add(value);
+        // Actualizar datalist correspondiente
+        updateDatalist(input, historicalValues.controles[tipo], `${tipo}-datalist`);
+    }
+    
+    controlInput.value = value || 'Ninguno';
+    saveData();
+});
         });
         
             // Configurar las barras de niveles y sus eventos
@@ -1090,16 +1142,145 @@ inputs.forEach(input => {
         updateGesResumen(cargoDiv);
     }
 
-    // Cargar datos guardados en localStorage
-    const savedData = JSON.parse(localStorage.getItem('matrizRiesgosData')) || [];
-    if (savedData.length > 0) {
-        savedData.forEach((cargoData, index) => {
+// Verificar si hay datos guardados en localStorage y mostrar banner
+function checkSavedData() {
+    try {
+        const savedState = localStorage.getItem('matrizRiesgosData');
+        if (!savedState) return false;
+        
+        const state = JSON.parse(savedState);
+        
+        // Verificar si ha expirado (72 horas)
+        if (state.timestamp && checkExpiration(state.timestamp)) {
+            console.log('Datos guardados expirados, eliminando...');
+            localStorage.removeItem('matrizRiesgosData');
+            return false;
+        }
+        
+        return state;
+    } catch (error) {
+        console.error('Error al verificar datos guardados:', error);
+        return false;
+    }
+}
+
+// Función para mostrar banner de restauración
+function showRestoreBanner(state) {
+    const banner = document.createElement('div');
+    banner.className = 'restore-banner';
+    
+    // Calcular tiempo transcurrido desde la última actualización
+    const lastUpdate = new Date(state.lastUpdate || state.timestamp);
+    const hoursAgo = Math.floor((new Date() - lastUpdate) / (1000 * 60 * 60));
+    
+    banner.innerHTML = `
+        <div class="banner-content">
+            <div class="banner-message">
+                Encontramos una cotización guardada con ${state.cargos.length} cargo(s) de hace ${hoursAgo} hora(s)
+            </div>
+            <div class="banner-actions">
+                <button class="btn-restore cta-button">Continuar con esta cotización</button>
+                <button class="btn-new cta-button-1">Crear nueva cotización</button>
+            </div>
+        </div>
+    `;
+    
+    // Insertar banner en el DOM
+    const container = document.querySelector('.calculator, .matriz-riesgos-section');
+    container.insertBefore(banner, container.firstChild);
+    
+    // Configurar eventos de botones
+    banner.querySelector('.btn-restore').addEventListener('click', () => {
+        restoreFormState(state);
+        banner.style.display = 'none';
+    });
+    
+    banner.querySelector('.btn-new').addEventListener('click', () => {
+        localStorage.removeItem('matrizRiesgosData');
+        // Limpiar contenedor e inicializar nuevo formulario
+        cargoContainer.innerHTML = '';
+        addCargo({}, true);
+        banner.style.display = 'none';
+    });
+}
+
+
+// Función para restaurar el estado completo del formulario
+// Modifica la función restoreFormState
+function restoreFormState(state) {
+    try {
+        // Limpiar contenedor
+        cargoContainer.innerHTML = '';
+        
+        // Restaurar cargos con todos sus datos y configuraciones
+        state.cargos.forEach((cargoData, index) => {
             addCargo(cargoData, index === 0);
+            
+            // Buscar el cargo recién añadido
+            const cargoEl = cargoContainer.lastElementChild;
+            
+            // Restaurar GES y sus datos asociados
+            if (cargoData.gesSeleccionados && cargoData.gesSeleccionados.length > 0) {
+                cargoData.gesSeleccionados.forEach(gesData => {
+                    const gesValue = `${gesData.riesgo} - ${gesData.ges}`;
+                    
+                    // Marcar el checkbox correspondiente
+                    const checkbox = cargoEl.querySelector(`input[value="${gesValue}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        
+                        // Restaurar controles existentes
+                        if (gesData.controles) {
+                            // Para cada tipo de control (fuente, medio, individuo)
+                            ['fuente', 'medio', 'individuo'].forEach(tipo => {
+                                if (gesData.controles[tipo]) {
+                                    // Crear o actualizar el input oculto para el control
+                                    let controlInput = cargoEl.querySelector(`[data-riesgo="${gesValue}"][data-tipo="${tipo}"]`);
+                                    if (!controlInput) {
+                                        controlInput = document.createElement('input');
+                                        controlInput.type = 'hidden';
+                                        controlInput.dataset.riesgo = gesValue;
+                                        controlInput.dataset.tipo = tipo;
+                                        cargoEl.appendChild(controlInput);
+                                    }
+                                    controlInput.value = gesData.controles[tipo];
+                                }
+                            });
+                        }
+                        
+                        // Restaurar niveles
+                        if (gesData.niveles) {
+                            updateNiveles(gesValue, cargoEl, gesData.niveles);
+                        }
+                    }
+                });
+                
+                // Actualizar resumen de GES
+                updateGesResumen(cargoEl);
+            }
         });
-    } else {
-        // Añadir el primer cargo por defecto (no se puede eliminar)
+        
+        console.log('Estado restaurado correctamente con todos los datos');
+    } catch (error) {
+        console.error('Error al restaurar estado:', error);
+        // Si falla la restauración, iniciar con un formulario nuevo
+        cargoContainer.innerHTML = '';
         addCargo({}, true);
     }
+}
+// Limpiar valores históricos expirados al inicio
+cleanupHistoricalValues();
+
+
+// Al inicio del formulario, verificar si hay datos guardados
+const savedState = checkSavedData();
+if (savedState && savedState.cargos && savedState.cargos.length > 0) {
+    // Mostrar banner de restauración
+    showRestoreBanner(savedState);
+} else {
+    // Si no hay datos guardados o han expirado, iniciar con el primer cargo
+    addCargo({}, true);
+}
 
     // Evento para agregar un nuevo cargo
     addCargoBtn.addEventListener('click', () => {
