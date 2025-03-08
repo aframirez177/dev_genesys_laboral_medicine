@@ -5,6 +5,7 @@ import cors from 'cors';
 import { getEnvVars } from './config/env.js';
 import { testConnection } from './config/database.js';
 import matrizRiesgosRoutes from './routes/matriz-riesgos.routes.js';
+import whatsappRoutes from './routes/whatsapp.routes.js';
 
 const env = getEnvVars();
 
@@ -23,7 +24,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
     origin: 'http://localhost:5500', // O tu puerto de desarrollo
     methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type']
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '50mb' }));
@@ -37,6 +38,7 @@ app.use(fileUpload({
 
 // Rutas
 app.use('/api/matriz-riesgos', matrizRiesgosRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
 
 await testConnection();
 
