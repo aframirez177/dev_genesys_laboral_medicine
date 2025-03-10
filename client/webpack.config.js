@@ -13,7 +13,8 @@ module.exports = {
         riesgos: './src/main_matriz_riesgos_profesional.js',
         profesiograma:'./src/main_profesiograma.js',
         examenes:'./src/main_examenes_medicos_ocupacionales.js',
-        bateriaPsicosocial: './src/main_bateria_de_riesgo_psicosocial.js'
+        bateriaPsicosocial: './src/main_bateria_de_riesgo_psicosocial.js',
+        analisispuestodetrabajo: './src/main_analisis_puesto_de_trabajo.js'
         
     },
     output: {
