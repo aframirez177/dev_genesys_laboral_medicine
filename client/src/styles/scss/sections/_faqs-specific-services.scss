@@ -1,0 +1,68 @@
+// Clase para preguntas del servicio
+
+.faq-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: map-get(
+      $colors,
+      "background-alternative"
+    ); // Fondo alternativo
+    padding: 2rem;
+  
+    .faq-container {
+      max-width: 800px; // Ancho máximo para mejor lectura
+      width: 100%;
+  
+      .faq-block {
+        margin-bottom: 2rem; // Espacio entre preguntas
+        width: 100%;
+  
+        h2 {
+          font-size: 3.1rem; // Tamaño de fuente para títulos
+          font-family: map-get($fonts, "title");
+          color: map-get($colors, "text"); // Color de texto principal
+          line-height: 120%; // Mejoramos el interlineado
+          margin-bottom: 1rem; // Espacio debajo del título
+        }
+  
+        .faq-description {
+          font-family: map-get($fonts, "body");
+          font-size: 1.5rem; // Tamaño de fuente ligeramente mayor
+          color: map-get($colors, "text"); // Color de texto principal
+          line-height: 1.6; // Mejoramos el interlineado
+          margin-bottom: 1rem; // Espacio debajo del párrafo
+        }
+  
+        ul.faq-description {
+          list-style-type: disc; // Viñetas para la lista
+          margin-left: 2rem; // Sangría para las viñetas
+          padding: 0;
+  
+          li {
+            margin-bottom: 0.5rem; // Espacio entre elementos de la lista
+          }
+        }
+      }
+    }
+  
+    .faq-button {
+      max-width: 600px;
+      margin: 2.5rem auto; // Centrar el botón
+      background-color: map-get($colors, "primary"); // Color primario
+      color: map-get($colors, "text-light"); // Texto claro
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  
+      &:hover {
+        background-color: darken(
+          map-get($colors, "primary"),
+          10%
+        ); // Efecto hover
+      }
+    }
+  }

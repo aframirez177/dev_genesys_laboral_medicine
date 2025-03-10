@@ -1,0 +1,45 @@
+// Clase para primera pregunta con imagen 
+
+.faq-pregunta-mas-imagen {
+  display: flex;
+  flex-direction: row; // Usamos flexbox para organizar los elementos
+  flex-wrap: wrap;
+  align-items: center; // Centramos verticalmente los elementos
+  justify-content: center; // Espacio entre la imagen y el texto
+  width: 100%; // Ocupa el 100% del ancho disponible
+  margin: 0 auto; // Centramos el section horizontalmente
+  padding: 2rem; // Padding interno
+  background-color: #edf0e9; // Color de fondo
+
+  .image-content {
+        min-width: 280px;
+        max-width: 400PX;
+    img {
+          
+          max-width: 100%;
+          aspect-ratio: 1 / 1; // Hace que la imagen sea cuadrada
+          object-fit: cover; // Asegura que la imagen cubra el espacio sin deformarse
+      }
+  }
+
+  .faq-pregunta-container {
+      min-width: 280px; // Ancho del contenedor de texto
+      max-width: 400px;
+      .text-container {
+          h2 {
+              font-family: map-get($fonts, "title");
+              font-size: 2.6rem;
+              color: map-get($colors, "secondary");
+              font-weight: 800;
+              margin: 0 0 1rem 0; // Margen inferior para separar del párrafo
+          }
+
+          p {
+              font-size: 1.1rem;
+              line-height: 150%;
+              font-weight: 500;
+              margin: 0; // Eliminamos el margen superior
+          }
+      }
+  }
+}
