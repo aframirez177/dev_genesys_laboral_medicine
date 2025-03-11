@@ -51,10 +51,10 @@ class ContactFormManager {
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="nit">NIT *</label>
+                                 <label for="nit">NIT *</label>
                                 <input type="text" id="nit" name="nit" 
-                                    pattern="\d+(-\d+)?" 
-                                    title="Ingrese un NIT válido (solo números y guiones)"
+                                    pattern="[0-9-]*" 
+                                    title="Ingrese un NIT válido"
                                     required>
                             </div>
                             <div class="form-group">

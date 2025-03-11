@@ -48,5 +48,24 @@ export function getEnvVars() {
         WHATSAPP_TOKEN: process.env.WHATSAPP_TOKEN,
         WHATSAPP_VERIFY_TOKEN: process.env.WHATSAPP_VERIFY_TOKEN,
         WHATSAPP_PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID
+        
     };
 }
+
+
+// Crea una instancia de configuración para el enfoque orientado a objetos
+class EnvironmentConfig {
+    constructor() {
+        // Carga variables de entorno a través de la función existente
+        const envVars = getEnvVars();
+        
+        // Transfiere todas las propiedades a esta instancia
+        Object.assign(this, envVars);
+        
+        // Añade propiedades específicas para WhatsApp que no estén en getEnvVars
+        this.WHATSAPP_API_VERSION = 'v22.0';
+    }
+}
+
+// Exporta una instancia singleton para uso orientado a objetos
+export default new EnvironmentConfig();

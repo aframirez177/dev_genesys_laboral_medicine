@@ -1,16 +1,11 @@
 // server/src/routes/whatsapp.routes.js
 import express from 'express';
-import { verifyWebhook, receiveMessage, sendMessage } from '../controllers/whatsapp.controller.js';
+import webhookController from '../controllers/webhookController.js';
 
 const router = express.Router();
 
-// Ruta para la verificación del webhook (GET)
-router.get('/webhook', verifyWebhook);
-
-// Ruta para recibir mensajes (POST)
-router.post('/webhook', receiveMessage);
-
-// Ruta para enviar mensajes
-router.post('/send', sendMessage);
+router.post('/webhook', webhookController.handleIncoming);
+router.get('/webhook', webhookController.verifyWebhook);
+router.post('/send', webhookController.sendMessageEndpoint);
 
 export default router;
