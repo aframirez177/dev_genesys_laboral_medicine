@@ -6,6 +6,8 @@ import { getEnvVars } from './config/env.js';
 import { testConnection } from './config/database.js';
 import matrizRiesgosRoutes from './routes/matriz-riesgos.routes.js';
 import whatsappRoutes from './routes/whatsapp.routes.js';
+import config from './config/whatsappConfig.js';
+
 
 const env = getEnvVars();
 
@@ -40,6 +42,8 @@ app.use(fileUpload({
 app.use('/api/matriz-riesgos', matrizRiesgosRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 
+app.use('/', whatsappRoutes);
+
 await testConnection();
 
 app.use((req, res, next) => {
@@ -56,6 +60,11 @@ app.get('/api/health', (req, res) => {
         timestamp: new Date()
     });
 });
+
+app.get('/', (req, res) => {
+    res.send(`<pre>Nothing to see here.
+  Checkout README.md to start.</pre>`);
+  });
 
 // Manejo de errores de puerto en uso
 const server = app.listen(PORT, () => {
