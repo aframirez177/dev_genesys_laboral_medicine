@@ -1,1 +1,1 @@
-import './styles/scss/client/src/styles/scss/style_analisis_puesto_de_trabajo.scss';
+import './styles/scss/style_analisis_puesto_de_trabajo.scss';

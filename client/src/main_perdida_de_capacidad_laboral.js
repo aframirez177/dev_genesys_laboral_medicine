@@ -1,0 +1,1 @@
+import './styles/scss/style_perdida_de_capacidad_laboral.scss';

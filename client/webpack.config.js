@@ -14,7 +14,10 @@ module.exports = {
         profesiograma:'./src/main_profesiograma.js',
         examenes:'./src/main_examenes_medicos_ocupacionales.js',
         bateriaPsicosocial: './src/main_bateria_de_riesgo_psicosocial.js',
-        analisispuestodetrabajo: './src/main_analisis_puesto_de_trabajo.js'
+        analisispuestodetrabajo: './src/main_analisis_puesto_de_trabajo.js',
+        perdidacapacidadlaboral: '/src/main_perdida_de_capacidad_laboral.js',
+        examenmedicoescolar: '/src/main_examen_medico_escolar.js',
+        sst: '/src/main_sst.js'
         
     },
     output: {
@@ -121,6 +124,11 @@ module.exports = {
         template: './public/pages/Nosotros.html',
         filename: './pages/Nosotros.html',
         }),
+        new HtmlWebpackPlugin({
+            inject: true,
+            template: './public/pages/Perdida_de_capacidad_laboral.html',
+            filename: './pages/Perdida_de_capacidad_laboral.html',
+            }),
         new HtmlWebpackPlugin({
         chunks:['main','profesiograma'],
         inject: true,
