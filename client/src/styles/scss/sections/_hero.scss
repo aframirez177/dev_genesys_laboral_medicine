@@ -50,7 +50,7 @@
     background-image: url("../../assets/images/foto_profesiograma_hero_background.webp");
 }
 .background-container-examenes_medicos_ocupacionales {
-    background-image: url("../../assets/images/foto_examenes_medicos_ocupacionales_hero_background_2.webp");
+    background-image: url("../../assets/images/foto_examenes_medicos_ocupacionales_hero_background.webp");
     background-blend-mode: lighten;
     background-color: rgb(222 222 222 / 45%);
 }
@@ -99,6 +99,11 @@
 
 .background-sst {
     background-image: url("../../assets/images/foto_sst_background.webp");
+    background-blend-mode: lighten;
+    background-color: rgb(222 222 222 / 45%);
+}
+.background-examen-medico-escolar {
+    background-image: url("../../assets/images/foto_examen_medico_escolar_background.webp");
     background-blend-mode: lighten;
     background-color: rgb(222 222 222 / 45%);
 }

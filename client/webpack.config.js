@@ -17,7 +17,10 @@ module.exports = {
         analisispuestodetrabajo: './src/main_analisis_puesto_de_trabajo.js',
         perdidacapacidadlaboral: '/src/main_perdida_de_capacidad_laboral.js',
         examenmedicoescolar: '/src/main_examen_medico_escolar.js',
-        sst: '/src/main_sst.js'
+        sst: '/src/main_sst.js',
+        nosotros:'/src/main_nosotros.js',
+        informacionlegal:'/src/main_informacion_legal.js',
+        enrollment:'/src/main_enrollment.js'
         
     },
     output: {
@@ -142,15 +145,9 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
         inject: true,
-        template: './public/pages/Servicios.html',
-        filename: './pages/Servicios.html',
-        }),
-        new HtmlWebpackPlugin({
-        inject: true,
         template: './public/pages/SST.html',
         filename: './pages/SST.html',
         }),
-
         new MiniCssExtractPlugin(),
         new CopyPlugin({
             patterns:[

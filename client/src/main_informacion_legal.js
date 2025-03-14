@@ -1,0 +1,1 @@
+import './styles/scss/style_informacion_legal.scss';

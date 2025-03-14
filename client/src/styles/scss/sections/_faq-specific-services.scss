@@ -28,18 +28,20 @@
       .text-container {
           h2 {
               font-family: map-get($fonts, "title");
-              font-size: 2.6rem;
+              font-size: 3.1rem;
               color: map-get($colors, "secondary");
               font-weight: 800;
               margin: 0 0 1rem 0; // Margen inferior para separar del párrafo
           }
 
           p {
-              font-size: 1.1rem;
-              line-height: 150%;
-              font-weight: 500;
-              margin: 0; // Eliminamos el margen superior
+            font-size: 1.5rem;
+            line-height: 150%;
+            font-weight: 500;
+            margin: 0;
+            position: relative; // Para posicionar el botón correctamente
           }
+          
       }
   }
 }
