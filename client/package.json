@@ -8,7 +8,7 @@
     "build": "webpack --mode production",
     "dev": "webpack --mode development --watch",
     "serve": "webpack serve --mode development",
-    "deploy": "gh-pages -d dist",
+    "deploy": "gh-pages -d ../dist",
     "clean": "sudo fuser -k 3000/tcp || true"
   },
   "repository": {
