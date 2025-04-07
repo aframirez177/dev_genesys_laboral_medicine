@@ -1,0 +1,78 @@
+.descripcion-equipo-de-trabajo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #edf0e9;
+
+  &.normal {
+    flex-direction: row;
+  }
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
+
+  .image-content {
+    width: 260px;
+    height: 390px;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .descripcion-container {
+    min-width: 280px;
+    max-width: 400px;
+
+    .text-container {
+      h2 {
+        font-family: map-get($fonts, "title");
+        font-size: 3.2rem;
+        color: map-get($colors, "secondary");
+        font-weight: 800;
+        margin: 0 0 1rem 0;
+      }
+
+      p {
+        font-size: 1.6rem;
+        line-height: 150%;
+        font-weight: 500;
+        margin: 0;
+        position: relative;
+      }
+    }
+  }
+}
+
+.separador-wrapper {
+    background-color: #edf0e9; // Igual que el fondo
+    padding: 1rem 0; // Opcional: separa visualmente
+  
+    .separador {
+      width: 80%;
+      height: 2px;
+      background: linear-gradient(to right, #ccc, #666, #ccc);
+      margin: 0 auto;
+      border-radius: 999px;
+    }
+
+}
+
+@include respond-to("tablet") {
+    .image-content {
+        width: 200px;
+        height: 200px;
+      }
+    }
