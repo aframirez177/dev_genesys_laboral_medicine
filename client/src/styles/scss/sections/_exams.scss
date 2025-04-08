@@ -1,6 +1,16 @@
 .section-servicios {
     background-color: map-get($colors, "background");
     padding: 2rem 0;
+    .service-description{
+        align-items: center;
+        .service-bennefit{
+            justify-items: center;
+            margin: 4rem;
+            font-size: 1.6rem;
+            text-align: center;
+        }
+
+    }
 }
 
 .exams-container {
@@ -24,16 +34,19 @@
         left: 0;
         width: 100%;
         height: 2px;
-        background-color: #e0e0e0;
+        background-color: map-get($colors ,"border-color");
     }
     
     &-button {
         padding: 1rem 1.5rem;
         margin: 0 0.5rem 0.5rem;
-        background-color: #f0f0f0;
+        background-color: map-get($colors ,"border-color");
         border: none;
         border-radius: 30px;
-        font-size: 1.1rem;
+        font-size: 1.7rem;
+        font-family: map-get($fonts, "title");
+        font-weight: 600;
+        color: map-get($colors ,"secondary");
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
@@ -87,7 +100,7 @@
     transform: translateX(-50%);
     width: 50px;
     height: 4px;
-    background-color: #5ecaa5;
+    background-color:transparent;
     border-radius: 2px;
     opacity: 0.7;
     animation: tabIndicator 5s linear infinite;
@@ -107,7 +120,7 @@
 // Contenido de las pestañas
 .exams-content {
     width: 100%;
-    min-height: 300px; // Altura mínima para evitar saltos en el layout
+    min-height: 200px; // Altura mínima para evitar saltos en el layout
     position: relative;
     
     &-panel {
@@ -116,7 +129,7 @@
         transform: translateY(10px);
         flex-wrap: wrap;
         justify-content: center;
-        gap: 1.5rem;
+        gap: .5rem;
         position: absolute;
         width: 100%;
         top: 0;
@@ -133,15 +146,16 @@
 
 // Tarjetas de exámenes
 .exam-card {
-    background-color: #5ecaa5;
-    color: white;
+    
+    color: map-get($colors ,"secondary");;
     padding: 1.2rem 1.5rem;
     border-radius: 12px;
-    width: calc(25% - 1.5rem);
-    min-width: 250px;
+    
+    min-width: 200px;
     text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+    font-family: map-get($fonts, "title");
+    font-size: 1.4rem;
     
     &:hover {
         transform: translateY(-5px);
@@ -178,10 +192,12 @@
     .exam-card {
         width: calc(50% - 1.5rem);
     }
-    
+    .exams-content {
+        min-height: 270px;
+    }
     .exams-tabs-button {
         padding: 0.8rem 1.2rem;
-        font-size: 1rem;
+        font-size: 1.7rem;
     }
 }
 
@@ -191,6 +207,6 @@
     }
     
     .exams-content {
-        min-height: 400px;
+        min-height: 560px;
     }
 }

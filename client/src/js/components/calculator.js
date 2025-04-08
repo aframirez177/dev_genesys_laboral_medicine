@@ -31,145 +31,211 @@ const formatUtils = {
             code: 'EMO',
             fullName: 'EXAMEN MEDICO CON ENFASIS OSTEOMUSCULAR',
             description: 'Evalúa la salud del sistema musculoesquelético, identificando condiciones que puedan afectar el desempeño laboral.',
-            basePrice: 30000
+            basePrice: 32100
         },
         EMOA: {
             code: 'EMOA',
             fullName: 'EXAMEN MEDICO OSTEOMUSCULAR CON ENFASIS EN ALTURAS',
             description: 'Evaluación específica para trabajo en alturas, incluyendo valoración del sistema vestibular y neurológico.',
-            basePrice: 33000
+            basePrice: 35310
+        },
+        EMOD: {
+            code: 'EMOD',
+            fullName: 'EXAMEN MEDICO OSTEOMUSCULAR CON ENFASIS DERMATOLOGICO',
+            description: 'Evaluación específica para trabajo con sustancias quimicas, incluyendo valoración dermatologica.',
+            basePrice: 32100
+        },
+        EMOMP: {
+            code: 'EMOMP',
+            fullName: 'EXAMEN MEDICO OSTEOMUSCULAR CON ENFASIS EN MANIPULACION DE ALIMENTOS',
+            description: 'Evaluación específica para trabajo con manipulacion de alimentos.',
+            basePrice: 32100
         },
         AUD: {
             code: 'AUD',
             fullName: 'AUDIOMETRIA',
             description: 'Mide la capacidad auditiva para identificar posibles pérdidas auditivas causadas por ruido ocupacional.',
-            basePrice: 16450
+            basePrice: 25145
           },
           ESP: {
               code: 'ESP',
               fullName: 'ESPIROMETRÍA',
               description: 'Evalúa la función pulmonar, detectando enfermedades respiratorias que puedan ser causadas o agravadas por el trabajo.',
-              basePrice: 16450
+              basePrice: 25145
           },
           OPTO: {
               code: 'OPTO',
               fullName: 'OPTOMETRÍA',
               description: 'Examina la salud visual y detecta problemas que puedan afectar el desempeño laboral o ser resultado de la exposición a riesgos en el trabajo.',
-              basePrice: 16450
+              basePrice: 25145
           },
           VIS: {
               code: 'VIS',
               fullName: 'VISIOMETRÍA',
               description: 'Mide la agudeza visual y otras capacidades visuales importantes para el trabajo.',
-              basePrice: 11900
+              basePrice: 16000
           },
           ECG: {
               code: 'ECG',
               fullName: 'ELECTROCARDIOGRAMA',
               description: 'Registra la actividad eléctrica del corazón para detectar enfermedades cardíacas.',
-              basePrice: 29400
+              basePrice: 44940
           },
           RXC: {
               code: 'RXC',
               fullName: 'RAYOS X DE COLUMNA',
               description: 'Obtiene imágenes de la columna vertebral para identificar lesiones o condiciones que puedan afectar la salud del trabajador.',
-              basePrice: 49000
+              basePrice: 74900
           },
           PSM: {
               code: 'PSM',
               fullName: 'PRUEBA PSICOSENSOMETRICA',
               description: 'Evalúa habilidades sensoriales y motoras importantes para ciertas tareas laborales.',
-              basePrice: 30800
+              basePrice: 43000
           },
           PST: {
               code: 'PST',
               fullName: 'PRUEBA PSICOTECNICA',
               description: 'Mide aptitudes y habilidades cognitivas relevantes para el desempeño laboral.',
-              basePrice: 24500
+              basePrice: 37450
+          },
+          FRO: {
+              code: 'FRO',
+              fullName: 'FROTIS FARINGEO',
+              description: 'prueba de laboratorio que se realiza para detectar infecciones en la garganta, especialmente aquellas causadas por bacterias como el estreptococo.',
+              basePrice: 13500
           },
           GLI: {
               code: 'GLI',
               fullName: 'GLICEMIA',
               description: 'Mide los niveles de azúcar en sangre para identificar diabetes u otras condiciones metabólicas.',
-              basePrice: 10500
+              basePrice: 16050
           },
           CH: {
               code: 'CH',
               fullName: 'CUADRO HEMATICO',
               description: 'Cuadro Hematico',
-              basePrice: 9800
+              basePrice: 18500
+          },
+          RH: {
+              code: 'RH',
+              fullName: 'HEMOCLASIFICIÓN GRUPO ABO Y FACTOR RH',
+              description: 'análisis de sangre que determina el tipo de sangre de una persona.',
+              basePrice: 14980
+          },
+          KOH: {
+              code: 'KOH',
+              fullName: 'PRUEBA DE KOH',
+              description: 'son las siglas de hidróxido de potasio, un compuesto químico que se utiliza en la prueba de KOH para diagnosticar infecciones por hongos.',
+              basePrice: 13500
+          },
+          BUN: {
+              code: 'BUN',
+              fullName: 'NITROGENO UREICO [BUN]',
+              description: 'Exámen de laboratorio de nitrogeno ureico en sangre',
+              basePrice: 14980
           },
           PL: {
               code: 'PL',
               fullName: 'PERFIL LIPÍDICO',
               description: 'Mide los niveles de colesterol y triglicéridos para evaluar el riesgo cardiovascular.',
-              basePrice: 22400
+              basePrice: 34240
           },
           PAS: {
               code: 'PAS',
               fullName: 'PRUEBA DE ALCOHOL EN SALIVA',
               description: 'Detectan consumo reciente de alcohol.',
-              basePrice: 28000
+              basePrice: 42800
           },
           PE: {
               code: 'PE',
               fullName: 'PRUEBA DE EMBARAZO',
               description: 'Confirma o descarta un embarazo.',
-              basePrice: 12600
+              basePrice: 19260
           },
           PSP: {
               code: 'PSP',
               fullName: 'PRUEBA DE SUSTANCIAS PSICOACTIVAS',
               description: 'Detectan el consumo de drogas.',
-              basePrice: 23800
+              basePrice: 36380
           },
           TGO: {
               code: 'TGO',
               fullName: 'TRANSAMINASAS TGO',
               description: 'Evalúan la función hepática. Colesterol: Mide los niveles de colesterol en sangre.',
-              basePrice: 12600
+              basePrice: 19260
           },
           TGP: {
               code: 'TGP',
               fullName: 'TRANSAMINASAS TGP',
               description: 'Evalúan la función hepática. Colesterol: Mide los niveles de colesterol en sangre.',
-              basePrice: 12600
+              basePrice: 19260
           },
           TRI: {
               code: 'TRI',
               fullName: 'TRIGLICÉRIDOS',
               description: 'Mide los niveles de triglicéridos en sangre.',
-              basePrice: 10500
+              basePrice: 16050
           },
           COL: {
               code: 'COL',
               fullName: 'COLESTEROL',
               description: 'Mide los niveles de colesterol en sangre.',
-              basePrice: 10500
+              basePrice: 16050
           },
           COP: {
               code: 'COP',
               fullName: 'COPROLOGICO',
               description: 'Coprologico',
-              basePrice: 9800
+              basePrice: 13500
           },
           LEP: {
               code: 'LEP',
               fullName: 'LEPTOSPIRA',
               description: 'Leptospira',
-              basePrice: 80500
+              basePrice: 90415
           },
           BRU: {
               code: 'BRU',
               fullName: 'BRUCELA',
               description: 'Brucela',
-              basePrice: 80500
+              basePrice: 84530
           },
           TOX: {
               code: 'TOX',
               fullName: 'TOXOPLASMA',
               description: 'Toxoplasma',
-              basePrice: 40600
+              basePrice: 55000
+          },
+          COLI: {
+              code: 'COLI',
+              fullName: 'COLINESTERASA',
+              description: 'colinesterasa',
+              basePrice: 53500
+          },
+          COLI: {
+              code: 'COLI',
+              fullName: 'COLINESTERASA',
+              description: 'colinesterasa',
+              basePrice: 53500
+          },
+          CRE: {
+              code: 'CRE',
+              fullName: 'CREATININA',
+              description: 'creatinina',
+              basePrice: 19000
+          },
+          ORI: {
+              code: 'ORI',
+              fullName: 'PARCIAL DE ORINA',
+              description: 'parcial de orina',
+              basePrice: 19500
+          },
+          TET: {
+              code: 'TET',
+              fullName: 'VACUNA DEL TETANO',
+              description: 'vacuna del tetano',
+              basePrice: 43000
           }
 
 
@@ -659,7 +725,9 @@ const formatUtils = {
 
             titleElement.textContent = exam.fullName;
             descElement.textContent = exam.description;
-            priceElement.textContent = formatUtils.formatCurrency(exam.basePrice);
+            const indicativeDiscount = 0.35; // 35%
+            const displayPrice = exam.basePrice * (1 - indicativeDiscount);
+            priceElement.textContent = formatUtils.formatCurrency(displayPrice);
         }
 
         /**
