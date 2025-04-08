@@ -1,3 +1,6 @@
+.section-servicios{
+    background-color: map-get($colors, "background");
+}
 .service-bennefit{
     display: flex;
     justify-content: center;
@@ -125,6 +128,10 @@
             
         }
     }
+}
+.nuestros-examenes{
+    margin: 0;
+    padding: 2rem;
 }
 
 
