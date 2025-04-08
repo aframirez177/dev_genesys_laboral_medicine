@@ -9,13 +9,14 @@
       "background-alternative"
     ); // Fondo alternativo
     padding: 2rem;
+    width: 100vw;
   
     .faq-container {
       max-width: 800px; // Ancho máximo para mejor lectura
       width: 100%;
   
       .faq-block {
-        margin-bottom: 2rem; // Espacio entre preguntas
+        padding: 3rem; // Espacio entre preguntas
         width: 100%;
   
         h2 {
@@ -28,10 +29,11 @@
   
         .faq-description {
           font-family: map-get($fonts, "body");
-          font-size: 1.5rem; // Tamaño de fuente ligeramente mayor
+          font-size: 1.6rem; // Tamaño de fuente ligeramente mayor
           color: map-get($colors, "text"); // Color de texto principal
           line-height: 1.6; // Mejoramos el interlineado
           margin-bottom: 1rem; // Espacio debajo del párrafo
+          font-weight: 600;
         }
   
         ul.faq-description {
@@ -41,8 +43,12 @@
   
           li {
             margin-bottom: 0.5rem; // Espacio entre elementos de la lista
+            font-weight: 300;
           }
         }
+        .cta-button{
+          margin: 3rem;
+      }
       }
     }
   

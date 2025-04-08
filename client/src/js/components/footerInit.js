@@ -58,8 +58,6 @@ export function initFooter() {
             { text: "Batería de riesgo psicosocial", href: "pages/Bateria_de_riesgo_psicosocial.html" },
             { text: "Análisis de puesto de trabajo", href: "pages/Analisis_de_puesto_de_trabajo.html" },
             { text: "Sistema de gestión (SG-SST)", href: "pages/SST.html" },
-            { text: "Exámenes paraclínicos", href: "pages/examenes_paraclinicos.html" },
-            { text: "Exámenes de laboratorio", href: "pages/examenes_laboratorio.html" },
             { text: "Examen escolar", href: "pages/examen_medico_escolar.html" }
         ],
         companyInfo: [

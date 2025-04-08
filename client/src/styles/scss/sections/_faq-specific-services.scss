@@ -5,7 +5,7 @@
   flex-direction: row; // Usamos flexbox para organizar los elementos
   flex-wrap: wrap;
   align-items: center; // Centramos verticalmente los elementos
-  justify-content: center; // Espacio entre la imagen y el texto
+  justify-content: space-around; // Espacio entre la imagen y el texto
   width: 100%; // Ocupa el 100% del ancho disponible
   margin: 0 auto; // Centramos el section horizontalmente
   padding: 2rem; // Padding interno
@@ -13,25 +13,28 @@
 
   .image-content {
         min-width: 280px;
-        max-width: 400PX;
+        max-width: 350PX;
     img {
           
           max-width: 100%;
-          aspect-ratio: 1 / 1; // Hace que la imagen sea cuadrada
+          /* aspect-ratio: 1 / 1; */ // Hace que la imagen sea cuadrada
           object-fit: cover; // Asegura que la imagen cubra el espacio sin deformarse
       }
+      .cta-button{
+        margin: 3rem;
+    }
   }
 
   .faq-pregunta-container {
       min-width: 280px; // Ancho del contenedor de texto
-      max-width: 400px;
+      max-width: 500px;
       .text-container {
           h2 {
               font-family: map-get($fonts, "title");
               font-size: 3.1rem;
               color: map-get($colors, "secondary");
               font-weight: 800;
-              margin: 0 0 1rem 0; // Margen inferior para separar del párrafo
+              margin: 1rem; // Margen inferior para separar del párrafo
           }
 
           p {
@@ -44,4 +47,15 @@
           
       }
   }
+}
+.cta-button-faqs{
+    margin: 3rem;
+}
+.faq-pregunta-analisis-puesto-trabajo{
+
+    background-color: #e6f0e1;
+}
+.faq-pregunta-examen-medico-escolar{
+
+    background-color: #e6f0e1;
 }

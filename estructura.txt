@@ -12,6 +12,7 @@
 │   │       ├── ./client/public/pages/Blog.html
 │   │       ├── ./client/public/pages/Blogs.html
 │   │       ├── ./client/public/pages/Contacto.html
+│   │       ├── ./client/public/pages/Enrollment.html
 │   │       ├── ./client/public/pages/Examenes_medicos_ocupacionales.html
 │   │       ├── ./client/public/pages/Genesys_BI.html
 │   │       ├── ./client/public/pages/Informacion_financiera.html
@@ -21,7 +22,6 @@
 │   │       ├── ./client/public/pages/Perdida_de_capacidad_laboral.html
 │   │       ├── ./client/public/pages/Profesiograma.html
 │   │       ├── ./client/public/pages/SST.html
-│   │       ├── ./client/public/pages/Servicios.html
 │   │       ├── ./client/public/pages/examen_medico_escolar.html
 │   │       └── ./client/public/pages/resultados.html
 │   ├── ./client/src
@@ -128,13 +128,22 @@
 │   │   │       │   ├── ./client/src/assets/images/Servicios medicos/logo-psicologia.svg
 │   │   │       │   └── ./client/src/assets/images/Servicios medicos/logo-toma-muestras.svg
 │   │   │       ├── ./client/src/assets/images/caneca.svg
+│   │   │       ├── ./client/src/assets/images/foto_analisis_de_puesto_de_trabajo_background.webp
+│   │   │       ├── ./client/src/assets/images/foto_bateria_de_riesgo_psicosocial_hero_background.webp
+│   │   │       ├── ./client/src/assets/images/foto_enrollment_background.webp
+│   │   │       ├── ./client/src/assets/images/foto_examen_medico_escolar_background.webp
 │   │   │       ├── ./client/src/assets/images/foto_examenes_medicos_ocupacionales_hero_background.webp
-│   │   │       ├── ./client/src/assets/images/foto_examenes_medicos_ocupacionales_hero_background_2.webp
+│   │   │       ├── ./client/src/assets/images/foto_informacion_legal_background.webp
 │   │   │       ├── ./client/src/assets/images/foto_inicio_hero_background.png
 │   │   │       ├── ./client/src/assets/images/foto_inicio_hero_background.webp
 │   │   │       ├── ./client/src/assets/images/foto_matriz_de_riesgos_profesional_hero_background.webp
+│   │   │       ├── ./client/src/assets/images/foto_nosotros_background.webp
+│   │   │       ├── ./client/src/assets/images/foto_perdida_de_capacidad_laboral_background.webp
 │   │   │       ├── ./client/src/assets/images/foto_profesiograma_hero_background.jpg
 │   │   │       ├── ./client/src/assets/images/foto_profesiograma_hero_background.webp
+│   │   │       ├── ./client/src/assets/images/foto_servicios_background - copia.webp:Zone.Identifier
+│   │   │       ├── ./client/src/assets/images/foto_servicios_background.webp
+│   │   │       ├── ./client/src/assets/images/foto_sst_background.webp
 │   │   │       ├── ./client/src/assets/images/icon_doctora.svg
 │   │   │       ├── ./client/src/assets/images/icon_heart.svg
 │   │   │       ├── ./client/src/assets/images/logo_claro_vectores.svg
@@ -147,19 +156,27 @@
 │   │   │       ├── ./client/src/assets/images/logo_solo_fabicon.png
 │   │   │       ├── ./client/src/assets/images/og_image.PNG
 │   │   │       ├── ./client/src/assets/images/patron_fondo.png
+│   │   │       ├── ./client/src/assets/images/render_analisis_puesto_de_trabajo.webp
+│   │   │       ├── ./client/src/assets/images/render_bateria_riesgo_psicosocial.webp
 │   │   │       ├── ./client/src/assets/images/render_dorctor_patient.webp
+│   │   │       ├── ./client/src/assets/images/render_examen_medico_escolar.webp
+│   │   │       ├── ./client/src/assets/images/render_perdida_de_capacidad_laboral.webp
+│   │   │       ├── ./client/src/assets/images/render_sst.webp
+│   │   │       ├── ./client/src/assets/images/render_sst.webp:Zone.Identifier
 │   │   │       ├── ./client/src/assets/images/viñeta.svg
 │   │   │       ├── ./client/src/assets/images/whatsapp-line-icon.png
 │   │   │       └── ./client/src/assets/images/whatsapp-line-icon.svg
 │   │   ├── ./client/src/index.js
 │   │   ├── ./client/src/js
 │   │   │   ├── ./client/src/js/components
+│   │   │   │   ├── ./client/src/js/components/boton_ver_mas.js
 │   │   │   │   ├── ./client/src/js/components/calculator.js
 │   │   │   │   ├── ./client/src/js/components/cardVisibility.js
 │   │   │   │   ├── ./client/src/js/components/clients.js
 │   │   │   │   ├── ./client/src/js/components/dropdown.js
 │   │   │   │   ├── ./client/src/js/components/faq.js
 │   │   │   │   ├── ./client/src/js/components/footerInit.js
+│   │   │   │   ├── ./client/src/js/components/form_bateria_riesgo_psicosocial.js
 │   │   │   │   ├── ./client/src/js/components/form_matriz_riesgos_prof.js
 │   │   │   │   ├── ./client/src/js/components/informacion_de_contacto.js
 │   │   │   │   ├── ./client/src/js/components/lazyMap.js
@@ -168,9 +185,17 @@
 │   │   │   └── ./client/src/js/utils
 │   │   │       └── ./client/src/js/utils/animations.js
 │   │   ├── ./client/src/main.js
+│   │   ├── ./client/src/main_analisis_puesto_de_trabajo.js
+│   │   ├── ./client/src/main_bateria_de_riesgo_psicosocial.js
+│   │   ├── ./client/src/main_enrollment.js
+│   │   ├── ./client/src/main_examen_medico_escolar.js
 │   │   ├── ./client/src/main_examenes_medicos_ocupacionales.js
+│   │   ├── ./client/src/main_informacion_legal.js
 │   │   ├── ./client/src/main_matriz_riesgos_profesional.js
+│   │   ├── ./client/src/main_nosotros.js
+│   │   ├── ./client/src/main_perdida_de_capacidad_laboral.js
 │   │   ├── ./client/src/main_profesiograma.js
+│   │   ├── ./client/src/main_sst.js
 │   │   ├── ./client/src/styles
 │   │   │   └── ./client/src/styles/scss
 │   │   │       ├── ./client/src/styles/scss/_media-queries.scss
@@ -194,7 +219,10 @@
 │   │   │       ├── ./client/src/styles/scss/sections
 │   │   │       │   ├── ./client/src/styles/scss/sections/_clients.scss
 │   │   │       │   ├── ./client/src/styles/scss/sections/_exams.scss
+│   │   │       │   ├── ./client/src/styles/scss/sections/_faq-specific-services.scss
+│   │   │       │   ├── ./client/src/styles/scss/sections/_faqs-specific-services.scss
 │   │   │       │   ├── ./client/src/styles/scss/sections/_faqs.scss
+│   │   │       │   ├── ./client/src/styles/scss/sections/_form_bateria_riesgos.scss
 │   │   │       │   ├── ./client/src/styles/scss/sections/_form_matriz_riesgos_prof.scss
 │   │   │       │   ├── ./client/src/styles/scss/sections/_hero.scss
 │   │   │       │   ├── ./client/src/styles/scss/sections/_location.scss
@@ -203,9 +231,17 @@
 │   │   │       │   ├── ./client/src/styles/scss/sections/_sst-services.scss
 │   │   │       │   ├── ./client/src/styles/scss/sections/_steps.scss
 │   │   │       │   └── ./client/src/styles/scss/sections/_women-leaders.scss
+│   │   │       ├── ./client/src/styles/scss/style_analisis_puesto_de_trabajo.scss
+│   │   │       ├── ./client/src/styles/scss/style_bateria_de_riesgo_psicosocial.scss
+│   │   │       ├── ./client/src/styles/scss/style_enrollment.scss
+│   │   │       ├── ./client/src/styles/scss/style_examen_medico_escolar.scss
 │   │   │       ├── ./client/src/styles/scss/style_examenes_medicos_ocupacionales.scss
+│   │   │       ├── ./client/src/styles/scss/style_informacion_legal.scss
 │   │   │       ├── ./client/src/styles/scss/style_matriz_de_riesgos_profesional.scss
+│   │   │       ├── ./client/src/styles/scss/style_nosotros.scss
+│   │   │       ├── ./client/src/styles/scss/style_perdida_de_capacidad_laboral.scss
 │   │   │       ├── ./client/src/styles/scss/style_profesiograma.scss
+│   │   │       ├── ./client/src/styles/scss/style_sst.scss
 │   │   │       └── ./client/src/styles/scss/utilities
 │   │   │           ├── ./client/src/styles/scss/utilities/_animations.scss
 │   │   │           └── ./client/src/styles/scss/utilities/_helpers.scss
@@ -213,8 +249,16 @@
 │   │       └── ./client/src/utils/getData.js
 │   └── ./client/webpack.config.js
 ├── ./dist
+│   ├── ./dist/0180d381040629780b00.webp
 │   ├── ./dist/20746168310abfd8a05f.webp
 │   ├── ./dist/34fca130022211be5eb2.webp
+│   ├── ./dist/5a66aa81a7fa610090aa.webp
+│   ├── ./dist/6ca331aa1e034402d5fa.webp
+│   ├── ./dist/a4ee4a7d006dbcb16ab9.webp
+│   ├── ./dist/a92f7362cd37884f0e56.webp
+│   ├── ./dist/analisispuestodetrabajo.bundle.js
+│   ├── ./dist/analisispuestodetrabajo.bundle.js.LICENSE.txt
+│   ├── ./dist/analisispuestodetrabajo.css
 │   ├── ./dist/assets
 │   │   ├── ./dist/assets/fonts
 │   │   │   ├── ./dist/assets/fonts/poppins-v21-latin-500.woff2
@@ -312,13 +356,22 @@
 │   │       │   ├── ./dist/assets/images/Servicios medicos/logo-psicologia.svg
 │   │       │   └── ./dist/assets/images/Servicios medicos/logo-toma-muestras.svg
 │   │       ├── ./dist/assets/images/caneca.svg
+│   │       ├── ./dist/assets/images/foto_analisis_de_puesto_de_trabajo_background.webp
+│   │       ├── ./dist/assets/images/foto_bateria_de_riesgo_psicosocial_hero_background.webp
+│   │       ├── ./dist/assets/images/foto_enrollment_background.webp
+│   │       ├── ./dist/assets/images/foto_examen_medico_escolar_background.webp
 │   │       ├── ./dist/assets/images/foto_examenes_medicos_ocupacionales_hero_background.webp
-│   │       ├── ./dist/assets/images/foto_examenes_medicos_ocupacionales_hero_background_2.webp
+│   │       ├── ./dist/assets/images/foto_informacion_legal_background.webp
 │   │       ├── ./dist/assets/images/foto_inicio_hero_background.png
 │   │       ├── ./dist/assets/images/foto_inicio_hero_background.webp
 │   │       ├── ./dist/assets/images/foto_matriz_de_riesgos_profesional_hero_background.webp
+│   │       ├── ./dist/assets/images/foto_nosotros_background.webp
+│   │       ├── ./dist/assets/images/foto_perdida_de_capacidad_laboral_background.webp
 │   │       ├── ./dist/assets/images/foto_profesiograma_hero_background.jpg
 │   │       ├── ./dist/assets/images/foto_profesiograma_hero_background.webp
+│   │       ├── ./dist/assets/images/foto_servicios_background - copia.webp:Zone.Identifier
+│   │       ├── ./dist/assets/images/foto_servicios_background.webp
+│   │       ├── ./dist/assets/images/foto_sst_background.webp
 │   │       ├── ./dist/assets/images/icon_doctora.svg
 │   │       ├── ./dist/assets/images/icon_heart.svg
 │   │       ├── ./dist/assets/images/logo_claro_vectores.svg
@@ -331,22 +384,46 @@
 │   │       ├── ./dist/assets/images/logo_solo_fabicon.png
 │   │       ├── ./dist/assets/images/og_image.PNG
 │   │       ├── ./dist/assets/images/patron_fondo.png
+│   │       ├── ./dist/assets/images/render_analisis_puesto_de_trabajo.webp
+│   │       ├── ./dist/assets/images/render_bateria_riesgo_psicosocial.webp
 │   │       ├── ./dist/assets/images/render_dorctor_patient.webp
+│   │       ├── ./dist/assets/images/render_examen_medico_escolar.webp
+│   │       ├── ./dist/assets/images/render_perdida_de_capacidad_laboral.webp
+│   │       ├── ./dist/assets/images/render_sst.webp
+│   │       ├── ./dist/assets/images/render_sst.webp:Zone.Identifier
 │   │       ├── ./dist/assets/images/viñeta.svg
 │   │       ├── ./dist/assets/images/whatsapp-line-icon.png
 │   │       └── ./dist/assets/images/whatsapp-line-icon.svg
+│   ├── ./dist/bateriaPsicosocial.bundle.js
+│   ├── ./dist/bateriaPsicosocial.bundle.js.LICENSE.txt
+│   ├── ./dist/bateriaPsicosocial.css
+│   ├── ./dist/c8b7e59de44f8b86568a.webp
 │   ├── ./dist/d197e50c9e7c1a79af91.webp
+│   ├── ./dist/e390b9effb57397a987b.webp
+│   ├── ./dist/enrollment.bundle.js
+│   ├── ./dist/enrollment.bundle.js.LICENSE.txt
+│   ├── ./dist/enrollment.css
 │   ├── ./dist/examenes.bundle.js
 │   ├── ./dist/examenes.bundle.js.LICENSE.txt
 │   ├── ./dist/examenes.css
+│   ├── ./dist/examenmedicoescolar.bundle.js
+│   ├── ./dist/examenmedicoescolar.bundle.js.LICENSE.txt
+│   ├── ./dist/examenmedicoescolar.css
 │   ├── ./dist/fc6bbb21e6d96188ec9f.webp
+│   ├── ./dist/fe4f75edc12052b050b9.webp
 │   ├── ./dist/index.bundle.js
 │   ├── ./dist/index.bundle.js.LICENSE.txt
 │   ├── ./dist/index.css
 │   ├── ./dist/index.html
+│   ├── ./dist/informacionlegal.bundle.js
+│   ├── ./dist/informacionlegal.bundle.js.LICENSE.txt
+│   ├── ./dist/informacionlegal.css
 │   ├── ./dist/main.bundle.js
 │   ├── ./dist/main.bundle.js.LICENSE.txt
 │   ├── ./dist/main.css
+│   ├── ./dist/nosotros.bundle.js
+│   ├── ./dist/nosotros.bundle.js.LICENSE.txt
+│   ├── ./dist/nosotros.css
 │   ├── ./dist/pages
 │   │   ├── ./dist/pages/Analisis_de_puesto_de_trabajo.html
 │   │   ├── ./dist/pages/Bateria_de_riesgo_psicosocial.html
@@ -358,17 +435,23 @@
 │   │   ├── ./dist/pages/Informacion_legal.html
 │   │   ├── ./dist/pages/Matriz_de_riesgos_profesional.html
 │   │   ├── ./dist/pages/Nosotros.html
+│   │   ├── ./dist/pages/Perdida_de_capacidad_laboral.html
 │   │   ├── ./dist/pages/Profesiograma.html
 │   │   ├── ./dist/pages/SST.html
-│   │   ├── ./dist/pages/Servicios.html
 │   │   ├── ./dist/pages/examen_medico_escolar.html
 │   │   └── ./dist/pages/resultados.html
+│   ├── ./dist/perdidacapacidadlaboral.bundle.js
+│   ├── ./dist/perdidacapacidadlaboral.bundle.js.LICENSE.txt
+│   ├── ./dist/perdidacapacidadlaboral.css
 │   ├── ./dist/profesiograma.bundle.js
 │   ├── ./dist/profesiograma.bundle.js.LICENSE.txt
 │   ├── ./dist/profesiograma.css
 │   ├── ./dist/riesgos.bundle.js
 │   ├── ./dist/riesgos.bundle.js.LICENSE.txt
-│   └── ./dist/riesgos.css
+│   ├── ./dist/riesgos.css
+│   ├── ./dist/sst.bundle.js
+│   ├── ./dist/sst.bundle.js.LICENSE.txt
+│   └── ./dist/sst.css
 ├── ./estructura.txt
 ├── ./jest.config.js
 ├── ./package-lock.json
@@ -376,29 +459,36 @@
 ├── ./scripts
 │   └── ./scripts/clean-ports.js
 └── ./server
-    ├── ./server/estructura.txt
     ├── ./server/nodemon.json
     ├── ./server/package-lock.json
     ├── ./server/package.json
-    └── ./server/src
-        ├── ./server/src/app.js
-        ├── ./server/src/config
-        │   ├── ./server/src/config/database.js
-        │   ├── ./server/src/config/env.js
-        │   ├── ./server/src/config/express.js
-        │   └── ./server/src/config/gtc45.config.js
-        ├── ./server/src/controllers
-        │   └── ./server/src/controllers/matriz-riesgos.controller.js
-        ├── ./server/src/database
-        │   ├── ./server/src/database/migrations
-        │   │   ├── ./server/src/database/migrations/init.js
-        │   │   └── ./server/src/database/migrations/schema.sql
-        │   └── ./server/src/database/seeds
-        ├── ./server/src/models
-        ├── ./server/src/routes
-        │   └── ./server/src/routes/matriz-riesgos.routes.js
-        ├── ./server/src/services
-        └── ./server/src/utils
-            └── ./server/src/utils/risk-calculations.js
+    ├── ./server/src
+    │   ├── ./server/src/app.js
+    │   ├── ./server/src/config
+    │   │   ├── ./server/src/config/database.js
+    │   │   ├── ./server/src/config/env.js
+    │   │   ├── ./server/src/config/express.js
+    │   │   ├── ./server/src/config/ges-config.js
+    │   │   ├── ./server/src/config/gtc45.config.js
+    │   │   └── ./server/src/config/whatsappConfig.js
+    │   ├── ./server/src/controllers
+    │   │   ├── ./server/src/controllers/matriz-riesgos.controller.js
+    │   │   └── ./server/src/controllers/webhookController.js
+    │   ├── ./server/src/database
+    │   │   ├── ./server/src/database/migrations
+    │   │   │   ├── ./server/src/database/migrations/init.js
+    │   │   │   └── ./server/src/database/migrations/schema.sql
+    │   │   └── ./server/src/database/seeds
+    │   ├── ./server/src/models
+    │   ├── ./server/src/routes
+    │   │   ├── ./server/src/routes/matriz-riesgos.routes.js
+    │   │   └── ./server/src/routes/whatsapp.routes.js
+    │   ├── ./server/src/services
+    │   │   ├── ./server/src/services/messageHandler.js
+    │   │   └── ./server/src/services/whatsappService.js
+    │   └── ./server/src/utils
+    │       └── ./server/src/utils/risk-calculations.js
+    └── ./server/tests
+        └── ./server/tests/matriz-riesgos.test.js
 
-43 directories, 358 files
+44 directories, 447 files
