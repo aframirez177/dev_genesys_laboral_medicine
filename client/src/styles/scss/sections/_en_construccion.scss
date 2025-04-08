@@ -1,0 +1,49 @@
+.construction-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .construction-content {
+    color: #ffffff;
+    animation: fadeIn 1.8s ease-in-out;
+  
+    h1 {
+      font-size: 4rem;
+      font-weight: 700;
+      line-height: 1.2;
+      animation: pulse 4s infinite;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); // mejora contraste con fondo
+    }
+  
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+    }
+  }
+  
+  // Animaciones
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+  }
