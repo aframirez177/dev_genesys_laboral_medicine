@@ -1,137 +1,196 @@
-.section-servicios{
+.section-servicios {
     background-color: map-get($colors, "background");
+    padding: 2rem 0;
 }
-.service-bennefit{
+
+.exams-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+// Pestañas de navegación
+.exams-tabs {
     display: flex;
     justify-content: center;
-    align-items: center;
-    h2{
-        font-size: 3rem;
-    }
-}
-.exams-cards {
-    margin-top: 5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-bottom: 2rem;
     flex-wrap: wrap;
-    padding: 1rem;
-
-    .exam {
-        background-color: #fff2fe;
-        border-radius: 12px;
-        padding: 1rem;
-        min-width: 320px;
-        height: 220px;
-        text-align: center;
+    position: relative;
+    
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #e0e0e0;
+    }
+    
+    &-button {
+        padding: 1rem 1.5rem;
+        margin: 0 0.5rem 0.5rem;
+        background-color: #f0f0f0;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
         position: relative;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        margin: 3rem 1rem;
-        hyphens: none;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        opacity: 0.1;
-        transform: translateY(20px);
-        transition: opacity 0.5s ease, transform 0.5s ease;
-
-        h3 {
-        color: map-get($colors, "primary");
-        position: absolute;
-        top: -40px;
-        transform: translateY(-25%);
-        transform-origin: left center;
-        white-space: nowrap;
-        font-size: 28px;
-        font-family: map-get($fonts, "title");
-        font-weight: 800;
-        text-align: center;
-        transition: 0.2s;
-        }
-
-        ul {
-        font-family: map-get($fonts, "body");
-        font-size: 11px;
-        color: map-get($colors, "alternative");
-        border-radius: 23px;
-        padding: 10px 10px;
-        position: absolute;
-        top: -20px;
-        text-align: center;
-        width: 320px;
-        transition: 0.2s;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        }
-
-        li {
-        position: relative;
-        font-family: map-get($fonts, "body");
-        font-weight: 500;
-        padding: 2rem;
-        border-radius: 5rem;
-        background-color: map-get($colors, "primary");
-        height: max-content;
-        text-align: center;
-        transition: 0.2s;
-        width: 40%;
-        font-size: 1.4rem;
-        top: 15%;
-        margin: 1rem;
-        text-align: left;
-        }
-
-        .cta-button {
-        position: absolute;
-        margin-top: 60%;
-        font-family: map-get($fonts, "title");
-        font-size: 12px;
-        padding: 7px;
-        height: 40px;
-        width: 150px;
-        border-radius: 12px;
-        background-color: map-get($colors, "alternative");
-        color: map-get($colors, "text");
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: 0.2s;
-        }
-
-        &:hover {
-            box-shadow: 0 10px 20px map-get($colors, "text");
-            background-color: map-get($colors, "primary");
-            
-            h3 {
-            font-size: 40px;
-            top: -65px;
-        }
-
-        ul {
-            background-color: map-get($colors, "alternative");
-            color: map-get($colors, "text");
-        }
-
-        li {
-            color: map-get($colors, "alternative");
-            font-weight: 800;
-        }
+        overflow: hidden;
+        
+        &::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background-color: #5ecaa5;
+            transition: width 0.3s ease;
         }
         
-        &.visible {
+        &:hover {
+            background-color: #e0e0e0;
+            
+            &::before {
+                width: 50%;
+            }
+        }
+        
+        &.active {
+            background-color: #5ecaa5;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(94, 202, 165, 0.3);
+            
+            &::before {
+                width: 80%;
+            }
+        }
+        
+        .emoji {
+            display: inline-block;
+            margin-left: 0.5rem;
+            transform: scale(1.2);
+        }
+    }
+}
+
+// Indicador de autorotación
+.exams-tabs::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    background-color: #5ecaa5;
+    border-radius: 2px;
+    opacity: 0.7;
+    animation: tabIndicator 5s linear infinite;
+}
+
+@keyframes tabIndicator {
+    0% {
+        width: 0;
+        opacity: 0.3;
+    }
+    100% {
+        width: 50px;
+        opacity: 0.7;
+    }
+}
+
+// Contenido de las pestañas
+.exams-content {
+    width: 100%;
+    min-height: 300px; // Altura mínima para evitar saltos en el layout
+    position: relative;
+    
+    &-panel {
+        display: none;
+        opacity: 0;
+        transform: translateY(10px);
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 0;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        
+        &.active {
+            display: flex;
             opacity: 1;
             transform: translateY(0);
         }
-        &:hover{
-            transform: translateY(-25px);
-            
+    }
+}
+
+// Tarjetas de exámenes
+.exam-card {
+    background-color: #5ecaa5;
+    color: white;
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    width: calc(25% - 1.5rem);
+    min-width: 250px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        background-color: darken(#5ecaa5, 5%);
+    }
+    
+    // Efecto de aparición escalonada
+    @for $i from 1 through 20 {
+        &:nth-child(#{$i}) {
+            animation: fadeInUp 0.5s #{$i * 0.05}s both;
         }
     }
 }
-.nuestros-examenes{
-    margin: 0;
-    padding: 2rem;
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
+// Ocultar contenedor original
+.exams-cards {
+    display: none;
+}
 
+// Estilos responsivos
+@media (max-width: 768px) {
+    .exam-card {
+        width: calc(50% - 1.5rem);
+    }
+    
+    .exams-tabs-button {
+        padding: 0.8rem 1.2rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .exam-card {
+        width: 100%;
+    }
+    
+    .exams-content {
+        min-height: 400px;
+    }
+}
