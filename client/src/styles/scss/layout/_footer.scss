@@ -7,7 +7,7 @@
     .footer-content {
         display: flex;
         flex-wrap: wrap;
-        justify-content: center;
+        justify-content: space-around;
         gap: 0;
 
         a,
@@ -19,8 +19,8 @@
 
     .footer-section {
         flex: 1;
-        min-width: 26rem;
-        max-width: 20rem;
+        min-width: 16rem;
+        max-width: 18rem;
         margin: 1rem;
 
         h3 {
@@ -65,14 +65,14 @@
     }
 
     .footer-section-contact-info {
-        min-width: 28rem;
-        max-width: 30rem;
+        min-width: 16rem;
+        max-width: 21rem;
         margin: 1rem;
 
         h3,
         h4 {
         color: map-get($colors, "primary");
-        margin: 1rem 0;
+        margin: 0rem 0;
         }
 
         a {

@@ -30,7 +30,7 @@ export function initMenu() {
         },
         mainNav: [
             { text: "Nosotros", href: `${pagesPath}/Nosotros.html` },
-            { text: "FAQ", href: "#" },
+            { text: "Resultados", href: "https://entregaderesultados.com/nueva_app/login-empresa", target: "_blank"},
             { text: "SST", href: `${pagesPath}/SST.html` },
             { text: "Genesys BI", href: `${pagesPath}/Genesys_BI.html` }
         ],
@@ -109,7 +109,7 @@ export function initMenu() {
             
             <nav class="screen-menu">
                 ${menuConfig.mainNav.map(item => 
-                    `<a href="${item.href}">${item.text}</a>`
+                    `<a href="${item.href}" ${item.target ? `target="${item.target}"` : ''}>${item.text}</a>`
                 ).join('')}
                 <div class="dropdown">
                     <button class="dropdown-toggle" aria-expanded="false" aria-controls="services-menu">

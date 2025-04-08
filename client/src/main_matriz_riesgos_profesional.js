@@ -1,4 +1,4 @@
-import { initializeForm } from './js/components/form_matriz_riesgos_prof.js';
+/* import { initializeForm } from './js/components/form_matriz_riesgos_prof.js'; */
 
 import './styles/scss/style_matriz_de_riesgos_profesional.scss';
 

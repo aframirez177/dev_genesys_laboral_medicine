@@ -1,5 +1,5 @@
 export function initCardVisibility() {
-    const cards = document.querySelectorAll('.step-card, .client-card, .exam-cards, .exam');
+    const cards = document.querySelectorAll('.step-card, .client-card, .exam');
     
     if (!cards.length) return;
 
