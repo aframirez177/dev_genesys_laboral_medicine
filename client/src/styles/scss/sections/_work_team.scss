@@ -30,6 +30,12 @@
       border-radius: 1.5rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
+    @include respond-to("tablet") {
+      .image-content {
+          width: 200px;
+          height: 200px;
+        }
+      }
   }
 
   .descripcion-container {
@@ -70,9 +76,3 @@
 
 }
 
-@include respond-to("tablet") {
-    .image-content {
-        width: 200px;
-        height: 200px;
-      }
-    }

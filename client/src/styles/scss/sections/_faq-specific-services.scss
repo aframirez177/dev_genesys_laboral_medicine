@@ -5,7 +5,7 @@
   flex-direction: row; // Usamos flexbox para organizar los elementos
   flex-wrap: wrap;
   align-items: center; // Centramos verticalmente los elementos
-  justify-content: space-around; // Espacio entre la imagen y el texto
+  justify-content: space-evenly; // Espacio entre la imagen y el texto
   width: 100%; // Ocupa el 100% del ancho disponible
   margin: 0 auto; // Centramos el section horizontalmente
   padding: 2rem; // Padding interno
