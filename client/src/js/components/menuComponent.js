@@ -30,7 +30,7 @@ export function initMenu() {
         },
         mainNav: [
             { text: "Nosotros", href: `${pagesPath}/Nosotros.html` },
-            { text: "Resultados", href: "https://entregaderesultados.com/nueva_app/login-empresa", target: "_blank"},
+            { text: "Resultados", href: "https://entregaderesultados.com/genesys", target: "_blank"},
             { text: "SST", href: `${pagesPath}/SST.html` },
             { text: "Genesys BI", href: `${pagesPath}/Genesys_BI.html` }
         ],
