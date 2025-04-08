@@ -1,0 +1,106 @@
+// Estilos específicos para la página "Nosotros"
+.nosotros-cards {
+  padding: 0;
+  background-color: #e6f0e1;
+  width: 100%;
+
+  .service-grid {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .service-card {
+    background-color: white;
+    padding: 2rem 3rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    align-items: center;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; // Centrado vertical de todo el contenido
+    min-height: 250px;
+    text-align: center; // Centrado horizontal por defecto
+
+
+    h3 {
+      font-size: 2.8rem;
+    }
+
+    p {
+      font-size: 1.6rem;
+    }
+
+    // Asignación de colores y alineación:
+    &:nth-child(1) {
+      background-color: map-get($aux-colors, 2);
+      width: 100%;
+
+      h3 {
+        text-align: left; // Título a la izquierda
+        margin-right: auto; // Refuerza alineación
+        color: map-get($colors, "text");
+      }
+
+      p {
+        text-align: left; // Texto alineado a la izquierda
+        margin-left: 0; // Elimina margen automático
+        margin-right: auto; // Empuja a la izquierda
+      }
+    }
+    &:nth-child(2) {
+      background-color: map-get($aux-colors, 7);
+      width: 100%;
+
+      h3 {
+        text-align: right; // Título a la derecha
+        margin-left: auto; // Refuerza alineación
+        color: map-get($colors, "text");
+      }
+
+      p {
+        text-align: right; // Texto alineado a la derecha
+        margin-left: auto; // Empuja a la derecha
+        margin-right: 0; // Elimina margen automático
+        color: map-get($colors, "text");
+      }
+    }
+    &:nth-child(3) {
+      background-color: map-get($aux-colors, 8);
+      min-width: 100%;
+      max-width: 100%;
+
+      h3 {
+        color: map-get($colors, "text-light");
+        margin-bottom: 1.6rem;
+      }
+      p {
+        text-align: center; // Texto centrado (ya está por defecto)
+        margin: 0 auto; // Centrado perfecto
+      }
+    }
+
+    &:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+  }
+  @include respond-to("tablet") {
+    .service-grid {
+      flex-wrap: wrap;
+    }
+
+    .service-card {
+      flex: 0 1 calc(50%);
+      width: auto;
+
+      &:nth-child(3) {
+        flex: 0 1 100%;
+      }
+
+      
+    }
+  }
+}

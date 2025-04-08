@@ -20,7 +20,8 @@ module.exports = {
         sst: '/src/main_sst.js',
         nosotros:'/src/main_nosotros.js',
         informacionlegal:'/src/main_informacion_legal.js',
-        enrollment:'/src/main_enrollment.js'
+        enrollment:'/src/main_enrollment.js',
+        genesysbi: '/src/main_genesys_bi.js'
         
     },
     output: {
