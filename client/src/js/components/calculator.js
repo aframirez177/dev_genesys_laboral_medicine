@@ -1189,6 +1189,7 @@ const formatUtils = {
 
                 // --- Detalles por Cargo ---
                 // ... (Mismo código que antes para iterar cargos y exámenes, usando addText y addLine) ...
+                // --- Detalles por Cargo (con lógica de página mejorada) ---
                 quotationData.cargos.forEach((cargo, index) => {
                     if (index > 0) y = addLine(y, 5); // Línea separadora entre cargos
                     y += 4;
@@ -1201,48 +1202,63 @@ const formatUtils = {
                     doc.setFont('Poppins', 'normal');
                     doc.setFontSize(9);
                     if (cargo.exams.length > 0) {
-                         y = addText('Exámenes incluidos:', margin + 3, y, { fontSize: 9, style: 'italic', color: highlightColor});
+                         let examListStartY = y; // Guardar Y antes de 'Exámenes incluidos:'
+                         y = addText('Exámenes incluidos:', margin + 3, examListStartY, { fontSize: 9, style: 'italic', color: highlightColor});
 
-                         // *** INICIO DEL BLOQUE CORREGIDO ***
+                         // *** INICIO DEL BLOQUE MEJORADO CON PRE-VERIFICACIÓN DE PÁGINA ***
                          cargo.exams.forEach(exam => {
                             let examLineText = `- ${exam.name}`;
                             let priceText = `(${formatUtils.formatCurrency(exam.unitPrice)} c/u)`;
-                            const fontSize = 9; // Usar una constante para la fuente
+                            const fontSize = 9;
+                            const lineHeight = doc.getTextDimensions('Test', { fontSize: fontSize }).h * 1.15; // Altura estimada por línea con espaciado
 
-                            // Calcula el ancho del texto del precio
+                            // --- Calcular espacio necesario ANTES de dibujar ---
                             let priceWidth = doc.getStringUnitWidth(priceText) * fontSize / doc.internal.scaleFactor;
-                            // Calcula el ancho máximo disponible para el nombre del examen si el precio va en la misma línea
-                            // Dejamos un pequeño espacio (ej. 3mm) entre el nombre y el precio
-                            let availableNameWidth = contentWidth - priceWidth - 3;
+                            let availableNameWidth = contentWidth - priceWidth - 3; // Ancho para nombre si precio va al lado
 
-                            // Calcula cómo se dividiría el nombre del examen si ocupara el ancho disponible
-                            let splitExamName = doc.splitTextToSize(examLineText, availableNameWidth);
-                            // Calcula la altura que ocuparía el nombre del examen
-                            let examNameHeight = doc.getTextDimensions(splitExamName).h;
-                            // Calcula la altura de una sola línea para comparar
-                            let singleLineHeight = doc.getTextDimensions("Test").h; // Altura de una línea simple
+                            let splitExamNameForHeightCalc = doc.splitTextToSize(examLineText, contentWidth); // Dividir nombre usando ancho completo
+                            let examNameHeight = doc.getTextDimensions(splitExamNameForHeightCalc).h * 1.1; // Altura estimada del nombre (con pequeño margen)
 
-                            let examNameStartY = y; // Guarda la posición Y inicial para esta línea
+                            let splitExamNameSingleLineCheck = doc.splitTextToSize(examLineText, availableNameWidth);
+                            let examNameSingleLineHeightCheck = doc.getTextDimensions(splitExamNameSingleLineCheck).h;
 
-                            if (examNameHeight <= singleLineHeight * 1.1) { // Si la altura es aproximadamente de una línea (considerando posible imprecisión)
-                                // --- Caso 1: Nombre y precio caben en una línea ---
-                                // Dibuja el nombre del examen limitado al espacio disponible
-                                addText(examLineText, margin + 5, examNameStartY, { fontSize: fontSize, maxWidth: availableNameWidth });
-                                // Dibuja el precio en la MISMA línea Y inicial, alineado a la DERECHA
-                                addText(priceText, pageWidth - margin, examNameStartY, { fontSize: fontSize, align: 'right' });
-                                // Actualiza la Y global basada en la altura de esta línea única + espaciado
-                                y = examNameStartY + examNameHeight + 1; // Siguiente línea
+                            let neededHeight = 0;
+                            let isSingleLineCase = (examNameSingleLineHeightCheck <= lineHeight * 1.1); // Aproximado
+
+                            if (isSingleLineCase) {
+                                // Si cabe en una línea, solo necesita esa altura
+                                neededHeight = lineHeight;
                             } else {
-                                // --- Caso 2: El nombre del examen ocupa varias líneas ---
-                                // Dibuja el nombre del examen usando el ancho COMPLETO disponible (sin dejar espacio para el precio en la misma línea)
-                                // La función addText actualizará la 'y' después de dibujar todas las líneas del nombre
-                                y = addText(examLineText, margin + 5, examNameStartY, { fontSize: fontSize, maxWidth: contentWidth }); // y ahora está DEBAJO del nombre
+                                // Si no, necesita altura del nombre + altura del precio + espacio
+                                neededHeight = examNameHeight + lineHeight + 1; // +1 para espacio entre nombre y precio
+                            }
 
-                                // Dibuja el precio DEBAJO del nombre (en la 'y' actualizada), alineado a la DERECHA
-                                y = addText(priceText, pageWidth - margin, y, { fontSize: fontSize, align: 'right' }); // y se actualiza de nuevo
+                            // --- Verificar si el espacio necesario cabe en la página actual ---
+                            if (y + neededHeight > pageHeight - margin - 10) { // Margen para footer
+                                doc.addPage();
+                                currentPage++;
+                                // Redibujar 'Exámenes incluidos:' en la nueva página si es el primer examen que salta
+                                // O simplemente resetear 'y' si ya se dibujó algo en la página anterior
+                                y = margin + 15; // Reset Y en la nueva página (debajo del header)
+                                // Opcional: Podrías redibujar el título "Exámenes incluidos:" si quieres que aparezca en la nueva página también
+                                // y = addText('Exámenes incluidos:', margin + 3, y, { fontSize: 9, style: 'italic', color: highlightColor});
+                            }
+
+                            // --- Ahora, dibujar el contenido sabiendo que cabe ---
+                            let examDrawStartY = y; // Y actual para dibujar este examen
+
+                            if (isSingleLineCase) {
+                                // --- Caso 1: Dibujar en una línea ---
+                                addText(examLineText, margin + 5, examDrawStartY, { fontSize: fontSize, maxWidth: availableNameWidth });
+                                addText(priceText, pageWidth - margin, examDrawStartY, { fontSize: fontSize, align: 'right' });
+                                y = examDrawStartY + lineHeight; // Avanzar una línea estimada
+                            } else {
+                                // --- Caso 2: Nombre en varias líneas, precio debajo ---
+                                y = addText(examLineText, margin + 5, examDrawStartY, { fontSize: fontSize, maxWidth: contentWidth }); // Dibuja nombre, actualiza y
+                                y = addText(priceText, pageWidth - margin, y, { fontSize: fontSize, align: 'right' }); // Dibuja precio debajo, actualiza y
                             }
                          }); // Fin del forEach de exámenes
-                         // *** FIN DEL BLOQUE CORREGIDO ***
+                         // *** FIN DEL BLOQUE MEJORADO ***
 
                          y += 2; // Espacio después de la lista de exámenes
                     } else {
@@ -1253,7 +1269,7 @@ const formatUtils = {
                    // Subtotal del cargo (Alineado a la derecha)
                    y = addText(`Subtotal Cargo: ${formatUtils.formatCurrency(cargo.subtotal)}`, contentWidth + margin, y, { fontSize: 10, style: 'bold', align: 'right' });
                    y += 7; // Más espacio entre cargos
-                }); // Fin del forEach de cargos
+                }); // Fin del forEach de cargos // Fin del forEach de cargos
 
                 // --- Resumen y Totales ---
                  y = addLine(y); y += 5;
