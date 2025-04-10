@@ -5,6 +5,8 @@
  * Proporciona funciones helper para formatear valores monetarios
  */
 import { initContactForm } from './informacion_de_contacto.js';
+import { jsPDF } from 'jspdf'; // Importar jsPDF
+import { addPoppinsFont } from '../utils/poppins-font-definitions.js'; // Importar la función de 
 
 const formatUtils = {
     /**
@@ -1021,20 +1023,157 @@ const formatUtils = {
         // Método separado para la generación y descarga
         async generateAndDownloadFile() {
             try {
-                const content = this.generateQuotationContent();
-                const blob = new Blob([content], { type: 'text/plain' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `cotizacion_examenes_${new Date().toISOString().split('T')[0]}.txt`;
-                
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
+                const quotationData = this.generateQuotationData(); // Obtener datos estructurados
+        
+                // Colores inspirados en tu web (ajusta si es necesario)
+                const primaryColor = '#4ECDC4'; // Teal/Turquesa
+                const secondaryColor = '#333333'; // Gris oscuro para texto
+                const accentColor = '#F0F0F0'; // Gris claro para fondos de sección
+                const whiteColor = '#FFFFFF';
+        
+                // Configuración del documento
+                const doc = new jsPDF('p', 'mm', 'a4');
+                addPoppinsFont(doc); // *** Añadir la fuente Poppins al documento ***
+        
+                const pageHeight = doc.internal.pageSize.height;
+                const pageWidth = doc.internal.pageSize.width;
+                const margin = 15;
+                const contentWidth = pageWidth - margin * 2;
+                let y = margin + 10; // Posición Y inicial
+        
+                // Función helper para añadir texto y manejar saltos de página
+                const addText = (text, x, currentY, options = {}) => {
+                    const { fontSize = 10, style = 'normal', color = secondaryColor, align = 'left', maxWidth = contentWidth } = options;
+                    doc.setFont('Poppins', style);
+                    doc.setFontSize(fontSize);
+                    doc.setTextColor(color);
+        
+                    const splitText = doc.splitTextToSize(text, maxWidth);
+                    const textHeight = doc.getTextDimensions(splitText).h;
+        
+                    if (currentY + textHeight > pageHeight - margin) {
+                        doc.addPage();
+                        currentY = margin; // Reset Y en nueva página
+                        addHeaderFooter(doc, pageNumber + 1); // Añadir encabezado/pie en nueva página
+                    }
+        
+                    doc.text(splitText, x, currentY, { align: align, maxWidth: maxWidth });
+                    return currentY + textHeight + 1; // Devuelve la nueva posición Y (+ pequeño espacio)
+                };
+        
+                // Función para añadir línea separadora
+                const addLine = (currentY) => {
+                    if (currentY > pageHeight - margin - 5) { // Evitar línea al final de página
+                        doc.addPage();
+                        currentY = margin;
+                        addHeaderFooter(doc, pageNumber + 1);
+                    }
+                    doc.setDrawColor(accentColor); // Color gris claro
+                    doc.setLineWidth(0.5);
+                    doc.line(margin, currentY, pageWidth - margin, currentY);
+                    return currentY + 3; // Espacio después de la línea
+                };
+        
+                // --- Encabezado y Pie de Página ---
+                let pageNumber = 1;
+                const addHeaderFooter = (docInstance, pageNum) => {
+                    const totalPages = docInstance.internal.getNumberOfPages(); // Obtener número total (puede cambiar)
+        
+                    // Encabezado (simple - podrías añadir logo aquí)
+                    docInstance.setFont('Poppins', 'normal');
+                    docInstance.setFontSize(8);
+                    docInstance.setTextColor(secondaryColor);
+                    docInstance.text('Genesys Laboral Medicine', margin, margin / 2 + 5); // Nombre de tu empresa
+                    docInstance.text(`Fecha: ${quotationData.date}`, pageWidth - margin, margin / 2 + 5, { align: 'right' });
+        
+                    // Pie de página
+                    docInstance.setFontSize(8);
+                    docInstance.text(`Página ${pageNum} de ${totalPages}`, pageWidth / 2, pageHeight - margin / 2, { align: 'center' });
+                    // Podrías añadir info de contacto o legal aquí abajo
+                     docInstance.text('www.genesysmedical.com', margin, pageHeight - margin / 2, { align: 'left'}); // Ejemplo
+                };
+        
+                // --- Contenido Principal ---
+                addHeaderFooter(doc, pageNumber); // Añadir en la primera página
+        
+                // Título
+                doc.setFont('Poppins', 'bold');
+                doc.setFontSize(18);
+                doc.setTextColor(primaryColor);
+                y = addText(quotationData.title, pageWidth / 2, y, { fontSize: 18, style: 'bold', color: primaryColor, align: 'center' });
+                y += 5; // Espacio extra
+        
+                // Detalles de Cargos
+                quotationData.cargos.forEach(cargo => {
+                     y = addLine(y);
+                     doc.setFont('Poppins', 'bold');
+                     doc.setFontSize(12);
+                     doc.setTextColor(secondaryColor);
+                     let cargoHeader = `Cargo: ${cargo.name} (${cargo.workers} trabajador${cargo.workers !== 1 ? 'es' : ''})`;
+                     y = addText(cargoHeader, margin, y, { fontSize: 12, style: 'bold' });
+                     y += 2;
+        
+                     doc.setFont('Poppins', 'normal');
+                     doc.setFontSize(9);
+                     doc.setTextColor(secondaryColor);
+        
+                     cargo.exams.forEach(exam => {
+                         let examLine = `- ${exam.name} (${formatUtils.formatCurrency(exam.unitPrice)} c/u)`;
+                         y = addText(examLine, margin + 5, y, { fontSize: 9 });
+                     });
+                     y += 1;
+                     // Subtotal del cargo
+                     y = addText(`Subtotal Cargo: ${formatUtils.formatCurrency(cargo.subtotal)}`, contentWidth + margin, y, { fontSize: 10, style: 'bold', align: 'right' });
+                     y += 5; // Espacio entre cargos
+                });
+        
+                // --- Resumen y Total ---
+                 y = addLine(y);
+                 y += 5;
+                 doc.setFont('Poppins', 'bold');
+                 doc.setFontSize(14);
+                 doc.setTextColor(primaryColor);
+                 y = addText('Resumen de la Cotización', margin, y, { fontSize: 14, style: 'bold', color: primaryColor });
+                 y += 3;
+        
+                // Subtotal General
+                 y = addText(`Subtotal General (antes de descuentos): ${formatUtils.formatCurrency(quotationData.summary.overallSubtotal)}`, margin, y, { fontSize: 11 });
+                // Descuento por Volumen
+                 y = addText(`Descuento por volumen (${quotationData.summary.totalWorkers} trabajadores): -${quotationData.summary.volumeDiscountPercent.toFixed(0)}%`, margin, y, { fontSize: 11 });
+                // Descuento por Tiempo
+                 if (quotationData.summary.timeDiscountApplied) {
+                     y = addText(`Descuento adicional por programación: -${quotationData.summary.timeDiscountPercent}%`, margin, y, { fontSize: 11 });
+                 }
+                 y += 5;
+        
+                // TOTAL FINAL
+                 y = addLine(y);
+                 doc.setFont('Poppins', 'bold');
+                 doc.setFontSize(16);
+                 doc.setTextColor(primaryColor);
+                 y = addText('Valor Total Estimado:', margin, y, { fontSize: 16, style: 'bold', color: primaryColor });
+                 y = addText(formatUtils.formatCurrency(quotationData.summary.finalPrice), contentWidth + margin, y - doc.getTextDimensions('T').h -1, { fontSize: 16, style: 'bold', color: primaryColor, align: 'right'}); // Alinear a la derecha
+                 y += 10;
+        
+                // Actualizar el número total de páginas en el pie de cada página (necesario porque se añaden páginas dinámicamente)
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFont('Poppins', 'normal');
+                    doc.setFontSize(8);
+                    doc.setTextColor(secondaryColor);
+                    doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, pageHeight - margin / 2, { align: 'center' });
+                }
+        
+                // Guardar el PDF
+                const timestamp = new Date().toISOString().split('T')[0];
+                doc.save(`cotizacion_examenes_${timestamp}.pdf`);
+                console.log('Cotización PDF generada exitosamente.');
+        
             } catch (error) {
-                console.error('Error al generar la cotización:', error);
-                alert('Hubo un error al generar la cotización. Por favor intente nuevamente.');
+                console.error('Error al generar la cotización PDF:', error);
+                alert('Hubo un error al generar la cotización en PDF. Por favor intente nuevamente.');
+                // Podrías intentar generar el TXT como fallback si quieres
             }
         }
 
@@ -1043,51 +1182,59 @@ const formatUtils = {
          * @returns {string} Contenido formateado de la cotización
          * @private
          */
-        generateQuotationContent() {
-            const lines = [];
-            const date = new Date().toLocaleDateString('es-CO');
-            
-            lines.push('COTIZACIÓN DE EXÁMENES MÉDICOS OCUPACIONALES');
-            lines.push(`Fecha: ${date}`);
-            lines.push('==========================================\n');
-            
-            // Detalles por cargo
+        // Dentro de la clase MedicalExamCalculator
+        generateQuotationData() { // Cambiado el nombre y la salida
+            const date = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+            const cargosDetails = [];
+            let overallSubtotal = 0;
+
             this.cargos.forEach(cargo => {
-                lines.push(`CARGO: ${cargo.name}`);
-                lines.push(`Número de trabajadores: ${cargo.workers}`);
-                lines.push('Exámenes seleccionados:');
-                
-                let subtotal = 0;
+                const examsDetails = [];
+                let cargoSubtotal = 0;
                 cargo.selectedExams.forEach(examCode => {
                     const exam = EXAM_CONFIG[examCode];
-                    const examTotal = exam.basePrice * cargo.workers;
-                    subtotal += examTotal;
-                    
-                    lines.push(`- ${exam.fullName}`);
-                    lines.push(`  Precio unitario: ${formatUtils.formatCurrency(exam.basePrice)}`);
-                    lines.push(`  Subtotal: ${formatUtils.formatCurrency(examTotal)}`);
+                    if (exam) {
+                        const examTotal = exam.basePrice * cargo.workers;
+                        cargoSubtotal += examTotal;
+                        examsDetails.push({
+                            code: exam.code,
+                            name: exam.fullName,
+                            unitPrice: exam.basePrice,
+                            total: examTotal
+                        });
+                    }
                 });
-                
-                lines.push(`Subtotal para ${cargo.name}: ${formatUtils.formatCurrency(subtotal)}\n`);
+                overallSubtotal += cargoSubtotal;
+                cargosDetails.push({
+                    name: cargo.name,
+                    workers: cargo.workers,
+                    exams: examsDetails,
+                    subtotal: cargoSubtotal
+                });
             });
-            
-            // Resumen de descuentos
-            const volumeDiscount = this.calculateVolumeDiscount();
+
             const totalWorkers = this.cargos.reduce((sum, cargo) => sum + cargo.workers, 0);
-            
-            lines.push('RESUMEN DE DESCUENTOS');
-            lines.push(`Total de trabajadores: ${totalWorkers}`);
-            lines.push(`Descuento por volumen: ${(volumeDiscount * 100).toFixed(0)}%`);
-            
-            if (this.discountCheckboxes.time.checked) {
-                lines.push('Descuento adicional: 5%');
+            const volumeDiscount = this.calculateVolumeDiscount();
+            const timeDiscountApplied = this.discountCheckboxes.time.checked;
+            let finalPrice = overallSubtotal * (1 - volumeDiscount);
+            if (timeDiscountApplied) {
+                finalPrice *= 0.95; // 5% adicional
             }
-            
-            // Total final
-            lines.push('\nTOTAL FINAL');
-            lines.push(this.totalPriceElement.textContent);
-            
-            return lines.join('\n');
+
+            // Devuelve un objeto con toda la información necesaria
+            return {
+                title: 'Cotización de Exámenes Médicos Ocupacionales',
+                date: date,
+                cargos: cargosDetails,
+                summary: {
+                    totalWorkers: totalWorkers,
+                    volumeDiscountPercent: (volumeDiscount * 100),
+                    timeDiscountApplied: timeDiscountApplied,
+                    timeDiscountPercent: 5,
+                    overallSubtotal: overallSubtotal, // Subtotal antes de descuentos
+                    finalPrice: finalPrice
+                }
+            };
         }
     }
 

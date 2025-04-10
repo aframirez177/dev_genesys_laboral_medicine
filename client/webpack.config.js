@@ -60,7 +60,21 @@ module.exports = {
             generator: {
                 filename: 'assets/fonts/[name][ext][query]', // Mantenemos la estructura de carpetas
             }
-        }
+        },
+        {
+            test: /\.pdf$/,
+            type: 'asset/resource',
+            generator: {
+                filename: 'assets/pdf/[name][ext][query]'
+            }
+        },
+        {
+            test: /\.ttf$/i, // Añadido para TrueType Fonts
+            type: 'asset/resource',
+            generator: {
+                filename: 'assets/fonts/[name][ext][query]',
+            }
+        },
         ],
     },
     plugins: [
@@ -156,6 +170,10 @@ module.exports = {
                     from: path.resolve(__dirname, 'src', 'assets/images'),
                     to: 'assets/images'
                 },
+                {
+                    from: path.resolve(__dirname, 'src', 'assets/pdf'),
+                    to: 'assets/pdf'
+                }
                 // Eliminamos la copia de fuentes de aquí
             ]
         })

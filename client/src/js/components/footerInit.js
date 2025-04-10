@@ -62,9 +62,10 @@ export function initFooter() {
         ],
         companyInfo: [
             { text: "Nosotros", href: "pages/Nosotros.html" },
-            { text: "Novedades", href: "pages/Blog.html" },
-            { text: "Blog", href: "pages/Blog.html" },
+        /*     { text: "Novedades", href: "pages/Blog.html" },
+            { text: "Blog", href: "pages/Blog.html" }, */
             { text: "Trabaja con nosotros", href: "pages/Contacto.html" },
+            { text: "informacion financiera", href: "assets/pdf/estados_financieros_2023_2024.pdf", target: "_blank"},
             { text: "Legales", href: "pages/Informacion_legal.html" }
         ],
         contact: {
@@ -151,7 +152,7 @@ export function initFooter() {
                 <h3>Información de la Empresa</h3>
                 <ul>
                     ${footerConfig.companyInfo.map(info => `
-                        <li><a href="${adjustPath(info.href)}">${info.text}</a></li>
+                        <li><a href="${adjustPath(info.href)}" ${info.target ? `target="${info.target}"` : ''}>${info.text}</a></li>
                     `).join('')}
                 </ul>
             </div>

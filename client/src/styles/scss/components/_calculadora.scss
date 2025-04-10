@@ -1,5 +1,7 @@
 // _calculator.scss
-
+.container {
+    background-color: #eef7fd;
+}
 // Mixin para checkbox personalizado
 @mixin custom-checkbox {
     width: 2rem;
