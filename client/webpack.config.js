@@ -150,6 +150,7 @@ module.exports = {
         filename: './pages/Informacion_financiera.html',
         }),
         new HtmlWebpackPlugin({
+        chunks:['main', 'informacionlegal'],
         inject: true,
         template: './public/pages/Informacion_legal.html',
         filename: './pages/Informacion_legal.html',
