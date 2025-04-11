@@ -5,6 +5,29 @@ const { plugins } = require('@babel/preset-env/lib/plugins-compat-data');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const SitemapPlugin = require('sitemap-webpack-plugin').default;
+
+const websiteBaseUrl = 'https://www.genesyslm.com.co'; // ¡TU DOMINIO REAL!
+const paths = [
+    '/', // Para index.html
+    '/pages/Analisis_de_puesto_de_trabajo.html',
+    '/pages/Bateria_de_riesgo_psicosocial.html',
+    '/pages/Blog.html', // Asumiendo que tienes un Blog.html listado
+    '/pages/Contacto.html',
+    '/pages/Enrollment.html',
+    '/pages/Examenes_medicos_ocupacionales.html',
+    '/pages/Genesys_BI.html',
+    '/pages/Informacion_financiera.html',
+    '/pages/Informacion_legal.html',
+    '/pages/Matriz_de_riesgos_profesional.html',
+    '/pages/Nosotros.html',
+    '/pages/Perdida_de_capacidad_laboral.html',
+    '/pages/Profesiograma.html',
+    '/pages/SST.html',
+    '/pages/examen_medico_escolar.html',
+    '/pages/resultados.html'
+    // Añade CUALQUIER OTRA PÁGINA que quieras incluir
+];
 
 module.exports = {
     entry: {
@@ -176,7 +199,19 @@ module.exports = {
                 }
                 // Eliminamos la copia de fuentes de aquí
             ]
-        })
+        }),
+        new SitemapPlugin({
+            base: websiteBaseUrl,
+            paths, // El array de rutas definido arriba
+            options: {
+                filename: 'sitemap.xml', // Nombre del archivo de salida
+                lastmod: true, // Añade fecha de última modificación (basada en build time)
+                changefreq: 'weekly', // Frecuencia por defecto
+                priority: 0.7 // Prioridad por defecto
+                // Puedes configurar prioridades/frecuencias específicas por ruta si quieres
+                // skipgzip: true // Descomenta si tu servidor ya comprime los sitemaps
+            }
+        }),
     ],
     optimization: {
         minimize: true,
