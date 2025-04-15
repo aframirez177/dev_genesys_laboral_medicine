@@ -1,0 +1,1 @@
+(()=>{"use strict";function t(){initializeForm()}"loading"===document.readyState?document.addEventListener("DOMContentLoaded",t):t()})();

@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkgenesys_client=self.webpackChunkgenesys_client||[]).push([[174],{1174:(n,e,c)=>{function t(){var n=document.querySelector(".clients");if(n){[].forEach((function(e){var c=document.createElement("div");c.classList.add("client"),c.innerHTML='\n            <img src="'.concat(e.logo,'" alt="').concat(e.name,'" loading="lazy">\n            <p>').concat(e.name,"</p>\n        "),n.appendChild(c)}))}}c.r(e),c.d(e,{initClients:()=>t})}}]);
-//# sourceMappingURL=174.eeb46fcd.bundle.js.map
