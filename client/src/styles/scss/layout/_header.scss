@@ -16,6 +16,9 @@ header {
         width: 150px;
         height: auto;
         margin: 1.16%;
+        @include respond-to("mobile") {
+            margin-left: 2rem;
+            }
     }
     .logo:hover {
         transform: scale(120%);
@@ -24,13 +27,31 @@ header {
     a {
         top: 17px;
     }
+    
+    .screen-menu {
+        display: none;
+        @include respond-to("tablet") {
+        display: flex;
+        gap: 2rem;
+        }
+        .main-nav-links{
+            display: flex;
+            gap: 2rem;
+        }
+        .cta-buttons{
+            display: flex;
+            gap: 2rem;
+        }
+    }
+    }
+
     .ham-menu {
         height: 38px;
         width: 45px;
         margin-left: auto;
         position: relative;
-        top: 9px;
-        right: 50px;
+        top: 4rem;
+        right: 70px;
         z-index: 11;
         @include respond-to("tablet") {
         display: none;
@@ -59,9 +80,14 @@ header {
         top: 75%;
     }
 
+    .ham-menu.active{
+        position: fixed;
+        
+    }
     .ham-menu.active span:nth-child(1) {
         top: 50%;
         transform: translate(-50%, -50%) rotate(45deg);
+        
     }
 
     .ham-menu.active span:nth-child(2) {
@@ -71,14 +97,6 @@ header {
     .ham-menu.active span:nth-child(3) {
         top: 50%;
         transform: translate(-50%, -50%) rotate(-45deg);
-    }
-    .screen-menu {
-        display: none;
-        @include respond-to("tablet") {
-        display: flex;
-        gap: 2rem;
-        }
-    }
     }
     /* Dropdown */
     .dropdown {
@@ -211,8 +229,13 @@ header {
     transition: 0.3s ease;
     border-radius: 16px;
     box-shadow: 0 10px 16px #3d434c7f;
-    z-index: 6;
-
+    z-index: 10;
+        .main-nav-links-mobile{
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
         .mobile-services {
             width: 100%;
             
@@ -275,6 +298,11 @@ header {
                     }
                 }
             }
+        }
+        .cta-buttons{
+            display: flex;
+            gap: 2rem;
+            flex-direction: column;
         }
     }
 
