@@ -43,7 +43,7 @@ export function initFAQ() {
         const faqItem = document.createElement('div');
         faqItem.classList.add('faqs__item');
         faqItem.innerHTML = `
-            <div class="faqs__question" tabindex="0" aria-expanded="false" aria-controls="faq-answer-${index}">
+            <div class="faqs__question" role="button" tabindex="0" aria-expanded="false" aria-controls="faq-answer-${index}">
                 ${faq.question}
             </div>
             <div id="faq-answer-${index}" class="faqs__answer" aria-hidden="true">

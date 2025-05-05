@@ -3,6 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="assets/fonts/poppins-v21-latin-800.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      href="main.css"
+      rel="preload"
+      onload="this.rel='stylesheet'"
+      as="style"
+    />
+    <link
+      href="index.css"
+      rel="preload"
+      onload="this.rel='stylesheet'"
+      as="style"
+    />
     <!-- Título mejorado para SEO -->
     <title>
       Genesys - Exámenes Médico Laborales SST | Seguridad y Salud en el Trabajo
@@ -109,6 +128,8 @@
       <!-- Botón Hamburguesa (Estático) -->
       <div
         class="ham-menu"
+        role="button"  
+        tabindex="0"     
         aria-label="Abrir menú de navegación"
         aria-expanded="false"
         aria-controls="off-screen-menu-nav"
@@ -1119,6 +1140,7 @@
           <img
             src="assets/images/render_dorctor_patient.webp"
             alt="Mujeres profesionales de la salud"
+            loading="lazy"
           />
         </div>
       </div>
@@ -1268,6 +1290,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 1.svg"
             alt="petcol"
+            loading="lazy"
           />
           <p>Petcol</p>
         </article>
@@ -1275,6 +1298,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 2.svg"
             alt="Federacion Colombiana De Futbol"
+            loading="lazy"
           />
           <p>FCF</p>
         </article>
@@ -1282,6 +1306,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 3.svg"
             alt="INDES"
+            loading="lazy"
           />
           <p>indes</p>
         </article>
@@ -1289,6 +1314,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 4.svg"
             alt="Colombia"
+            loading="lazy"
           />
           <p>Fontur co</p>
         </article>
@@ -1296,17 +1322,23 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 5.svg"
             alt="Sogrisel"
+            loading="lazy"
           />
           <p>Sogrisel</p>
         </article>
         <article class="client-card">
-          <img src="assets/images/Nuestros_clientes/Recurso 6.svg" alt="Etib" />
+          <img 
+          src="assets/images/Nuestros_clientes/Recurso 6.svg" 
+          alt="Etib"
+          loading="lazy"
+          />
           <p>Etib</p>
         </article>
         <article class="client-card">
           <img
             src="assets/images/Nuestros_clientes/Recurso 7.svg"
             alt="Consorcio Express"
+            loading="lazy"
           />
           <p>Consorcio</p>
         </article>
@@ -1314,6 +1346,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 8.svg"
             alt="Axa Colpatria"
+            loading="lazy"
           />
           <p>AXA colpatria</p>
         </article>
@@ -1321,6 +1354,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 9.svg"
             alt="ARL seguros bolivar"
+            loading="lazy"
           />
           <p>Seguros bolivar</p>
         </article>
@@ -1328,6 +1362,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 10.svg"
             alt="D energy"
+            loading="lazy"
           />
           <p>IDI energy</p>
         </article>
@@ -1335,6 +1370,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 11.svg"
             alt="Logistica y limpieza"
+            loading="lazy"
           />
           <p>Logistica y limplieza</p>
         </article>
@@ -1342,6 +1378,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 12.svg"
             alt="Transportes artico"
+            loading="lazy"
           />
           <p>Transportes Artico</p>
         </article>
@@ -1349,6 +1386,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 13.svg"
             alt="Contegral"
+            loading="lazy"
           />
           <p>Contegral</p>
         </article>
@@ -1356,6 +1394,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 14.svg"
             alt="Alimentos Finca"
+            loading="lazy"
           />
           <p>Finca</p>
         </article>
@@ -1363,6 +1402,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 15.svg"
             alt="Euphoria"
+            loading="lazy"
           />
           <p>Euphoria</p>
         </article>
@@ -1370,6 +1410,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 16.svg"
             alt="Bussines Insights"
+            loading="lazy"
           />
           <p>Business insights</p>
         </article>
@@ -1377,6 +1418,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 17.svg"
             alt="Premium Choice"
+            loading="lazy"
           />
           <p>Premium Choice</p>
         </article>
@@ -1388,6 +1430,7 @@
           <img
             src="assets/images/Nuestros_clientes/Recurso 19.svg"
             alt="Dental 83"
+            loading="lazy"
           />
           <p>Dental 83</p>
         </article>

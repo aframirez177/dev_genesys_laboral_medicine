@@ -197,11 +197,11 @@ module.exports = {
       // Vamos a intentar precargar los tipos de archivo explícitamente.
       fileWhitelist: [/(\/|\\)assets(\/|\\)fonts(\/|\\).*\.woff2?$/i],
       as(entry) {
-        if (/\.woff2?$/i.test(entry)) return 'font';
-    },
+        if (/\.woff2?$/i.test(entry)) return "font";
+      },
       // Filtra explícitamente por extensión de archivo
       include: "allAssets", // Considera todos los assets generados por Webpack
-      
+
       crossorigin: "anonymous",
     }),
     new MiniCssExtractPlugin(),
@@ -230,53 +230,75 @@ module.exports = {
         // skipgzip: true // Descomenta si tu servidor ya comprime los sitemaps
       },
     }),
+    // Una única instancia de Beasties para toda la aplicación
     new BeastiesPlugin({
       path: path.resolve(__dirname, "../dist"),
-      html: ["index.html"], // Solo afecta a index.html
-      additionalStylesheets: ["main.css", "index.css"],
+      html: ["index.html", "pages/*.html"], // Aplica a todas las páginas
+      additionalStylesheets: ["*.css"], // Procesa todos los CSS generados
       preload: "swap",
       pruneSource: true,
       compress: true,
-      logLevel: "debug",
-    }),
-
-    // --- Beasties: Instancia para SST.html ---
-    new BeastiesPlugin({
-      path: path.resolve(__dirname, "../dist"),
-      html: ["pages/SST.html"], // Solo afecta a pages/SST.html
-      // Le decimos que busque en los archivos CSS que están en la raíz de dist
-      additionalStylesheets: ["main.css"],
-      preload: "swap",
-      pruneSource: true,
-      compress: true,
-      logLevel: "debug",
-      rewriteAssetURLs: true, //
-    }),
-    new BeastiesPlugin({
-      path: path.resolve(__dirname, "../dist"),
-      html: ["pages/Analisis_de_puesto_de_trabajo.html"], // Solo afecta a pages/SST.html
-      // Le decimos que busque en los archivos CSS que están en la raíz de dist
-      additionalStylesheets: ["main.css" /* ,'analisispuestodetrabajo.css' */],
-      preload: "swap",
-      pruneSource: true,
-      compress: true,
-      logLevel: "debug",
-      rewriteAssetURLs: true, //
-    }),
-    new BeastiesPlugin({
-      path: path.resolve(__dirname, "../dist"),
-      html: ["pages/Bateria_de_riesgo_psicosocial.html"], // Solo afecta a pages/SST.html
-      // Le decimos que busque en los archivos CSS que están en la raíz de dist
-      additionalStylesheets: ["main.css" /* ,'bateriaPsicosocial.css' */],
-      preload: "swap",
-      pruneSource: true,
-      compress: true,
-      logLevel: "debug",
-      rewriteAssetURLs: true, //
+      logLevel: "info", // Cambiado de debug a info para reducir logs
+      rewriteAssetURLs: true,
+      fontFace: {
+        display: 'swap', // Asegura que el texto sea visible durante la carga de la fuente
+        preload: true,    // Precargar fuentes críticas
+      }
     }),
   ],
   optimization: {
     minimize: true,
-    minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
+    minimizer: [
+      new CssMinimizerPlugin({
+        minimizerOptions: {
+          preset: [
+            "default",
+            {
+              discardComments: { removeAll: true },
+              discardDuplicates: true, // Elimina reglas CSS duplicadas
+              discardEmpty: true,
+              minifyFontValues: true,
+              minifySelectors: true,
+            },
+          ],
+        },
+      }),
+      new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: false,
+          },
+          compress: {
+            drop_console: true,
+          },
+        },
+        extractComments: false,
+      }),
+    ],
+    // Splitear el código para mejor caching
+    splitChunks: {
+      chunks: "all",
+      maxInitialRequests: Infinity,
+      minSize: 0,
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name(module) {
+            // Obtener el nombre del paquete
+            const packageName = module.context.match(
+              /[\\/]node_modules[\\/](.*?)([\\/]|$)/
+            )[1];
+            return `npm.${packageName.replace("@", "")}`;
+          },
+        },
+        styles: {
+          name: "styles",
+          test: /\.css$/,
+          chunks: "all",
+          enforce: true,
+        },
+      },
+    },
+    
   },
 };

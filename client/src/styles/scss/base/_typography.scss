@@ -78,6 +78,7 @@
 
 
 h1{
+    font-family: map-get($fonts, "title");
     font-size: 3.5rem;
 }
 h1,
