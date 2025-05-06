@@ -231,49 +231,21 @@ module.exports = {
       },
     }),
     new BeastiesPlugin({
-      path: path.resolve(__dirname, "../dist"),
-      html: ["index.html"], // Solo afecta a index.html
-      additionalStylesheets: ["main.css", "index.css"],
-      preload: "swap",
-      pruneSource: true,
-      compress: true,
-      logLevel: "debug",
-    }),
+            preload: 'media',     // O swap
+            pruneSource: false,   // <-- NO podar
+            fonts: true,        // Dejar que Beasties maneje fuentes
+            keyframes: 'critical',
+            noscriptFallback: true,
+            compress: true,
+            logLevel: 'info',    // Para ver qué hace
+            additionalStylesheets: [
+              'main*.css'
+              // NO listes los CSS específicos aquí (index.css, sst.css)
+              // porque Beasties los tomará del <link> de cada HTML.
+              // Solo necesitamos asegurarnos de que SIEMPRE vea el 'main.css'.
+          ],
+        })
 
-    // --- Beasties: Instancia para SST.html ---
-    new BeastiesPlugin({
-      path: path.resolve(__dirname, "../dist"),
-      html: ["pages/SST.html"], // Solo afecta a pages/SST.html
-      // Le decimos que busque en los archivos CSS que están en la raíz de dist
-      additionalStylesheets: ["main.css"],
-      preload: "swap",
-      pruneSource: true,
-      compress: true,
-      logLevel: "debug",
-      rewriteAssetURLs: true, //
-    }),
-    new BeastiesPlugin({
-      path: path.resolve(__dirname, "../dist"),
-      html: ["pages/Analisis_de_puesto_de_trabajo.html"], // Solo afecta a pages/SST.html
-      // Le decimos que busque en los archivos CSS que están en la raíz de dist
-      additionalStylesheets: ["main.css" /* ,'analisispuestodetrabajo.css' */],
-      preload: "swap",
-      pruneSource: true,
-      compress: true,
-      logLevel: "debug",
-      rewriteAssetURLs: true, //
-    }),
-    new BeastiesPlugin({
-      path: path.resolve(__dirname, "../dist"),
-      html: ["pages/Bateria_de_riesgo_psicosocial.html"], // Solo afecta a pages/SST.html
-      // Le decimos que busque en los archivos CSS que están en la raíz de dist
-      additionalStylesheets: ["main.css" /* ,'bateriaPsicosocial.css' */],
-      preload: "swap",
-      pruneSource: true,
-      compress: true,
-      logLevel: "debug",
-      rewriteAssetURLs: true, //
-    }),
   ],
   optimization: {
     minimize: true,
