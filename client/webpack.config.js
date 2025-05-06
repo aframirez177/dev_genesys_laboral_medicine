@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { plugins } = require("@babel/preset-env/lib/plugins-compat-data");
 const CopyPlugin = require("copy-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const PreloadWebpackPlugin = require("preload-webpack-plugin");
+/* const PreloadWebpackPlugin = require("preload-webpack-plugin"); */
 const TerserPlugin = require("terser-webpack-plugin");
 const SitemapPlugin = require("sitemap-webpack-plugin").default;
 const BeastiesPlugin = require("beasties-webpack-plugin");
@@ -188,7 +188,7 @@ module.exports = {
       template: "./public/pages/SST.html",
       filename: "./pages/SST.html",
     }),
-    new PreloadWebpackPlugin({
+    /* new PreloadWebpackPlugin({
       rel: "preload",
       // En lugar de 'include: "font"', prueba incluyendo los chunks que
       // generan los archivos de fuentes (si los tienes definidos)
@@ -203,7 +203,7 @@ module.exports = {
       include: "allAssets", // Considera todos los assets generados por Webpack
       
       crossorigin: "anonymous",
-    }),
+    }), */
     new MiniCssExtractPlugin(),
     new CopyPlugin({
       patterns: [
