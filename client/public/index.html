@@ -3,20 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!--     <link
+    <link
       rel="preload"
       href="assets/fonts/poppins-v21-latin-800.woff2"
       as="font"
       type="font/woff2"
       crossorigin="anonymous"
-    /> -->
-    <!-- <link
+      fetchpriority="high"
+    />
+    <link
       href="main.css"
       rel="preload"
       onload="this.rel='stylesheet'"
       as="style"
     />
-    <link
+    <!-- <link
       href="index.css"
       rel="preload"
       onload="this.rel='stylesheet'"
@@ -67,17 +68,21 @@
       }
     </script>
     <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-PMW9BJJC8N"
-    ></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
+      function loadGTM() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-PMW9BJJC8N';
+        document.head.appendChild(script);
+
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-PMW9BJJC8N');
+        }
       }
-      gtag("js", new Date());
-      gtag("config", "G-PMW9BJJC8N");
+      window.addEventListener('load', loadGTM);
     </script>
   </head>
 
@@ -1294,6 +1299,7 @@
           />
           <p>Petcol</p>
         </article>
+        <!--
         <article class="client-card">
           <img
             src="assets/images/Nuestros_clientes/Recurso 2.svg"
@@ -1302,6 +1308,7 @@
           />
           <p>FCF</p>
         </article>
+        -->
         <article class="client-card">
           <img
             src="assets/images/Nuestros_clientes/Recurso 3.svg"

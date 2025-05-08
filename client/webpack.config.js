@@ -233,7 +233,7 @@ module.exports = {
     new BeastiesPlugin({
             preload: 'media',     // O swap
             pruneSource: false,   // <-- NO podar
-            fonts: true,        // Dejar que Beasties maneje fuentes
+            fonts: false,        // Dejar que Beasties maneje fuentes
             keyframes: 'critical',
             noscriptFallback: true,
             compress: true,

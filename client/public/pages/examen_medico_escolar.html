@@ -48,17 +48,21 @@
       }
     </script>
     <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-PMW9BJJC8N"
-    ></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
+      function loadGTM() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-PMW9BJJC8N';
+        document.head.appendChild(script);
+
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-PMW9BJJC8N');
+        }
       }
-      gtag("js", new Date());
-      gtag("config", "G-PMW9BJJC8N");
+      window.addEventListener('load', loadGTM);
     </script>
   </head>
 
@@ -75,6 +79,7 @@
             alt="Genesys Logo"
             class="logo"
             id="header-logo"
+            loading="lazy"
           />
         </a>
 
@@ -795,6 +800,7 @@
           <img
             src="../assets/images/render_examen_medico_escolar.webp"
             alt="Examen Médico Escolar"
+            loading="lazy"
           />
         </div>
 
@@ -960,20 +966,25 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 1.svg"
             alt="petcol"
+            loading="lazy"
           />
           <p>Petcol</p>
         </article>
+        <!--
         <article class="client-card">
           <img
             src="../assets/images/Nuestros_clientes/Recurso 2.svg"
             alt="Federacion Colombiana De Futbol"
+            loading="lazy"
           />
           <p>FCF</p>
         </article>
+        -->
         <article class="client-card">
           <img
             src="../assets/images/Nuestros_clientes/Recurso 3.svg"
             alt="INDES"
+            loading="lazy"
           />
           <p>indes</p>
         </article>
@@ -981,6 +992,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 4.svg"
             alt="Colombia"
+            loading="lazy"
           />
           <p>Fontur co</p>
         </article>
@@ -988,6 +1000,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 5.svg"
             alt="Sogrisel"
+            loading="lazy"
           />
           <p>Sogrisel</p>
         </article>
@@ -995,6 +1008,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 6.svg"
             alt="Etib"
+            loading="lazy"
           />
           <p>Etib</p>
         </article>
@@ -1002,6 +1016,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 7.svg"
             alt="Consorcio Express"
+            loading="lazy"
           />
           <p>Consorcio</p>
         </article>
@@ -1009,6 +1024,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 8.svg"
             alt="Axa Colpatria"
+            loading="lazy"
           />
           <p>AXA colpatria</p>
         </article>
@@ -1016,6 +1032,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 9.svg"
             alt="ARL seguros bolivar"
+            loading="lazy"
           />
           <p>Seguros bolivar</p>
         </article>
@@ -1023,6 +1040,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 10.svg"
             alt="D energy"
+            loading="lazy"
           />
           <p>IDI energy</p>
         </article>
@@ -1030,6 +1048,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 11.svg"
             alt="Logistica y limpieza"
+            loading="lazy"
           />
           <p>Logistica y limplieza</p>
         </article>
@@ -1037,6 +1056,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 12.svg"
             alt="Transportes artico"
+            loading="lazy"
           />
           <p>Transportes Artico</p>
         </article>
@@ -1044,6 +1064,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 13.svg"
             alt="Contegral"
+            loading="lazy"
           />
           <p>Contegral</p>
         </article>
@@ -1051,6 +1072,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 14.svg"
             alt="Alimentos Finca"
+            loading="lazy"
           />
           <p>Finca</p>
         </article>
@@ -1058,6 +1080,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 15.svg"
             alt="Euphoria"
+            loading="lazy"
           />
           <p>Euphoria</p>
         </article>
@@ -1065,6 +1088,7 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 16.svg"
             alt="Bussines Insights"
+            loading="lazy"
           />
           <p>Business insights</p>
         </article>
@@ -1072,17 +1096,15 @@
           <img
             src="../assets/images/Nuestros_clientes/Recurso 17.svg"
             alt="Premium Choice"
+            loading="lazy"
           />
           <p>Premium Choice</p>
         </article>
-        <!--  <article class="client-card">
-          <img src="../assets/images/Nuestros_clientes/Recurso 18.svg" alt="Agrobel" />
-          <p>Agrobel</p>
-          </article> -->
         <article class="client-card">
           <img
             src="../assets/images/Nuestros_clientes/Recurso 19.svg"
             alt="Dental 83"
+            loading="lazy"
           />
           <p>Dental 83</p>
         </article>
@@ -1121,18 +1143,21 @@
           <img
             src="../assets/images/Donde_Encontrarnos/Waze_logo_2022.svg"
             alt="Waze"
+            loading="lazy"
           />
         </a>
         <a class="map-button" data-map="moovit">
           <img
             src="../assets/images/Donde_Encontrarnos/Moovit_logo.svg"
             alt="Moovit"
+            loading="lazy"
           />
         </a>
         <a class="map-button" data-map="google">
           <img
             src="../assets/images/Donde_Encontrarnos/google-maps-logo.svg"
             alt="Google Maps"
+            loading="lazy"
           />
         </a>
       </div>
@@ -1146,7 +1171,7 @@
     <!--- Footer HTML --->
 
     <div id="whatsapp-button" class="whatsapp-button">
-      <img src="../assets/images/whatsapp-line-icon.svg" alt="WhatsApp" />
+      <img src="../assets/images/whatsapp-line-icon.svg" alt="WhatsApp" loading="lazy" />
     </div>
 
     <div id="whatsapp-popup" class="whatsapp-popup">
@@ -1155,6 +1180,7 @@
           src="../assets/images/logo_icono_color_vectores_fabicon.svg"
           alt="Advisor Avatar"
           class="advisor-avatar"
+          loading="lazy"
         />
         <div class="advisor-info">
           <h3>Genesys</h3>
@@ -1168,7 +1194,7 @@
         <p>¿En qué te podemos ayudar?</p>
       </div>
       <button id="start-chat" class="start-chat-button">
-        <img src="../assets/images/whatsapp-line-icon.svg" alt="WhatsApp" />
+        <img src="../assets/images/whatsapp-line-icon.svg" alt="WhatsApp" loading="lazy" />
         Iniciar conversación
       </button>
     </div>

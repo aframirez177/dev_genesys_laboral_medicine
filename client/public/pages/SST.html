@@ -4,13 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Título mejorado para SEO -->
-<!--     <link
+    <link
       rel="preload"
       href="../assets/fonts/poppins-v21-latin-800.woff2"
       as="font"
       type="font/woff2"
       crossorigin="anonymous"
-    /> -->
+      fetchpriority="high"
+    />
     <!--     <link
       rel="preload"
       href="../assets/fonts/poppins-v21-latin-regular.woff2"
@@ -25,13 +26,13 @@
       type="font/woff2"
       crossorigin="anonymous"
     /> -->
-    <!-- <link
+    <link
       href="../main.css"
       rel="preload"
       onload="this.rel='stylesheet'"
       as="style"
     />
-    <link
+    <!-- <link
       href="../sst.css"
       rel="preload"
       onload="this.rel='stylesheet'"
@@ -82,17 +83,21 @@
       }
     </script>
     <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-PMW9BJJC8N"
-    ></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
+      function loadGTM() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-PMW9BJJC8N';
+        document.head.appendChild(script);
+
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-PMW9BJJC8N');
+        }
       }
-      gtag("js", new Date());
-      gtag("config", "G-PMW9BJJC8N");
+      window.addEventListener('load', loadGTM);
     </script>
   </head>
 
@@ -1005,6 +1010,7 @@
           />
           <p>Petcol</p>
         </article>
+        <!--
         <article class="client-card">
           <img
             src="../assets/images/Nuestros_clientes/Recurso 2.svg"
@@ -1013,6 +1019,7 @@
           />
           <p>FCF</p>
         </article>
+        -->
         <article class="client-card">
           <img
             src="../assets/images/Nuestros_clientes/Recurso 3.svg"
@@ -1181,18 +1188,21 @@
           <img
             src="../assets/images/Donde_Encontrarnos/Waze_logo_2022.svg"
             alt="Waze"
+            loading="lazy"
           />
         </a>
         <a class="map-button" data-map="moovit">
           <img
             src="../assets/images/Donde_Encontrarnos/Moovit_logo.svg"
             alt="Moovit"
+            loading="lazy"
           />
         </a>
         <a class="map-button" data-map="google">
           <img
             src="../assets/images/Donde_Encontrarnos/google-maps-logo.svg"
             alt="Google Maps"
+            loading="lazy"
           />
         </a>
       </div>
@@ -1206,7 +1216,7 @@
     <!--- Footer HTML --->
 
     <div id="whatsapp-button" class="whatsapp-button">
-      <img src="../assets/images/whatsapp-line-icon.svg" alt="WhatsApp" />
+      <img src="../assets/images/whatsapp-line-icon.svg" alt="WhatsApp" loading="lazy"/>
     </div>
 
     <div id="whatsapp-popup" class="whatsapp-popup">
@@ -1215,6 +1225,7 @@
           src="../assets/images/logo_icono_color_vectores_fabicon.svg"
           alt="Advisor Avatar"
           class="advisor-avatar"
+          loading="lazy"
         />
         <div class="advisor-info">
           <h3>Genesys</h3>
@@ -1228,7 +1239,7 @@
         <p>¿En qué te podemos ayudar?</p>
       </div>
       <button id="start-chat" class="start-chat-button">
-        <img src="../assets/images/whatsapp-line-icon.svg" alt="WhatsApp" />
+        <img src="../assets/images/whatsapp-line-icon.svg" alt="WhatsApp" loading="lazy" />
         Iniciar conversación
       </button>
     </div>

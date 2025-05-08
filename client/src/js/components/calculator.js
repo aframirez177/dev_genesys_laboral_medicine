@@ -249,7 +249,9 @@ const formatUtils = {
      * Define los descuentos aplicables según la cantidad de trabajadores
      */
     const DISCOUNT_RANGES = {
-        '1-10': { min: 1, max: 10, discount: 0.05 },
+
+        '0-7': { min: 0, max: 7, discount: 0.0 },
+        '8-10': { min: 1, max: 10, discount: 0.05 },
         '11-50': { min: 11, max: 50, discount: 0.10 },
         '51-100': { min: 51, max: 100, discount: 0.15 },
         '101-500': { min: 101, max: 500, discount: 0.20 },
@@ -428,7 +430,7 @@ const formatUtils = {
                                     <div class="discount-header">
                                         <span class="discount-title">Ahorra tiempo y dinero</span>
                                     </div>
-                                    <p class="discount-description">Todo mi equipo realizará sus examenes en una semana o asistirán un mínimo de 35 personas a la semana.</p>
+                                    <p class="discount-description">quiero hacer todos los examenes medicos de mi equipo en el menor tiempo posible.</p>
                                 </div>
                                 <div class="discount-action">
                                     <span class="discount-value">-5%</span>
@@ -752,15 +754,15 @@ const formatUtils = {
          */
         calculateVolumeDiscount() {
             const totalWorkers = this.cargos.reduce((sum, cargo) => sum + cargo.workers, 0);
-            
+
             for (const range of Object.values(DISCOUNT_RANGES)) {
                 if (totalWorkers >= range.min && totalWorkers <= range.max) {
                     return range.discount;
                 }
             }
             
-            return 0;
-        }
+                return 0;
+            }
         /**
          * Actualiza todos los totales y el resumen
          * Este método es el núcleo del cálculo de precios y debe llamarse
