@@ -5,10 +5,12 @@
     font-family: map-get($fonts, "body");
 
     .footer-content {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
-        gap: 0;
+        display: grid;
+        grid-template-areas:
+            "certifications certifications certifications"
+            "services company-info contact-info";
+        gap: 1rem;
+        width: 100%;
 
         a,
         p,
@@ -18,10 +20,7 @@
     }
 
     .footer-section {
-        flex: 1;
-        min-width: 16rem;
-        max-width: 18rem;
-        margin: 1rem;
+        margin: 0;
 
         h3 {
         color: map-get($colors, "primary");
@@ -50,24 +49,22 @@
         }
     }
 
-    .certification-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-        gap: 0.5rem;
-        justify-content: baseline;
+    .footer-section.certifications {
+        grid-area: certifications;
+        width: 100%;
     }
 
-    .certification-img {
-        width: 110%;
-        height: auto;
-        margin: 0.3rem;
-        object-fit: scale-down;
+    .footer-section.services {
+        grid-area: services;
+    }
+
+    .footer-section.company-info {
+        grid-area: company-info;
     }
 
     .footer-section-contact-info {
-        min-width: 16rem;
-        max-width: 21rem;
-        margin: 1rem;
+        grid-area: contact-info;
+        margin: 0;
 
         h3,
         h4 {
@@ -114,5 +111,41 @@
         align-items: center;
         max-width: 500px;
         }
+    }
+
+    @media (max-width: 955px) {
+        .footer-content {
+            grid-template-areas:
+                "certifications"
+                "services"
+                "company-info"
+                "contact-info";
+            justify-items: center;
+        }
+
+        .footer-section, .footer-section-contact-info {
+            width: 100%;
+            max-width: 40rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section.certifications .certification-grid {
+            justify-content: center;
+        }
+    }
+
+    .certification-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+        gap: 0.5rem;
+        justify-content: baseline;
+        align-items: center;
+    }
+
+    .certification-img {
+        width: 110%;
+        height: auto;
+        margin: 0.3rem;
+        object-fit: scale-down;
     }
 }

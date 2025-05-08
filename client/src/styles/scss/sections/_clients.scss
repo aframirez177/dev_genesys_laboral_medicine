@@ -1,11 +1,14 @@
+@use "../base/variables" as vars;
+// @use "../base/mixins" as mixins; // Eliminado ya que no se usa respond-to aquí
+
 .section-clientes {
     background-color: white;
     padding: 2rem 5%;
-    overflow: hidden;
+    // overflow: hidden; // Quitar overflow hidden del contenedor principal para que no corte la animación al inicio/fin si hay padding
 
     h2 {
         text-align: center;
-        font-family: map-get($fonts, "title");
+        font-family: map-get(vars.$fonts, "title");
         font-weight: 800;
         font-size: 4rem;
         margin: 0;
@@ -13,67 +16,96 @@
 
     p {
         text-align: center;
-        font-family: map-get($fonts, "body");
+        font-family: map-get(vars.$fonts, "body");
         font-size: 1.5rem;
         font-weight: 400;
         margin-bottom: 2rem;
         margin: 0;
     }
 
+    // Contenedor externo para controlar el overflow de la animación
+    .clients-container-outer {
+        overflow: hidden;
+        width: 100%; // O el ancho deseado para el viewport del carrusel
+        position: relative; // Necesario si se usan gradientes para fade out
+    }
+
     .clients {
         display: flex;
-        justify-content: flex-start;
+        // justify-content: flex-start; // No necesario con animación
         align-items: center;
-        overflow-x: auto;
+        // overflow-x: auto; // Reemplazado por la animación
         padding: 1.5rem 0;
         margin: 2vw 0 40px;
-        height: 30rem;
-        @include hide-scrollbar;
+        height: 30rem; // Mantener si se desea altura fija
+        // @include mixins.hide-scrollbar; // No relevante para la animación
+        width: fit-content; // Ajustar ancho al contenido flex
+        min-width: 100%; // Asegurar que al menos ocupe el contenedor externo
+        
+        // Animación
+        animation: scrollClients 60s linear infinite; // Ajustar duración (60s) según se necesite
+
+        // Pausar animación al pasar el mouse por encima
+        &:hover {
+            animation-play-state: paused;
+        }
     }
 
     .client-card {
-        flex: 0 0 auto;
-        width: 13rem;
-        height: 15rem;
-        margin: 0 1rem;
+        flex: 0 0 auto; // Mantener
+        width: 13rem; // Mantener ancho fijo
+        height: 15rem; // Mantener altura fija
+        margin: 0 1rem; // Mantener margen
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         align-items: center;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.5s ease, transform 0.5s ease;
-
-    &.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    img {
-        margin-top: 0;
-        align-items: center;
-        max-width: 10rem;
-        max-height: fit-content;
-        object-fit: fill;
-        filter: grayscale(1%);
-        transition: filter 0.3s ease;
-            @include respond-to("tablet") {
-            filter: grayscale(100%);
-            }
-    }
-        &:hover {
-        transform: scale(1.05);
+        // Quitar la animación de entrada inicial, ya no es necesaria
+        // opacity: 0; 
+        // transform: translateY(20px);
+        // transition: opacity 0.5s ease, transform 0.5s ease;
+        
+        // &.visible { ... } // Ya no se necesita la clase .visible
 
         img {
-            filter: grayscale(1%);
+            margin-top: 0;
+            align-items: center;
+            max-width: 10rem;
+            max-height: fit-content;
+            object-fit: fill;
+            filter: grayscale(1%); // Mantener o ajustar filtro inicial
+            transition: filter 0.3s ease, transform 0.3s ease; // Añadir transición de transform
+            @media screen and (min-width: 955px) { // Usar el valor directamente
+                 // filter: grayscale(100%); // Mantener comentado o decidir si aplicar
+            }
+        }
+
+        &:hover {
+            transform: scale(1.05); // Mantener efecto hover
+            img {
+                filter: grayscale(1%);
             }
         }
 
         p {
-        font-size: 1.2rem;
-        margin-top: 10px;
-        font-weight: 800;
-        text-align: center;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            font-weight: 800;
+            text-align: center;
         }
+    }
+}
+
+// Keyframes para la animación de scroll infinito
+@keyframes scrollClients {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        // Mover hacia la izquierda exactamente la mitad del ancho total (el ancho del conjunto original)
+        // Como el ancho es dinámico (fit-content y duplicado), usamos 50%
+        // ¡OJO! translateX(-50%) funciona porque el elemento .clients tendrá un ancho intrínseco 
+        // que es el doble del conjunto original gracias al duplicado en JS.
+        transform: translateX(-50%); 
     }
 }

@@ -1,5 +1,7 @@
+@use "variables" as vars;
+
 @mixin respond-to($breakpoint) {
-    $value: map-get($breakpoints, $breakpoint);
+    $value: map-get(vars.$breakpoints, $breakpoint);
 
     @if $value != null {
         @media screen and (min-width: $value) {
