@@ -9,7 +9,7 @@
         grid-template-areas:
             "certifications certifications certifications"
             "services company-info contact-info";
-        gap: 1rem;
+        gap: 2rem;
         width: 100%;
 
         a,
@@ -52,19 +52,22 @@
     .footer-section.certifications {
         grid-area: certifications;
         width: 100%;
+        
     }
 
     .footer-section.services {
         grid-area: services;
+        margin: 3rem;
     }
 
     .footer-section.company-info {
         grid-area: company-info;
+        margin: 3rem;
     }
 
     .footer-section-contact-info {
         grid-area: contact-info;
-        margin: 0;
+        margin: 3rem;
 
         h3,
         h4 {
@@ -139,7 +142,7 @@
     .certification-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-        gap: 0.5rem;
+        gap: 1rem;
         justify-content: baseline;
         align-items: center;
     }
