@@ -89,6 +89,7 @@
       }
       window.addEventListener('load', loadGTM);
     </script>
+    <link rel="stylesheet" href="../styles/css/styles.css">
   </head>
 
   <body>
@@ -378,14 +379,14 @@
           </p>
           <button
             class="cta-button"
-            onclick="window.open('https://wa.me/573205803048?text=Hola!%20me%20interesa%20contratar%20el%20servicio%20de%20Examenes%20medicos%20ocupacionales,%20me%20puedes%20brindar%20mas%20informacion', '_blank')"
+            onclick="document.getElementById('service-info').scrollIntoView({behavior: 'smooth'})"
           >
             Empieza aquí
           </button>
         </div>
       </section>
     </main>
-    <section class="service-info">
+    <section id="servicie.info"class="service-info">
       <section class="program-description">
         <h2>
           Realizamos tus
@@ -394,6 +395,7 @@
           tecnología avanzada
         </h2>
         <p class="descripcion">
+          Obten una cotizacion personalizada en minutos! usa nustra calculadora de
           Ofrecemos todos los exámenes médicos ocupacionales que tu empresa
           necesita: ingreso, periódicos, egreso, trabajo en alturas y más.
           Combina la eficiencia de la tecnología con la experiencia de
@@ -407,6 +409,7 @@
         >
           Conoce más
         </button>
+      
     </section>
 
     <section class="section-servicios" id="servicios">
@@ -467,6 +470,12 @@
           </ul>
         </article>
       </section>
+      <button
+        class="cta-button cta-button-faqs"
+        onclick="document.getElementById('calculator-section').scrollIntoView({behavior: 'smooth'})"
+      >
+        cotizacion rapida 
+      </button>
       <!-- <p class="nuestros-examenes">
         <span class="green">Ofrecemos</span> una amplia gama de exámenes,
         <span class="green">cuidadosamente seleccionados</span> según la matriz
@@ -478,9 +487,33 @@
             </section> -->
     </section>
     <!-- Sección de la calculadora de cotizaciones -->
-    <div class="container">
-      <div class="calculator"></div>
-    </div>
+    <section class="calculator-instructions-container">
+      <div class="container">
+        <h2>Obten una cotizacion personalizada en minutos <br/><br/>
+          ¿Cómo Usar Nuestra Calculadora de Cotizaciones?</h2>
+        <p>Sigue estos sencillos pasos para obtener una estimación precisa de los exámenes médicos ocupacionales para tu equipo:</p>
+        <ol>
+          <li><strong>Nombra el Cargo:</strong> En el primer campo, escribe el nombre del cargo para el cual necesitas la cotización (ej: "Auxiliar Administrativo", "Operario de Maquinaria").</li>
+          <li><strong>Define el Número de Trabajadores:</strong> Indica cuántos trabajadores desempeñan ese cargo.</li>
+          <li><strong>Selecciona los Exámenes:</strong> Marca los exámenes requeridos para ese cargo específico. Puedes pasar el cursor sobre cada código de examen (ej: EMO, AUD) para ver su nombre completo y descripción.</li>
+          <li><strong>Añade Más Cargos (Opcional):</strong> Si necesitas cotizar para múltiples cargos, haz clic en el botón "<strong>+ Agrega un nuevo cargo aquí</strong>". Repite los pasos 1 a 3 para cada nuevo cargo.</li>
+          <li><strong>Visualiza tu Resumen:</strong> A la derecha, verás un resumen detallado de tu cotización, incluyendo el desglose por cargo y los descuentos aplicados.
+            <ul>
+              <li>El descuento por <em>tamaño de empresa</em> se aplica automáticamente.</li>
+              <li>Puedes obtener un descuento adicional si marcas la opción "<em>quiero hacer todos los examenes medicos de mi equipo en el menor tiempo posible</em>".</li>
+            </ul>
+          </li>
+          <li><strong>Descarga tu Cotización:</strong> Cuando estés listo, haz clic en "<strong>Descarga Acá tu cotización</strong>". Se te pedirá completar un breve formulario de contacto antes de generar el PDF.</li>
+        </ol>
+        <p class="instructions-note"><em>Nota: Tus selecciones se guardan automáticamente. Si sales y regresas más tarde, podrás continuar donde lo dejaste.</em></p>
+      </div>
+    </section>
+
+    <section id="calculator-section" class="calculator-container">
+      <div class="calculator">
+        <!-- El contenido de la calculadora se generará aquí por JavaScript -->
+      </div>
+    </section>
 
     <section class="section-clientes">
       <h2>Nuestros clientes</h2>
@@ -577,7 +610,7 @@
       </button>
     </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjHr3DJQXXQJsbG7rhKl5tkQoSbDP1UDc"></script>
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjHr3DJQXXQJsbG7rhKl5tkQoSbDP1UDc"></script> -->
     <!--             <script src="../js/ham_menu.js"></script>
             <script src="../js/animacion.js"></script> -->
     </div> <!-- Close data-beasties-container -->

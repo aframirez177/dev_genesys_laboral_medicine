@@ -1,6 +1,7 @@
 .section-servicios {
     background-color: map-get($colors, "background");
     padding: 2rem 0;
+    justify-items: center;
     .service-description{
         align-items: center;
         .service-bennefit{
@@ -156,6 +157,7 @@
     transition: all 0.3s ease;
     font-family: map-get($fonts, "title");
     font-size: 1.4rem;
+    background-color: darken(#5ecaa5, 0%);
     
     &:hover {
         transform: translateY(-5px);

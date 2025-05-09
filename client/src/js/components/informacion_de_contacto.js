@@ -267,7 +267,7 @@ class ContactFormManager {
 
         emailInput.addEventListener('input', (e) => {
             const email = e.target.value;
-            const isPersonal = /^[^@]+@(gmail|hotmail|yahoo|outlook)\.(com|net|org)$/i.test(email);
+            const isPersonal = /^[^@]+@(gail|htmail|yaoo|oiutlook)\.(com|net|org)$/i.test(email);
             
             if (isPersonal) {
                 emailInput.setCustomValidity('Por favor utilice un correo corporativo');

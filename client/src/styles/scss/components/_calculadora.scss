@@ -30,7 +30,7 @@
 
     .calculator {
     width: 100%;
-    max-width: 120rem;
+    
     margin: 0 auto;
     padding-top: 2rem;
     background-color: map-get($colors, "background-alternative");
@@ -51,6 +51,7 @@
             color: map-get($colors, "secondary");
             line-height: 1.3;
             text-align: left;
+            margin: 5rem;
             
             @include respond-to("tablet") {
                 font-size: 2.8rem;
@@ -589,5 +590,111 @@
                 font-size: 1.4rem;
             }
         }
+    }
+}
+
+// Estilos para la nueva sección de instrucciones
+.calculator-instructions-container {
+    padding: 30px 0;
+    background-color: map-get($colors, "background-alternative");
+    text-align: left;
+
+    .container {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    h2 {
+        font-family: map-get($fonts, "title");
+        font-size: 2.2rem;
+        color: map-get($colors, "primary");
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    p {
+        font-family: map-get($fonts, "body");
+        font-size: 2rem;
+        color: map-get($colors, "text");
+        line-height: 1.6;
+        margin-bottom: 10px;
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+
+    ol {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 20px;
+        counter-reset: list-item;
+
+        li {
+            font-family: map-get($fonts, "body");
+            font-size: 1.6rem;
+            color: map-get($colors, "text");
+            line-height: 1.7;
+            margin-bottom: 20px;
+            padding-left: 40px;
+            position: relative;
+
+            &::before {
+                content: counter(list-item);
+                counter-increment: list-item;
+                position: absolute;
+                left: 0;
+                top: 0;
+                background-color: map-get($colors, "primary");
+                color: map-get($colors, "text-light");
+                border-radius: 50%;
+                width: 28px;
+                height: 28px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.9rem;
+                font-family: map-get($fonts, "title");
+            }
+
+            strong {
+                color: map-get($colors, "secondary");
+                font-weight: 600;
+            }
+
+            em {
+                color: darken(map-get($colors, "text"), 20%);
+                font-style: italic;
+                font-size: 1.6rem;
+            }
+            ul {
+                list-style-type: disc;
+                margin-top: 5px;
+                margin-left: 20px;
+                padding-left: 10px;
+                li {
+                    padding-left: 10px;
+                    margin-bottom: 5px;
+                    font-size: 1.6rem;
+                    &::before {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+
+    .instructions-note {
+        font-family: map-get($fonts, "body");
+        font-size: 1.2rem;
+        text-align: center;
+        color: map-get($colors, "secondary");
+        margin-top: 20px;
+        padding: 10px;
+        background-color: lighten(map-get($colors, "background"), 2%);
+        border-left: 4px solid map-get($colors, "primary");
+        border-radius: 4px;
     }
 }
