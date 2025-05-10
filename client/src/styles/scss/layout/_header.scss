@@ -114,6 +114,7 @@ header {
         display: flex;
         align-items: center;
         transition: 0.2s;
+        
 
         &::after {
         content: "";
@@ -143,10 +144,12 @@ header {
     left: 0;
     right: 0;
     top: 11rem;
-    background-color: map-get($colors,"background");
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: rgb(243, 240, 240, .50) ;
+    box-shadow: 3px 4px 6px rgba(56, 61, 71, 0.5);
     z-index: 1000;
     padding: 2rem 2rem;
+    backdrop-filter: blur(8px);
+    
 
     &[aria-hidden="false"] {
         display: block;
@@ -217,7 +220,8 @@ header {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    background-color: #93ddc2ed;
+    background-color: rgba(147, 221, 194, 0.7);
+    backdrop-filter: blur(8px);
     position: fixed;
     top: 0;
     height: 100vh;

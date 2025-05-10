@@ -167,16 +167,16 @@ export function initFooter() {
         return `
             <div class="footer-section-contact-info">
                 <h3>Contáctanos</h3>
-                <a><strong>Dirección:</strong> ${contact.address}</a>
-                <a><strong>Email:</strong> ${contact.email}</a>
-                <a><strong>Teléfono:</strong> ${contact.phone}</a>
+                <p><strong>Dirección:</strong> ${contact.address}</p>
+                <p><a href="mailto:${contact.email}"><strong>Email:</strong> ${contact.email}</a></p>
+                <p><a href="https://wa.me/573205803048?text=Hola!%20me%20interesa%20saber%20más%20acerca%20de%20la%20perdida%20de%20capacidad%20laboral,%20me%20puedes%20brindar%20mas%20informacion" target="_blank"><strong>WhatsApp:</strong> ${contact.whatsapp}</a></p>
                 <h4>Horario de atención:</h4>
-                <a>${contact.schedule.weekday}</a>
-                <a>${contact.schedule.weekend}</a>
+                <p>${contact.schedule.weekday}</p>
+                <p>${contact.schedule.weekend}</p>
                 <h4>Asesores Comerciales:</h4>
-                <a>${contact.commercial.weekday}</a>
-                <a>${contact.commercial.weekend}</a>
-                <a><strong>WhatsApp:</strong> ${contact.whatsapp}</a>
+                <p>${contact.commercial.weekday}</p>
+                <p>${contact.commercial.weekend}</p>
+                <p><a href="https://wa.me/573205803048?text=Hola!%20me%20interesa%20saber%20más%20acerca%20de%20la%20perdida%20de%20capacidad%20laboral,%20me%20puedes%20brindar%20mas%20informacion" target="_blank"><strong>WhatsApp:</strong> ${contact.whatsapp}</a></p>
             </div>
         `;
     }

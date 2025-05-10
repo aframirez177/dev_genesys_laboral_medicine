@@ -4,7 +4,7 @@ import './styles/scss/style_profesiograma.scss';
 
 
 
-function initApp() {
+/* function initApp() {
 
     initializeForm();
 
@@ -16,7 +16,7 @@ if (document.readyState === 'loading') {
 } else {
     initApp();
 }
-
+ */
 
 
 

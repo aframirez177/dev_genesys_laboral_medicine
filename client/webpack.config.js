@@ -129,6 +129,13 @@ module.exports = {
       filename: "./pages/Contacto.html",
     }),
     new HtmlWebpackPlugin({
+      chunks: ["main", "enrollment"],
+      inject: true,
+      template: "./public/pages/Enrollment.html",
+      filename: "./pages/Enrollment.html",
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ["main", "examenmedicoescolar"],
       inject: true,
       template: "./public/pages/examen_medico_escolar.html",
       filename: "./pages/examen_medico_escolar.html",
@@ -140,6 +147,7 @@ module.exports = {
       filename: "./pages/Examenes_medicos_ocupacionales.html",
     }),
     new HtmlWebpackPlugin({
+      chunks: ["main", "genesysbi"],
       inject: true,
       template: "./public/pages/Genesys_BI.html",
       filename: "./pages/Genesys_BI.html",
@@ -162,11 +170,13 @@ module.exports = {
       filename: "./pages/Matriz_de_riesgos_profesional.html",
     }),
     new HtmlWebpackPlugin({
+      chunks: ["main", "nosotros"],
       inject: true,
       template: "./public/pages/Nosotros.html",
       filename: "./pages/Nosotros.html",
     }),
     new HtmlWebpackPlugin({
+      chunks: ["main", "perdidacapacidadlaboral"],
       inject: true,
       template: "./public/pages/Perdida_de_capacidad_laboral.html",
       filename: "./pages/Perdida_de_capacidad_laboral.html",
