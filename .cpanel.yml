@@ -1,0 +1,7 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/qgenesyq8/public_html/
+    - /bin/cp -R dist/* ${DEPLOYPATH}
+    # Si necesitas copiar archivos ocultos como .htaccess desde tu carpeta dist:
+    # - /bin/cp dist/.htaccess ${DEPLOYPATH}
