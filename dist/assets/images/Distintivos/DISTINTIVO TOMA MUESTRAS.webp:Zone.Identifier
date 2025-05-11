@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://cloudconvert.com/
+HostUrl=https://eu-central.storage.cloudconvert.com/tasks/a2e5d75c-29af-4437-9c51-b9b5145918e2/DISTINTIVO%20TOMA%20MUESTRAS.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20240730%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20240730T231023Z&X-Amz-Expires=86400&X-Amz-Signature=d6c6879db791a3f3154319fad6d3ecd157254f66112f05a8d8027394a9891efb&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22DISTINTIVO%20TOMA%20MUESTRAS.webp%22&response-content-type=image%2Fwebp&x-id=GetObject
