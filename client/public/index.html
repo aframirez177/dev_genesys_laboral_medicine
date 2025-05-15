@@ -17,24 +17,18 @@
       onload="this.rel='stylesheet'"
       as="style"
     />
-    <!-- <link
-      href="index.css"
-      rel="preload"
-      onload="this.rel='stylesheet'"
-      as="style"
-    /> -->
-    <!-- Título mejorado para SEO -->
+    <!-- Título optimizado para SEO, incluyendo nueva normativa y propuesta de valor -->
     <title>
-      Genesys - Exámenes Médico Laborales SST | Seguridad y Salud en el Trabajo
+      Genesys: Cumple Res. 1843 SST | Profesiograma y Exámenes Ocupacionales
     </title>
-    <!--metadatos para SEO-->
+    <!-- Metadatos optimizados para SEO -->
     <meta
       name="description"
-      content="Genesys ofrece servicios integrales de Seguridad y Salud en el Trabajo (SST). Cumple con todos los requisitos legales y mejora el bienestar laboral de tu empresa."
+      content="Genesys te guía en la nueva Resolución 1843 SST. Inicia GRATIS tu diagnóstico de riesgos, obtén tu Matriz y Profesiograma Validados por médicos expertos. Exámenes ocupacionales de calidad. ¡Cumplimiento y bienestar!"
     />
     <meta
       name="keywords"
-      content="SST, Salud Laboral, Exámenes Médicos Ocupacionales, Seguridad en el Trabajo"
+      content="Resolución 1843, SST Colombia, Exámenes Médicos Ocupacionales, Profesiograma, Matriz de Riesgos, Salud Laboral, Seguridad en el Trabajo, Genesys, Cumplimiento Normativo SST, Asesoría SST, Diagnóstico de Riesgos Gratis"
     />
     <meta name="robots" content="index-follow" />
     <meta name="googlebot" content="index-follow" />
@@ -47,14 +41,14 @@
       sizes="16x10 32x20"
     />
 
-    <!-- Datos estructurados para SEO -->
+    <!-- Datos estructurados para SEO (Ajustar URL si es necesario) -->
     <script type="application/ld+json">
       {
-      "@context": "https://schema.org"
-      "@type": "LocalBusiness",
-      "name": "Genesys SST",
-      "image": "https://www.genesyssst.com/assets/logo_color_vectores.svg",
-      "description": "Servicios integrales de Seguridad y Salud en el Trabajo (SST) en Bogotá",
+      "@context": "https://schema.org",
+      "@type": "MedicalBusiness",
+      "name": "Genesys Laboral Medicine SAS",
+      "image": "https://www.genesyslm.com.co/assets/images/logo_color_vectores.svg",
+      "description": "Servicios integrales de Seguridad y Salud en el Trabajo (SST) en Bogotá, adaptados a la Resolución 1843. Expertos en exámenes ocupacionales, profesiogramas y matrices de riesgo.",
       "address": {
           "@type": "PostalAddress",
           "streetAddress": "Calle 86 A # 23-12",
@@ -64,7 +58,28 @@
           "addressCountry": "CO"
       },
       "telephone": "+573205803048",
-      "url": "https://www.genesyslm.com.co"
+      "url": "https://www.genesyslm.com.co",
+      "priceRange": "$$",
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday"
+          ],
+          "opens": "08:00",
+          "closes": "17:00"
+        }
+      ],
+      "department": [
+        {
+          "@type": "MedicalClinic",
+          "name": "Medicina Laboral y Salud Ocupacional"
+        }
+      ]
       }
     </script>
     <!-- Google tag (gtag.js) -->
@@ -92,27 +107,23 @@
         <a
           href="./index.html"
           class="logo-link"
-          aria-label="Ir a la página de inicio"
+          aria-label="Ir a la página de inicio de Genesys Laboral Medicine"
         >
           <img
             src="./assets/images/logo_color_vectores.svg"
-            alt="Genesys Logo"
+            alt="Genesys Laboral Medicine Logo"
             class="logo"
             id="header-logo"
           />
         </a>
 
         <nav class="screen-menu" id="screen-menu-nav">
-          <!-- Links Principales (Estático) -->
           <div class="main-nav-links">
             <a href="./pages/Nosotros.html">Nosotros</a>
-            <a href="http://entregaderesultados.com/genesys" target="_blank"
-              >Resultados</a
-            >
-            <a href="./pages/SST.html">SST</a>
+            <a href="http://entregaderesultados.com/genesys" target="_blank">Resultados</a>
+            <a href="./pages/SST.html">SST Integral</a>
             <a href="./pages/Genesys_BI.html">Genesys BI</a>
           </div>
-          <!-- Dropdown Trigger (Estático) -->
           <div class="dropdown">
             <button
               type="button"
@@ -120,21 +131,19 @@
               aria-expanded="false"
               aria-controls="services-menu"
             >
-              Servicios
+              Nuestros Servicios
             </button>
           </div>
-          <!-- Botones CTA (Estático) -->
           <div class="cta-buttons">
-            <button type="button" class="cta-button-1" onclick="window.location.href='https://sites.google.com/view/intranet-genesys-laboral-medic/p%C3%A1gina-principal?authuser=0'">Log In</button>
-            <button type="button" class="cta-button">Sign Up</button>
+            <button type="button" class="cta-button-1" onclick="window.location.href='https://sites.google.com/view/intranet-genesys-laboral-medic/p%C3%A1gina-principal?authuser=0'">Intranet</button>
+            <button type="button" class="cta-button" onclick="window.location.href='#paso1-diagnostico'">Empieza Aquí</button>
           </div>
         </nav>
       </header>
-      <!-- Botón Hamburguesa (Estático) -->
       <div
         class="ham-menu"
-        role="button"  
-        tabindex="0"     
+        role="button"
+        tabindex="0"
         aria-label="Abrir menú de navegación"
         aria-expanded="false"
         aria-controls="off-screen-menu-nav"
@@ -143,657 +152,126 @@
         <span></span>
         <span></span>
       </div>
-      <!-- ===== FIN HEADER ===== -->
 
-      <!-- ===== MENÚ SERVICIOS DESPLEGABLE (Escritorio - Estático) ===== -->
       <div id="services-menu" class="dropdown-menu" aria-hidden="true">
         <div class="dropdown-menu-content">
           <ul id="services-menu-list">
             <li data-icon="viñeta">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
               <a href="./pages/Matriz_de_riesgos_profesional.html"
-                >Matriz de riesgo profesional</a
+                >Asistente Diagnóstico de Riesgos (¡Gratis!)</a
               >
             </li>
             <li data-icon="viñeta">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
-              <a href="./pages/Profesiograma.html">Profesiograma</a>
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
+              <a href="./pages/Profesiograma.html">Diseño Matriz y Profesiograma Experto</a>
             </li>
             <li data-icon="viñeta">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
               <a href="./pages/Examenes_medicos_ocupacionales.html"
-                >Exámenes Médico Ocupacionales</a
+                >Exámenes Ocupacionales (Res. 1843)</a
               >
             </li>
             <li data-icon="viñeta">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
               <a href="./pages/Bateria_de_riesgo_psicosocial.html"
-                >Batería de riesgo Psicosocial</a
+                >Batería Riesgo Psicosocial</a
               >
             </li>
             <li data-icon="viñeta">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
               <a href="./pages/Analisis_de_puesto_de_trabajo.html"
-                >Análisis de puesto de trabajo</a
+                >Análisis de Puesto (APT)</a
               >
             </li>
             <li data-icon="viñeta">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
-              <a href="./pages/SST.html">SST</a>
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
+              <a href="./pages/SST.html">Asesoría SG-SST</a>
             </li>
-            <li data-icon="viñeta">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
+             <li data-icon="viñeta">
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
               <a href="./pages/examen_medico_escolar.html"
                 >Examen Médico Escolar</a
               >
             </li>
             <li data-icon="viñeta">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
               <a href="./pages/Perdida_de_capacidad_laboral.html"
-                >Pérdida de capacidad Laboral</a
+                >PCL y Rehabilitación</a
               >
             </li>
           </ul>
         </div>
       </div>
-      <!-- ===== FIN ESTRUCTURA MENÚ SERVICIOS ===== -->
 
-      <!-- ===== MENÚ OFF-SCREEN (Móvil - Estático) ===== -->
       <nav class="off-screen-menu" id="off-screen-menu-nav" aria-hidden="true">
-        <!-- Links Principales Móvil -->
         <div class="main-nav-links-mobile">
           <a href="./pages/Nosotros.html">Nosotros</a>
-          <a href="http://entregaderesultados.com/genesys" target="_blank"
-            >Resultados</a
-          >
-          <a href="./pages/SST.html">SST</a>
+          <a href="http://entregaderesultados.com/genesys" target="_blank">Resultados</a>
+          <a href="./pages/SST.html">SST Integral</a>
           <a href="./pages/Genesys_BI.html">Genesys BI</a>
         </div>
-        <!-- Servicios Móvil -->
         <div class="mobile-services">
-          <button
-            type="button"
-            class="mobile-services-toggle"
-            aria-expanded="false"
-            aria-controls="mobile-services-list"
-          >
-            Servicios
+          <button type="button" class="mobile-services-toggle" aria-expanded="false" aria-controls="mobile-services-list">
+            Nuestros Servicios
           </button>
-          <div
-            class="mobile-services-content"
-            id="mobile-services-list"
-            aria-hidden="true"
-          >
+          <div class="mobile-services-content" id="mobile-services-list" aria-hidden="true">
             <div class="mobile-service-item">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
-              <a href="./pages/Matriz_de_riesgos_profesional.html"
-                >Matriz de riesgo profesional</a
-              >
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
+              <a href="./pages/Matriz_de_riesgos_profesional.html">Asistente Diagnóstico Riesgos</a>
             </div>
             <div class="mobile-service-item">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
-              <a href="./pages/Profesiograma.html">Profesiograma</a>
+                <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
+              <a href="./pages/Profesiograma.html">Diseño Matriz y Profesiograma</a>
             </div>
             <div class="mobile-service-item">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
-              <a href="./pages/Examenes_medicos_ocupacionales.html"
-                >Exámenes Médico Ocupacionales</a
-              >
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
+              <a href="./pages/Examenes_medicos_ocupacionales.html">Exámenes Ocupacionales</a>
             </div>
             <div class="mobile-service-item">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
-              <a href="./pages/Bateria_de_riesgo_psicosocial.html"
-                >Batería de riesgo Psicosocial</a
-              >
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
+              <a href="./pages/Bateria_de_riesgo_psicosocial.html">Batería Psicosocial</a>
             </div>
             <div class="mobile-service-item">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
-              <a href="./pages/Analisis_de_puesto_de_trabajo.html"
-                >Análisis de puesto de trabajo</a
-              >
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
+              <a href="./pages/Analisis_de_puesto_de_trabajo.html">Análisis Puesto (APT)</a>
             </div>
             <div class="mobile-service-item">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
-              <a href="./pages/SST.html">SST</a>
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
+              <a href="./pages/SST.html">Asesoría SG-SST</a>
             </div>
             <div class="mobile-service-item">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
-              <a href="./pages/examen_medico_escolar.html"
-                >Examen Médico Escolar</a
-              >
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
+              <a href="./pages/examen_medico_escolar.html">Examen Médico Escolar</a>
             </div>
             <div class="mobile-service-item">
-              <svg
-                width="36"
-                height="41"
-                viewBox="0 0 36 41"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
-                  fill="#EBBEC9"
-                />
-                <path
-                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
-                  fill="#B0D7DC"
-                />
-                <path
-                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
-                  fill="#92CED2"
-                />
-                <path
-                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
-                  fill="#F1A298"
-                />
-                <path
-                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
-                  fill="#F1A59C"
-                />
-                <path
-                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
-                  fill="#EDC9C4"
-                />
-              </svg>
-              <a href="./pages/Perdida_de_capacidad_laboral.html"
-                >Pérdida de capacidad Laboral</a
-              >
+              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/><path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/><path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/><path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/><path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/><path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/></svg>
+              <a href="./pages/Perdida_de_capacidad_laboral.html">PCL y Rehabilitación</a>
             </div>
           </div>
         </div>
-        <!-- Botones CTA Móvil -->
         <div class="cta-buttons-mobile">
-          <button type="button" class="cta-button-1" onclick="window.location.href='https://sites.google.com/view/intranet-genesys-laboral-medic/p%C3%A1gina-principal?authuser=0'">Log In</button>
-          <button type="button" class="cta-button">Sign Up</button>
+          <button type="button" class="cta-button-1" onclick="window.location.href='https://sites.google.com/view/intranet-genesys-laboral-medic/p%C3%A1gina-principal?authuser=0'">Intranet</button>
+          <button type="button" class="cta-button" onclick="window.location.href='#paso1-diagnostico'">Empieza Aquí</button>
         </div>
       </nav>
 
       <main class="background-container">
         <div class="background-fixed background-container-inicio"></div>
-        <!-- <header></header> -->
 
         <section class="hero">
           <div class="hero-content">
             <h1>
-              <span class="green">Cumple</span> con todos los
-              <span class="green">requisitos</span> en SALUD LABORAL
-              <span class="green">(SGSST)</span>
+              Genesys: Tu Aliado Experto para <span class="green">Cumplir la Resolución 1843</span> en Salud Ocupacional
             </h1>
             <p class="intro">
-              No vivimos para trabajar. trabajamos para tener una mejor vida.
-              encuentra aca un proveedor confiable que se ajusta a tus
-              necesidades. Evita sanciones de ley. Te guiamos en todo el proceso
+              La nueva Resolución 1843 exige un mayor rigor en la salud laboral. En Genesys, te guiamos paso a paso: desde la <span>identificación de riesgos con nuestro Asistente GRATUITO</span>, hasta la creación de tu Matriz y Profesiograma validados por médicos expertos, y la realización de <span>exámenes ocupacionales de calidad que aseguran el bienestar de tu equipo y tu tranquilidad legal</span>. Evita sanciones y fortalece tu SG-SST con nosotros.
             </p>
             <button
               class="cta-button"
-              onclick="window.open('https://wa.me/573205803048?text=Hola!%20me%20interesa%20saber%20mas%20acerca%20de%20Genesys%20Laboral%20Medicine.%20Me%20puedes%20brindar%20mas%20informacion', '_blank')"
+              onclick="window.location.href='#paso1-diagnostico'"
             >
-              Empieza aquí
+              Diagnostica tus Riesgos ¡GRATIS!
             </button>
           </div>
         </section>
@@ -802,341 +280,112 @@
 
     <section class="program-description">
       <h2>
-        <span class="green">Programa</span> de Bienestar Laboral<span
-          class="green"
-        >
-          Integral</span
-        >
+        Navegando la Nueva Normativa SST: <span class="green">Nuestra Metodología Genesys</span>
       </h2>
       <p class="descripcion">
-        Con nuestra solución integral de SST, combinamos tecnología avanzada y
-        experiencia para crear una cultura de bienestar que impulsa la
-        productividad y el compromiso. Te ofrecemos una estrategia personalizada
-        para el éxito y la seguridad de tu empresa.
+        Ante los nuevos requisitos de la Resolución 1843, en Genesys hemos diseñado un proceso claro y eficiente. Te acompañamos desde el diagnóstico inicial de riesgos de tus cargos (¡puedes empezar GRATIS!), pasando por la <span>elaboración experta de tu Matriz de Riesgos y Profesiograma</span>, hasta la <span>validación médica profesional</span> y la realización de exámenes ocupacionales que cumplen rigurosamente con la ley.
+        <span>Una solución integral para tu tranquilidad y el bienestar de tus colaboradores.</span>
       </p>
     </section>
 
-    <section class="steps">
-      <article class="step-card">
-        <h3>PASO 1</h3>
-        <h4>Matriz de Riesgos</h4>
-        <p>Identificación y evaluación de riesgos laborales.</p>
+    <!-- SECCIÓN DE PASOS REENFOCADA Y OPTIMIZADA (6 PASOS) -->
+    <section class="steps" id="nuestro-proceso">
+      <article class="step-card" id="paso1-diagnostico">
+        <h3>PASO 1 <span><br>(¡Inicia GRATIS!)</span></h3>
+        <h4>Diagnóstico Inicial y Perfil de Cargo</h4>
+        <p>Usa nuestro <span>Asistente Interactivo</span> obten un <span>borrador de Perfil de Cargo</span> + <span>identificación preliminar de riesgos</span> laborales.</p>
         <button
           onclick="window.location.href='./pages/Matriz_de_riesgos_profesional.html'"
           class="cta-button"
         >
-          Inicia Aquí
+          Comienza tu Diagnóstico
         </button>
       </article>
-      <article class="step-card">
-        <h3>PASO 2</h3>
-        <h4>Profesiograma</h4>
-        <p>Perfiles de cargo y requerimientos de salud.</p>
+      <article class="step-card" id="paso2-matriz">
+        <h3>PASO 2 <span><br>(Servicio Experto)</span></h3>
+        <h4>Elaboración Matriz de Riesgos</h4>
+        <p>Con base en tu diagnóstico, nuestra IPS desarrolla tu Matriz de Riesgos detallada usando IA <br>( basado en la GTC45)</p>
+        <button
+          onclick="window.location.href='./pages/Matriz_de_riesgos_profesional.html'"
+          class="cta-button"
+        >
+          Solicita tu Matriz Detallada
+        </button>
+      </article>
+      <article class="step-card" id="paso3-profesiograma-tecnico">
+        <h3>PASO 3 <span><br>(Diseño Profesional)</span></h3>
+        <h4>Diseño de Profesiograma Técnico</h4>
+        <p>Creamos un Profesiograma técnico para cada cargo, definiendo los exámenes necesarios según tu Matriz de riesgos.</p>
         <button
           onclick="window.location.href='./pages/Profesiograma.html'"
           class="cta-button"
         >
-          Solicítalo Aquí
+          Diseña tu Profesiograma
         </button>
       </article>
-      <article class="step-card">
-        <h3>PASO 3</h3>
-        <h4>Exámenes Médicos Ocupacionales</h4>
-        <p>Evaluaciones de ingreso, periódicas y de egreso.tambin examen PCL</p>
+      <article class="step-card" id="paso4-validacion-medica">
+        <h3>PASO 4 <span><br>(Cumple la norma)</span></h3>
+        <h4>Validación Médica del Profesiograma</h4>
+        <p>Nuestro Médico Especialista en SST valida y aprueba tu profesiograma, asegurando el total cumplimiento de la Res. 1843.</p>
+        <button class="cta-button"
+          onclick="window.location.href='./pages/Profesiograma.html'" 
+        >
+          Obtén Validación Médica
+        </button>
+      </article>
+      <article class="step-card" id="paso5-examenes">
+        <h3>PASO 5 <span><br>(Cuidado y Prevención)</span></h3>
+        <h4>Exámenes Médico Ocupacionales</h4>
+        <p>Realizamos todas las evaluaciones (ingreso, periódicas, egreso) con <span>calidad, rigor normativo</span> y una valoración completa.</p>
         <button
           onclick="window.location.href='./pages/Examenes_medicos_ocupacionales.html'"
           class="cta-button"
         >
-          Cotiza Ahora
+          Cotiza tus Exámenes
         </button>
       </article>
-      <article class="step-card">
-        <h3>PASO 4</h3>
-        <h4>Bateria de riesgo psicosocial</h4>
-        <p>¡Protege a tu equipo, mejora el rendimiento y cumple la ley!</p>
-        <button
-          onclick="window.location.href='./pages/Bateria_de_riesgo_psicosocial.html'"
-          class="cta-button"
-        >
-          Más Información
-        </button>
-      </article>
-      <article class="step-card">
-        <h3>PASO 5</h3>
-        <h4>Analisis de puesto de trabajo</h4>
-        <p>Optimiza tareas, reduce riesgos y potencia el talento.</p>
-        <button
-          onclick="window.location.href='./pages/Analisis_de_puesto_de_trabajo.html'"
-          class="cta-button"
-        >
-          Solicítalo Ya
-        </button>
-      </article>
-      <article class="step-card">
-        <h3>PASO 6</h3>
-        <h4>SST</h4>
-        <p>Cumplimiento legal, bienestar laboral y productividad en armonía.</p>
+      <article class="step-card" id="paso6-servicios-complementarios">
+        <h3>PASO 6 <span><br>(Soporte Integral)</span></h3>
+        <h4>Servicios Complementarios SST</h4>
+        <p>Fortalece tu SG-SST con nuestra Batería Psicosocial, Análisis de Puesto (APT) y <span>Asesoría Integral experta</span>.</p>
         <button
           onclick="window.location.href='./pages/SST.html'"
           class="cta-button"
         >
-          Solicítalo Ya
+          Ver Servicios Adicionales
         </button>
       </article>
     </section>
+    <!-- FIN SECCIÓN DE PASOS REENFOCADA -->
+
     <section class="mujeres-lideres">
       <div class="mujeres-lideres-container">
         <div class="text-container">
           <h2>
-            Somos mujeres lideres con el proposito de cuidar la salud de los
-            trabajadores en colombia.
+            Somos <span class="green">mujeres líderes</span> con el propósito de <span class="green">cuidar la salud</span> de los
+            trabajadores en Colombia.
           </h2>
           <p>
-            Somos una IPS colombiana dirigida por mujeres, con un equipo 98%
-            femenino. Nuestra misión: empoderar a las mujeres líderes para
-            transformar positivamente sus familias y empresas.
+            Genesys Laboral Medicine es una IPS colombiana dirigida por mujeres, con un equipo mayoritariamente femenino. Nuestra misión: empoderar a líderes y empresas para transformar positivamente la salud y el bienestar laboral, cumpliendo con la <span>nueva Resolución 1843</span>.
           </p>
 
           <div class="features">
             <div class="feature">
               <div class="icon">
-                <svg
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 110 135"
-                  class="icon-svg"
-                >
-                  <path
-                    d="M73.6,21.9c-7.3,0-14.1,3.3-18.6,8.8c-4.5-5.5-11.3-8.8-18.6-8.8c-13.2,0-23.9,10.6-24,23.8
-                            c-0.4,3.5-1.5,26.5,40.7,51.9c0.4,0.2,0.9,0.4,1.3,0.5c0.2,0,0.4,0,0.6,0h0h0h0h0c0.7,0,1.4-0.2,2-0.6
-                            c42.1-25.5,41.1-48.4,40.6-51.9C97.5,32.5,86.8,21.9,73.6,21.9L73.6,21.9z"
-                  />
-                </svg>
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 135" class="icon-svg"><path d="M73.6,21.9c-7.3,0-14.1,3.3-18.6,8.8c-4.5-5.5-11.3-8.8-18.6-8.8c-13.2,0-23.9,10.6-24,23.8 c-0.4,3.5-1.5,26.5,40.7,51.9c0.4,0.2,0.9,0.4,1.3,0.5c0.2,0,0.4,0,0.6,0h0h0h0h0c0.7,0,1.4-0.2,2-0.6 c42.1-25.5,41.1-48.4,40.6-51.9C97.5,32.5,86.8,21.9,73.6,21.9L73.6,21.9z"/></svg>
               </div>
-              <h3>Trabajamos para vivir</h3>
+              <h3>Trabajamos para Vivir Mejor</h3>
               <p>
-                Todos sabemos que trabajamos para tener una mejor vida, nosotras
-                cuidamos de tu salud para que disfrutes de esa mejor vida.
+                Creemos que el trabajo es un medio para una vida plena. Cuidamos tu salud laboral para que disfrutes de ese bienestar, con la <span>tranquilidad del cumplimiento normativo</span>.
               </p>
             </div>
             <div class="feature">
               <div class="icon">
-                <svg
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlns:xlink="http://www.w3.org/1999/xlink"
-                  x="0px"
-                  y="0px"
-                  viewBox="0 0 115.9 144.8"
-                  style="enable-background: new 0 0 115.9 144.8"
-                  xml:space="preserve"
-                >
-                  <style type="text/css">
-                    .st0 {
-                      display: none;
-                    }
-                    .st1 {
-                      display: inline;
-                    }
-                    .st2 {
-                      fill: none;
-                    }
-                    .st3 {
-                      fill: #5dc4af;
-                    }
-                  </style>
-                  <g
-                    id="Capa_1"
-                    xmlns:xodm="http://www.corel.com/coreldraw/odm/2003"
-                    class="st0"
-                  >
-                    <g class="st1">
-                      <g>
-                        <path
-                          class="st2"
-                          d="M58.3,72l0-0.5c0-0.1,0-0.1,0.1-0.1c0.3-0.1,0.7-0.3,0.9-0.6c0.2-0.3,0.3-0.6,0.3-0.9
-                    c-0.5-0.2-0.9-0.4-1.2-0.7l0,0c-0.2-0.2-0.3-0.4-0.4-0.7c-0.1,0.3-0.3,0.5-0.4,0.7c-0.3,0.3-0.7,0.5-1.2,0.7
-                    c0,0.3,0.1,0.6,0.3,0.9c0.2,0.3,0.5,0.5,0.9,0.6c0.1,0,0.1,0.1,0.1,0.1V72c0,0.1,0,0.2-0.1,0.3l0,0c0,0-0.1,0.1-0.1,0.1l0.5,0.8
-                    l0.5-0.8c0,0-0.1,0-0.1-0.1C58.3,72.2,58.3,72.1,58.3,72z"
-                        />
-                        <path
-                          class="st2"
-                          d="M56.3,73.8L56.3,73.8c0,0-0.1,0.1-0.1,0.1c0,0.1,0,0.1,0.1,0.1c0,0,0.1,0.1,0.1,0.1c0.1,0,0.1,0,0.1-0.1
-                    c0,0,0.1-0.1,0.1-0.1c0-0.1,0-0.1-0.1-0.1c0,0-0.1-0.1-0.1-0.1C56.4,73.7,56.3,73.8,56.3,73.8z"
-                        />
-                        <path
-                          class="st2"
-                          d="M59.2,73.8C59.1,73.8,59.1,73.9,59.2,73.8l0.5,0.1c0,0,0-0.1-0.1-0.1C59.5,73.7,59.3,73.7,59.2,73.8z"
-                        />
-                        <path
-                          class="st2"
-                          d="M57.9,67.7c-0.6,0-1.1,0.3-1.5,0.7c-0.4,0.4-0.6,1-0.6,1.6v2.6c0,0,0,0,0.1,0c0.5-0.1,0.9-0.2,1.4-0.3
-                    c0,0,0.1,0,0.1-0.1l0,0c0,0,0-0.1,0-0.1v-0.4c-0.4-0.1-0.7-0.4-0.9-0.6c-0.2-0.3-0.4-0.7-0.4-1.1c0-0.1,0-0.1,0.1-0.1
-                    c0.5-0.2,0.9-0.4,1.2-0.7c0.3-0.3,0.4-0.6,0.5-1c0-0.1,0.1-0.1,0.1-0.1c0.1,0,0.1,0.1,0.1,0.1c0.1,0.4,0.2,0.7,0.5,1l0,0
-                    c0.3,0.3,0.7,0.5,1.2,0.7c0.1,0,0.1,0.1,0.1,0.1c0,0.4-0.1,0.8-0.4,1.1c-0.2,0.3-0.5,0.5-0.9,0.7l0,0.4c0,0,0,0.1,0,0.1
-                    c0,0,0.1,0.1,0.1,0.1l1.4,0.3c0,0,0,0,0.1,0v-2.6c0-0.6-0.2-1.2-0.6-1.6C59.1,67.9,58.5,67.7,57.9,67.7z"
-                        />
-                        <path
-                          d="M60.3,72.9L60.3,72.9l0-2.9c0-0.7-0.3-1.3-0.7-1.8c-0.4-0.5-1-0.7-1.7-0.7s-1.3,0.3-1.7,0.7c-0.4,0.5-0.7,1.1-0.7,1.8
-                    v2.9v0l0,0l-0.3,2.3c0,0.1,0,0.1,0.1,0.1c0.1,0,0.1,0,0.1-0.1l0.3-2.3c0,0,0-0.1,0-0.1c0,0,0.1,0,0.1-0.1l0.4-0.1v0.8
-                    c-0.1,0-0.1,0.1-0.2,0.1l0,0C56,73.7,56,73.8,56,73.9c0,0.1,0.1,0.2,0.1,0.3l0,0c0.1,0.1,0.2,0.1,0.3,0.1c0.1,0,0.2-0.1,0.3-0.1
-                    c0.1-0.1,0.1-0.2,0.1-0.3c0-0.1-0.1-0.2-0.1-0.3c-0.1-0.1-0.1-0.1-0.2-0.1v-0.9l0.6-0.1l0.6,0.9v1.8c0,0.1,0.1,0.1,0.1,0.1
-                    c0.1,0,0.1-0.1,0.1-0.1v-1.8l0.6-0.9l0.6,0.1v0.9c-0.1,0-0.2,0.1-0.3,0.2c-0.1,0.1-0.2,0.2-0.2,0.4v0v0v0.6
-                    c0,0.1,0.1,0.1,0.1,0.1h0.2c0.1,0,0.1-0.1,0.1-0.1c0-0.1-0.1-0.1-0.1-0.1h0v-0.4h0.6v0.4h0c-0.1,0-0.1,0.1-0.1,0.1
-                    c0,0.1,0.1,0.1,0.1,0.1h0.2c0.1,0,0.1-0.1,0.1-0.1V74v0v0c0-0.2-0.1-0.3-0.2-0.4c-0.1-0.1-0.2-0.1-0.3-0.2v-0.8l0.4,0.1
-                    c0,0,0.1,0,0.1,0.1c0,0,0,0,0,0.1v0c0,0,0,0,0,0l0.3,2.2c0,0.1,0.1,0.1,0.1,0.1c0.1,0,0.1-0.1,0.1-0.1L60.3,72.9z M56.6,73.8
-                    c0,0,0.1,0.1,0.1,0.1c0,0.1,0,0.1-0.1,0.1c0,0-0.1,0.1-0.1,0.1c-0.1,0-0.1,0-0.1-0.1c0,0-0.1-0.1-0.1-0.1c0-0.1,0-0.1,0.1-0.1
-                    l0,0c0,0,0.1-0.1,0.1-0.1C56.5,73.7,56.5,73.8,56.6,73.8z M57.9,73.1l-0.5-0.8c0,0,0.1,0,0.1-0.1l0,0c0.1-0.1,0.1-0.2,0.1-0.3
-                    v-0.5c0-0.1,0-0.1-0.1-0.1c-0.4-0.1-0.6-0.3-0.9-0.6c-0.2-0.3-0.3-0.6-0.3-0.9c0.5-0.2,0.9-0.4,1.2-0.7c0.2-0.2,0.3-0.4,0.4-0.7
-                    c0.1,0.3,0.3,0.5,0.4,0.7l0,0c0.3,0.3,0.7,0.5,1.2,0.7c0,0.3-0.1,0.6-0.3,0.9c-0.2,0.3-0.5,0.5-0.9,0.6c-0.1,0-0.1,0.1-0.1,0.1
-                    l0,0.5c0,0.1,0,0.2,0.1,0.3c0,0,0.1,0.1,0.1,0.1L57.9,73.1z M59.6,73.8C59.6,73.8,59.7,73.9,59.6,73.8l-0.5,0.1
-                    c0,0,0-0.1,0.1-0.1C59.3,73.7,59.5,73.7,59.6,73.8z M60.1,72.5C60.1,72.5,60,72.5,60.1,72.5l-1.4-0.3c0,0-0.1,0-0.1-0.1
-                    c0,0,0-0.1,0-0.1l0-0.4c0.4-0.1,0.7-0.4,0.9-0.7c0.2-0.3,0.4-0.7,0.4-1.1c0-0.1,0-0.1-0.1-0.1c-0.5-0.2-0.9-0.4-1.2-0.7l0,0
-                    c-0.3-0.3-0.4-0.6-0.5-1c0-0.1,0-0.1-0.1-0.1c-0.1,0-0.1,0-0.1,0.1c-0.1,0.4-0.2,0.7-0.5,1c-0.3,0.3-0.7,0.5-1.2,0.7
-                    c-0.1,0-0.1,0.1-0.1,0.1c0,0.4,0.1,0.8,0.4,1.1c0.2,0.3,0.5,0.5,0.9,0.6V72c0,0,0,0.1,0,0.1l0,0c0,0-0.1,0.1-0.1,0.1
-                    c-0.5,0.1-0.9,0.2-1.4,0.3c0,0,0,0-0.1,0v-2.6c0-0.6,0.2-1.2,0.6-1.6c0.4-0.4,0.9-0.7,1.5-0.7c0.6,0,1.1,0.3,1.5,0.7
-                    c0.4,0.4,0.6,1,0.6,1.6V72.5z"
-                        />
-                      </g>
-                    </g>
-                  </g>
-                  <g id="Capa_2">
-                    <g>
-                      <g>
-                        <path
-                          class="st3"
-                          d="M15.2,135.8c1.9-12.3,3.8-24.6,5.8-36.9c0.3-1.7,0.5-3.4,0.8-5.2c-0.5,0.5-1,1-1.6,1.6
-                    c8.8-2.3,17.6-4.5,26.4-6.8c1.3-0.3,2.5-0.6,3.8-1c1-0.2,1.7-1.2,1.7-2.2c0-4.1,0-8.1,0-12.2c0-1-0.7-1.9-1.7-2.2
-                    c-3.8-1.1-7.6-3.1-10.9-5.7c-5-4-7.2-9.7-8.4-15.9c-0.1-0.7-0.2-1.3-0.3-2c0.1,0.4,0-0.3-0.1-0.4c0-0.2,0-0.4-0.1-0.6
-                    c0-0.5-0.1-0.9-0.1-1.4c-0.6,0.7-1.1,1.4-1.7,2.2c3.7-1.1,7.4-2.7,10.8-4.5c6.5-3.4,12.8-8,16.8-14.3c2.5-3.9,3.8-8.5,3.7-13.1
-                    c0-2.9-4.5-2.9-4.5,0c0.1,15.3,14,25.4,26.8,30.7c1.2,0.5,2.5,1,3.8,1.4c-0.6-0.7-1.1-1.4-1.7-2.2c0.5,4.5-0.8,9.4-2.8,13.3
-                    c-1.5,2.9-3.7,5.5-6.3,7.4c-2,1.4-4.5,2.8-6.5,3.6c-1.2,0.5-2.5,0.9-3.8,1.2c-1,0.2-1.7,1.2-1.7,2.2c0,4.3,0,8.5,0,12.8
-                    c0,1,0.7,1.9,1.7,2.2c8.6,2.3,17.2,4.6,25.8,6.9c1.2,0.3,2.5,0.7,3.7,1c-0.5-0.5-1-1-1.6-1.6c2.2,12.1,4.4,24.2,6.7,36.4
-                    c0.3,1.7,0.6,3.4,0.9,5.2c0.2,1.2,1.7,1.9,2.8,1.6c1.3-0.3,1.8-1.6,1.6-2.8c-2.2-12.1-4.4-24.2-6.7-36.4
-                    c-0.3-1.7-0.6-3.4-0.9-5.2c-0.1-0.7-0.9-1.4-1.6-1.6c-8.6-2.3-17.2-4.6-25.8-6.9c-1.2-0.3-2.5-0.7-3.7-1c0.6,0.7,1.1,1.4,1.7,2.2
-                    c0-4.3,0-8.5,0-12.8c-0.6,0.7-1.1,1.4-1.7,2.2c3.9-0.9,7.7-2.7,11-5c6.3-4.4,10.3-11.2,11.5-18.8c0.3-2,0.5-4.1,0.3-6.2
-                    c-0.1-1-0.6-1.8-1.7-2.2c-0.9-0.3-1.8-0.6-2.8-1c-0.2-0.1-0.4-0.2-0.7-0.3c-0.1,0-0.2-0.1-0.3-0.1c-0.3-0.1,0.5,0.2,0,0
-                    c-0.6-0.3-1.2-0.5-1.7-0.8c-1.2-0.6-2.4-1.2-3.6-1.8C72.6,36,67.1,32,63.6,26.4c-2.2-3.4-3.3-7.1-3.4-11.1c-1.5,0-3,0-4.5,0
-                    c0.1,7.2-3.8,13.1-9.3,17.7c-2.3,1.9-5.3,3.8-8.2,5.4c-1.3,0.7-2.7,1.4-4,2c-0.3,0.1-0.6,0.3-0.9,0.4c-0.1,0.1-0.3,0.1-0.4,0.2
-                    c-0.5,0.2,0.3-0.1,0,0c-0.5,0.2-1.1,0.4-1.6,0.7c-1.2,0.5-2.4,0.9-3.6,1.2C26.8,43.1,26,44,26,45c0.2,4.6,1.3,9.4,3,13.7
-                    c1.4,3.4,3.4,6.5,6.1,8.9c2.6,2.3,5.5,4.2,8.6,5.7c1.7,0.8,3.5,1.6,5.4,2.2c-0.6-0.7-1.1-1.4-1.7-2.2c0,4.1,0,8.1,0,12.2
-                    c0.6-0.7,1.1-1.4,1.7-2.2c-8.8,2.3-17.6,4.5-26.4,6.8c-1.3,0.3-2.5,0.6-3.8,1c-0.7,0.2-1.5,0.8-1.6,1.6
-                    c-1.9,12.3-3.8,24.6-5.8,36.9c-0.3,1.7-0.5,3.4-0.8,5.2c-0.2,1.2,0.3,2.4,1.6,2.8C13.5,137.7,15,137,15.2,135.8L15.2,135.8z"
-                        />
-                      </g>
-                    </g>
-                    <g>
-                      <g>
-                        <path
-                          class="st3"
-                          d="M30.8,89.7c0,5.2,0,10.3,0,15.5c0,0.7,0,1.5,0,2.2c0,2.9,4.5,2.9,4.5,0c0-5.2,0-10.3,0-15.5
-                    c0-0.7,0-1.5,0-2.2C35.3,86.8,30.8,86.8,30.8,89.7L30.8,89.7z"
-                        />
-                      </g>
-                    </g>
-                    <g>
-                      <g>
-                        <path
-                          class="st3"
-                          d="M41.5,113.6c0-3.6-2.3-6.7-5.6-8c-3.2-1.2-7.1-0.2-9.2,2.5c-2.3,2.8-2.7,6.7-0.9,9.8c1.9,3.1,5.5,4.6,9,4
-                    C38.6,121.2,41.4,117.5,41.5,113.6c0-1.2-1-2.3-2.3-2.3c-1.2,0.1-2.2,1-2.3,2.3c0,0.2,0,0.3,0,0.5c0,0.5,0-0.1,0-0.1
-                    c0,0.2-0.1,0.6-0.2,0.8c0,0.1-0.1,0.3-0.2,0.5c0,0,0.2-0.5,0-0.1c-0.2,0.3-0.3,0.6-0.5,0.8c-0.3,0.4,0.2-0.2,0,0
-                    c-0.1,0.1-0.2,0.2-0.3,0.3c-0.1,0.1-0.7,0.7-0.3,0.3c-0.2,0.2-0.5,0.3-0.7,0.4c-0.1,0.1-0.2,0.1-0.3,0.2
-                    c-0.4,0.2,0.4-0.1-0.1,0.1c-0.3,0.1-0.5,0.2-0.8,0.2c-0.2,0-0.5,0.2,0,0c-0.1,0-0.3,0-0.4,0c-0.3,0-0.6,0-0.9,0
-                    c-0.3,0,0.5,0.1,0,0c-0.2,0-0.3-0.1-0.5-0.1c-0.2,0-0.3-0.1-0.5-0.2c-0.2-0.1-0.2,0,0.1,0c-0.2,0-0.5-0.3-0.7-0.4
-                    c-0.1-0.1-0.2-0.2-0.3-0.2c-0.3-0.2,0.4,0.4,0,0c-0.2-0.2-0.6-0.5-0.7-0.7c0.1,0.3,0.2,0.3,0.1,0.1c-0.1-0.1-0.2-0.3-0.3-0.4
-                    c-0.1-0.1-0.1-0.2-0.2-0.3c-0.1-0.1-0.4-0.5,0-0.1c-0.1-0.2-0.2-0.5-0.3-0.8c0-0.1,0-0.2-0.1-0.3c-0.1-0.5,0,0.4,0-0.2
-                    c0-0.3,0-0.5,0-0.8c0-0.1,0-0.1,0-0.2c0-0.3,0-0.2,0,0.1c0,0,0.1-0.3,0.1-0.3c0.1-0.3,0.1-0.5,0.2-0.8c0.2-0.5-0.2,0.4,0-0.1
-                    c0.1-0.1,0.2-0.3,0.2-0.4c0.1-0.1,0.1-0.2,0.2-0.3c0.1-0.2,0.1-0.4,0,0c0-0.2,0.4-0.5,0.6-0.6c0,0,0.4-0.4,0.1-0.1
-                    c-0.3,0.2,0.1-0.1,0.2-0.1c0.2-0.1,0.6-0.5,0.9-0.5c0,0-0.5,0.2-0.1,0c0.2-0.1,0.3-0.1,0.5-0.2c0.1,0,0.2-0.1,0.3-0.1
-                    c0,0,0.6-0.1,0.2,0c-0.4,0.1,0.2,0,0.2,0c0.1,0,0.3,0,0.4,0c0.1,0,0.3,0,0.4,0c0.5,0-0.4-0.1,0.1,0c0.3,0.1,0.6,0.2,1,0.3
-                    c0.5,0.2-0.3-0.2,0,0c0.1,0.1,0.3,0.2,0.5,0.3c0.1,0.1,0.2,0.1,0.3,0.2c0.1,0.1,0.2,0.1,0.3,0.2c-0.2-0.2-0.3-0.2-0.1,0
-                    c0.2,0.2,0.4,0.4,0.6,0.6c0.4,0.4-0.2-0.4,0,0.1c0.1,0.1,0.2,0.3,0.3,0.4c0.1,0.1,0.2,0.3,0.2,0.4c0.2,0.4-0.1-0.4,0,0.1
-                    c0.1,0.3,0.2,0.6,0.3,1c0,0.2,0.2,0.3,0-0.1c0.1,0.2,0,0.5,0,0.7c0,1.2,1,2.3,2.3,2.3C40.4,115.8,41.5,114.9,41.5,113.6z"
-                        />
-                      </g>
-                    </g>
-                    <g>
-                      <g>
-                        <path
-                          class="st3"
-                          d="M60.2,134.4c0-9.2,0-18.4,0-27.7c0-1.3,0-2.6,0-4c0-2.9-4.5-2.9-4.5,0c0,9.2,0,18.4,0,27.7c0,1.3,0,2.6,0,4
-                    C55.7,137.2,60.2,137.3,60.2,134.4L60.2,134.4z"
-                        />
-                      </g>
-                    </g>
-                    <g>
-                      <g>
-                        <path
-                          class="st3"
-                          d="M44.4,88.5c3.9,5.5,7.7,10.9,11.6,16.4c1,1.5,2.8,1.4,3.9,0c3.7-4.8,7.4-9.6,11.1-14.4
-                    c0.5-0.7,1.1-1.4,1.6-2c0.7-1,0.1-2.5-0.8-3.1c-1.2-0.7-2.3-0.2-3.1,0.8c-3.7,4.8-7.4,9.6-11.1,14.4c-0.5,0.7-1.1,1.4-1.6,2
-                    c1.3,0,2.6,0,3.9,0c-3.9-5.5-7.7-10.9-11.6-16.4c-0.7-1-2-1.5-3.1-0.8C44.3,86,43.7,87.5,44.4,88.5L44.4,88.5z"
-                        />
-                      </g>
-                    </g>
-                    <g>
-                      <g>
-                        <path
-                          class="st3"
-                          d="M80,90.2c0,5,0,10.1,0,15.1c0,0.7,0,1.4,0,2.1c0,2.9,4.5,2.9,4.5,0c0-5,0-10.1,0-15.1c0-0.7,0-1.4,0-2.1
-                    C84.5,87.3,80,87.3,80,90.2L80,90.2z"
-                        />
-                      </g>
-                    </g>
-                    <g>
-                      <g>
-                        <path
-                          class="st3"
-                          d="M78.9,124.3c-1.6,0-3.2,0-4.8,0c0.8,0.8,1.5,1.5,2.3,2.3c0-3.5,0-7,0-10.4c-0.8,0.8-1.5,1.5-2.3,2.3
-                    c4.3,0,8.5,0,12.8,0c1.2,0,2.3,0,3.5,0c-0.8-0.8-1.5-1.5-2.3-2.3c0,3.5,0,7,0,10.4c0.8-0.8,1.5-1.5,2.3-2.3c-1.3,0-2.6,0-3.9,0
-                    c-1.2,0-2.3,1-2.3,2.3c0,1.2,1,2.2,2.3,2.2c1.3,0,2.6,0,3.9,0c1.2,0,2.3-1,2.3-2.2c0-3.5,0-7,0-10.4c0-1.2-1-2.3-2.3-2.3
-                    c-4.3,0-8.7,0-13,0c-1.1,0-2.2,0-3.3,0c-1.2,0-2.3,1-2.3,2.3c0,3.5,0,7,0,10.4c0,1.2,1,2.2,2.3,2.2c1.6,0,3.2,0,4.8,0
-                    c1.2,0,2.3-1,2.3-2.2C81.2,125.3,80.1,124.3,78.9,124.3L78.9,124.3z"
-                        />
-                      </g>
-                    </g>
-                    <g>
-                      <g>
-                        <path
-                          class="st3"
-                          d="M92.6,116.1c-0.1-4.5-2.6-8.6-6.9-10.3c-4.1-1.6-8.9-0.1-11.5,3.4c-1.6,2-2.4,4.4-2.4,7c0,1.2,1,2.3,2.3,2.3
-                    c1.2,0,2.2-1,2.3-2.3c0-0.3,0-0.6,0-0.9c0,0.4,0.1-0.3,0.1-0.3c0.1-0.5,0.2-1,0.4-1.5c-0.1,0.4,0.1-0.2,0.1-0.3
-                    c0.1-0.3,0.3-0.5,0.4-0.8c0.1-0.2,0.2-0.4,0.4-0.5c-0.2,0.3,0.3-0.3,0.3-0.4c0.1-0.2,0.3-0.3,0.5-0.4c0.1-0.1,0.2-0.2,0.3-0.3
-                    c-0.2,0.1-0.2,0.1,0,0c0.4-0.3,0.8-0.5,1.2-0.7c0.2-0.1,0.3-0.1,0,0c0.1-0.1,0.3-0.1,0.4-0.1c0.2-0.1,0.4-0.1,0.6-0.2
-                    c0.1,0,0.3-0.1,0.4-0.1c-0.2,0-0.2,0-0.1,0c0.3,0,0.5,0,0.8,0c0.2,0,0.4,0,0.7,0c0.3,0,0.3,0,0,0c0.1,0,0.3,0.1,0.4,0.1
-                    c0.2,0,0.4,0.1,0.6,0.2c0.1,0,0.3,0.1,0.4,0.1c-0.2-0.1-0.2-0.1-0.1,0c0.4,0.2,0.8,0.4,1.2,0.7c0.2,0.2,0.2,0.2,0,0
-                    c0.1,0.1,0.2,0.2,0.3,0.3c0.2,0.1,0.3,0.3,0.5,0.4c0.1,0.1,0.6,0.7,0.3,0.4c0.1,0.2,0.3,0.4,0.4,0.5c0.1,0.2,0.3,0.4,0.4,0.7
-                    c0,0.1,0.3,0.7,0.2,0.4c0.2,0.5,0.3,1,0.4,1.5c0,0.1,0.1,0.7,0.1,0.3c0,0.3,0,0.6,0,0.9c0,1.2,1,2.3,2.3,2.3
-                    C91.6,118.4,92.6,117.3,92.6,116.1L92.6,116.1z"
-                        />
-                      </g>
-                    </g>
-                    <g>
-                      <g>
-                        <path
-                          class="st3"
-                          d="M97.5,93.7c0-5.5,0-11,0-16.5c0-9.1,0-18.1,0-27.2c0-3.4,0.3-6.8-0.4-10.2c-1.4-6.5-4.1-13-8-18.5
-                    C82.9,12.7,73.9,7,63.3,5.7C52,4.2,40.5,7.5,32.2,15.3c-6,5.7-10.2,13.3-12.8,21.1c-1,3.1-1.9,6.1-1.9,9.3
-                    c0,7.8-0.1,15.7-0.1,23.5c0,7.5-0.1,15.1-0.1,22.6c0,0.4,0,0.9,0,1.3c0,2.9,4.5,2.9,4.5,0c0-5.4,0-10.9,0.1-16.3
-                    c0-8.8,0.1-17.6,0.1-26.4c0-2.1,0.2-4.3,0-6.4c0-0.5-0.2,0.9,0,0c0.1-0.7,0.3-1.4,0.5-2.1c0.7-2.7,1.6-5.4,2.7-8
-                    c0.2-0.5-0.1,0.1,0.1-0.2c0.1-0.2,0.2-0.4,0.2-0.5c0.2-0.4,0.4-0.9,0.6-1.3c0.4-0.9,0.9-1.8,1.3-2.7c1-1.8,2.1-3.6,3.3-5.3
-                    c0.7-0.9,1-1.4,1.9-2.4c0.7-0.8,1.5-1.6,2.3-2.4c1.7-1.7,3.3-2.9,5.2-4.2c4.3-2.7,9.1-4.4,14.2-4.9c5.7-0.5,11.5,0.1,16.8,2.2
-                    c4.2,1.7,7.9,4.4,11.1,7.7c2.7,2.9,4.9,6.3,6.8,10.1c0.9,1.8,1.2,2.5,1.9,4.4c0.5,1.4,0.9,2.8,1.3,4.2c0.4,1.4,0.6,2.9,1,4.3
-                    c0,0.2,0-0.9-0.1-0.4c0,0.2,0,0.5,0,0.7c0,1,0,2,0,3c0,8.3,0,16.5,0,24.8c0,7.2,0,14.3,0,21.5c0,0.4,0,0.8,0,1.2
-                    C93,96.6,97.5,96.6,97.5,93.7L97.5,93.7z"
-                        />
-                      </g>
-                    </g>
-                  </g>
-                </svg>
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 115.9 144.8" style="enable-background: new 0 0 115.9 144.8" xml:space="preserve"><style type="text/css">.st0{display:none;}.st1{display:inline;}.st2{fill:none;}.st3{fill:#5DC4AF;}</style><g id="Capa_1" xmlns:xodm="http://www.corel.com/coreldraw/odm/2003" class="st0"><g class="st1"><g><path class="st2" d="M58.3,72l0-0.5c0-0.1,0-0.1,0.1-0.1c0.3-0.1,0.7-0.3,0.9-0.6c0.2-0.3,0.3-0.6,0.3-0.9 c-0.5-0.2-0.9-0.4-1.2-0.7l0,0c-0.2-0.2-0.3-0.4-0.4-0.7c-0.1,0.3-0.3,0.5-0.4,0.7c-0.3,0.3-0.7,0.5-1.2,0.7 c0,0.3,0.1,0.6,0.3,0.9c0.2,0.3,0.5,0.5,0.9,0.6c0.1,0,0.1,0.1,0.1,0.1V72c0,0.1,0,0.2-0.1,0.3l0,0c0,0-0.1,0.1-0.1,0.1l0.5,0.8 l0.5-0.8c0,0-0.1,0-0.1-0.1C58.3,72.2,58.3,72.1,58.3,72z"/><path class="st2" d="M56.3,73.8L56.3,73.8c0,0-0.1,0.1-0.1,0.1c0,0.1,0,0.1,0.1,0.1c0,0,0.1,0.1,0.1,0.1c0.1,0,0.1,0,0.1-0.1 c0,0,0.1-0.1,0.1-0.1c0-0.1,0-0.1-0.1-0.1c0,0-0.1-0.1-0.1-0.1C56.4,73.7,56.3,73.8,56.3,73.8z"/><path class="st2" d="M59.2,73.8C59.1,73.8,59.1,73.9,59.2,73.8l0.5,0.1c0,0,0-0.1-0.1-0.1C59.5,73.7,59.3,73.7,59.2,73.8z"/><path class="st2" d="M57.9,67.7c-0.6,0-1.1,0.3-1.5,0.7c-0.4,0.4-0.6,1-0.6,1.6v2.6c0,0,0,0,0.1,0c0.5-0.1,0.9-0.2,1.4-0.3 c0,0,0.1,0,0.1-0.1l0,0c0,0,0-0.1,0-0.1v-0.4c-0.4-0.1-0.7-0.4-0.9-0.6c-0.2-0.3-0.4-0.7-0.4-1.1c0-0.1,0-0.1,0.1-0.1 c0.5-0.2,0.9-0.4,1.2-0.7c0.3-0.3,0.4-0.6,0.5-1c0-0.1,0.1-0.1,0.1-0.1c0.1,0,0.1,0.1,0.1,0.1c0.1,0.4,0.2,0.7,0.5,1l0,0 c0.3,0.3,0.7,0.5,1.2,0.7c0.1,0,0.1,0.1,0.1,0.1c0,0.4-0.1,0.8-0.4,1.1c-0.2,0.3-0.5,0.5-0.9,0.7l0,0.4c0,0,0,0.1,0,0.1 c0,0,0.1,0.1,0.1,0.1l1.4,0.3c0,0,0,0,0.1,0v-2.6c0-0.6-0.2-1.2-0.6-1.6C59.1,67.9,58.5,67.7,57.9,67.7z"/><path d="M60.3,72.9L60.3,72.9l0-2.9c0-0.7-0.3-1.3-0.7-1.8c-0.4-0.5-1-0.7-1.7-0.7s-1.3,0.3-1.7,0.7c-0.4,0.5-0.7,1.1-0.7,1.8 v2.9v0l0,0l-0.3,2.3c0,0.1,0,0.1,0.1,0.1c0.1,0,0.1,0,0.1-0.1l0.3-2.3c0,0,0-0.1,0-0.1c0,0,0.1,0,0.1-0.1l0.4-0.1v0.8 c-0.1,0-0.1,0.1-0.2,0.1l0,0C56,73.7,56,73.8,56,73.9c0,0.1,0.1,0.2,0.1,0.3l0,0c0.1,0.1,0.2,0.1,0.3,0.1c0.1,0,0.2-0.1,0.3-0.1 c0.1-0.1,0.1-0.2,0.1-0.3c0-0.1-0.1-0.2-0.1-0.3c-0.1-0.1-0.1-0.1-0.2-0.1v-0.9l0.6-0.1l0.6,0.9v1.8c0,0.1,0.1,0.1,0.1,0.1 c0.1,0,0.1-0.1,0.1-0.1v-1.8l0.6-0.9l0.6,0.1v0.9c-0.1,0-0.2,0.1-0.3,0.2c-0.1,0.1-0.2,0.2-0.2,0.4v0v0v0.6 c0,0.1,0.1,0.1,0.1,0.1h0.2c0.1,0,0.1-0.1,0.1-0.1c0-0.1-0.1-0.1-0.1-0.1h0v-0.4h0.6v0.4h0c-0.1,0-0.1,0.1-0.1,0.1 c0,0.1,0.1,0.1,0.1,0.1h0.2c0.1,0,0.1-0.1,0.1-0.1V74v0v0c0-0.2-0.1-0.3-0.2-0.4c-0.1-0.1-0.2-0.1-0.3-0.2v-0.8l0.4,0.1 c0,0,0.1,0,0.1,0.1c0,0,0,0,0,0.1v0c0,0,0,0,0,0l0.3,2.2c0,0.1,0.1,0.1,0.1,0.1c0.1,0,0.1-0.1,0.1-0.1L60.3,72.9z M56.6,73.8 c0,0,0.1,0.1,0.1,0.1c0,0.1,0,0.1-0.1,0.1c0,0-0.1,0.1-0.1,0.1c-0.1,0-0.1,0-0.1-0.1c0,0-0.1-0.1-0.1-0.1c0-0.1,0-0.1,0.1-0.1 l0,0c0,0,0.1-0.1,0.1-0.1C56.5,73.7,56.5,73.8,56.6,73.8z M57.9,73.1l-0.5-0.8c0,0,0.1,0,0.1-0.1l0,0c0.1-0.1,0.1-0.2,0.1-0.3 v-0.5c0-0.1,0-0.1-0.1-0.1c-0.4-0.1-0.6-0.3-0.9-0.6c-0.2-0.3-0.3-0.6-0.3-0.9c0.5-0.2,0.9-0.4,1.2-0.7c0.2-0.2,0.3-0.4,0.4-0.7 c0.1,0.3,0.3,0.5,0.4,0.7l0,0c0.3,0.3,0.7,0.5,1.2,0.7c0,0.3-0.1,0.6-0.3,0.9c-0.2,0.3-0.5,0.5-0.9,0.6c-0.1,0-0.1,0.1-0.1,0.1 l0,0.5c0,0.1,0,0.2,0.1,0.3c0,0,0.1,0.1,0.1,0.1L57.9,73.1z M59.6,73.8C59.6,73.8,59.7,73.9,59.6,73.8l-0.5,0.1 c0,0,0-0.1,0.1-0.1C59.3,73.7,59.5,73.7,59.6,73.8z M60.1,72.5C60.1,72.5,60,72.5,60.1,72.5l-1.4-0.3c0,0-0.1,0-0.1-0.1 c0,0,0-0.1,0-0.1l0-0.4c0.4-0.1,0.7-0.4,0.9-0.7c0.2-0.3,0.4-0.7,0.4-1.1c0-0.1,0-0.1-0.1-0.1c-0.5-0.2-0.9-0.4-1.2-0.7l0,0 c-0.3-0.3-0.4-0.6-0.5-1c0-0.1,0-0.1-0.1-0.1c-0.1,0-0.1,0-0.1,0.1c-0.1,0.4-0.2,0.7-0.5,1c-0.3,0.3-0.7,0.5-1.2,0.7 c-0.1,0-0.1,0.1-0.1,0.1c0,0.4,0.1,0.8,0.4,1.1c0.2,0.3,0.5,0.5,0.9,0.6V72c0,0,0,0.1,0,0.1l0,0c0,0-0.1,0.1-0.1,0.1 c-0.5,0.1-0.9,0.2-1.4,0.3c0,0,0,0-0.1,0v-2.6c0-0.6,0.2-1.2,0.6-1.6c0.4-0.4,0.9-0.7,1.5-0.7c0.6,0,1.1,0.3,1.5,0.7 c0.4,0.4,0.6,1,0.6,1.6V72.5z"/></g></g></g><g id="Capa_2"><g><g><path class="st3" d="M15.2,135.8c1.9-12.3,3.8-24.6,5.8-36.9c0.3-1.7,0.5-3.4,0.8-5.2c-0.5,0.5-1,1-1.6,1.6 c8.8-2.3,17.6-4.5,26.4-6.8c1.3-0.3,2.5-0.6,3.8-1c1-0.2,1.7-1.2,1.7-2.2c0-4.1,0-8.1,0-12.2c0-1-0.7-1.9-1.7-2.2 c-3.8-1.1-7.6-3.1-10.9-5.7c-5-4-7.2-9.7-8.4-15.9c-0.1-0.7-0.2-1.3-0.3-2c0.1,0.4,0-0.3-0.1-0.4c0-0.2,0-0.4-0.1-0.6 c0-0.5-0.1-0.9-0.1-1.4c-0.6,0.7-1.1,1.4-1.7,2.2c3.7-1.1,7.4-2.7,10.8-4.5c6.5-3.4,12.8-8,16.8-14.3c2.5-3.9,3.8-8.5,3.7-13.1 c0-2.9-4.5-2.9-4.5,0c0.1,15.3,14,25.4,26.8,30.7c1.2,0.5,2.5,1,3.8,1.4c-0.6-0.7-1.1-1.4-1.7-2.2c0.5,4.5-0.8,9.4-2.8,13.3 c-1.5,2.9-3.7,5.5-6.3,7.4c-2,1.4-4.5,2.8-6.5,3.6c-1.2,0.5-2.5,0.9-3.8,1.2c-1,0.2-1.7,1.2-1.7,2.2c0,4.3,0,8.5,0,12.8 c0,1,0.7,1.9,1.7,2.2c8.6,2.3,17.2,4.6,25.8,6.9c1.2,0.3,2.5,0.7,3.7,1c-0.5-0.5-1-1-1.6-1.6c2.2,12.1,4.4,24.2,6.7,36.4 c0.3,1.7,0.6,3.4,0.9,5.2c0.2,1.2,1.7,1.9,2.8,1.6c1.3-0.3,1.8-1.6,1.6-2.8c-2.2-12.1-4.4-24.2-6.7-36.4 c-0.3-1.7-0.6-3.4-0.9-5.2c-0.1-0.7-0.9-1.4-1.6-1.6c-8.6-2.3-17.2-4.6-25.8-6.9c-1.2-0.3-2.5-0.7-3.7-1c0.6,0.7,1.1,1.4,1.7,2.2 c0-4.3,0-8.5,0-12.8c-0.6,0.7-1.1,1.4-1.7,2.2c3.9-0.9,7.7-2.7,11-5c6.3-4.4,10.3-11.2,11.5-18.8c0.3-2,0.5-4.1,0.3-6.2 c-0.1-1-0.6-1.8-1.7-2.2c-0.9-0.3-1.8-0.6-2.8-1c-0.2-0.1-0.4-0.2-0.7-0.3c-0.1,0-0.2-0.1-0.3-0.1c-0.3-0.1,0.5,0.2,0,0 c-0.6-0.3-1.2-0.5-1.7-0.8c-1.2-0.6-2.4-1.2-3.6-1.8C72.6,36,67.1,32,63.6,26.4c-2.2-3.4-3.3-7.1-3.4-11.1c-1.5,0-3,0-4.5,0 c0.1,7.2-3.8,13.1-9.3,17.7c-2.3,1.9-5.3,3.8-8.2,5.4c-1.3,0.7-2.7,1.4-4,2c-0.3,0.1-0.6,0.3-0.9,0.4c-0.1,0.1-0.3,0.1-0.4,0.2 c-0.5,0.2,0.3-0.1,0,0c-0.5,0.2-1.1,0.4-1.6,0.7c-1.2,0.5-2.4,0.9-3.6,1.2C26.8,43.1,26,44,26,45c0.2,4.6,1.3,9.4,3,13.7 c1.4,3.4,3.4,6.5,6.1,8.9c2.6,2.3,5.5,4.2,8.6,5.7c1.7,0.8,3.5,1.6,5.4,2.2c-0.6-0.7-1.1-1.4-1.7-2.2c0,4.1,0,8.1,0,12.2 c0.6-0.7,1.1,1.4,1.7-2.2c-8.8,2.3-17.6,4.5-26.4,6.8c-1.3,0.3-2.5,0.6-3.8,1c-0.7,0.2-1.5,0.8-1.6,1.6 c-1.9,12.3-3.8,24.6-5.8,36.9c-0.3,1.7-0.5,3.4-0.8,5.2c-0.2,1.2,0.3,2.4,1.6,2.8C13.5,137.7,15,137,15.2,135.8L15.2,135.8z"/></g></g><g><g><path class="st3" d="M30.8,89.7c0,5.2,0,10.3,0,15.5c0,0.7,0,1.5,0,2.2c0,2.9,4.5,2.9,4.5,0c0-5.2,0-10.3,0-15.5 c0-0.7,0-1.5,0-2.2C35.3,86.8,30.8,86.8,30.8,89.7L30.8,89.7z"/></g></g><g><g><path class="st3" d="M41.5,113.6c0-3.6-2.3-6.7-5.6-8c-3.2-1.2-7.1-0.2-9.2,2.5c-2.3,2.8-2.7,6.7-0.9,9.8c1.9,3.1,5.5,4.6,9,4 C38.6,121.2,41.4,117.5,41.5,113.6c0-1.2-1-2.3-2.3-2.3c-1.2,0.1-2.2,1-2.3,2.3c0,0.2,0,0.3,0,0.5c0,0.5,0-0.1,0-0.1 c0,0.2-0.1,0.6-0.2,0.8c0,0.1-0.1,0.3-0.2,0.5c0,0,0.2-0.5,0-0.1c-0.2,0.3-0.3,0.6-0.5,0.8c-0.3,0.4,0.2-0.2,0,0 c-0.1,0.1-0.2,0.2-0.3,0.3c-0.1,0.1-0.7,0.7-0.3,0.3c-0.2,0.2-0.5,0.3-0.7,0.4c-0.1,0.1-0.2,0.1-0.3,0.2 c-0.4,0.2,0.4-0.1-0.1,0.1c-0.3,0.1-0.5,0.2-0.8,0.2c-0.2,0-0.5,0.2,0,0c-0.1,0-0.3,0-0.4,0c-0.3,0-0.6,0-0.9,0 c-0.3,0,0.5,0.1,0,0c-0.2,0-0.3-0.1-0.5-0.1c-0.2,0-0.3-0.1-0.5-0.2c-0.2-0.1-0.2,0,0.1,0c-0.2,0-0.5-0.3-0.7-0.4 c-0.1-0.1-0.2-0.2-0.3-0.2c-0.3-0.2,0.4,0.4,0,0c-0.2-0.2-0.6-0.5-0.7-0.7c0.1,0.3,0.2,0.3,0.1,0.1c-0.1-0.1-0.2-0.3-0.3-0.4 c-0.1-0.1-0.1-0.2-0.2-0.3c-0.1-0.1-0.4-0.5,0-0.1c-0.1-0.2-0.2-0.5-0.3-0.8c0-0.1,0-0.2-0.1-0.3c-0.1-0.5,0,0.4,0-0.2 c0-0.3,0-0.5,0-0.8c0-0.1,0-0.1,0-0.2c0-0.3,0-0.2,0,0.1c0,0,0.1-0.3,0.1-0.3c0.1-0.3,0.1-0.5,0.2-0.8c0.2-0.5-0.2,0.4,0-0.1 c0.1-0.1,0.2-0.3,0.2-0.4c0.1-0.1,0.1-0.2,0.2-0.3c0.1-0.2,0.1-0.4,0,0c0-0.2,0.4-0.5,0.6-0.6c0,0,0.4-0.4,0.1-0.1 c-0.3,0.2,0.1-0.1,0.2-0.1c0.2-0.1,0.6-0.5,0.9-0.5c0,0-0.5,0.2-0.1,0c0.2-0.1,0.3-0.1,0.5-0.2c0.1,0,0.2-0.1,0.3-0.1 c0,0,0.6-0.1,0.2,0c-0.4,0.1,0.2,0,0.2,0c0.1,0,0.3,0,0.4,0c0.1,0,0.3,0,0.4,0c0.5,0-0.4-0.1,0.1,0c0.3,0.1,0.6,0.2,1,0.3 c0.5,0.2-0.3-0.2,0,0c0.1,0.1,0.3,0.2,0.5,0.3c0.1,0.1,0.2,0.1,0.3,0.2c0.1,0.1,0.2,0.1,0.3,0.2c-0.2-0.2-0.3-0.2-0.1,0 c0.2,0.2,0.4,0.4,0.6,0.6c0.4,0.4-0.2-0.4,0,0.1c0.1,0.1,0.2,0.3,0.3,0.4c0.1,0.1,0.2,0.3,0.2,0.4c0.2,0.4-0.1-0.4,0,0.1 c0.1,0.3,0.2,0.6,0.3,1c0,0.2,0.2,0.3,0-0.1c0.1,0.2,0,0.5,0,0.7c0,1.2,1,2.3,2.3,2.3C40.4,115.8,41.5,114.9,41.5,113.6z"/></g></g><g><g><path class="st3" d="M60.2,134.4c0-9.2,0-18.4,0-27.7c0-1.3,0-2.6,0-4c0-2.9-4.5-2.9-4.5,0c0,9.2,0,18.4,0,27.7c0,1.3,0,2.6,0,4 C55.7,137.2,60.2,137.3,60.2,134.4L60.2,134.4z"/></g></g><g><g><path class="st3" d="M44.4,88.5c3.9,5.5,7.7,10.9,11.6,16.4c1,1.5,2.8,1.4,3.9,0c3.7-4.8,7.4-9.6,11.1-14.4 c0.5-0.7,1.1-1.4,1.6-2c0.7-1,0.1-2.5-0.8-3.1c-1.2-0.7-2.3-0.2-3.1,0.8c-3.7,4.8-7.4,9.6-11.1,14.4c-0.5,0.7-1.1,1.4-1.6,2 c1.3,0,2.6,0,3.9,0c-3.9-5.5-7.7-10.9-11.6-16.4c-0.7-1-2-1.5-3.1-0.8C44.3,86,43.7,87.5,44.4,88.5L44.4,88.5z"/></g></g><g><g><path class="st3" d="M80,90.2c0,5,0,10.1,0,15.1c0,0.7,0,1.4,0,2.1c0,2.9,4.5,2.9,4.5,0c0-5,0-10.1,0-15.1c0-0.7,0-1.4,0-2.1 C84.5,87.3,80,87.3,80,90.2L80,90.2z"/></g></g><g><g><path class="st3" d="M78.9,124.3c-1.6,0-3.2,0-4.8,0c0.8,0.8,1.5,1.5,2.3,2.3c0-3.5,0-7,0-10.4c-0.8,0.8-1.5,1.5-2.3,2.3 c4.3,0,8.5,0,12.8,0c1.2,0,2.3,0,3.5,0c-0.8-0.8-1.5-1.5-2.3-2.3c0,3.5,0,7,0,10.4c0.8-0.8,1.5-1.5,2.3-2.3c-1.3,0-2.6,0-3.9,0 c-1.2,0-2.3,1-2.3,2.3c0,1.2,1,2.2,2.3,2.2c1.3,0,2.6,0,3.9,0c1.2,0,2.3-1,2.3-2.2c0-3.5,0-7,0-10.4c0-1.2-1-2.3-2.3-2.3 c-4.3,0-8.7,0-13,0c-1.1,0-2.2,0-3.3,0c-1.2,0-2.3,1-2.3,2.3c0,3.5,0,7,0,10.4c0,1.2,1,2.2,2.3,2.2c1.6,0,3.2,0,4.8,0 c1.2,0,2.3-1,2.3-2.2C81.2,125.3,80.1,124.3,78.9,124.3L78.9,124.3z"/></g></g><g><g><path class="st3" d="M92.6,116.1c-0.1-4.5-2.6-8.6-6.9-10.3c-4.1-1.6-8.9-0.1-11.5,3.4c-1.6,2-2.4,4.4-2.4,7c0,1.2,1,2.3,2.3,2.3 c1.2,0,2.2-1,2.3-2.3c0-0.3,0-0.6,0-0.9c0,0.4,0.1-0.3,0.1-0.3c0.1-0.5,0.2-1,0.4-1.5c-0.1,0.4,0.1-0.2,0.1-0.3 c0.1-0.3,0.3-0.5,0.4-0.8c0.1-0.2,0.2-0.4,0.4-0.5c-0.2,0.3,0.3-0.3,0.3-0.4c0.1-0.2,0.3-0.3,0.5-0.4c0.1-0.1,0.2-0.2,0.3-0.3 c-0.2,0.1-0.2,0.1,0,0c0.4-0.3,0.8-0.5,1.2-0.7c0.2-0.1,0.3-0.1,0,0c0.1-0.1,0.3-0.1,0.4-0.1c0.2-0.1,0.4-0.1,0.6-0.2 c0.1,0,0.3-0.1,0.4-0.1c-0.2,0-0.2,0-0.1,0c0.3,0,0.5,0,0.8,0c0.2,0,0.4,0,0.7,0c0.3,0,0.3,0,0,0c0.1,0,0.3,0.1,0.4,0.1 c0.2,0,0.4,0.1,0.6,0.2c0.1,0,0.3,0.1,0.4,0.1c-0.2-0.1-0.2-0.1-0.1,0c0.4,0.2,0.8,0.4,1.2,0.7c0.2,0.2,0.2,0.2,0,0 c0.1,0.1,0.2,0.2,0.3,0.3c0.2,0.1,0.3,0.3,0.5,0.4c0.1,0.1,0.6,0.7,0.3,0.4c0.1,0.2,0.3,0.4,0.4,0.5c0.1,0.2,0.3,0.4,0.4,0.7 c0,0.1,0.3,0.7,0.2,0.4c0.2,0.5,0.3,1,0.4,1.5c0,0.1,0.1,0.7,0.1,0.3c0,0.3,0,0.6,0,0.9c0,1.2,1,2.3,2.3,2.3 C91.6,118.4,92.6,117.3,92.6,116.1L92.6,116.1z"/></g></g><g><g><path class="st3" d="M97.5,93.7c0-5.5,0-11,0-16.5c0-9.1,0-18.1,0-27.2c0-3.4,0.3-6.8-0.4-10.2c-1.4-6.5-4.1-13-8-18.5 C82.9,12.7,73.9,7,63.3,5.7C52,4.2,40.5,7.5,32.2,15.3c-6,5.7-10.2,13.3-12.8,21.1c-1,3.1-1.9,6.1-1.9,9.3 c0,7.8-0.1,15.7-0.1,23.5c0,7.5-0.1,15.1-0.1,22.6c0,0.4,0,0.9,0,1.3c0,2.9,4.5,2.9,4.5,0c0-5.4,0-10.9,0.1-16.3 c0-8.8,0.1-17.6,0.1-26.4c0-2.1,0.2-4.3,0-6.4c0-0.5-0.2,0.9,0,0c0.1-0.7,0.3-1.4,0.5-2.1c0.7-2.7,1.6-5.4,2.7-8 c0.2-0.5-0.1,0.1,0.1-0.2c0.1-0.2,0.2-0.4,0.2-0.5c0.2-0.4,0.4-0.9,0.6-1.3c0.4-0.9,0.9-1.8,1.3-2.7c1-1.8,2.1-3.6,3.3-5.3 c0.7-0.9,1-1.4,1.9-2.4c0.7-0.8,1.5-1.6,2.3-2.4c1.7-1.7,3.3-2.9,5.2-4.2c4.3-2.7,9.1-4.4,14.2-4.9c5.7-0.5,11.5,0.1,16.8,2.2 c4.2,1.7,7.9,4.4,11.1,7.7c2.7,2.9,4.9,6.3,6.8,10.1c0.9,1.8,1.2,2.5,1.9,4.4c0.5,1.4,0.9,2.8,1.3,4.2c0.4,1.4,0.6,2.9,1,4.3 c0,0.2,0-0.9-0.1-0.4c0,0.2,0,0.5,0,0.7c0,1,0,2,0,3c0,8.3,0,16.5,0,24.8c0,7.2,0,14.3,0,21.5c0,0.4,0,0.8,0,1.2 C93,96.6,97.5,96.6,97.5,93.7L97.5,93.7z"/></g></g></g></svg>
               </div>
-              <h3>Cuidadoras de la salud</h3>
+              <h3>Cuidadoras Expertas de tu Salud</h3>
               <p>
-                La mujeres son la mayor fuerza laboral del sector de la salud.
-                Desde que nacemos son las mujeres quienes dan atencion a nuestra
-                salud. En Genesys reconocemos esto y por eso nuestro compromiso
-                es con ellas, con las empresas y los trabajadores en Colombia.
+                Con un equipo mayoritariamente femenino y experto, en Genesys fusionamos la empatía con el rigor técnico. Te acompañamos en cada paso, desde la <span>identificación de riesgos hasta la prevención efectiva</span>.
               </p>
             </div>
           </div>
@@ -1144,204 +393,149 @@
         <div class="image-content">
           <img
             src="assets/images/render_dorctor_patient.webp"
-            alt="Mujeres profesionales de la salud"
+            alt="Profesionales de la salud de Genesys Laboral Medicine revisando exámenes"
             loading="lazy"
           />
         </div>
       </div>
     </section>
+
     <section class="sst-services">
       <div class="service-grid">
         <div class="service-card">
           <h3>
-            <span class="green">MATRIZ</span> DE RIESGOS Y
-            <span class="green">PELIGROS</span>
+            ASISTENTE <span class="green">DIAGNÓSTICO DE RIESGOS</span> (¡GRATIS!)
           </h3>
           <p>
-            <span class="highlight"
-              >Identifique y evalúe los riesgos laborales con precisión.</span
-            >
-            Nuestra Matriz de Riesgos Profesional le ofrece una
-            <span class="highlight"
-              >visión completa de los peligros potenciales en su entorno de
-              trabajo.</span
-            >
-            <span class="highlight"
-              >¿Listo para dar el siguiente paso en la seguridad laboral?</span
-            >
+            <span>Define perfiles de cargo</span> e identifica riesgos preliminares con nuestra herramienta online. <span>El primer paso inteligente</span> hacia tu cumplimiento SST.
           </p>
           <button
             onclick="window.location.href='./pages/Matriz_de_riesgos_profesional.html'"
             class="cta-button"
           >
-            empieza aquí
+            Inicia tu Diagnóstico Gratis
           </button>
         </div>
         <div class="service-card">
-          <h3>MATRIZ <span class="green">PROFESIOGRAMA</span></h3>
+          <h3>DISEÑO EXPERTO: <span class="green">MATRIZ Y PROFESIOGRAMA</span></h3>
           <p>
-            Basado en su Matriz de Riesgos,<span class="highlight">
-              determinamos con precisión los exámenes médicos requeridos</span
-            >
-            para cada puesto de trabajo. Asegure que sus empleados reciban las
-            <span class="highlight"> evaluaciones médicas adecuadas </span>según
-            los riesgos específicos de su rol.
-            <span class="highlight">
-              ¿Listo para implementar estas recomendaciones?</span
-            >
+            Transformamos tu diagnóstico en una <span>Matriz de Riesgos GTC45 completa</span> y un <span>Profesiograma técnico y específico</span>, listos para tu SG-SST.
           </p>
           <button
-            onclick="window.location.href='./pages/Profesiograma.html'"
+            onclick="window.location.href='./pages/Profesiograma.html#solicitar-servicio-experto'"
             class="cta-button"
           >
-            empieza aquí
+            Solicita Diseño Experto
           </button>
         </div>
         <div class="service-card">
           <h3>
-            <span class="green">EXAMENES</span> MEDICO
-            <span class="green">OCUPACIONALES</span>
+            VALIDACIÓN MÉDICA <span class="green">PROFESIOGRAMA (Res. 1843)</span>
           </h3>
           <p>
-            <span class="highlight">Garantice la salud de su equipo</span> con
-            evaluaciones médicas especializadas. Nuestros
-            <span class="highlight">Exámenes Médico Ocupacionales</span>
-            aseguran que cada empleado esté en óptimas condiciones para su rol.
-            <span class="highlight">
-              ¿Quiere una visión más amplia de la salud laboral?</span
-            >
+            <span>Asegura tu cumplimiento total.</span> Nuestro Médico Especialista en SST <span>valida y aprueba formalmente</span> tu profesiograma según la nueva normativa.
+          </p>
+          <button
+            onclick="window.location.href='./pages/Profesiograma.html#solicitar-validacion'"
+            class="cta-button"
+          >
+            Obtén Validación Médica
+          </button>
+        </div>
+        <div class="service-card">
+          <h3>
+            <span class="green">EXÁMENES</span> OCUPACIONALES <span class="green">DE CALIDAD</span>
+          </h3>
+          <p>
+            Realizamos exámenes de ingreso, periódicos, egreso y más, con <span>valoraciones médicas rigurosas</span> que cumplen el tiempo reglamentario. <span>Salud y prevención efectivas.</span>
           </p>
           <button
             onclick="window.location.href='./pages/Examenes_medicos_ocupacionales.html'"
             class="cta-button"
           >
-            empieza aquí
+            Cotiza tus Exámenes
           </button>
         </div>
         <div class="service-card">
-          <h3>
-            <span class="green">BATERIA</span> DE RIESGO
-            <span class="green">PSICOSOCIAL</span>
-          </h3>
+          <h3><span class="green">BATERÍA</span> RIESGO <span class="green">PSICOSOCIAL</span></h3>
           <p>
-            Evalúe y
-            <span class="highlight"
-              >gestione los factores psicosociales que afectan a sus
-              empleados</span
-            >. Nuestra Batería de Riesgo Psicosocial le proporciona
-            <span class="highlight"
-              >insights valiosos para mejorar el bienestar laboral. ¿Necesita un
-              enfoque más integral?</span
-            >
+            Evalúa y gestiona los <span>factores psicosociales</span> que impactan el bienestar y la productividad de tu equipo, cumpliendo con la normativa vigente.
           </p>
           <button
             onclick="window.location.href='./pages/Bateria_de_riesgo_psicosocial.html'"
             class="cta-button"
           >
-            empieza aquí
-          </button>
-        </div>
-        <div class="service-card">
-          <h3><span class="green">ANALISIS</span> DE PUESTO DE TRABAJO</h3>
-          <p>
-            Optimice cada rol en su organización con nuestro
-            <span class="highlight"
-              >Análisis de Puesto de Trabajo detallado.</span
-            >
-            Mejore la eficiencia y la seguridad laboral con recomendaciones
-            personalizadas.
-            <span class="highlight"
-              >¿Busca llevar su gestión de seguridad al siguiente nivel?</span
-            >
-          </p>
-          <button
-            onclick="window.location.href='./pages/Analisis_de_puesto_de_trabajo.html'"
-            class="cta-button"
-          >
-            empieza aquí
+            Conoce Más Aquí
           </button>
         </div>
         <div class="service-card">
           <h3>
-            <span class="green">SISTEMA</span> DE GESTION SST
-            <span class="green">(SG-SST)</span>
+            ASESORÍA <span class="green">SG-SST</span> INTEGRAL
           </h3>
           <p>
-            Implemente un
-            <span class="highlight"
-              >enfoque integral de Seguridad y Salud en el Trabajo</span
-            >
-            con nuestro Sistema de Gestión SST.
-            <span class="highlight">
-              Cumpla con las normativas y proteja a sus empleados</span
-            >
-            de manera eficiente.
-            <span class="highlight">¿Listo para una solución completa?</span>
+            Te acompañamos en el <span>diseño, implementación y mejora continua</span> de tu Sistema de Gestión. <span>Cumplimiento normativo y cultura de prevención.</span>
           </p>
           <button
             onclick="window.location.href='./pages/SST.html'"
             class="cta-button"
           >
-            empieza aquí
+            Asesórate con Expertos
           </button>
         </div>
       </div>
     </section>
+
     <section class="section-clientes">
-      <h2>Nuestros clientes</h2>
-      <p>Estos son algunos de nuestros casos de exito</p>
-      <div class="clients-container-outer"> 
+      <h2>Nuestros Aliados Estratégicos</h2>
+      <p>Empresas que confían en Genesys para su bienestar laboral y cumplimiento normativo.</p>
+      <div class="clients-container-outer">
         <section class="clients">
           <!-- Las tarjetas de cliente se generarán dinámicamente con JavaScript -->
-          <!-- Se eliminan las <article class="client-card"> estáticas que estaban aquí -->
         </section>
       </div>
     </section>
     <section class="faqs">
       <div class="faqs__container">
-        <h2 class="faqs__title">Preguntas Frecuentes</h2>
+        <h2 class="faqs__title">Preguntas Frecuentes sobre SST y la Resolución 1843</h2>
         <p class="faqs__description">
-          Encuentra respuestas a las preguntas más comunes sobre nuestros
-          servicios de Salud y Seguridad en el Trabajo.
+          Encuentra respuestas a tus dudas sobre la nueva normativa, nuestros servicios de Salud Ocupacional y cómo podemos ayudarte a cumplir.
         </p>
-
         <div class="faqs__grid">
           <!-- Las preguntas se generarán dinámicamente con JavaScript -->
         </div>
       </div>
-
       <div class="faqs__contact">
-        <h3 class="faqs__contact-title">¿Aún tienes dudas?</h3>
+        <h3 class="faqs__contact-title">¿Más Dudas sobre la Nueva Normativa o Nuestros Servicios?</h3>
         <p class="faqs__contact-description">
-          Estamos aquí para ayudarte. Contáctanos para obtener más información.
+          Nuestro equipo experto está listo para asesorarte. Contáctanos y naveguemos juntos la nueva era de la Salud Ocupacional.
         </p>
         <a
           class="faqs__contact-button"
-          href="https://wa.me/573205803048?text=Hola!%20me%20interesa%20saber%20mas%20sobre%20sus%20servicios"
+          href="https://wa.me/573205803048?text=Hola!%20Tengo%20dudas%20sobre%20la%20Res.%201843%20y%20los%20servicios%20de%20Genesys"
           target="_blank"
-          >Contáctanos
+          >Contáctanos Ahora
         </a>
       </div>
     </section>
     <section id="donde-encontrarnos" class="location-section">
       <h2>DONDE ENCONTRARNOS</h2>
       <div class="map-controls">
-        <a class="map-button" data-map="waze">
+        <a class="map-button" data-map="waze" aria-label="Abrir en Waze">
           <img
             src="assets/images/Donde_Encontrarnos/Waze_logo_2022.svg"
-            alt="Waze"
+            alt="Waze Logo"
           />
         </a>
-        <a class="map-button" data-map="moovit">
+        <a class="map-button" data-map="moovit" aria-label="Abrir en Moovit">
           <img
             src="assets/images/Donde_Encontrarnos/Moovit_logo.svg"
-            alt="Moovit"
+            alt="Moovit Logo"
           />
         </a>
-        <a class="map-button" data-map="google">
+        <a class="map-button" data-map="google" aria-label="Abrir en Google Maps">
           <img
             src="assets/images/Donde_Encontrarnos/google-maps-logo.svg"
-            alt="Google Maps"
+            alt="Google Maps Logo"
           />
         </a>
       </div>
@@ -1349,43 +543,45 @@
         <!-- El mapa se cargará aquí -->
       </div>
       <p>
-        genesys laboral medicine sas | ▼ Cl. 86a #23-12, Bogotá | ☎ 601-3739387
+        Genesys Laboral Medicine SAS | Dirección: Cl. 86a #23-12, Bogotá, Colombia | Teléfono: (601) 373-9387
       </p>
     </section>
-    <!--- Footer HTML --->
 
-    <div id="whatsapp-button" class="whatsapp-button">
-      <img src="assets/images/whatsapp-line-icon.svg" alt="WhatsApp" />
+    <div id="whatsapp-button" class="whatsapp-button" aria-label="Abrir chat de WhatsApp">
+      <img src="assets/images/whatsapp-line-icon.svg" alt="WhatsApp Icon" />
     </div>
-
-    <div id="whatsapp-popup" class="whatsapp-popup">
-      <div class="popup-header">
+    <div id="whatsapp-popup" class="whatsapp-popup" role="dialog" aria-modal="true" aria-labelledby="whatsapp-popup-header">
+      <div class="popup-header" id="whatsapp-popup-header">
         <img
           src="assets/images/logo_icono_color_vectores_fabicon.svg"
-          alt="Advisor Avatar"
+          alt="Avatar de Asesor Genesys"
           class="advisor-avatar"
         />
         <div class="advisor-info">
-          <h3>Genesys</h3>
-          <p>Asesor</p>
+          <h3>Genesys Laboral Medicine</h3>
+          <p>Asesor Experto en SST</p>
         </div>
-        <button id="close-popup">&times;</button>
+        <button id="close-popup" aria-label="Cerrar ventana de chat">×</button>
       </div>
       <div class="popup-content">
         <p>Hola,👋</p>
-        <p>Gracias por comunicarte.</p>
-        <p>¿En qué te podemos ayudar?</p>
+        <p>Gracias por visitar Genesys.</p>
+        <p>¿Cómo podemos ayudarte a cumplir con la Resolución 1843 y proteger a tu equipo?</p>
       </div>
       <button id="start-chat" class="start-chat-button">
-        <img src="assets/images/whatsapp-line-icon.svg" alt="WhatsApp" />
-        Iniciar conversación
+        <img src="assets/images/whatsapp-line-icon.svg" alt="WhatsApp Icon" />
+        Iniciar Conversación
       </button>
     </div>
 
-    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjHr3DJQXXQJsbG7rhKl5tkQoSbDP1UDc"></script> -->
-
-    <!--         <script src="../src/js/main.js"></script> -->
-    <!--         <script src="./js/ham_menu.js"></script>
-        <script src="js/animacion.js"></script> -->
+    <!-- SCRIPTS JS -->
+    <!-- Asegúrate de que las rutas a tus archivos JS sean correctas y cárgalos al final del body si es posible -->
+    <!-- <script src="./js/main.js" defer></script> -->
+    <!-- <script src="./js/ham_menu.js" defer></script> -->
+    <!-- <script src="./js/animacion.js" defer></script> -->
+    <!-- Si tienes un script para cargar el mapa, FAQs o clientes, inclúyelo aquí -->
+    <!-- Ejemplo: <script src="./js/map-loader.js" defer></script> -->
+    <!-- Ejemplo: <script src="./js/faq-loader.js" defer></script> -->
+    <!-- Ejemplo: <script src="./js/client-loader.js" defer></script> -->
   </body>
 </html>
