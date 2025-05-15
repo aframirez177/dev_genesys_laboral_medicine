@@ -225,6 +225,14 @@ module.exports = {
           from: path.resolve(__dirname, "src", "assets/pdf"),
           to: "assets/pdf",
         },
+        {from: path.resolve(__dirname, "public", "robots.txt"), // Asume que está en client/public/robots.txt
+          to: "robots.txt",
+        },
+
+        {from: path.resolve(__dirname, "public", ".htaccess"), 
+          to: ".htaccess",
+          toType: "file"
+        }
         // Eliminamos la copia de fuentes de aquí
       ],
     }),

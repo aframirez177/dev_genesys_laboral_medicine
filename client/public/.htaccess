@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Redirigir /servicios o /servicios/ al index.html
+RewriteRule ^servicios/?$ index.html [L]
+
+# Redirigir cualquier otra ruta /algo o /algo/ a /pages/algo.html
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^/]+)/?$ pages/$1.html [L]
+
+# Servir index.html en la raíz
+RewriteRule ^$ index.html [L]
