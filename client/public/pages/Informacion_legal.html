@@ -4,32 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Título mejorado para SEO -->
-    <title>
-      Genesys - Informacion legal | Seguridad y salud en el Trabajo | Decreto
-      1072 de 2015 | Resolución 0312 de 2019
-    </title>
-
-    <!-- Preload Fonts (Example, adjust if needed) -->
     <link
       rel="preload"
       href="../assets/fonts/poppins-v21-latin-800.woff2"
       as="font"
       type="font/woff2"
       crossorigin="anonymous"
+      fetchpriority="high"
     />
-    <!-- Async CSS -->
-     <link
+    <link
       href="../main.css"
       rel="preload"
       onload="this.rel='stylesheet'"
       as="style"
     />
-     <link
-      href="../informacion_legal.css" 
-      rel="preload"
-      onload="this.rel='stylesheet'"
-      as="style"
-    />
+    <title>
+      Genesys: Información Legal | Términos y Condiciones | Res. 1843
+    </title>
 
     <!-- Fabicon-->
     <link
@@ -42,22 +33,23 @@
     <!--metadatos para SEO-->
     <meta
       name="description"
-      content="Conoce las políticas del Sistema Integrado de Gestión y Seguridad del Paciente de Genesys Laboral Medicine. Comprometidos con el bienestar, la calidad y la mejora continua."
+      content="Información legal y términos de servicio de Genesys Laboral Medicine. Políticas de privacidad, términos y condiciones para servicios de salud ocupacional según Resolución 1843."
     />
     <meta
       name="keywords"
-      content="Política de Gestión, Seguridad del Paciente, Salud Ocupacional, Sistema Integrado, Genesys Laboral Medicine, Gestión en Salud, Cultura de Seguridad, Normatividad, Evaluación de Riesgos"
+      content="Información Legal, Términos y Condiciones, Política de Privacidad, Resolución 1843, Genesys Laboral Medicine, Genesys"
     />
     <meta name="robots" content="index-follow" />
+    <meta name="googlebot" content="index-follow" />
 
     <!-- Datos estructurados para SEO -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "Genesys SST",
-        "image": "https://www.genesyssst.com/assets/logo_color_vectores.svg",
-        "description": "Servicios integrales de Seguridad y Salud en el Trabajo (SST) en Bogotá",
+        "@type": "MedicalBusiness",
+        "name": "Genesys Laboral Medicine SAS",
+        "image": "https://www.genesyslm.com.co/assets/images/logo_color_vectores.svg",
+        "description": "Información legal y términos de servicio de Genesys Laboral Medicine en Bogotá. Servicios de salud ocupacional según Resolución 1843.",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Calle 86 A # 23-12",
@@ -67,7 +59,29 @@
           "addressCountry": "CO"
         },
         "telephone": "+573205803048",
-        "url": "https://www.genesyslm.com.co"
+        "url": "https://www.genesyslm.com.co",
+        "priceRange": "$$",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday"
+            ],
+            "opens": "06:00",
+            "closes": "14:00"
+          }
+        ],
+        "department": [
+          {
+            "@type": "MedicalClinic",
+            "name": "Servicios de Salud Ocupacional"
+          }
+        ]
       }
     </script>
     <!-- Google tag (gtag.js) -->

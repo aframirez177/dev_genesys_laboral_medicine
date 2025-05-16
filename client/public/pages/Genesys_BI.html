@@ -4,31 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Título mejorado para SEO -->
-    <title>
-      Genesys - Genesys BI | Seguridad y Salud en el Trabajo | Con IA
-    </title>
-
-    <!-- Preload Fonts (Example, adjust if needed) -->
     <link
       rel="preload"
       href="../assets/fonts/poppins-v21-latin-800.woff2"
       as="font"
       type="font/woff2"
       crossorigin="anonymous"
+      fetchpriority="high"
     />
-    <!-- Async CSS -->
-     <link
+    <link
       href="../main.css"
       rel="preload"
       onload="this.rel='stylesheet'"
       as="style"
     />
-     <link
-      href="../genesys_bi.css"  
-      rel="preload"
-      onload="this.rel='stylesheet'"
-      as="style"
-    />
+    <title>
+      Genesys: Genesys BI | Inteligencia de Negocios | Res. 1843
+    </title>
 
     <!-- Fabicon-->
     <link
@@ -41,22 +33,23 @@
     <!--metadatos para SEO-->
     <meta
       name="description"
-      content="Genesys BI es la próxima plataforma inteligente de Genesys SST. Actualmente en construcción, pronto te permitirá gestionar exámenes médicos ocupacionales con apoyo de inteligencia artificial."
+      content="Plataforma de inteligencia de negocios para gestión de salud ocupacional. Análisis de datos, reportes y dashboards para cumplimiento de Resolución 1843."
     />
     <meta
       name="keywords"
-      content="inteligencia artificial, salud ocupacional, exámenes médicos, plataforma digital, SST, gestión médica, IA en salud, Genesys BI, Bogotá, Colombia"
+      content="Genesys BI, Inteligencia de Negocios, Resolución 1843, Análisis de Datos, Dashboards, Gestión de Salud Ocupacional, Genesys"
     />
     <meta name="robots" content="index-follow" />
+    <meta name="googlebot" content="index-follow" />
 
     <!-- Datos estructurados para SEO -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "Genesys SST",
-        "image": "https://www.genesyssst.com/assets/logo_color_vectores.svg",
-        "description": "Servicios integrales de Seguridad y Salud en el Trabajo (SST) en Bogotá",
+        "@type": "MedicalBusiness",
+        "name": "Genesys Laboral Medicine SAS",
+        "image": "https://www.genesyslm.com.co/assets/images/logo_color_vectores.svg",
+        "description": "Plataforma de inteligencia de negocios para gestión de salud ocupacional en Bogotá. Análisis de datos y reportes para cumplimiento de Resolución 1843.",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Calle 86 A # 23-12",
@@ -66,7 +59,29 @@
           "addressCountry": "CO"
         },
         "telephone": "+573205803048",
-        "url": "https://www.genesyslm.com.co"
+        "url": "https://www.genesyslm.com.co",
+        "priceRange": "$$",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday"
+            ],
+            "opens": "06:00",
+            "closes": "14:00"
+          }
+        ],
+        "department": [
+          {
+            "@type": "MedicalClinic",
+            "name": "Inteligencia de Negocios en Salud Ocupacional"
+          }
+        ]
       }
     </script>
     <!-- Google tag (gtag.js) -->
