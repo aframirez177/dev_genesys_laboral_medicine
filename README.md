@@ -8,7 +8,7 @@ El proyecto está dividido en dos partes principales:
 
 - `client/`: Frontend en JavaScript vanilla
 - `server/`: Backend en Node.js con Express
-
+-
 ## Requisitos
 
 - Node.js v18.20.4 o superior
