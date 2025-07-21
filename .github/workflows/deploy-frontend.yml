@@ -33,4 +33,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            rsync -avzr --delete ./dist/ /var/www/html/ 
+            rsync -avzr --delete /github/workspace/dist/ /var/www/html/ 
