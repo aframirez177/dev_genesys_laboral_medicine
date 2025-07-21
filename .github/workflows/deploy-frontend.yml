@@ -1,0 +1,29 @@
+name: Build and Deploy Frontend
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'client/**'
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install Frontend Dependencies
+        run: npm install --prefix client
+      - name: Build Frontend Project
+        run: npm run build --prefix client
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@v5.0.0
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
+          REMOTE_USER: ${{ secrets.SERVER_USER }}
+          SOURCE: "dist/"
+          TARGET: "/var/www/html/"
+          EXCLUDE: "/.git/, /node_modules/" 

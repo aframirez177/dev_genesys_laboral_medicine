@@ -20,7 +20,7 @@ class ContactFormManager {
 
     detectSourcePage() {
         const pathname = window.location.pathname;
-        if (pathname.includes('Matriz_de_riesgos_profesional')) {
+        if (pathname.includes('Matriz_de_riesgos_profesional') || pathname.includes('diagnostico_interactivo')) {
             return 'matriz-riesgos';
         } else if (pathname.includes('Profesiograma')) {
             return 'profesiograma';
@@ -36,31 +36,44 @@ class ContactFormManager {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h2>${this.getFormTitle()}</h2>
-                        <button class="close-modal" type="button">&times;</button>
+                        <button class="close-modal" type="button" aria-label="Cerrar formulario">&times;</button>
                     </div>
                     <form id="contactInfoForm" class="contact-form">
                         <div class="form-group">
-                            <label for="fullName">Nombre completo *</label>
-                            <input type="text" id="fullName" name="fullName" required>
+                            <label for="fullName">Nombre completo <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="fullName" 
+                                   name="fullName" 
+                                   placeholder="Ej: Juan Carlos Pérez García"
+                                   required
+                                   autocomplete="name">
                         </div>
                         
                         <div class="form-group">
-                            <label for="company">Empresa *</label>
-                            <input type="text" id="company" name="company" required>
+                            <label for="company">Empresa <span class="required">*</span></label>
+                            <input type="text" 
+                                   id="company" 
+                                   name="company" 
+                                   placeholder="Ej: Tecnologías Avanzadas S.A.S."
+                                   required
+                                   autocomplete="organization">
                         </div>
                         
                         <div class="form-row">
                             <div class="form-group">
-                                 <label for="nit">NIT *</label>
-                                <input type="text" id="nit" name="nit" 
-                                    pattern="[0-9-]*" 
-                                    title="Ingrese un NIT válido"
-                                    required>
+                                <label for="nit">NIT <span class="required">*</span></label>
+                                <input type="text" 
+                                       id="nit" 
+                                       name="nit" 
+                                       placeholder="Ej: 900123456-7"
+                                       pattern="[0-9-]*" 
+                                       title="Ingrese un NIT válido"
+                                       required>
                             </div>
                             <div class="form-group">
-                                <label for="companySize">Tamaño de la empresa *</label>
+                                <label for="companySize">Tamaño de la empresa <span class="required">*</span></label>
                                 <select id="companySize" name="companySize" required>
-                                    <option value="">Seleccione...</option>
+                                    <option value="">Seleccione el tamaño...</option>
                                     <option value="micro">Micro (1-10 empleados)</option>
                                     <option value="pequena">Pequeña (11-50 empleados)</option>
                                     <option value="mediana">Mediana (51-200 empleados)</option>
@@ -71,35 +84,50 @@ class ContactFormManager {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="corporateEmail">Email corporativo *</label>
-                                <input type="email" id="corporateEmail" name="corporateEmail" required>
+                                <label for="corporateEmail">Email corporativo <span class="required">*</span></label>
+                                <input type="email" 
+                                       id="corporateEmail" 
+                                       name="corporateEmail" 
+                                       placeholder="usuario@empresa.com"
+                                       required
+                                       autocomplete="work email">
                             </div>
                             <div class="form-group">
-                                <label for="whatsapp">WhatsApp *</label>
-                                <input type="tel" id="whatsapp" name="whatsapp" 
-                                    pattern="[0-9]*" 
-                                    title="Ingrese solo números"
-                                    required>
+                                <label for="whatsapp">WhatsApp <span class="required">*</span></label>
+                                <input type="tel" 
+                                       id="whatsapp" 
+                                       name="whatsapp" 
+                                       placeholder="3001234567"
+                                       pattern="[0-9]*" 
+                                       title="Ingrese solo números"
+                                       maxlength="10"
+                                       required
+                                       autocomplete="tel">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="position">Cargo *</label>
-                                <input type="text" id="position" name="position" required>
+                                <label for="position">Cargo <span class="required">*</span></label>
+                                <input type="text" 
+                                       id="position" 
+                                       name="position" 
+                                       placeholder="Ej: Gerente de Recursos Humanos"
+                                       required
+                                       autocomplete="organization-title">
                             </div>
                             <div class="form-group">
-                                <label for="city">Ciudad *</label>
+                                <label for="city">Ciudad <span class="required">*</span></label>
                                 <select id="city" name="city" required>
-                                    <option value="">Seleccione...</option>
+                                    <option value="">Seleccione la ciudad...</option>
                                     ${this.generateColombiaCities()}
                                 </select>
                             </div>
                         </div>
 
                         <div class="form-row actions">
-                            <button type="submit" class="submit-btn cta-button">Continuar</button>
-                            <button type="button" class="cancel-btn cta-button-1">Cancelar</button>
+                            <button type="button" class="cancel-btn">Cancelar</button>
+                            <button type="submit" class="submit-btn">Continuar</button>
                         </div>
                     </form>
                 </div>
@@ -118,9 +146,11 @@ class ContactFormManager {
 
     generateColombiaCities() {
         const cities = [
-            'Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena',
+            'Bogotá D.C.', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena',
             'Cúcuta', 'Bucaramanga', 'Pereira', 'Santa Marta', 'Ibagué',
-            'Pasto', 'Manizales', 'Neiva', 'Villavicencio', 'Armenia'
+            'Pasto', 'Manizales', 'Neiva', 'Villavicencio', 'Armenia',
+            'Montería', 'Sincelejo', 'Valledupar', 'Popayán', 'Buenaventura',
+            'Tunja', 'Florencia', 'Riohacha', 'Yopal', 'Quibdó'
         ].sort();
 
         return cities.map(city => 
@@ -129,7 +159,6 @@ class ContactFormManager {
     }
 
     async submitToGoogleForms(formData) {
-
         const googleFormsData = {
             'entry.376229560': formData.fullName,
             'entry.388709108': formData.company,
@@ -188,11 +217,19 @@ class ContactFormManager {
         this.modal = document.getElementById('contactFormModal');
         this.form = document.getElementById('contactInfoForm');
         this.modal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Prevent background scroll
+
+        // Focus on first input
+        setTimeout(() => {
+            const firstInput = this.form.querySelector('input');
+            if (firstInput) firstInput.focus();
+        }, 300);
     }
 
     hideForm() {
         if (this.modal) {
             this.modal.style.display = 'none';
+            document.body.style.overflow = ''; // Restore scroll
         }
     }
 
@@ -209,6 +246,44 @@ class ContactFormManager {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 this.hideForm();
+            }
+        });
+
+        // Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.modal && this.modal.style.display === 'block') {
+                this.hideForm();
+            }
+        });
+
+        // Validaciones en tiempo real
+        const nitInput = document.getElementById('nit');
+        const whatsappInput = document.getElementById('whatsapp');
+        const emailInput = document.getElementById('corporateEmail');
+
+        nitInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/[^0-9-]/g, '');
+            if (value.length > 11) value = value.substring(0, 11);
+            e.target.value = value;
+        });
+
+        whatsappInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length > 10) value = value.substring(0, 10);
+            e.target.value = value;
+        });
+
+        emailInput.addEventListener('input', (e) => {
+            const email = e.target.value;
+            const personalDomains = ['gmail', 'hotmail', 'yahoo', 'outlook'];
+            const isPersonal = personalDomains.some(domain => 
+                email.toLowerCase().includes(domain.toLowerCase())
+            );
+            
+            if (isPersonal) {
+                emailInput.setCustomValidity('Por favor utilice un correo corporativo');
+            } else {
+                emailInput.setCustomValidity('');
             }
         });
 
@@ -231,13 +306,18 @@ class ContactFormManager {
                     this.submitToGoogleSheets(formDataObj)
                 ]);
 
-                if (formsResult && sheetsResult) {
+                if (formsResult || sheetsResult) {
                     this.hideForm();
                     this.options.onSuccess(formDataObj);
                     
+                    // Mostrar mensaje de éxito
+                    this.showSuccessMessage();
+                    
                     // Si hay una redirección configurada, realizarla
                     if (this.options.redirectTo) {
-                        window.location.href = this.options.redirectTo;
+                        setTimeout(() => {
+                            window.location.href = this.options.redirectTo;
+                        }, 2000);
                     }
                 } else {
                     throw new Error('Error al enviar el formulario');
@@ -251,30 +331,36 @@ class ContactFormManager {
                 submitBtn.textContent = originalText;
             }
         });
+    }
 
-        // Validaciones en tiempo real
-        const nitInput = document.getElementById('nit');
-        const whatsappInput = document.getElementById('whatsapp');
-        const emailInput = document.getElementById('corporateEmail');
-
-        nitInput.addEventListener('input', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9-]/g, '');
-        });
-
-        whatsappInput.addEventListener('input', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        });
-
-        emailInput.addEventListener('input', (e) => {
-            const email = e.target.value;
-            const isPersonal = /^[^@]+@(gail|htmail|yaoo|oiutlook)\.(com|net|org)$/i.test(email);
-            
-            if (isPersonal) {
-                emailInput.setCustomValidity('Por favor utilice un correo corporativo');
-            } else {
-                emailInput.setCustomValidity('');
-            }
-        });
+    showSuccessMessage() {
+        const notification = document.createElement('div');
+        notification.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 2rem;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+                z-index: 1001;
+                text-align: center;
+                max-width: 400px;
+                animation: slideUp 0.5s ease-out;
+            ">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                <h3 style="color: #065f46; margin: 0 0 0.5rem 0; font-size: 1.8rem;">¡Información enviada correctamente!</h3>
+                <p style="color: #047857; margin: 0; font-size: 1.3rem;">En breves momentos recibirá su matriz de riesgos en el correo indicado.</p>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 4000);
     }
 }
 

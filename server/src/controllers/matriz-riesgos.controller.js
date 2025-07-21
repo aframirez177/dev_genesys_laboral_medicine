@@ -1,180 +1,284 @@
 // server/src/controllers/matriz-riesgos.controller.js
 import ExcelJS from 'exceljs';
 import { calcularNivelProbabilidad, calcularNivelRiesgo } from '../utils/risk-calculations.js';
+import { GES_DATOS_PREDEFINIDOS } from '../config/ges-config.js';
 
 export async function generarMatrizExcel(datosFormulario) {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Matriz de Riesgos');
+    const worksheet = workbook.addWorksheet('Matriz de Riesgos GTC45');
 
-    // Configurar columnas según el formato requerido
-    worksheet.columns = [
-        { header: 'Proceso', key: 'proceso', width: 15 },
-        { header: 'Actividades', key: 'actividades', width: 20 },
-        { header: 'Rutinario (Si o No)', key: 'rutinario', width: 10 },
-        { header: 'Descripción', key: 'descripcion', width: 30 },
-        { header: 'Clasificación', key: 'clasificacion', width: 15 },
-        { header: 'Efectos Posibles', key: 'efectos', width: 30 },
-        // Controles existentes
-        { header: 'Fuente', key: 'control_fuente', width: 15 },
-        { header: 'Medio', key: 'control_medio', width: 15 },
-        { header: 'Individuo', key: 'control_individuo', width: 15 },
-        // Evaluación del riesgo
-        { header: 'Nivel de deficiencia', key: 'nd', width: 10 },
-        { header: 'Nivel de exposición', key: 'ne', width: 10 },
-        { header: 'Nivel de probabilidad (ND x NE)', key: 'np', width: 10 },
-        { header: 'Interpretación del nivel de probabilidad', key: 'int_np', width: 20 },
-        { header: 'Nivel de consecuencia', key: 'nc', width: 10 },
-        { header: 'Nivel de riesgo (NR)', key: 'nr', width: 10 },
-        { header: 'Interpretación del NR', key: 'int_nr', width: 20 },
-        // Valoración del riesgo
-        { header: 'Aceptabilidad del riesgo', key: 'aceptabilidad', width: 20 },
-        // Criterios para establecer controles
-        { header: 'Nro. Expuestos', key: 'nro_expuestos', width: 10 },
-        { header: 'Peor consecuencia', key: 'peor_consecuencia', width: 25 },
-        { header: 'Requisito legal', key: 'requisito_legal', width: 10 },
-        // Medidas de intervención
-        { header: 'Eliminación', key: 'eliminacion', width: 20 },
-        { header: 'Sustitución', key: 'sustitucion', width: 20 },
-        { header: 'Controles de ingeniería', key: 'controles_ingenieria', width: 20 },
-        { header: 'Controles administrativos', key: 'controles_admin', width: 20 },
-        { header: 'Equipos / EPP', key: 'epp', width: 20 }
-    ];
-
-    // Aplicar estilos a la cabecera
-    worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFF' } };
-    worksheet.getRow(1).fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: '4F81BD' }
+    // ... (definición de colores y columnas se mantiene igual) ...
+    // Colores para semaforización (AJUSTAR A LOS COLORES DEL FORMULARIO)
+    const coloresNiveles = {
+        deficiencia: { 10: 'FFF44336', 6: 'FFFF9800', 2: 'FFFFEB3B', 0: 'FF4CAF50' },
+        exposicion: { 4: 'FFF44336', 3: 'FFFF9800', 2: 'FFFFEB3B', 1: 'FF4CAF50' },
+        consecuencia: { 100: 'FFF44336', 60: 'FFFF9800', 25: 'FFFFEB3B', 10: 'FF4CAF50' }
     };
-    worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+    const coloresNivelProbabilidadCategoria = {
+        'Muy Alto': 'FFF44336', 'Alto': 'FFFF9800', 'Medio': 'FFFFEB3B', 'Bajo': 'FF4CAF50'
+    };
 
-    // Procesar datos por cargo para poder combinar celdas
-    let startRow = 2; // Comenzamos en la fila 2 (después del encabezado)
+    // --- 1. DEFINIR ESTRUCTURA DE COLUMNAS DEL EXCEL ---
+    worksheet.columns = [
+        { header: 'Proceso', key: 'proceso', width: 25 },
+        { header: 'Zona/Lugar', key: 'zona_lugar', width: 25 },
+        { header: 'Actividades', key: 'actividades', width: 30 },
+        { header: 'Tareas', key: 'tareas', width: 35 },
+        { header: 'Rutinario (Si o No)', key: 'rutinario', width: 12, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Descripción', key: 'peligro_descripcion', width: 35 },
+        { header: 'Clasificación', key: 'peligro_clasificacion', width: 20 },
+        { header: 'Efectos posibles', key: 'efectos_posibles', width: 35 },
+        { header: 'Fuente', key: 'control_fuente', width: 25 },
+        { header: 'Medio', key: 'control_medio', width: 25 },
+        { header: 'Individuo', key: 'control_individuo', width: 25 },
+        { header: 'Nivel de deficiencia', key: 'nd', width: 10, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Nivel de exposición', key: 'ne', width: 10, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Nivel de probabilidad (NP)', key: 'np_valor', width: 12, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Nivel de Probabilidad (Categoría)', key: 'np_nivel_categoria', width: 18, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Interpretación del nivel de probabilidad', key: 'np_interpretacion', width: 30 },
+        { header: 'Nivel de consecuencia', key: 'nc_valor', width: 10, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Nivel de riesgo (NR) e intervención', key: 'nr_valor_intervencion', width: 12, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Nivel de Riesgo (Categoría)', key: 'nr_interpretacion_nivel', width: 15, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Interpretación del NR', key: 'nr_interpretacion_texto', width: 35 },
+        { header: 'Aceptabilidad del riesgo', key: 'aceptabilidad_riesgo', width: 30 },
+        { header: 'Nro. Expuestos', key: 'nro_expuestos', width: 10, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Peor consecuencia', key: 'peor_consecuencia', width: 30 },
+        { header: 'Existencia requisito legal específico asociado (Si o No)', key: 'requisito_legal', width: 18, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Eliminación', key: 'medida_eliminacion', width: 30 },
+        { header: 'Sustitución', key: 'medida_sustitucion', width: 30 },
+        { header: 'Controles de ingeniería', key: 'medida_ctrl_ingenieria', width: 35 },
+        { header: 'Controles administrativos, Señalización, Advertencia', key: 'medida_ctrl_admin', width: 40 },
+        { header: 'Equipos/ Elementos de protección personal', key: 'epp', width: 40 }
+    ];
+    
+    // --- 2. ESTILOS DE CABECERA ---
+    // ... (código de cabeceras idéntico al de la respuesta anterior) ...
+    const headerFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } }; 
+    const headerFont = { bold: true, color: { argb: 'FF000000' }, name: 'Calibri', size: 10 };
+    const headerAlignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
 
-    datosFormulario.cargos.forEach(cargo => {
-        const gesCount = cargo.gesSeleccionados.length;
-        if (gesCount === 0) return; // Saltar si no hay GES seleccionados
+    const mainHeaderRow = worksheet.getRow(1);
+    mainHeaderRow.font = { ...headerFont, size: 11 };
+    mainHeaderRow.fill = headerFill;
+    mainHeaderRow.alignment = headerAlignment;
+    mainHeaderRow.height = 30;
 
-        // Datos del cargo que se repetirán en múltiples filas
-        const datosCargo = {
-            proceso: cargo.area,
-            actividades: cargo.cargoName,
-            rutinario: cargo.tareasRutinarias ? 'Si' : 'No',
-            efectos: cargo.descripcionTareas || 'No especificado',
-            nro_expuestos: cargo.numTrabajadores,
-            peor_consecuencia: 'Muerte', // Por defecto según requerimiento
-            requisito_legal: 'Si'
-        };
+    const subHeaderRow = worksheet.getRow(2);
+    subHeaderRow.font = headerFont;
+    subHeaderRow.fill = headerFill;
+    subHeaderRow.alignment = headerAlignment;
+    subHeaderRow.height = 40;
 
-        // Para cada GES, agregar una fila con datos específicos del GES
-        cargo.gesSeleccionados.forEach((ges, idx) => {
-            // Calcular niveles
-            let nivelProb;
-            let nivelRiesgo;
+    const groupHeaders = {
+        'Peligro': { start: 6, end: 8 },
+        'Controles existentes': { start: 9, end: 11 },
+        'Evaluación del riesgo': { start: 12, end: 20 },
+        'Valoración del riesgo': { start: 21, end: 21 },
+        'Criterios para establecer controles': { start: 22, end: 24 },
+        'Medidas intervención': { start: 25, end: 29 }
+    };
 
-            try {
-                // Intentar calcular con los valores proporcionados
-                nivelProb = calcularNivelProbabilidad(
-                    ges.niveles?.deficiencia?.value,
-                    ges.niveles?.exposicion?.value
-                );
-                
-                nivelRiesgo = calcularNivelRiesgo(
-                    nivelProb.valor,
-                    ges.niveles?.consecuencia?.value
-                );
-            } catch (error) {
-                // Valores por defecto si hay error en el cálculo
-                console.error('Error al calcular niveles:', error);
-                nivelProb = { valor: 0, interpretacion: 'No determinado' };
-                nivelRiesgo = { 
-                    valor: 0, 
-                    interpretacion: 'No determinado',
-                    aceptabilidad: 'No determinado',
-                    color: '#FFFFFF'
-                };
+    worksheet.columns.forEach((col, index) => {
+        const colNum = index + 1;
+        let isGrouped = false;
+        for (const groupName in groupHeaders) {
+            const group = groupHeaders[groupName];
+            if (colNum >= group.start && colNum <= group.end) {
+                if (colNum === group.start) {
+                    worksheet.mergeCells(1, group.start, 1, group.end);
+                    worksheet.getCell(1, group.start).value = groupName;
+                }
+                worksheet.getCell(2, colNum).value = col.header;
+                isGrouped = true;
+                break;
+            }
+        }
+        if (!isGrouped) {
+            worksheet.mergeCells(1, colNum, 2, colNum);
+            worksheet.getCell(1, colNum).value = col.header;
+        }
+    });
+
+
+    // --- 3. PROCESAR Y AÑADIR DATOS CON AGRUPACIÓN ---
+    // ... (lógica de agrupación de cargosPorProceso, bucles, y rowData idéntica) ...
+    let currentRowIndex = 3;
+    
+    const cargosPorProceso = datosFormulario.cargos.reduce((acc, cargo) => {
+        const proceso = cargo.area;
+        if (!acc[proceso]) {
+            acc[proceso] = [];
+        }
+        acc[proceso].push(cargo);
+        return acc;
+    }, {});
+
+    for (const procesoNombre in cargosPorProceso) {
+        const cargosEnEsteProceso = cargosPorProceso[procesoNombre];
+        const inicioFilasProceso = currentRowIndex;
+
+        cargosEnEsteProceso.forEach((cargo) => {
+            const gesSeleccionados = cargo.gesSeleccionados || [];
+            if (gesSeleccionados.length === 0) return;
+
+            const startRowForCurrentCargo = currentRowIndex;
+
+            const gesAgrupadosPorClasificacion = gesSeleccionados.reduce((acc, ges) => {
+                const clasificacion = ges.riesgo;
+                if (!acc[clasificacion]) acc[clasificacion] = [];
+                acc[clasificacion].push(ges);
+                return acc;
+            }, {});
+
+            for (const clasificacionKey in gesAgrupadosPorClasificacion) {
+                const gesDeMismaClasificacion = gesAgrupadosPorClasificacion[clasificacionKey];
+                const startRowForClasificacion = currentRowIndex;
+
+                gesDeMismaClasificacion.forEach((ges) => {
+                    const datosGesPredefinidos = GES_DATOS_PREDEFINIDOS[ges.ges] || {};
+                    let nivelProb = { valor: 0, interpretacion: 'N/A', nivel: 'N/A' };
+                    let nivelRiesgo = { valor: 0, interpretacion: 'N/A', nivel: 'N/A', aceptabilidad: 'N/A', color: 'FFFFFFFF' };
+
+                    try {
+                        const ndVal = parseInt(ges.niveles?.deficiencia?.value, 10);
+                        const neVal = parseInt(ges.niveles?.exposicion?.value, 10);
+                        const ncVal = parseInt(ges.niveles?.consecuencia?.value, 10);
+                        if (!isNaN(ndVal) && !isNaN(neVal)) {
+                            nivelProb = calcularNivelProbabilidad(ndVal, neVal);
+                            if (!isNaN(ncVal) && nivelProb.valor !== undefined) {
+                               nivelRiesgo = calcularNivelRiesgo(nivelProb.valor, ncVal);
+                            }
+                        }
+                    } catch (e) { console.error("Error cálculo niveles:", e); }
+                    
+                    const rowData = {
+                        proceso: cargo.area, 
+                        zona_lugar: cargo.zona,
+                        actividades: cargo.cargoName,
+                        tareas: cargo.descripcionTareas || 'No especificado',
+                        rutinario: cargo.tareasRutinarias ? 'Si' : 'No',
+                        peligro_descripcion: ges.ges,
+                        peligro_clasificacion: ges.riesgo, 
+                        efectos_posibles: datosGesPredefinidos.consecuencias || 'No especificado',
+                        control_fuente: ges.controles?.fuente || 'Ninguno',
+                        control_medio: ges.controles?.medio || 'Ninguno',
+                        control_individuo: ges.controles?.individuo || 'Ninguno',
+                        nd: ges.niveles?.deficiencia?.value ?? 0,
+                        ne: ges.niveles?.exposicion?.value ?? 0,
+                        np_valor: nivelProb.valor,
+                        np_nivel_categoria: nivelProb.nivel,
+                        np_interpretacion: nivelProb.interpretacion,
+                        nc_valor: ges.niveles?.consecuencia?.value ?? 0,
+                        nr_valor_intervencion: nivelRiesgo.valor,
+                        nr_interpretacion_nivel: nivelRiesgo.nivel, 
+                        nr_interpretacion_texto: nivelRiesgo.interpretacion,
+                        aceptabilidad_riesgo: nivelRiesgo.aceptabilidad,
+                        nro_expuestos: cargo.numTrabajadores,
+                        peor_consecuencia: datosGesPredefinidos.peorConsecuencia || 'No especificado',
+                        requisito_legal: 'Si', 
+                        medida_eliminacion: datosGesPredefinidos.medidasIntervencion?.eliminacion || '',
+                        medida_sustitucion: datosGesPredefinidos.medidasIntervencion?.sustitucion || '',
+                        medida_ctrl_ingenieria: datosGesPredefinidos.medidasIntervencion?.controlesIngenieria || '',
+                        medida_ctrl_admin: datosGesPredefinidos.medidasIntervencion?.controlesAdministrativos || '',
+                        epp: datosGesPredefinidos.elementosProteccion || ''
+                    };
+                    const addedRow = worksheet.addRow(rowData);
+
+                    // Aplicar semaforización de celdas (ND, NE, NC, NP Categoría, NR Valor y Categoría)
+                    const ndCell = addedRow.getCell('nd');
+                    const neCell = addedRow.getCell('ne');
+                    const ncCell = addedRow.getCell('nc_valor');
+                    if (coloresNiveles.deficiencia[rowData.nd]) ndCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNiveles.deficiencia[rowData.nd] } };
+                    if (coloresNiveles.exposicion[rowData.ne]) neCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNiveles.exposicion[rowData.ne] } };
+                    if (coloresNiveles.consecuencia[rowData.nc_valor]) ncCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNiveles.consecuencia[rowData.nc_valor] } };
+                    
+                    const npCategoriaCell = addedRow.getCell('np_nivel_categoria');
+                    if (coloresNivelProbabilidadCategoria[nivelProb.nivel]) npCategoriaCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNivelProbabilidadCategoria[nivelProb.nivel] } };
+    
+                    const nrValorCell = addedRow.getCell('nr_valor_intervencion');
+                    const nrCategoriaCell = addedRow.getCell('nr_interpretacion_nivel');
+                    if (nivelRiesgo.color) {
+                        const bgColorHex = nivelRiesgo.color.replace('#', '').toUpperCase();
+                        const cellFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgColorHex } };
+                        nrValorCell.fill = cellFill;
+                        nrCategoriaCell.fill = cellFill;
+                        const fontColor = (bgColorHex === 'FF0000' || bgColorHex === 'FFA500' || bgColorHex === '000000') ? 'FFFFFFFF' : 'FF000000';
+                        const fontStyle = { color: { argb: fontColor }, name: 'Calibri', size: 10 };
+                        nrValorCell.font = fontStyle;
+                        nrCategoriaCell.font = fontStyle;
+                    }
+    
+                    // ***************************************************
+                    // * MODIFICACIÓN: Quitar altura fija de la fila     *
+                    // ***************************************************
+                    // addedRow.height = 20; // Línea eliminada
+    
+                    addedRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                       const columnKey = worksheet.getColumn(colNumber).key;
+                       // Asegurar que todas las celdas de datos tengan wrapText
+                       cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+                       const centeredKeys = ['rutinario', 'nd', 'ne', 'np_valor', 'np_nivel_categoria', 'nc_valor', 'nr_valor_intervencion', 'nr_interpretacion_nivel', 'nro_expuestos', 'requisito_legal'];
+                       if (centeredKeys.includes(columnKey)) {
+                           cell.alignment.horizontal = 'center';
+                       }
+                    });
+                    currentRowIndex++;
+                });
+
+                // Combinar celda "Clasificación"
+                if (gesDeMismaClasificacion.length > 1) {
+                    const endRowForClasificacion = currentRowIndex - 1;
+                    worksheet.mergeCells(startRowForClasificacion, worksheet.getColumn('peligro_clasificacion').number, endRowForClasificacion, worksheet.getColumn('peligro_clasificacion').number);
+                    const cellClasificacion = worksheet.getCell(startRowForClasificacion, worksheet.getColumn('peligro_clasificacion').number);
+                    cellClasificacion.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
+                }
             }
 
-            // Crear la fila con datos del cargo y específicos del GES
-            const rowData = {
-                ...datosCargo,
-                descripcion: ges.ges,
-                clasificacion: ges.riesgo,
-                control_fuente: ges.controles?.fuente || '',
-                control_medio: ges.controles?.medio || '',
-                control_individuo: ges.controles?.individuo || '',
-                nd: ges.niveles?.deficiencia?.value || 0,
-                ne: ges.niveles?.exposicion?.value || 0,
-                np: nivelProb.valor,
-                int_np: nivelProb.interpretacion,
-                nc: ges.niveles?.consecuencia?.value || 0,
-                nr: nivelRiesgo.valor,
-                int_nr: nivelRiesgo.interpretacion,
-                aceptabilidad: nivelRiesgo.aceptabilidad,
-                eliminacion: '',  // Campos para futuras mejoras
-                sustitucion: '',
-                controles_ingenieria: '',
-                controles_admin: '',
-                epp: ''
-            };
-
-            worksheet.addRow(rowData);
-
-            // Aplicar color según nivel de riesgo
-            const ultimaFila = worksheet.lastRow;
-            const celdaNR = ultimaFila.getCell('nr');
-            if (nivelRiesgo.color) {
-                celdaNR.fill = {
-                    type: 'pattern',
-                    pattern: 'solid',
-                    fgColor: { argb: nivelRiesgo.color.replace('#', '') }
-                };
+            // Combinar celdas comunes del CARGO
+            const endRowForCurrentCargo = currentRowIndex - 1;
+            if (endRowForCurrentCargo >= startRowForCurrentCargo && gesSeleccionados.length > 0) {
+                const keysCargoComun = ['zona_lugar', 'actividades', 'tareas', 'rutinario', 'nro_expuestos', 'requisito_legal'];
+                keysCargoComun.forEach(key => {
+                    const colNum = worksheet.getColumn(key).number;
+                    if (endRowForCurrentCargo > startRowForCurrentCargo) {
+                         worksheet.mergeCells(startRowForCurrentCargo, colNum, endRowForCurrentCargo, colNum);
+                    }
+                    const cellToAlign = worksheet.getCell(startRowForCurrentCargo, colNum);
+                    cellToAlign.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
+                    if (['rutinario', 'nro_expuestos', 'requisito_legal'].includes(key)) {
+                        cellToAlign.alignment.horizontal = 'center';
+                    }
+                });
             }
         });
 
-        // Si hay múltiples GES para este cargo, combinar las celdas con información común
-        if (gesCount > 1) {
-            const endRow = startRow + gesCount - 1;
-
-            // Columnas con información común del cargo
-            const columnasACombinar = ['A', 'B', 'C', 'F', 'R', 'S', 'T'];
-            
-            // Combinar celdas para cada columna
-            columnasACombinar.forEach(col => {
-                worksheet.mergeCells(`${col}${startRow}:${col}${endRow}`);
-                // Centrar verticalmente el texto en las celdas combinadas
-                worksheet.getCell(`${col}${startRow}`).alignment = { 
-                    vertical: 'middle', 
-                    horizontal: col === 'F' ? 'left' : 'center' // Alineación especial para descripción
-                };
-            });
-        }
-
-        // Actualizar la fila de inicio para el siguiente cargo
-        startRow += gesCount;
-    });
-
-    // Aplicar bordes a todas las celdas con datos
-    const lastRow = worksheet.rowCount;
-    const lastCol = worksheet.columnCount;
-    
-    for (let row = 1; row <= lastRow; row++) {
-        for (let col = 1; col <= lastCol; col++) {
-            const cell = worksheet.getCell(row, col);
-            cell.border = {
-                top: { style: 'thin' },
-                left: { style: 'thin' },
-                bottom: { style: 'thin' },
-                right: { style: 'thin' }
-            };
+        // Combinar celda "Proceso"
+        const finFilasProceso = currentRowIndex - 1;
+        if (finFilasProceso >= inicioFilasProceso && finFilasProceso > inicioFilasProceso) { 
+            worksheet.mergeCells(inicioFilasProceso, worksheet.getColumn('proceso').number, finFilasProceso, worksheet.getColumn('proceso').number);
+            const cellProceso = worksheet.getCell(inicioFilasProceso, worksheet.getColumn('proceso').number);
+            cellProceso.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
+        } else if (finFilasProceso === inicioFilasProceso && cargosEnEsteProceso.length > 0 && cargosEnEsteProceso[0].gesSeleccionados.length > 0) { // Asegurar alineación incluso si el proceso solo tiene una fila de datos
+            const cellProceso = worksheet.getCell(inicioFilasProceso, worksheet.getColumn('proceso').number);
+            cellProceso.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
         }
     }
-
-    // Ajustar altura automática para todas las filas
-    worksheet.eachRow({ includeEmpty: false }, function(row) {
-        row.height = 25; // Altura mínima para todas las filas
-    });
+    
+    // --- 5. ESTILOS FINALES Y BORDES ---
+    // ... (código de bordes y fuente base idéntico) ...
+    for (let r = 1; r <= worksheet.rowCount; r++) {
+        worksheet.getRow(r).eachCell({ includeEmpty: true }, (cell) => {
+            cell.border = {
+                top: { style: 'thin', color: { argb: 'FF000000' } },
+                left: { style: 'thin', color: { argb: 'FF000000' } },
+                bottom: { style: 'thin', color: { argb: 'FF000000' } },
+                right: { style: 'thin', color: { argb: 'FF000000' } }
+            };
+            if (r > 2 && !cell.font) { 
+                 cell.font = { name: 'Calibri', size: 10, color: { argb: 'FF000000'} };
+            }
+        });
+    }
 
     return await workbook.xlsx.writeBuffer();
 }

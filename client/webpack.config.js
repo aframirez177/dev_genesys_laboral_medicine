@@ -47,6 +47,7 @@ module.exports = {
     informacionlegal: "./src/main_informacion_legal.js",
     enrollment: "./src/main_enrollment.js",
     genesysbi: "./src/main_genesys_bi.js",
+    diagnosticointeractivo: "./src/main_diagnostico_interactivo.js",
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
@@ -197,6 +198,12 @@ module.exports = {
       inject: true,
       template: "./public/pages/SST.html",
       filename: "./pages/SST.html",
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ["main", "diagnosticointeractivo"],
+      inject: true,
+      template: "./public/pages/diagnostico_interactivo.html",
+      filename: "./pages/diagnostico_interactivo.html",
     }),
     /* new PreloadWebpackPlugin({
       rel: "preload",

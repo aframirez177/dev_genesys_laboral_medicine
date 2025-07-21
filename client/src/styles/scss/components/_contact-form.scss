@@ -1,4 +1,6 @@
-// src/styles/scss/components/_contact-form.scss
+// ===================================================================
+// FORMULARIO DE CONTACTO MEJORADO - UX/UI MODERNO SIMPLE
+// ===================================================================
 
 .contact-form-modal {
     display: none;
@@ -7,112 +9,214 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     z-index: 1000;
     overflow-y: auto;
     padding: 2rem;
 
     .modal-content {
         background-color: white;
-        border-radius: 1rem;
+        border-radius: 20px;
         max-width: 600px;
+        width: 100%;
         margin: 2rem auto;
         position: relative;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         animation: modalSlideIn 0.3s ease-out;
+
+        @include respond-to("mobile") {
+            margin: 1rem auto;
+            border-radius: 16px;
+        }
     }
 
     .modal-header {
-        padding: 1.5rem 2rem;
-        border-bottom: 1px solid map-get($colors, "border-color");
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        background: linear-gradient(135deg, map-get($colors, "primary") 0%, lighten(map-get($colors, "primary"), 10%) 100%);
+        color: white;
+        padding: 2.5rem 2rem 2rem;
+        border-radius: 20px 20px 0 0;
+        position: relative;
+
+        @include respond-to("mobile") {
+            padding: 2rem 1.5rem 1.5rem;
+            border-radius: 16px 16px 0 0;
+        }
 
         h2 {
-            font-size: 1.8rem;
+            font-family: map-get($fonts, "title");
+            font-size: 2.4rem;
             font-weight: 700;
-            color: map-get($colors, "secondary");
             margin: 0;
+            line-height: 1.2;
+
+            @include respond-to("mobile") {
+                font-size: 2rem;
+            }
         }
 
         .close-modal {
-            background: none;
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
             border: none;
-            font-size: 2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.6rem;
             cursor: pointer;
-            padding: 0.5rem;
-            color: map-get($colors, "text");
-            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
 
             &:hover {
-                color: map-get($colors, "primary");
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(1.1);
             }
         }
     }
 
     .contact-form {
-        padding: 2rem;
+        padding: 2.5rem 2rem;
+
+        @include respond-to("mobile") {
+            padding: 2rem 1.5rem;
+        }
 
         .form-group {
-            margin-bottom: 1.5rem;
-            width: 100%;
+            margin-bottom: 2rem;
 
             label {
                 display: block;
+                font-family: map-get($fonts, "title");
                 font-size: 1.4rem;
-                margin-bottom: 0.5rem;
+                font-weight: 600;
                 color: map-get($colors, "text");
-                font-weight: 500;
+                margin-bottom: 0.8rem;
+
+                .required {
+                    color: map-get($colors, "danger");
+                    font-weight: 700;
+                }
             }
 
             input, select {
                 width: 100%;
-                padding: 1rem;
-                border: 1px solid map-get($colors, "border-color");
-                border-radius: 0.5rem;
+                padding: 1.2rem 1.5rem;
+                border: 2px solid map-get($colors, "input-border");
+                border-radius: 12px;
+                font-family: map-get($fonts, "body");
                 font-size: 1.4rem;
-                transition: border-color 0.2s;
+                color: map-get($colors, "text");
+                background-color: map-get($colors, "input-bg");
+                transition: all 0.3s ease;
+                box-sizing: border-box;
 
                 &:focus {
                     outline: none;
                     border-color: map-get($colors, "primary");
+                    box-shadow: 0 0 0 3px rgba(map-get($colors, "primary"), 0.1);
+                    transform: translateY(-1px);
                 }
 
-                &:invalid {
-                    border-color: #ff4444;
+                &::placeholder {
+                    color: map-get($colors, "placeholder");
                 }
+
+                &:hover:not(:focus) {
+                    border-color: lighten(map-get($colors, "input-border"), 10%);
+                }
+            }
+
+            select {
+                cursor: pointer;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+                background-position: right 1rem center;
+                background-repeat: no-repeat;
+                background-size: 1.5rem;
+                padding-right: 3rem;
             }
         }
 
         .form-row {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
 
             @include respond-to("mobile") {
-                flex-direction: column;
-                gap: 1.5rem;
+                grid-template-columns: 1fr;
+                gap: 0;
             }
 
             .form-group {
-                flex: 1;
                 margin-bottom: 0;
+
+                @include respond-to("mobile") {
+                    margin-bottom: 2rem;
+                }
             }
         }
 
         .actions {
-            margin-top: 2rem;
+            margin-top: 3rem;
             display: flex;
             justify-content: flex-end;
-            gap: 1rem;
+            gap: 1.5rem;
+
+            @include respond-to("mobile") {
+                flex-direction: column;
+                gap: 1rem;
+            }
 
             button {
-                min-width: 120px;
-                padding: 1rem 2rem;
+                padding: 1.2rem 2.5rem;
+                border-radius: 12px;
+                font-family: map-get($fonts, "title");
+                font-size: 1.4rem;
+                font-weight: 600;
+                border: none;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                min-width: 140px;
+
+                @include respond-to("mobile") {
+                    width: 100%;
+                }
+
+                &:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+                }
 
                 &:disabled {
-                    opacity: 0.7;
+                    opacity: 0.6;
                     cursor: not-allowed;
+                    transform: none !important;
+                }
+
+                &.submit-btn {
+                    background: linear-gradient(135deg, map-get($colors, "primary") 0%, lighten(map-get($colors, "primary"), 10%) 100%);
+                    color: white;
+
+                    &:hover {
+                        box-shadow: 0 6px 20px rgba(map-get($colors, "primary"), 0.4);
+                    }
+                }
+
+                &.cancel-btn {
+                    background: white;
+                    color: map-get($colors, "text");
+                    border: 2px solid map-get($colors, "border-color");
+
+                    &:hover {
+                        background: map-get($colors, "background");
+                        border-color: map-get($colors, "primary");
+                        color: map-get($colors, "primary");
+                    }
                 }
             }
         }
@@ -121,11 +225,11 @@
 
 @keyframes modalSlideIn {
     from {
-        transform: translateY(-10%);
+        transform: translateY(-20px) scale(0.95);
         opacity: 0;
     }
     to {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         opacity: 1;
     }
 }

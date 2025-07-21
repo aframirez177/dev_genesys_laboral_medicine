@@ -19,8 +19,8 @@
       onload="this.rel='stylesheet'"
       as="style"
     />
-     <link
-      href="../nosotros.css" 
+    <link
+      href="../nosotros.css"
       rel="preload"
       onload="this.rel='stylesheet'"
       as="style"
@@ -68,25 +68,27 @@
     <!-- Google tag (gtag.js) -->
     <script>
       function loadGTM() {
-        var script = document.createElement('script');
+        var script = document.createElement("script");
         script.async = true;
-        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-PMW9BJJC8N';
+        script.src = "https://www.googletagmanager.com/gtag/js?id=G-PMW9BJJC8N";
         document.head.appendChild(script);
 
-        script.onload = function() {
+        script.onload = function () {
           window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-PMW9BJJC8N');
-        }
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+          gtag("config", "G-PMW9BJJC8N");
+        };
       }
-      window.addEventListener('load', loadGTM);
+      window.addEventListener("load", loadGTM);
     </script>
   </head>
 
   <body>
     <div data-beasties-container>
-       <header class="site-header" id="main-header">
+      <header class="site-header" id="main-header">
         <a
           href="../index.html"
           class="logo-link"
@@ -124,7 +126,13 @@
           </div>
           <!-- Botones CTA (Estático) -->
           <div class="cta-buttons">
-            <button type="button" class="cta-button-1" onclick="window.location.href='https://sites.google.com/view/intranet-genesys-laboral-medic/p%C3%A1gina-principal?authuser=0'">Log In</button>
+            <button
+              type="button"
+              class="cta-button-1"
+              onclick="window.location.href='https://sites.google.com/view/intranet-genesys-laboral-medic/p%C3%A1gina-principal?authuser=0'"
+            >
+              Log In
+            </button>
             <button type="button" class="cta-button">Sign Up</button>
           </div>
         </nav>
@@ -132,8 +140,8 @@
       <!-- Botón Hamburguesa (Estático) -->
       <div
         class="ham-menu"
-        role="button"  
-        tabindex="0" 
+        role="button"
+        tabindex="0"
         aria-label="Abrir menú de navegación"
         aria-expanded="false"
         aria-controls="off-screen-menu-nav"
@@ -149,234 +157,677 @@
         <div class="dropdown-menu-content">
           <ul id="services-menu-list">
             <li data-icon="viñeta">
-              <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
               </svg>
-              <a href="../pages/Matriz_de_riesgos_profesional.html">Matriz de riesgo profesional</a>
+              <a href="../pages/Matriz_de_riesgos_profesional.html"
+                >Matriz de riesgo profesional</a
+              >
             </li>
             <li data-icon="viñeta">
-               <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
               </svg>
               <a href="../pages/Profesiograma.html">Profesiograma</a>
             </li>
             <li data-icon="viñeta">
-               <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
               </svg>
-              <a href="../pages/Examenes_medicos_ocupacionales.html">Exámenes Médico Ocupacionales</a>
+              <a href="../pages/Examenes_medicos_ocupacionales.html"
+                >Exámenes Médico Ocupacionales</a
+              >
             </li>
             <li data-icon="viñeta">
-               <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
               </svg>
-              <a href="../pages/Bateria_de_riesgo_psicosocial.html">Batería de riesgo Psicosocial</a>
+              <a href="../pages/Bateria_de_riesgo_psicosocial.html"
+                >Batería de riesgo Psicosocial</a
+              >
             </li>
             <li data-icon="viñeta">
-               <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
               </svg>
-              <a href="../pages/Analisis_de_puesto_de_trabajo.html">Análisis de puesto de trabajo</a>
+              <a href="../pages/Analisis_de_puesto_de_trabajo.html"
+                >Análisis de puesto de trabajo</a
+              >
             </li>
-             <li data-icon="viñeta">
-               <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
+            <li data-icon="viñeta">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
               </svg>
               <a href="../pages/SST.html">SST</a>
             </li>
-             <li data-icon="viñeta">
-               <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
+            <li data-icon="viñeta">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
               </svg>
-              <a href="../pages/examen_medico_escolar.html">Examen Médico Escolar</a>
+              <a href="../pages/examen_medico_escolar.html"
+                >Examen Médico Escolar</a
+              >
             </li>
-             <li data-icon="viñeta">
-               <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
+            <li data-icon="viñeta">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
               </svg>
-              <a href="../pages/Perdida_de_capacidad_laboral.html">Pérdida de capacidad Laboral</a>
+              <a href="../pages/Perdida_de_capacidad_laboral.html"
+                >Pérdida de capacidad Laboral</a
+              >
             </li>
           </ul>
         </div>
       </div>
       <!-- ===== FIN ESTRUCTURA MENÚ SERVICIOS ===== -->
 
-       <!-- ===== MENÚ OFF-SCREEN (Móvil - Estático) ===== -->
+      <!-- ===== MENÚ OFF-SCREEN (Móvil - Estático) ===== -->
       <nav class="off-screen-menu" id="off-screen-menu-nav" aria-hidden="true">
         <!-- Links Principales Móvil -->
         <div class="main-nav-links-mobile">
           <a href="../pages/Nosotros.html">Nosotros</a>
-          <a href="http://entregaderesultados.com/genesys" target="_blank">Resultados</a>
+          <a href="http://entregaderesultados.com/genesys" target="_blank"
+            >Resultados</a
+          >
           <a href="../pages/SST.html">SST</a>
           <a href="../pages/Genesys_BI.html">Genesys BI</a>
         </div>
         <!-- Servicios Móvil -->
         <div class="mobile-services">
-          <button type="button" class="mobile-services-toggle" aria-expanded="false" aria-controls="mobile-services-list">
+          <button
+            type="button"
+            class="mobile-services-toggle"
+            aria-expanded="false"
+            aria-controls="mobile-services-list"
+          >
             Servicios
           </button>
-          <div class="mobile-services-content" id="mobile-services-list" aria-hidden="true">
-             <div class="mobile-service-item">
-               <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                 <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                 <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                 <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                 <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                 <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                 <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
-               </svg>
-               <a href="../pages/Matriz_de_riesgos_profesional.html">Matriz de riesgo profesional</a>
-             </div>
-             <div class="mobile-service-item">
-                <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                 <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                 <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                 <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                 <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                 <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                 <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
-               </svg>
-               <a href="../pages/Profesiograma.html">Profesiograma</a>
-             </div>
-             <div class="mobile-service-item">
-                <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                 <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                 <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                 <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                 <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                 <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                 <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
-               </svg>
-               <a href="../pages/Examenes_medicos_ocupacionales.html">Exámenes Médico Ocupacionales</a>
-             </div>
-             <div class="mobile-service-item">
-                <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                 <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                 <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                 <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                 <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                 <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                 <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
-               </svg>
-               <a href="../pages/Bateria_de_riesgo_psicosocial.html">Batería de riesgo Psicosocial</a>
-             </div>
-             <div class="mobile-service-item">
-                <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                 <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                 <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                 <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                 <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                 <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                 <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
-               </svg>
-               <a href="../pages/Analisis_de_puesto_de_trabajo.html">Análisis de puesto de trabajo</a>
-             </div>
-             <div class="mobile-service-item">
-                <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                 <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                 <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                 <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                 <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                 <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                 <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
-               </svg>
-               <a href="../pages/SST.html">SST</a>
-             </div>
-             <div class="mobile-service-item">
-                <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                 <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                 <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                 <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                 <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                 <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                 <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
-               </svg>
-               <a href="../pages/examen_medico_escolar.html">Examen Médico Escolar</a>
-             </div>
-             <div class="mobile-service-item">
-                <svg width="36" height="41" viewBox="0 0 36 41" fill="none" xmlns="http://www.w3.org/2000/svg" loading="lazy">
-                 <path d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z" fill="#EBBEC9"/>
-                 <path d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z" fill="#B0D7DC"/>
-                 <path d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z" fill="#92CED2"/>
-                 <path d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z" fill="#F1A298"/>
-                 <path d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z" fill="#F1A59C"/>
-                 <path d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z" fill="#EDC9C4"/>
-               </svg>
-               <a href="../pages/Perdida_de_capacidad_laboral.html">Pérdida de capacidad Laboral</a>
-             </div>
+          <div
+            class="mobile-services-content"
+            id="mobile-services-list"
+            aria-hidden="true"
+          >
+            <div class="mobile-service-item">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
+              </svg>
+              <a href="../pages/Matriz_de_riesgos_profesional.html"
+                >Matriz de riesgo profesional</a
+              >
+            </div>
+            <div class="mobile-service-item">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
+              </svg>
+              <a href="../pages/Profesiograma.html">Profesiograma</a>
+            </div>
+            <div class="mobile-service-item">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
+              </svg>
+              <a href="../pages/Examenes_medicos_ocupacionales.html"
+                >Exámenes Médico Ocupacionales</a
+              >
+            </div>
+            <div class="mobile-service-item">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
+              </svg>
+              <a href="../pages/Bateria_de_riesgo_psicosocial.html"
+                >Batería de riesgo Psicosocial</a
+              >
+            </div>
+            <div class="mobile-service-item">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
+              </svg>
+              <a href="../pages/Analisis_de_puesto_de_trabajo.html"
+                >Análisis de puesto de trabajo</a
+              >
+            </div>
+            <div class="mobile-service-item">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
+              </svg>
+              <a href="../pages/SST.html">SST</a>
+            </div>
+            <div class="mobile-service-item">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
+              </svg>
+              <a href="../pages/examen_medico_escolar.html"
+                >Examen Médico Escolar</a
+              >
+            </div>
+            <div class="mobile-service-item">
+              <svg
+                width="36"
+                height="41"
+                viewBox="0 0 36 41"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                loading="lazy"
+              >
+                <path
+                  d="M17.9929 11.1715V0L36.0001 10.25L26.1845 15.8358L17.9929 11.1715Z"
+                  fill="#EBBEC9"
+                />
+                <path
+                  d="M26.1843 15.8358V25.1642L35.9999 30.75V10.25L26.1843 15.8358Z"
+                  fill="#B0D7DC"
+                />
+                <path
+                  d="M17.9929 29.8286V41.0001L36.0001 30.7501L26.1845 25.1643L17.9929 29.8286Z"
+                  fill="#92CED2"
+                />
+                <path
+                  d="M17.9928 29.8286V41.0001L0 30.7501L9.8012 25.1643L17.9928 29.8286Z"
+                  fill="#F1A298"
+                />
+                <path
+                  d="M9.8012 25.1642V15.8358L0 10.25V30.75L9.8012 25.1642Z"
+                  fill="#F1A59C"
+                />
+                <path
+                  d="M17.9928 0V11.1715L9.8012 15.8358L0 10.25L17.9928 0Z"
+                  fill="#EDC9C4"
+                />
+              </svg>
+              <a href="../pages/Perdida_de_capacidad_laboral.html"
+                >Pérdida de capacidad Laboral</a
+              >
+            </div>
           </div>
         </div>
         <!-- Botones CTA Móvil -->
         <div class="cta-buttons-mobile">
-          <button type="button" class="cta-button-1" onclick="window.location.href='https://sites.google.com/view/intranet-genesys-laboral-medic/p%C3%A1gina-principal?authuser=0'">Log In</button>
+          <button
+            type="button"
+            class="cta-button-1"
+            onclick="window.location.href='https://sites.google.com/view/intranet-genesys-laboral-medic/p%C3%A1gina-principal?authuser=0'"
+          >
+            Log In
+          </button>
           <button type="button" class="cta-button">Sign Up</button>
         </div>
       </nav>
 
-    <!-- Sección Hero: Introducción General -->
-    <main class="background-container ">
-      <div class="background-fixed background-nosotros">
-      </div>
-      <section class="hero">
-        <div class="hero-content">
-          <h1>
-            Realizamos tus <span class="green">Examenes Medicos Ocupacionales</span>en Bogotá
-          </h1>
-          <p class="intro">
-            No vivimos para trabajar. trabajamos para tener una mejor vida.
-            encuentra aca un proveedor confiable que se ajusta a tus
-            necesidades. Evita sanciones de ley. <br />Te guiamos en todo el
-            proceso
-          </p>
-          <button
-            class="cta-button"
-            onclick="window.open('https://wa.me/573205803048?text=Hola!%20me%20interesa%20saber%20mas%20acerca%20de%20Genesys%20Laboral%20Medicine.%20Me%20puedes%20brindar%20mas%20informacion', '_blank')"
-          >
-            Empieza aquí
-          </button>
-        </div>
-      </section>
-    </main>
+      <!-- Sección Hero: Introducción General -->
+      <main class="background-container">
+        <div class="background-fixed background-nosotros"></div>
+        <section class="hero">
+          <div class="hero-content">
+            <h1>
+              Realizamos tus
+              <span class="green">Examenes Medicos Ocupacionales</span>en Bogotá
+            </h1>
+            <p class="intro">
+              No vivimos para trabajar. trabajamos para tener una mejor vida.
+              encuentra aca un proveedor confiable que se ajusta a tus
+              necesidades. Evita sanciones de ley. <br />Te guiamos en todo el
+              proceso
+            </p>
+            <button
+              class="cta-button"
+              onclick="window.open('https://wa.me/573205803048?text=Hola!%20me%20interesa%20saber%20mas%20acerca%20de%20Genesys%20Laboral%20Medicine.%20Me%20puedes%20brindar%20mas%20informacion', '_blank')"
+            >
+              Empieza aquí
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+    <!-- Close data-beasties-container -->
     <section class="mujeres-lideres">
       <div class="mujeres-lideres-container">
         <div class="text-container">
@@ -741,10 +1192,10 @@
         <div class="text-container">
           <h2>Líder de Medicina Ocupacional: <br />Marcela Ramírez</h2>
           <p>
-            Médico cirujana con especialización en medicina ocupacional. 7 años de experiencia en
-            seguridad laboral, lidera estrategias integrales de salud que
-            transforman el bienestar de los trabajadores, combinando rigor
-            científico y compromiso humano.
+            Médico cirujana con especialización en medicina ocupacional. 7 años
+            de experiencia en seguridad laboral, lidera estrategias integrales
+            de salud que transforman el bienestar de los trabajadores,
+            combinando rigor científico y compromiso humano.
           </p>
         </div>
       </div>
@@ -768,11 +1219,12 @@
         <div class="text-container">
           <h2>Directora Comercial: <br />Fanny Ramírez</h2>
           <p>
-            Optometra con extraordinaria trayectoria internacional como representante comercial, ha liderado
-            relaciones comerciales en más de 15 países entre Latinoamérica,
-            Norteamérica, Europa y Asia. Con más de 20 años de experiencia
-            comercial y 7 años en seguridad laboral, aporta una visión global y
-            estratégica al desarrollo empresarial.
+            Optometra con extraordinaria trayectoria internacional como
+            representante comercial, ha liderado relaciones comerciales en más
+            de 15 países entre Latinoamérica, Norteamérica, Europa y Asia. Con
+            más de 20 años de experiencia comercial y 7 años en seguridad
+            laboral, aporta una visión global y estratégica al desarrollo
+            empresarial.
           </p>
         </div>
       </div>
@@ -792,12 +1244,12 @@
         <div class="text-container">
           <h2>Director Asistencial: <br />Edison Plazas</h2>
           <p>
-            Médico y cirujano general con especialización en salud ocupacional ocupacional. 
-            4 años de experiencia en
-            promocion y prevencion en seguridad y salud en el trabajo, lidera al quipo 
-            de profesionales de la salud en genesys, cuenta con los conocimientos
-            mas recientes en calificacion de perdida laboral, practicas saludables y 
-            atencion humanizada.
+            Médico y cirujano general con especialización en salud ocupacional
+            ocupacional. 4 años de experiencia en promocion y prevencion en
+            seguridad y salud en el trabajo, lidera al quipo de profesionales de
+            la salud en genesys, cuenta con los conocimientos mas recientes en
+            calificacion de perdida laboral, practicas saludables y atencion
+            humanizada.
           </p>
         </div>
       </div>
@@ -834,7 +1286,11 @@
         <p class="faqs__contact-description">
           Estamos aquí para ayudarte. Contáctanos para obtener más información.
         </p>
-        <a class=faqs__contact-button href="https://wa.me/573205803048?text=Hola!%20me%20interesa%20saber%20mas%20sobre%20sus%20servicios" target="_blank">Contáctanos
+        <a
+          class="faqs__contact-button"
+          href="https://wa.me/573205803048?text=Hola!%20me%20interesa%20saber%20mas%20sobre%20sus%20servicios"
+          target="_blank"
+          >Contáctanos
         </a>
       </div>
     </section>
@@ -873,7 +1329,11 @@
     <!--- Footer HTML --->
 
     <div id="whatsapp-button" class="whatsapp-button">
-      <img src="../assets/images/whatsapp-line-icon.svg" alt="WhatsApp" loading="lazy" />
+      <img
+        src="../assets/images/whatsapp-line-icon.svg"
+        alt="WhatsApp"
+        loading="lazy"
+      />
     </div>
 
     <div id="whatsapp-popup" class="whatsapp-popup">
@@ -896,7 +1356,11 @@
         <p>¿En qué te podemos ayudar?</p>
       </div>
       <button id="start-chat" class="start-chat-button">
-        <img src="../assets/images/whatsapp-line-icon.svg" alt="WhatsApp" loading="lazy" />
+        <img
+          src="../assets/images/whatsapp-line-icon.svg"
+          alt="WhatsApp"
+          loading="lazy"
+        />
         Iniciar conversación
       </button>
     </div>
@@ -904,6 +1368,5 @@
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjHr3DJQXXQJsbG7rhKl5tkQoSbDP1UDc"></script> -->
     <!--             <script src="../js/ham_menu.js"></script>
         <script src="../js/animacion.js"></script> -->
-    </div> <!-- Close data-beasties-container -->
   </body>
 </html>
