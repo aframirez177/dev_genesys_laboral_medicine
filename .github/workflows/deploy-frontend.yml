@@ -10,21 +10,27 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+
       - name: Install Frontend Dependencies
         run: npm install --prefix client
+
       - name: Build Frontend Project
         run: npm run build --prefix client
+
+      - name: Install rsync
+        run: sudo apt-get install -y rsync
+
       - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@v5.0.0
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
-          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
-          REMOTE_USER: ${{ secrets.SERVER_USER }}
-          SOURCE: "dist/"
-          TARGET: "/var/www/html/"
-          EXCLUDE: "/.git/, /node_modules/" 
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            rsync -avzr --delete ./dist/ /var/www/html/ 
