@@ -10,10 +10,10 @@ console.log(`\n🛠️ Iniciando corrección de rutas en CSS inlinado para ${htm
 
 let filesModified = 0;
 
-// Expresión regular global y más robusta.
-// Busca cualquier 'url(' seguido opcionalmente por comillas ' o ", luego 'assets/',
-// siempre y cuando no esté precedido por '../'.
-const universalUrlRegex = /url\((?!['"]?\.\.\/)(['"]?)assets\//g;
+// Expresión regular final: más robusta.
+// Busca 'url(' (con posibles espacios), seguido opcionalmente por comillas, y luego 'assets/'.
+// Es insensible a mayúsculas/minúsculas (i) y busca todas las ocurrencias (g).
+const finalUniversalUrlRegex = /url\(\s*(?!['"]?\.\.\/)(['"]?)assets\//gi;
 
 htmlFiles.forEach(filePath => {
     try {
@@ -21,7 +21,7 @@ htmlFiles.forEach(filePath => {
         const originalContent = content;
 
         // Reemplaza todas las ocurrencias encontradas en todo el archivo.
-        content = content.replace(universalUrlRegex, (match, quote) => {
+        content = content.replace(finalUniversalUrlRegex, (match, quote) => {
             // `quote` captura la comilla simple o doble si existe, para preservarla.
             return `url(${quote}../assets/`;
         });
