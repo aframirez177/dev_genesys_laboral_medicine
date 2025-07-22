@@ -23,7 +23,7 @@ htmlFiles.forEach(filePath => {
         // Reemplaza todas las ocurrencias encontradas en todo el archivo.
         content = content.replace(finalUniversalUrlRegex, (match, quote) => {
             // `quote` captura la comilla simple o doble si existe, para preservarla.
-            return `url(${quote}../assets/`;
+                return `url(${quote}../assets/`;
         });
 
         if (content !== originalContent) {
