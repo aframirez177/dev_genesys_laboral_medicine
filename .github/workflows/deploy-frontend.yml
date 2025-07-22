@@ -34,3 +34,5 @@ jobs:
           SOURCE: "dist/"
           TARGET: "/var/www/html/"
           EXCLUDE: "/.git/, /node_modules/"
+          TARGET: "/var/www/html/"
+          EXCLUDE: "/.git/, /node_modules/"
