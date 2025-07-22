@@ -10,40 +10,23 @@ console.log(`\n🛠️ Iniciando corrección de rutas en CSS inlinado para ${htm
 
 let filesModified = 0;
 
+// Expresión regular global y más robusta.
+// Busca cualquier 'url(' seguido opcionalmente por comillas ' o ", luego 'assets/',
+// siempre y cuando no esté precedido por '../'.
+const universalUrlRegex = /url\((?!['"]?\.\.\/)(['"]?)assets\//g;
+
 htmlFiles.forEach(filePath => {
     try {
         let content = fs.readFileSync(filePath, 'utf8');
-        let originalContent = content;
+        const originalContent = content;
 
-        // Expresión regular mejorada para buscar DENTRO de etiquetas <style>
-        const styleTagRegex = /(<style[^>]*>)([\s\S]*?)(<\/style>)/gi;
-        const urlInStyleTagRegex = /url\((?!['"]?\.\.\/)(['"]?)assets\//g;
-
-        // Expresión regular para buscar DENTRO de atributos style="..."
-        const inlineStyleRegex = /style="([^"]*)"/gi;
-        const urlInInlineStyleRegex = /url\((?!['"]?\.\.\/)(['"]?)assets\//g;
-
-        let modified = false;
-
-        // 1. Corrección dentro de etiquetas <style>
-        content = content.replace(styleTagRegex, (match, styleTagStart, styleContent, styleTagEnd) => {
-            const newStyleContent = styleContent.replace(urlInStyleTagRegex, (urlMatch, quote) => {
-                modified = true;
-                return `url(${quote}../assets/`;
-            });
-            return styleTagStart + newStyleContent + styleTagEnd;
+        // Reemplaza todas las ocurrencias encontradas en todo el archivo.
+        content = content.replace(universalUrlRegex, (match, quote) => {
+            // `quote` captura la comilla simple o doble si existe, para preservarla.
+            return `url(${quote}../assets/`;
         });
 
-        // 2. Corrección dentro de atributos style="..."
-        content = content.replace(inlineStyleRegex, (match, styleAttributeContent) => {
-            const newStyleAttributeContent = styleAttributeContent.replace(urlInInlineStyleRegex, (urlMatch, quote) => {
-                modified = true;
-                return `url(${quote}../assets/`;
-            });
-            return `style="${newStyleAttributeContent}"`;
-        });
-
-        if (modified) {
+        if (content !== originalContent) {
             fs.writeFileSync(filePath, content, 'utf8');
             console.log(`  ✅ Corregido: ${path.basename(filePath)}`);
             filesModified++;
