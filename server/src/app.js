@@ -22,12 +22,29 @@ console.log('Variables de entorno cargadas en app.js:', {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configurar CORS y middleware
-app.use(cors({
-    origin: 'http://localhost:5500', // O tu puerto de desarrollo
+// Configuración de CORS más robusta
+const whitelist = [
+    'http://localhost:5500', // Desarrollo local
+    'http://localhost:8080', // Otro puerto común de desarrollo de Webpack
+    `http://${env.SERVER_HOST}`, // La IP de tu servidor desde .env
+    `http://104.131.163.89` // Añadimos la IP directamente como respaldo
+];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Permite peticiones sin 'origin' (como las de Postman o apps móviles)
+        if (!origin || whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+};
+
+// Configurar CORS y middleware
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));

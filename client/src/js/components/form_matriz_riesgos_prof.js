@@ -1861,7 +1861,7 @@ export function initializeForm() {
         if (!validateCargosData()) return; 
         try {
             const formData = gatherFormData();
-            const response = await fetch('http://localhost:3000/api/matriz-riesgos/generar', { 
+            const response = await fetch('/api/matriz-riesgos/generar', { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
                 body: JSON.stringify(formData)
