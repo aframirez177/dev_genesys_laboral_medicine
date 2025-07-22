@@ -14,6 +14,8 @@ El proyecto está dividido en dos partes principales:
 - Node.js v18.20.4 o superior
 - MySQL/MariaDB
 
+ok
+
 ## Instalación
 
 1. Clonar el repositorio:
