@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode production",
+    "build": "webpack --mode production && node ../scripts/fix-inline-css-paths.js",
     "dev": "webpack --mode development --watch",
     "serve": "webpack serve --mode development",
     "deploy": "gh-pages -d ../dist",
