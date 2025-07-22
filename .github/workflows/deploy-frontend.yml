@@ -20,9 +20,6 @@ jobs:
       - name: Build Frontend Project
         run: npm run build --prefix client
 
-      - name: DEBUG - Inspect build output
-        run: ls -la dist/pages/ && echo "--- SEPARATOR ---" && cat dist/pages/Nosotros.html
-
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@v5.0.0
         with:
@@ -30,7 +27,5 @@ jobs:
           REMOTE_HOST: ${{ secrets.SERVER_HOST }}
           REMOTE_USER: ${{ secrets.SERVER_USER }}
           SOURCE: "dist/"
-          TARGET: "/var/www/html/"
-          EXCLUDE: "/.git/, /node_modules/"
           TARGET: "/var/www/html/"
           EXCLUDE: "/.git/, /node_modules/"
