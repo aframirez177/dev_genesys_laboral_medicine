@@ -1,9 +1,13 @@
 // server/src/controllers/matriz-riesgos.controller.js
 import ExcelJS from 'exceljs';
+import crypto from 'crypto';
+import db from '../config/database.js'; // <-- Importamos la conexión a la BD
 import { calcularNivelProbabilidad, calcularNivelRiesgo } from '../utils/risk-calculations.js';
 import { GES_DATOS_PREDEFINIDOS } from '../config/ges-config.js';
 
-export async function generarMatrizExcel(datosFormulario) {
+// La función generarMatrizExcel se mantiene igual, pero ahora la llamaremos
+// solo cuando se necesite el archivo, no en la primera solicitud.
+async function generarMatrizExcel(datosFormulario) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Matriz de Riesgos GTC45');
 
@@ -282,3 +286,82 @@ export async function generarMatrizExcel(datosFormulario) {
 
     return await workbook.xlsx.writeBuffer();
 }
+
+
+/**
+ * NUEVO Controlador para manejar el envío del formulario.
+ * Guarda los datos en la BD y devuelve una URL de redirección.
+ */
+export const handleFormSubmission = async (req, res) => {
+    const formData = req.body;
+
+    // Extraer datos del cliente (asumiendo que vienen en el formulario)
+    // NECESITAREMOS un formulario de contacto al inicio o al final del flujo.
+    // Por ahora, usaremos datos de ejemplo.
+    const contactData = {
+        fullName: formData.contact?.fullName || 'Usuario de Prueba',
+        email: formData.contact?.email || `test-${Date.now()}@example.com`,
+        phone: formData.contact?.phone || 'N/A',
+        companyName: formData.contact?.companyName || 'Empresa de Prueba',
+    };
+
+    let trx;
+    try {
+        // Iniciar una transacción
+        trx = await db.transaction();
+
+        // 1. Buscar o crear el usuario
+        let user = await trx('users').where('email', contactData.email).first();
+        let userId;
+
+        if (user) {
+            userId = user.id;
+        } else {
+            const [newUser] = await trx('users').insert({
+                full_name: contactData.fullName,
+                email: contactData.email,
+                phone: contactData.phone,
+                company_name: contactData.companyName,
+            }).returning('id');
+            userId = newUser.id;
+        }
+
+        // 2. Generar un token seguro
+        const token = crypto.randomBytes(32).toString('hex');
+
+        // 3. Crear el conjunto de documentos
+        await trx('document_sets').insert({
+            user_id: userId,
+            token: token,
+            form_data: JSON.stringify(formData), // Guardamos todos los datos del formulario
+            status: 'pending',
+        });
+
+        // Si todo va bien, confirmar la transacción
+        await trx.commit();
+
+        // 4. Enviar la URL de redirección al frontend
+        // CAMBIAR "/pages/resultados.html" por la URL de la nueva página cuando la creemos
+        const redirectUrl = `/pages/resultados.html?token=${token}`; 
+        
+        res.status(200).json({
+            success: true,
+            message: 'Datos guardados correctamente.',
+            redirectUrl: redirectUrl
+        });
+
+    } catch (error) {
+        // Si algo falla, deshacer la transacción
+        if (trx) {
+            await trx.rollback();
+        }
+        console.error('Error al procesar el formulario:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor al procesar su solicitud.'
+        });
+    }
+};
+
+// Exportamos ambas funciones. La antigua se usará después.
+export { generarMatrizExcel };

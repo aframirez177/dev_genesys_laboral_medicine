@@ -1,33 +1,25 @@
 // server/src/routes/matriz-riesgos.routes.js
-import express from 'express';
-import { generarMatrizExcel } from '../controllers/matriz-riesgos.controller.js';
+import { Router } from 'express';
+// Importamos la nueva función del controlador
+import { handleFormSubmission } from '../controllers/matriz-riesgos.controller.js';
 
-const router = express.Router();
+const router = Router();
 
+/**
+ * @route   POST /api/matriz-riesgos/generar
+ * @desc    Recibe los datos del formulario, los guarda en la BD y devuelve una URL de redirección.
+ * @access  Public
+ */
 router.post('/generar', async (req, res) => {
-    try {
-        // Add input validation
-        if (!req.body || !req.body.cargos) {
-            return res.status(400).json({
-                success: false,
-                error: 'Datos de formulario inválidos'
-            });
-        }
-
-        const datosFormulario = req.body;
-        const excelBuffer = await generarMatrizExcel(datosFormulario);
-        
-        // Set proper headers for Excel download
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', 'attachment; filename=matriz-riesgos.xlsx');
-        res.send(excelBuffer);
-    } catch (error) {
-        console.error('Error al generar matriz:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Error al generar la matriz de riesgos'
-        });
-    }
+    // Simplemente llamamos a nuestro nuevo controlador.
+    // Toda la lógica de BD y respuesta está ahora encapsulada allí.
+    await handleFormSubmission(req, res);
 });
+
+
+// NOTA: Más adelante añadiremos más rutas aquí, como por ejemplo:
+// router.get('/documentos/:token', handleGetDocumentData);
+// router.get('/descargar/:token/:tipo', handleDownloadFile);
+
 
 export default router;
