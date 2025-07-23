@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de tus Documentos - Genesys Laboral Medicine</title>
+    <meta name="description" content="Tus documentos de Seguridad y Salud en el Trabajo están siendo generados. Descárgalos aquí.">
+    <link rel="stylesheet" href="../styles/scss/style_resultados.scss">
+</head>
+<body>
+    <header class="header">
+        <!-- El contenido del header se inyecta desde un template o es común -->
+    </header>
+
+    <main>
+        <section id="resultados-section" class="resultados-section">
+            <div class="container">
+                <div id="loader-container" class="loader-container active">
+                    <div class="loader"></div>
+                    <h1>Generando tus documentos...</h1>
+                    <p>Estamos procesando la información para crear tus documentos de Seguridad y Salud en el Trabajo. Esto puede tardar unos momentos.</p>
+                    <p class="subtle-text">Por favor, no cierres ni actualices esta página.</p>
+                </div>
+
+                <div id="results-container" class="results-container">
+                    <div class="results-header">
+                        <span class="success-icon">✓</span>
+                        <h1>¡Tus documentos están listos!</h1>
+                        <p>Gracias por usar Genesys Laboral Medicine. A continuación, puedes descargar los documentos generados.</p>
+                    </div>
+                    <div class="document-list">
+                        <!-- Los botones de descarga se insertarán aquí dinámicamente -->
+                        <!-- Ejemplo:
+                        <div class="document-item">
+                            <span class="document-icon">📄</span>
+                            <span class="document-name">Matriz de Riesgos y Peligros</span>
+                            <a href="#" class="btn-download cta-button" download>Descargar</a>
+                        </div>
+                        -->
+                    </div>
+                    <div class="results-footer">
+                        <p>¿Tienes alguna pregunta? <a href="/pages/Contacto.html">Contáctanos</a>.</p>
+                    </div>
+                </div>
+                 <div id="error-container" class="error-container">
+                    <div class="error-header">
+                        <span class="error-icon">❌</span>
+                        <h1>Ocurrió un error</h1>
+                        <p id="error-message">No pudimos procesar tu solicitud. Por favor, intenta de nuevo o contacta a soporte si el problema persiste.</p>
+                    </div>
+                     <div class="error-actions">
+                        <a href="/pages/diagnostico_interactivo.html" class="cta-button-1">Volver a intentarlo</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <!-- El contenido del footer se inyecta desde un template o es común -->
+    </footer>
+
+    <script src="../js/main_resultados.js"></script>
+</body>
+</html> 

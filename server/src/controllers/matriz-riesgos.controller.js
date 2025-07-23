@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import db from '../config/database.js'; // <-- Importamos la conexión a la BD
 import { calcularNivelProbabilidad, calcularNivelRiesgo } from '../utils/risk-calculations.js';
 import { GES_DATOS_PREDEFINIDOS } from '../config/ges-config.js';
+import { startDocumentGeneration } from './documentos.controller.js'; // <-- AÑADIDO
 
 // La función generarMatrizExcel se mantiene igual, pero ahora la llamaremos
 // solo cuando se necesite el archivo, no en la primera solicitud.
@@ -334,14 +335,16 @@ export const handleFormSubmission = async (req, res) => {
             user_id: userId,
             token: token,
             form_data: JSON.stringify(formData), // Guardamos todos los datos del formulario
-            status: 'pending',
+            status: 'pending', // Lo marcamos como pendiente
         });
 
         // Si todo va bien, confirmar la transacción
         await trx.commit();
 
+        // ¡NUEVO! Iniciar la generación de documentos en segundo plano
+        startDocumentGeneration(token);
+
         // 4. Enviar la URL de redirección al frontend
-        // CAMBIAR "/pages/resultados.html" por la URL de la nueva página cuando la creemos
         const redirectUrl = `/pages/resultados.html?token=${token}`; 
         
         res.status(200).json({

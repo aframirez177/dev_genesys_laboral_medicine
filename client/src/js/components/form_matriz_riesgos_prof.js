@@ -1863,7 +1863,7 @@ export function initializeForm() {
         const submitButton = matrizRiesgosForm.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.textContent;
         submitButton.disabled = true;
-        submitButton.textContent = 'Guardando y generando...';
+        submitButton.textContent = 'Generando tus documentos...';
 
         try {
             const formData = gatherFormData();
