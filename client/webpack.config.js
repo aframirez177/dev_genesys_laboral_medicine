@@ -48,7 +48,7 @@ module.exports = {
     enrollment: "./src/main_enrollment.js",
     genesysbi: "./src/main_genesys_bi.js",
     diagnosticointeractivo: "./src/main_diagnostico_interactivo.js",
-    resultados: "./src/js/main_resultados.js",
+    resultados: "./src/main_resultados.js",
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
@@ -194,6 +194,7 @@ module.exports = {
       inject: true,
       template: "./public/pages/resultados.html",
       filename: "./pages/resultados.html",
+      excludeChunks: ['main.css'] // Excluimos el CSS global
     }),
     new HtmlWebpackPlugin({
       chunks: ["main", "sst"],

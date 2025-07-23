@@ -5,14 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados de tus Documentos - Genesys Laboral Medicine</title>
     <meta name="description" content="Tus documentos de Seguridad y Salud en el Trabajo están siendo generados. Descárgalos aquí.">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="stylesheet" href="../styles/scss/style_resultados.scss">
 </head>
 <body>
-    <header class="header">
+    <div data-beasties-container>
+      <header class="site-header" id="main-header">
         <!-- El contenido del header se inyecta desde un template o es común -->
-    </header>
+      </header>
 
-    <main>
+      <nav class="site-nav">
+        <!-- El contenido de la navegación se cargará dinámicamente -->
+      </nav>
+
+      <main>
         <section id="resultados-section" class="resultados-section">
             <div class="container">
                 <div id="loader-container" class="loader-container active">
@@ -55,10 +61,12 @@
             </div>
         </section>
     </main>
-
-    <footer class="footer">
-        <!-- El contenido del footer se inyecta desde un template o es común -->
+    
+    <footer class="site-footer" id="main-footer">
+        <!-- El contenido del footer se cargará dinámicamente -->
     </footer>
+    
+    </div>
 
     <script src="../js/main_resultados.js"></script>
 </body>

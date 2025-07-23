@@ -1,9 +1,18 @@
-// Estilos para la página de resultados
-// importamos la base para tener acceso a variables y mixins
+// Base
 @import 'base/variables';
 @import 'base/mixins';
-@import 'components/buttons';
+@import 'base/reset';
+@import 'base/typography';
 
+// Components
+@import 'components/buttons';
+@import 'components/whatsapp';
+
+// Layout
+@import 'layout/header';
+@import 'layout/footer';
+
+// Estilos para la página de resultados
 .resultados-section {
     display: flex;
     align-items: center;
