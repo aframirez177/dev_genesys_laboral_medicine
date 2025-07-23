@@ -1858,28 +1858,55 @@ export function initializeForm() {
 
     matrizRiesgosForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!validateCargosData()) return; 
+        if (!validateCargosData()) return;
+
+        const submitButton = matrizRiesgosForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Guardando y generando...';
+
         try {
             const formData = gatherFormData();
+            // Agregar datos de contacto del nuevo formulario
+            const contactForm = document.getElementById('contact-info-form');
+            if (contactForm) {
+                formData.contact = {
+                    fullName: contactForm.querySelector('#contact-fullname').value,
+                    email: contactForm.querySelector('#contact-email').value,
+                    phone: contactForm.querySelector('#contact-phone').value,
+                    companyName: contactForm.querySelector('#contact-company').value,
+                };
+            }
+
             const response = await fetch('/api/matriz-riesgos/generar', { 
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json' // ¡Cambiado! Esperamos un JSON ahora.
+                },
                 body: JSON.stringify(formData)
             });
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Error del servidor: ${response.status} ${response.statusText} - ${errorText}`);
+
+            const result = await response.json(); // Leemos la respuesta como JSON
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Error desconocido del servidor.');
             }
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'matriz-riesgos.xlsx';
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            alert('¡Matriz de riesgos generada exitosamente!');
+
+            // ¡Éxito! Redirigir a la página de resultados.
+            if (result.redirectUrl) {
+                // Limpiar datos guardados para no mostrar el banner de restauración al volver.
+                localStorage.removeItem('matrizRiesgosData');
+                window.location.href = result.redirectUrl;
+            } else {
+                throw new Error('El servidor no proporcionó una URL de redirección.');
+            }
+
         } catch (error) {
             console.error('Error detallado:', error);
-            alert(`Error al generar la matriz: ${error.message}`);
+            alert(`Error al procesar la solicitud: ${error.message}`);
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
         }
     });
 
