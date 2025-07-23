@@ -4,9 +4,7 @@ import fileUpload from 'express-fileupload';
 import cors from 'cors';
 import { getEnvVars } from './config/env.js';
 import { testConnection } from './config/database.js';
-import profesiogramaRoutes from './routes/profesiograma.routes.js';
 import matrizRiesgosRoutes from './routes/matriz-riesgos.routes.js';
-import sstRoutes from './routes/sst.routes.js';
 import documentosRoutes from './routes/documentos.routes.js';
 import whatsappRoutes from './routes/whatsapp.routes.js';
 import config from './config/whatsappConfig.js';
@@ -59,9 +57,7 @@ app.use(fileUpload({
 }));
 
 // Rutas
-app.use('/api/profesiograma', profesiogramaRoutes);
 app.use('/api/matriz-riesgos', matrizRiesgosRoutes);
-app.use('/api/sst', sstRoutes);
 app.use('/api/documentos', documentosRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 
