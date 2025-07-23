@@ -1,5 +1,6 @@
 // knexfile.js
-require('dotenv').config({ path: './server/.env' });
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, './.env') });
 
 module.exports = {
   development: {
