@@ -19,4 +19,4 @@ jobs:
             cd /var/www/genesys-project
             git pull
             npm install --prefix server --omit=dev
-            pm2 restart backend-api 
+            pm2 reload backend-api 
