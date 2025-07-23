@@ -194,7 +194,6 @@ module.exports = {
       inject: true,
       template: "./public/pages/resultados.html",
       filename: "./pages/resultados.html",
-      excludeChunks: ['main.css'] // Excluimos el CSS global
     }),
     new HtmlWebpackPlugin({
       chunks: ["main", "sst"],

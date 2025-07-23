@@ -1,3 +1,5 @@
+import './styles/scss/style_resultados.scss';
+
 document.addEventListener('DOMContentLoaded', () => {
 
     const loaderContainer = document.getElementById('loader-container');
