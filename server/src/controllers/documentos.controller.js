@@ -3,6 +3,7 @@ import db from '../config/database.js';
 import { generarMatrizExcel } from './matriz-riesgos.controller.js';
 import { generarProfesiogramaPDF } from './profesiograma.controller.js';
 import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
+import { generarCotizacionPDF } from './cotizacion.controller.js';
 
 // Usaremos un mapa en memoria para almacenar temporalmente los archivos generados.
 // La clave será el token, y el valor será un mapa de los buffers de los archivos.
@@ -25,17 +26,15 @@ export async function startDocumentGeneration(token) {
         // CORRECCIÓN: Los datos ya vienen como un objeto JSON desde la BD con Knex/pg, no es necesario parsearlos.
         const formData = record.form_data;
 
-        // 3. Generar el buffer del Excel (versión gratuita)
+        // Generar todos los documentos gratuitos
         const matrizGratuitaBuffer = await generarMatrizExcel(formData, { isFree: true });
-        
-        // 4. Generar el buffer del PDF del Profesiograma (versión gratuita)
         const profesiogramaGratuitoBuffer = await generarProfesiogramaPDF(formData, { isFree: true });
-
-        // 5. Generar el buffer del PDF del Perfil de Cargo (versión gratuita)
         const perfilCargoGratuitoBuffer = await generarPerfilCargoPDF(formData);
+        const cotizacionBuffer = await generarCotizacionPDF(formData);
 
-        // 6. Almacenar los buffers en memoria
+        // Almacenar todos los buffers en memoria
         const currentJob = jobStore.get(token);
+        
         currentJob.files.set('matriz-riesgos-gratuita', {
             buffer: matrizGratuitaBuffer,
             filename: 'matriz-de-riesgos-diagnostico.xlsx',
@@ -51,15 +50,13 @@ export async function startDocumentGeneration(token) {
             filename: 'perfil-de-cargo.pdf',
             contentType: 'application/pdf'
         });
-        
-        // Simular el último documento
         currentJob.files.set('cotizacion-examenes', {
-            buffer: Buffer.from('Este es el PDF de la cotización de exámenes.'),
+            buffer: cotizacionBuffer,
             filename: 'cotizacion-examenes.pdf',
             contentType: 'application/pdf'
         });
 
-        // 7. Actualizar el estado a 'completed'
+        // Actualizar el estado a 'completed'
         currentJob.status = 'completed';
         
         // 8. Actualizar el estado en la base de datos
