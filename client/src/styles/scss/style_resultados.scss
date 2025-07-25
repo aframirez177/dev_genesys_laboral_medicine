@@ -19,7 +19,7 @@
     justify-content: center;
     min-height: 70vh;
     padding: 4rem 2rem;
-    background-color: $color-background-light;
+    background-color: map-get($colors, "background");
 
     .container {
         max-width: 800px;
@@ -44,13 +44,13 @@
 
     h1 {
         font-size: 2.5rem;
-        color: $color-primary;
+        color: map-get($colors, "primary");
         margin-bottom: 1rem;
     }
 
     p {
         font-size: 1.1rem;
-        color: $color-text-secondary;
+        color: map-get($colors, "text");
         line-height: 1.6;
         margin-bottom: 2rem;
     }
@@ -63,7 +63,7 @@
     // Estilos del Loader
     .loader {
         border: 6px solid #f3f3f3;
-        border-top: 6px solid $color-accent;
+        border-top: 6px solid map-get($colors, "alternative");
         border-radius: 50%;
         width: 60px;
         height: 60px;
@@ -81,8 +81,8 @@
         .success-icon {
             display: inline-block;
             font-size: 3rem;
-            color: $color-success;
-            background-color: lighten($color-success, 35%);
+            color: map-get($colors, "success");
+            background-color: lighten(map-get($colors, "success"), 35%);
             width: 80px;
             height: 80px;
             line-height: 80px;
@@ -103,7 +103,7 @@
         display: flex;
         align-items: center;
         padding: 1rem 1.5rem;
-        background-color: $color-background-light;
+        background-color: map-get($colors, "background");
         border-radius: 8px;
         text-align: left;
         transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -121,7 +121,7 @@
         .document-name {
             flex-grow: 1;
             font-weight: 500;
-            color: $color-text-primary;
+            color: map-get($colors, "text");
         }
 
         .btn-download {
@@ -135,7 +135,7 @@
         margin-top: 2rem;
         font-size: 0.9rem;
         a {
-            color: $color-accent;
+            color: map-get($colors, "alternative");
             text-decoration: none;
             font-weight: 500;
             &:hover {
@@ -149,8 +149,8 @@
          .error-icon {
             display: inline-block;
             font-size: 3rem;
-            color: $color-danger;
-            background-color: lighten($color-danger, 35%);
+            color: map-get($colors, "danger");
+            background-color: lighten(map-get($colors, "danger"), 35%);
             width: 80px;
             height: 80px;
             line-height: 80px;
