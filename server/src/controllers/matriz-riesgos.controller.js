@@ -256,8 +256,8 @@ async function generarMatrizExcel(datosFormulario, options = { isFree: false }) 
                     currentRowIndex++;
                 });
 
-                // Combinar celda "Clasificación"
-                if (gesDeMismaClasificacion.length > 1) {
+                // Combinar celda "Clasificación" - SOLO PARA VERSIÓN PRO
+                if (!options.isFree && gesDeMismaClasificacion.length > 1) {
                     const endRowForClasificacion = currentRowIndex - 1;
                     worksheet.mergeCells(startRowForClasificacion, worksheet.getColumn('peligro_clasificacion').number, endRowForClasificacion, worksheet.getColumn('peligro_clasificacion').number);
                     const cellClasificacion = worksheet.getCell(startRowForClasificacion, worksheet.getColumn('peligro_clasificacion').number);
@@ -265,9 +265,9 @@ async function generarMatrizExcel(datosFormulario, options = { isFree: false }) 
                 }
             }
 
-            // Combinar celdas comunes del CARGO
+            // Combinar celdas comunes del CARGO - SOLO PARA VERSIÓN PRO
             const endRowForCurrentCargo = currentRowIndex - 1;
-            if (endRowForCurrentCargo >= startRowForCurrentCargo && gesSeleccionados.length > 0) {
+            if (!options.isFree && endRowForCurrentCargo >= startRowForCurrentCargo && gesSeleccionados.length > 0) {
                 const keysCargoComun = ['zona_lugar', 'actividades', 'tareas', 'rutinario', 'nro_expuestos', 'requisito_legal'];
                 keysCargoComun.forEach(key => {
                     const colNum = worksheet.getColumn(key).number;
@@ -283,13 +283,13 @@ async function generarMatrizExcel(datosFormulario, options = { isFree: false }) 
             }
         });
 
-        // Combinar celda "Proceso"
+        // Combinar celda "Proceso" - SOLO PARA VERSIÓN PRO
         const finFilasProceso = currentRowIndex - 1;
-        if (finFilasProceso >= inicioFilasProceso && finFilasProceso > inicioFilasProceso) { 
+        if (!options.isFree && finFilasProceso >= inicioFilasProceso && finFilasProceso > inicioFilasProceso) { 
             worksheet.mergeCells(inicioFilasProceso, worksheet.getColumn('proceso').number, finFilasProceso, worksheet.getColumn('proceso').number);
             const cellProceso = worksheet.getCell(inicioFilasProceso, worksheet.getColumn('proceso').number);
             cellProceso.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
-        } else if (finFilasProceso === inicioFilasProceso && cargosEnEsteProceso.length > 0 && cargosEnEsteProceso[0].gesSeleccionados.length > 0) { // Asegurar alineación incluso si el proceso solo tiene una fila de datos
+        } else if (!options.isFree && finFilasProceso === inicioFilasProceso && cargosEnEsteProceso.length > 0 && cargosEnEsteProceso[0].gesSeleccionados.length > 0) {
             const cellProceso = worksheet.getCell(inicioFilasProceso, worksheet.getColumn('proceso').number);
             cellProceso.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
         }
