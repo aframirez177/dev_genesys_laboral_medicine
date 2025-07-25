@@ -1,6 +1,7 @@
 import db from '../config/database.js';
-// Importamos la función de generación de Excel que modificamos
+// Importamos las funciones de generación de documentos reales
 import { generarMatrizExcel } from './matriz-riesgos.controller.js';
+import { generarProfesiogramaPDF } from './profesiograma.controller.js';
 
 // Usaremos un mapa en memoria para almacenar temporalmente los archivos generados.
 // La clave será el token, y el valor será un mapa de los buffers de los archivos.
@@ -26,20 +27,23 @@ export async function startDocumentGeneration(token) {
         // 3. Generar el buffer del Excel (versión gratuita)
         const matrizGratuitaBuffer = await generarMatrizExcel(formData, { isFree: true });
         
-        // 4. Almacenar el buffer en memoria
+        // 4. Generar el buffer del PDF del Profesiograma (versión gratuita)
+        const profesiogramaGratuitoBuffer = await generarProfesiogramaPDF(formData, { isFree: true });
+
+        // 5. Almacenar los buffers en memoria
         const currentJob = jobStore.get(token);
         currentJob.files.set('matriz-riesgos-gratuita', {
             buffer: matrizGratuitaBuffer,
             filename: 'matriz-de-riesgos-diagnostico.xlsx',
             contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         });
-
-        // Simular la generación de otros documentos (en el futuro se reemplazarán)
         currentJob.files.set('profesiograma-gratuito', {
-            buffer: Buffer.from('Este es el PDF del profesiograma gratuito.'),
+            buffer: profesiogramaGratuitoBuffer,
             filename: 'profesiograma-diagnostico.pdf',
             contentType: 'application/pdf'
         });
+        
+        // Simular los otros dos documentos
         currentJob.files.set('perfil-cargo-gratuito', {
             buffer: Buffer.from('Este es el PDF del perfil de cargo gratuito.'),
             filename: 'perfil-de-cargo.pdf',
@@ -51,10 +55,10 @@ export async function startDocumentGeneration(token) {
             contentType: 'application/pdf'
         });
 
-        // 5. Actualizar el estado a 'completed'
+        // 6. Actualizar el estado a 'completed'
         currentJob.status = 'completed';
         
-        // 6. Actualizar el estado en la base de datos
+        // 7. Actualizar el estado en la base de datos
         await db('document_sets').where({ token }).update({ status: 'completed' });
 
     } catch (error) {
