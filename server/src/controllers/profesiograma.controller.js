@@ -66,78 +66,55 @@ export async function generarProfesiogramaPDF(datosFormulario) {
         doc.setFont('helvetica', 'normal');
         doc.text(`Área: ${cargo.area}`, margin, 52);
 
-        // 1. Consolidar todos los exámenes y su criticidad
-        const examenesMap = new Map();
+        // 1. Lógica Sólida de Compilación de Exámenes
+        const examenesRecomendados = new Set();
+
+        // Iterar sobre los riesgos para compilar exámenes
         cargo.gesSeleccionados.forEach(ges => {
             const gesConfig = GES_DATOS_PREDEFINIDOS[ges.ges];
             if (!gesConfig || !gesConfig.examenesMedicos) return;
 
-            Object.entries(gesConfig.examenesMedicos).forEach(([code, criticidad]) => {
-                if (criticidad > 0 && criticidad < 3) { // Asumimos que 1 o 2 son válidos
-                    if (!examenesMap.has(code) || criticidad < examenesMap.get(code).criticidad) {
-                        examenesMap.set(code, { 
-                            criticidad: criticidad,
-                            nombre: EXAM_DETAILS[code]?.fullName || code
-                        });
-                    }
+            Object.entries(gesConfig.examenesMedicos).forEach(([code, aplica]) => {
+                if (aplica === true) {
+                    examenesRecomendados.add(code);
                 }
             });
         });
-        
-        // Reglas obligatorias
+
+        // 2. Aplicar Reglas de Negocio Obligatorias
         if (cargo.trabajaAlturas) {
-             examenesMap.set('EMOA', { criticidad: 1, nombre: EXAM_DETAILS['EMOA'].fullName });
+            examenesRecomendados.add('EMOA');
         }
         if (cargo.manipulaAlimentos) {
-             examenesMap.set('EMOMP', { criticidad: 1, nombre: EXAM_DETAILS['EMOMP'].fullName });
+            examenesRecomendados.add('EMOMP');
         }
-
-        // 2. Crear paquetes
-        const paqueteBasico = Array.from(examenesMap.values()).filter(e => e.criticidad === 1);
-        const paqueteRecomendado = Array.from(examenesMap.values());
-
-        // 3. Maquetar el PDF
-        doc.setFontSize(12).setFont('helvetica', 'bold');
-        let y = doc.autoTable.previous.finalY ? doc.autoTable.previous.finalY + 10 : 60;
         
-        doc.text('Paquetes de Exámenes Médicos Sugeridos', margin, y);
+        // 3. Maquetar el PDF con la lista única y sólida
+        let y = 70;
+        doc.setFontSize(12).setFont('helvetica', 'bold');
+        doc.text('Exámenes Médicos Ocupacionales Sugeridos', margin, y);
         y += 6;
 
-        // Paquete Básico
-        doc.setFontSize(10).setFont('helvetica', 'bold');
-        doc.text('Paquete Básico (Exámenes Críticos)', margin, y);
-        doc.autoTable({
-            startY: y + 2,
-            head: [['Ingreso', 'Periódicos', 'Egreso']],
-            body: [
-                [paqueteBasico.map(e => e.nombre).join('\n'), 
-                 paqueteBasico.map(e => e.nombre).join('\n'), 
-                 paqueteBasico.map(e => e.nombre).join('\n')]
-            ],
-            theme: 'striped',
-            headStyles: { fillColor: [220, 220, 220], textColor: 40 },
+        const examenesTableBody = Array.from(examenesRecomendados).map(code => {
+            const detalle = EXAM_DETAILS[code] || { fullName: code };
+            // La periodicidad se puede hacer más granular en el futuro
+            const periodicidad = "Anual"; 
+            return [detalle.fullName, periodicidad, periodicidad, 'Aplica']; // Ingreso, Periódico, Egreso
         });
-        y = doc.autoTable.previous.finalY + 10;
 
-        // Paquete Recomendado
-        doc.setFontSize(10).setFont('helvetica', 'bold');
-        doc.text('Paquete Recomendado (Completo)', margin, y);
         doc.autoTable({
-            startY: y + 2,
-            head: [['Ingreso', 'Periódicos', 'Egreso']],
-            body: [
-                [paqueteRecomendado.map(e => e.nombre).join('\n'), 
-                 paqueteRecomendado.map(e => e.nombre).join('\n'), 
-                 paqueteRecomendado.map(e => e.nombre).join('\n')]
-            ],
-            theme: 'striped',
+            startY: y,
+            head: [['Examen Sugerido', 'Ingreso', 'Periódico', 'Egreso']],
+            body: examenesTableBody,
+            theme: 'grid',
             headStyles: { fillColor: [93, 196, 175] },
         });
+        
         y = doc.autoTable.previous.finalY + 15;
 
         // Lista de Riesgos Justificativos
         const riesgosContent = cargo.gesSeleccionados.map(ges => `- ${ges.riesgo}: ${ges.ges}`).join('\n');
-        y = drawSection(doc, 'Riesgos Ocupacionales Identificados', riesgosContent, y);
+        y = drawSection(doc, 'Riesgos Ocupacionales Identificados que Justifican estos Exámenes:', riesgosContent, y);
         
         // Anotación Legal
         y = pageHeight - 40; // Posicionar al final
