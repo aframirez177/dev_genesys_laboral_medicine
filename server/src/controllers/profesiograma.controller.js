@@ -95,11 +95,11 @@ export async function generarProfesiogramaPDF(datosFormulario) {
         doc.text('Exámenes Médicos Ocupacionales Sugeridos', margin, y);
         y += 6;
 
+        const checkMark = '✓'; // Símbolo de chulito
+
         const examenesTableBody = Array.from(examenesRecomendados).map(code => {
             const detalle = EXAM_DETAILS[code] || { fullName: code };
-            // La periodicidad se puede hacer más granular en el futuro
-            const periodicidad = "Anual"; 
-            return [detalle.fullName, periodicidad, periodicidad, 'Aplica']; // Ingreso, Periódico, Egreso
+            return [detalle.fullName, checkMark, checkMark, checkMark]; // Usar el chulito
         });
 
         doc.autoTable({
@@ -108,9 +108,18 @@ export async function generarProfesiogramaPDF(datosFormulario) {
             body: examenesTableBody,
             theme: 'grid',
             headStyles: { fillColor: [93, 196, 175] },
+            styles: { font: 'helvetica', fontSize: 9, halign: 'center' },
+            columnStyles: { 0: { halign: 'left' } } // Alinear a la izquierda la primera columna
         });
         
-        y = doc.autoTable.previous.finalY + 15;
+        y = doc.autoTable.previous.finalY + 6;
+
+        // Añadir la anotación de periodicidad
+        doc.setFontSize(8).setFont('helvetica', 'italic');
+        doc.setTextColor(100, 100, 100);
+        doc.text('Nota: Se recomienda que los exámenes periódicos se realicen con una frecuencia anual, sujeto a criterio médico.', margin, y);
+        y += 10;
+
 
         // Lista de Riesgos Justificativos
         const riesgosContent = cargo.gesSeleccionados.map(ges => `- ${ges.riesgo}: ${ges.ges}`).join('\n');
