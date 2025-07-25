@@ -1,0 +1,149 @@
+// Estilos para la sección de resultados de la página
+.resultados-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 4rem 2rem;
+    background-color: map-get($colors, "background");
+
+    .container {
+        max-width: 800px;
+        width: 100%;
+        text-align: center;
+        background: #fff;
+        padding: 3rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    // Contenedores de estado (solo uno debe estar activo)
+    .loader-container,
+    .results-container,
+    .error-container {
+        display: none; // Ocultos por defecto
+        &.active {
+            display: block; // Mostramos el activo
+        }
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        color: map-get($colors, "primary");
+        margin-bottom: 1rem;
+    }
+
+    p {
+        font-size: 1.1rem;
+        color: map-get($colors, "text");
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+    
+    .subtle-text {
+        font-size: 0.9rem;
+        color: #999;
+    }
+
+    // Estilos del Loader
+    .loader {
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid map-get($colors, "alternative");
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 2rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    // Contenedor de Resultados
+    .results-header {
+        .success-icon {
+            display: inline-block;
+            font-size: 3rem;
+            color: map-get($colors, "success");
+            background-color: lighten(map-get($colors, "success"), 35%);
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+            margin-bottom: 1.5rem;
+        }
+    }
+
+    .document-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .document-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background-color: map-get($colors, "background");
+        border-radius: 8px;
+        text-align: left;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
+        }
+
+        .document-icon {
+            font-size: 1.5rem;
+            margin-right: 1.5rem;
+        }
+
+        .document-name {
+            flex-grow: 1;
+            font-weight: 500;
+            color: map-get($colors, "text");
+        }
+
+        .btn-download {
+           padding: 0.6rem 1.2rem;
+           font-size: 0.9rem;
+        }
+    }
+
+    .results-footer {
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        a {
+            color: map-get($colors, "alternative");
+            text-decoration: none;
+            font-weight: 500;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    // Contenedor de Error
+    .error-header {
+         .error-icon {
+            display: inline-block;
+            font-size: 3rem;
+            color: map-get($colors, "danger");
+            background-color: lighten(map-get($colors, "danger"), 35%);
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+            margin-bottom: 1.5rem;
+        }
+    }
+    .error-actions {
+        margin-top: 2rem;
+    }
+} 
