@@ -20,7 +20,8 @@ export async function startDocumentGeneration(token) {
         if (!record) {
             throw new Error('No se encontró el registro en la base de datos.');
         }
-        const formData = JSON.parse(record.form_data);
+        // CORRECCIÓN: Los datos ya vienen como un objeto JSON desde la BD con Knex/pg, no es necesario parsearlos.
+        const formData = record.form_data;
 
         // 3. Generar el buffer del Excel (versión gratuita)
         const matrizGratuitaBuffer = await generarMatrizExcel(formData, { isFree: true });
