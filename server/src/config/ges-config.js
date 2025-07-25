@@ -4,41 +4,41 @@ export const GES_DATOS_PREDEFINIDOS = {
         consecuencias: "Heridas traumas contusiones fracturas",
         peorConsecuencia: "Muerte",
         examenesMedicos: {
-            EMO: true,
-            EMOMP: false,
-            EMOA: false,
-            AUD: false,
-            ESP: false,
-            OPT: false,
-            VIS: true,
-            ECG: false,
-            RXC: false,
-            PSM: false,
-            PST: false,
-            GLI: false,
-            CH: false,
-            PL: false,
-            PAS:false,
-            PE: false,
-            PSP: false,
-            TGO: false,
-            TGP: false,
-            TRI: false,
-            CRE: false,
-            BUN: false,
-            T4L: false,
-            TSH: false,
-            BRU: false,
-            PO: false,
-            TOX: false,
-            LEP: false,
-            COP: false,
-            FRO: false,
-            KOH: false,
-            COLI: false,
-            VH: false,
-            VT: false,
-            VFA: false
+            EMO: 1, // Crítico
+            EMOMP: 2, // Recomendado
+            EMOA: 2, // Recomendado
+            AUD: 2, // Recomendado
+            ESP: 2, // Recomendado
+            OPT: 2, // Recomendado
+            VIS: 2, // Recomendado
+            ECG: 2, // Recomendado
+            RXC: 2, // Recomendado
+            PSM: 2, // Recomendado
+            PST: 2, // Recomendado
+            GLI: 2, // Recomendado
+            CH: 2, // Recomendado
+            PL: 2, // Recomendado
+            PAS:2, // Recomendado
+            PE: 2, // Recomendado
+            PSP: 2, // Recomendado
+            TGO: 2, // Recomendado
+            TGP: 2, // Recomendado
+            TRI: 2, // Recomendado
+            CRE: 2, // Recomendado
+            BUN: 2, // Recomendado
+            T4L: 2, // Recomendado
+            TSH: 2, // Recomendado
+            BRU: 2, // Recomendado
+            PO: 2, // Recomendado
+            TOX: 2, // Recomendado
+            LEP: 2, // Recomendado
+            COP: 2, // Recomendado
+            FRO: 2, // Recomendado
+            KOH: 2, // Recomendado
+            COLI: 2, // Recomendado
+            VH: 2, // Recomendado
+            VT: 2, // Recomendado
+            VFA: 2 // Recomendado
         },
         elementosProteccion: "Calzado de seguridad antideslizante, señalización de áreas, cintas antideslizantes",
         medidasIntervencion: {
@@ -53,41 +53,13 @@ export const GES_DATOS_PREDEFINIDOS = {
         consecuencias: "Heridas traumas contusiones fracturas",
         peorConsecuencia: "Muerte",
         examenesMedicos: {
-            EMO: true,
-            EMOMP: false,
-            EMOA: true,
-            AUD: true,
-            ESP: true,
-            OPT: true,
-            VIS: false,
-            ECG: true,
-            RXC: false,
-            PSM: false,
-            PST: true,
-            GLI: true,
-            CH: false,
-            PL: true,
-            PAS:false,
-            PE: false,
-            PSP: true,
-            TGO: false,
-            TGP: false,
-            TRI: false,
-            CRE: false,
-            BUN: false,
-            T4L: false,
-            TSH: false,
-            BRU: false,
-            PO: false,
-            TOX: false,
-            LEP: false,
-            COP: false,
-            FRO: false,
-            KOH: false,
-            COLI: false,
-            VH: false,
-            VT: false,
-            VFA: false
+            EMOA: 1, // Crítico/Obligatorio
+            VIS: 1,  // Crítico para la tarea
+            PSM: 2,  // Recomendado
+            ECG: 2,
+            GLI: 2,
+            PSP: 2
+            // Se omiten otros que pueden ser menos directos para el paquete básico
         },
         elementosProteccion: "Arnés de seguridad, línea de vida, casco con barbuquejo, puntos de anclaje certificados",
         medidasIntervencion: {
@@ -797,48 +769,18 @@ export const GES_DATOS_PREDEFINIDOS = {
         consecuencias: "Hipoacusia alteraciones fisiológicas",
         peorConsecuencia: "Sordera permanente",
         examenesMedicos: {
-            EMO: true,
-            EMOMP: false,
-            EMOA: false,
-            AUD: true,
-            ESP: true,
-            OPT: false,
-            VIS: false,
-            ECG: false,
-            RXC: false,
-            PSM: true,
-            PST: true,
-            GLI: false,
-            CH: false,
-            PL: false,
-            PAS:false,
-            PE: false,
-            PSP: false,
-            TGO: false,
-            TGP: false,
-            TRI: false,
-            CRE: false,
-            BUN: false,
-            T4L: false,
-            TSH: false,
-            BRU: false,
-            PO: false,
-            TOX: false,
-            LEP: false,
-            COP: false,
-            FRO: false,
-            KOH: false,
-            COLI: false,
-            VH: false,
-            VT: false,
-            VFA: false
+            AUD: 1, // Crítico
+            EMO: 2, // Recomendado
+            ESP: 2,
+            PSM: 2,
+            PST: 2
         },
         elementosProteccion: "Protectores auditivos tipo copa, tapones auditivos",
         medidasIntervencion: {
-            eliminacion: "Eliminación: Reemplazo de equipos",
-            sustitucion: "Sustitución: Equipos más silenciosos",
-            controlesIngenieria: "Controles de ingeniería: Encerramientos",
-            controlesAdministrativos: "Controles administrativos: Tiempo exposición"
+            eliminacion: "Reemplazo de equipos",
+            sustitucion: "Equipos más silenciosos",
+            controlesIngenieria: "Encerramientos",
+            controlesAdministrativos: "Tiempo exposición"
         }
     },
 
@@ -1495,41 +1437,12 @@ export const GES_DATOS_PREDEFINIDOS = {
         consecuencias: "Enfermedades transmitidas por alimentos",
         peorConsecuencia: "Intoxicación severa",
         examenesMedicos: {
-            EMO: false,
-            EMOMP: true,
-            EMOA: false,
-            AUD: false,
-            ESP: false,
-            OPT: false,
-            VIS: false,
-            ECG: false,
-            RXC: false,
-            PSM: false,
-            PST: false,
-            GLI: false,
-            CH: false,
-            PL: false,
-            PAS:false,
-            PE: false,
-            PSP: false,
-            TGO: false,
-            TGP: false,
-            TRI: false,
-            CRE: false,
-            BUN: false,
-            T4L: false,
-            TSH: false,
-            BRU: false,
-            PO: false,
-            TOX: false,
-            LEP: false,
-            COP: true,
-            FRO: true,
-            KOH: true,
-            COLI: false,
-            VH: true,
-            VT: true,
-            VFA: false
+            EMOMP: 1, // Crítico/Obligatorio
+            FRO: 1,   // Crítico/Obligatorio
+            KOH: 1,   // Crítico/Obligatorio
+            COP: 1,   // Crítico/Obligatorio
+            VH: 2,    // Recomendado (VDRL/Serología)
+            VT: 2     // Recomendado (Vértigo - menos común)
         },
         elementosProteccion: "Guantes de nitrilo, tapabocas, cofias, delantal",
         medidasIntervencion: {
