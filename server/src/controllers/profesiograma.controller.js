@@ -69,7 +69,6 @@ export async function generarProfesiogramaPDF(datosFormulario) {
         // 1. Lógica Sólida de Compilación de Exámenes
         const examenesRecomendados = new Set();
 
-        // Iterar sobre los riesgos para compilar exámenes
         cargo.gesSeleccionados.forEach(ges => {
             const gesConfig = GES_DATOS_PREDEFINIDOS[ges.ges];
             if (!gesConfig || !gesConfig.examenesMedicos) return;
@@ -81,15 +80,23 @@ export async function generarProfesiogramaPDF(datosFormulario) {
             });
         });
 
-        // 2. Aplicar Reglas de Negocio Obligatorias
+        // 2. Aplicar Reglas de Negocio Obligatorias y de Supresión
+        const condicionesEspeciales = [];
+        let requiereCursoAlimentos = false;
+
         if (cargo.trabajaAlturas) {
             examenesRecomendados.add('EMOA');
+            examenesRecomendados.delete('EMO'); // Suprimir EMO si EMOA está presente
+            condicionesEspeciales.push('- Realiza trabajo en alturas.');
         }
         if (cargo.manipulaAlimentos) {
             examenesRecomendados.add('EMOMP');
+            examenesRecomendados.delete('EMO'); // Suprimir EMO si EMOMP está presente
+            condicionesEspeciales.push('- Realiza manipulación de alimentos.');
+            requiereCursoAlimentos = true;
         }
         
-        // 3. Maquetar el PDF con la lista única y sólida
+        // 3. Maquetar el PDF con la lógica mejorada
         let y = 70;
         doc.setFontSize(12).setFont('helvetica', 'bold');
         doc.text('Exámenes Médicos Ocupacionales Sugeridos', margin, y);
@@ -112,18 +119,21 @@ export async function generarProfesiogramaPDF(datosFormulario) {
             columnStyles: { 0: { halign: 'left' } } // Alinear a la izquierda la primera columna
         });
         
-        y = doc.autoTable.previous.finalY + 6;
+        y = doc.autoTable.previous.finalY + 15;
 
-        // Añadir la anotación de periodicidad
-        doc.setFontSize(8).setFont('helvetica', 'italic');
-        doc.setTextColor(100, 100, 100);
-        doc.text('Nota: Se recomienda que los exámenes periódicos se realicen con una frecuencia anual, sujeto a criterio médico.', margin, y);
-        y += 10;
+        // Lista de Riesgos y Justificaciones
+        let justificacionContent = condicionesEspeciales.join('\n');
+        if (cargo.gesSeleccionados.length > 0) {
+            const riesgosContent = cargo.gesSeleccionados.map(ges => `- ${ges.riesgo}: ${ges.ges}`).join('\n');
+            justificacionContent += (justificacionContent ? '\n\n' : '') + 'Riesgos Ocupacionales Identificados (GES):\n' + riesgosContent;
+        }
+        y = drawSection(doc, 'Justificación de Exámenes Sugeridos:', justificacionContent, y);
 
-
-        // Lista de Riesgos Justificativos
-        const riesgosContent = cargo.gesSeleccionados.map(ges => `- ${ges.riesgo}: ${ges.ges}`).join('\n');
-        y = drawSection(doc, 'Riesgos Ocupacionales Identificados que Justifican estos Exámenes:', riesgosContent, y);
+        // Nueva sección de Recomendaciones Adicionales
+        if (requiereCursoAlimentos) {
+            const recomendacion = 'Se recomienda la realización del Curso de Manipulación de Alimentos, conforme a la normativa sanitaria vigente para el personal que procesa y/o distribuye alimentos.';
+            y = drawSection(doc, 'Recomendaciones Adicionales:', recomendacion, y);
+        }
         
         // Anotación Legal
         y = pageHeight - 40; // Posicionar al final
