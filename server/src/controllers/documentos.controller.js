@@ -1,88 +1,116 @@
 import db from '../config/database.js';
+// Importamos la función de generación de Excel que modificamos
+import { generarMatrizExcel } from './matriz-riesgos.controller.js';
 
-// Simulación en memoria para el estado de la generación de archivos
-// En un sistema real, esto podría ser una tabla en la BD o un sistema de colas como Redis.
-const jobStatus = new Map();
+// Usaremos un mapa en memoria para almacenar temporalmente los archivos generados.
+// La clave será el token, y el valor será un mapa de los buffers de los archivos.
+const jobStore = new Map();
 
 /**
- * Inicia la simulación de la generación de documentos.
- * En el futuro, aquí se llamará a la generación real de cada archivo.
+ * Inicia la generación real de los documentos.
+ * Por ahora, solo genera la matriz de riesgos gratuita.
  */
-export function startDocumentGeneration(token) {
-    // Marcar el trabajo como 'pending'
-    jobStatus.set(token, { status: 'pending', files: [] });
+export async function startDocumentGeneration(token) {
+    try {
+        // 1. Marcar el trabajo como 'pending'
+        jobStore.set(token, { status: 'pending', files: new Map() });
 
-    // Simular un tiempo de procesamiento
-    setTimeout(() => {
-        // Una vez completado, actualizar el estado y añadir los enlaces de descarga
-        jobStatus.set(token, {
-            status: 'completed',
-            files: [
-                { name: 'Matriz de Riesgos y Peligros', url: `/api/documentos/download/${token}/matriz-riesgos` },
-                { name: 'Profesiograma', url: `/api/documentos/download/${token}/profesiograma` },
-                { name: 'Cotización de Exámenes Ocupacionales', url: `/api/documentos/download/${token}/cotizacion` }
-            ]
+        // 2. Obtener los datos del formulario desde la BD
+        const record = await db('document_sets').where({ token }).first();
+        if (!record) {
+            throw new Error('No se encontró el registro en la base de datos.');
+        }
+        const formData = JSON.parse(record.form_data);
+
+        // 3. Generar el buffer del Excel (versión gratuita)
+        const matrizGratuitaBuffer = await generarMatrizExcel(formData, { isFree: true });
+        
+        // 4. Almacenar el buffer en memoria
+        const currentJob = jobStore.get(token);
+        currentJob.files.set('matriz-riesgos-gratuita', {
+            buffer: matrizGratuitaBuffer,
+            filename: 'matriz-de-riesgos-diagnostico.xlsx',
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         });
-    }, 10000); // Simular 10 segundos de procesamiento
-}
 
+        // Simular la generación de otros documentos (en el futuro se reemplazarán)
+        currentJob.files.set('profesiograma-gratuito', {
+            buffer: Buffer.from('Este es el PDF del profesiograma gratuito.'),
+            filename: 'profesiograma-diagnostico.pdf',
+            contentType: 'application/pdf'
+        });
+        currentJob.files.set('perfil-cargo-gratuito', {
+            buffer: Buffer.from('Este es el PDF del perfil de cargo gratuito.'),
+            filename: 'perfil-de-cargo.pdf',
+            contentType: 'application/pdf'
+        });
+        currentJob.files.set('cotizacion-examenes', {
+            buffer: Buffer.from('Este es el PDF de la cotización de exámenes.'),
+            filename: 'cotizacion-examenes.pdf',
+            contentType: 'application/pdf'
+        });
+
+        // 5. Actualizar el estado a 'completed'
+        currentJob.status = 'completed';
+        
+        // 6. Actualizar el estado en la base de datos
+        await db('document_sets').where({ token }).update({ status: 'completed' });
+
+    } catch (error) {
+        console.error(`Error en la generación de documentos para el token ${token}:`, error);
+        // Marcar el trabajo como fallido
+        jobStore.set(token, { status: 'failed', message: error.message });
+        await db('document_sets').where({ token }).update({ status: 'failed' });
+    }
+}
 
 /**
  * Controlador para verificar el estado de la generación de documentos.
  */
 export const checkDocumentStatus = async (req, res) => {
     const { token } = req.params;
-    
-    // Consultar el estado del trabajo usando el token
-    const statusInfo = jobStatus.get(token);
+    const job = jobStore.get(token);
 
-    if (!statusInfo) {
-        return res.status(404).json({ success: false, message: 'No se encontró un trabajo con el token proporcionado.' });
+    if (!job) {
+        return res.status(404).json({ success: false, message: 'Trabajo no encontrado.' });
     }
 
-    if (statusInfo.status === 'completed') {
-        res.status(200).json({
-            status: 'completed',
-            documents: statusInfo.files
-        });
-    } else if (statusInfo.status === 'failed') {
-        res.status(200).json({
-            status: 'failed',
-            message: 'La generación del documento falló.'
-        });
+    if (job.status === 'completed') {
+        // Crear los enlaces de descarga dinámicamente
+        const documents = [
+            { name: 'Matriz de Riesgos (Diagnóstico)', url: `/api/documentos/download/${token}/matriz-riesgos-gratuita` },
+            { name: 'Profesiograma (Diagnóstico)', url: `/api/documentos/download/${token}/profesiograma-gratuito` },
+            { name: 'Perfil de Cargo', url: `/api/documentos/download/${token}/perfil-cargo-gratuito` },
+            { name: 'Cotización de Exámenes', url: `/api/documentos/download/${token}/cotizacion-examenes` }
+        ];
+        res.status(200).json({ status: 'completed', documents: documents });
+    } else if (job.status === 'failed') {
+        res.status(500).json({ status: 'failed', message: job.message || 'La generación de documentos ha fallado.' });
     } else { // 'pending'
-        res.status(200).json({
-            status: 'pending'
-        });
+        res.status(200).json({ status: 'pending' });
     }
 };
 
 /**
  * Controlador para descargar un documento específico.
- * En el futuro, obtendrá los datos de la BD, generará el archivo y lo enviará.
  */
 export const downloadDocument = async (req, res) => {
     const { token, tipo } = req.params;
+    const job = jobStore.get(token);
+
+    if (!job || job.status !== 'completed' || !job.files.has(tipo)) {
+        return res.status(404).send('Documento no encontrado o no está listo.');
+    }
 
     try {
-        // 1. Validar el token y que el trabajo esté completado
-        const record = await db('document_sets').where({ token, status: 'completed' }).first();
-        if (!record) {
-            return res.status(404).send('Documento no encontrado o no está listo.');
-        }
-
-        // 2. Aquí iría la lógica para generar el archivo específico (ej. la matriz)
-        // Por ahora, enviaremos un archivo de texto de ejemplo.
+        const file = job.files.get(tipo);
         
-        // const datosFormulario = JSON.parse(record.form_data);
-        // const buffer = await generarMatrizExcel(datosFormulario);
-
-        res.setHeader('Content-Type', 'text/plain');
-        res.setHeader('Content-Disposition', `attachment; filename=${tipo}.txt`);
-        res.send(`Este es el documento de ejemplo para: ${tipo}`);
+        res.setHeader('Content-Type', file.contentType);
+        res.setHeader('Content-Disposition', `attachment; filename=${file.filename}`);
+        res.send(file.buffer);
         
     } catch (error) {
-        console.error(`Error al generar el documento ${tipo} para el token ${token}:`, error);
-        res.status(500).send('Error interno al generar el documento.');
+        console.error(`Error al enviar el documento ${tipo} para el token ${token}:`, error);
+        res.status(500).send('Error interno al enviar el documento.');
     }
 }; 

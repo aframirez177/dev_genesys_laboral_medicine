@@ -6,25 +6,14 @@ import { calcularNivelProbabilidad, calcularNivelRiesgo } from '../utils/risk-ca
 import { GES_DATOS_PREDEFINIDOS } from '../config/ges-config.js';
 import { startDocumentGeneration } from './documentos.controller.js'; // <-- AÑADIDO
 
-// La función generarMatrizExcel se mantiene igual, pero ahora la llamaremos
-// solo cuando se necesite el archivo, no en la primera solicitud.
-async function generarMatrizExcel(datosFormulario) {
+// La función generarMatrizExcel se actualiza para aceptar opciones y generar
+// tanto la versión gratuita como la pro.
+async function generarMatrizExcel(datosFormulario, options = { isFree: false }) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Matriz de Riesgos GTC45');
 
-    // ... (definición de colores y columnas se mantiene igual) ...
-    // Colores para semaforización (AJUSTAR A LOS COLORES DEL FORMULARIO)
-    const coloresNiveles = {
-        deficiencia: { 10: 'FFF44336', 6: 'FFFF9800', 2: 'FFFFEB3B', 0: 'FF4CAF50' },
-        exposicion: { 4: 'FFF44336', 3: 'FFFF9800', 2: 'FFFFEB3B', 1: 'FF4CAF50' },
-        consecuencia: { 100: 'FFF44336', 60: 'FFFF9800', 25: 'FFFFEB3B', 10: 'FF4CAF50' }
-    };
-    const coloresNivelProbabilidadCategoria = {
-        'Muy Alto': 'FFF44336', 'Alto': 'FFFF9800', 'Medio': 'FFFFEB3B', 'Bajo': 'FF4CAF50'
-    };
-
-    // --- 1. DEFINIR ESTRUCTURA DE COLUMNAS DEL EXCEL ---
-    worksheet.columns = [
+    // Definimos las columnas para cada versión
+    const columnasCompletas = [
         { header: 'Proceso', key: 'proceso', width: 25 },
         { header: 'Zona/Lugar', key: 'zona_lugar', width: 25 },
         { header: 'Actividades', key: 'actividades', width: 30 },
@@ -55,59 +44,94 @@ async function generarMatrizExcel(datosFormulario) {
         { header: 'Controles administrativos, Señalización, Advertencia', key: 'medida_ctrl_admin', width: 40 },
         { header: 'Equipos/ Elementos de protección personal', key: 'epp', width: 40 }
     ];
+
+    const columnasGratuitas = [
+        { header: 'Proceso', key: 'proceso', width: 25 },
+        { header: 'Zona/Lugar', key: 'zona_lugar', width: 25 },
+        { header: 'Actividades', key: 'actividades', width: 30 },
+        { header: 'Tareas', key: 'tareas', width: 35 },
+        { header: 'Rutinario (Si o No)', key: 'rutinario', width: 12, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Descripción', key: 'peligro_descripcion', width: 35 },
+        { header: 'Clasificación', key: 'peligro_clasificacion', width: 20 },
+        { header: 'Efectos posibles', key: 'efectos_posibles', width: 35 },
+        { header: 'Nro. Expuestos', key: 'nro_expuestos', width: 10, style: { alignment: { horizontal: 'center' } } },
+        { header: 'Peor consecuencia', key: 'peor_consecuencia', width: 30 },
+        { header: 'Interpretación del NR', key: 'nr_interpretacion_texto', width: 35 },
+        { header: 'Equipos/ Elementos de protección personal', key: 'epp', width: 40 }
+    ];
+
+    // Se elige qué conjunto de columnas usar
+    worksheet.columns = options.isFree ? columnasGratuitas : columnasCompletas;
     
+    // El resto de la función (colores, estilos de cabecera, procesamiento de datos)
+    // se mantiene igual, ya que solo se usan las columnas definidas arriba.
+    // Colores para semaforización (AJUSTAR A LOS COLORES DEL FORMULARIO)
+    const coloresNiveles = {
+        deficiencia: { 10: 'FFF44336', 6: 'FFFF9800', 2: 'FFFFEB3B', 0: 'FF4CAF50' },
+        exposicion: { 4: 'FFF44336', 3: 'FFFF9800', 2: 'FFFFEB3B', 1: 'FF4CAF50' },
+        consecuencia: { 100: 'FFF44336', 60: 'FFFF9800', 25: 'FFFFEB3B', 10: 'FF4CAF50' }
+    };
+    const coloresNivelProbabilidadCategoria = {
+        'Muy Alto': 'FFF44336', 'Alto': 'FFFF9800', 'Medio': 'FFFFEB3B', 'Bajo': 'FF4CAF50'
+    };
+
     // --- 2. ESTILOS DE CABECERA ---
-    // ... (código de cabeceras idéntico al de la respuesta anterior) ...
     const headerFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } }; 
     const headerFont = { bold: true, color: { argb: 'FF000000' }, name: 'Calibri', size: 10 };
     const headerAlignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-
+    
+    // Aplicar estilos a la cabecera principal (fila 1)
     const mainHeaderRow = worksheet.getRow(1);
     mainHeaderRow.font = { ...headerFont, size: 11 };
     mainHeaderRow.fill = headerFill;
     mainHeaderRow.alignment = headerAlignment;
     mainHeaderRow.height = 30;
 
-    const subHeaderRow = worksheet.getRow(2);
-    subHeaderRow.font = headerFont;
-    subHeaderRow.fill = headerFill;
-    subHeaderRow.alignment = headerAlignment;
-    subHeaderRow.height = 40;
+    // Aplicar estilos a la sub-cabecera (fila 2) si no es la versión gratuita
+    if (!options.isFree) {
+        const subHeaderRow = worksheet.getRow(2);
+        subHeaderRow.font = headerFont;
+        subHeaderRow.fill = headerFill;
+        subHeaderRow.alignment = headerAlignment;
+        subHeaderRow.height = 40;
 
-    const groupHeaders = {
-        'Peligro': { start: 6, end: 8 },
-        'Controles existentes': { start: 9, end: 11 },
-        'Evaluación del riesgo': { start: 12, end: 20 },
-        'Valoración del riesgo': { start: 21, end: 21 },
-        'Criterios para establecer controles': { start: 22, end: 24 },
-        'Medidas intervención': { start: 25, end: 29 }
-    };
-
-    worksheet.columns.forEach((col, index) => {
-        const colNum = index + 1;
-        let isGrouped = false;
-        for (const groupName in groupHeaders) {
-            const group = groupHeaders[groupName];
-            if (colNum >= group.start && colNum <= group.end) {
-                if (colNum === group.start) {
-                    worksheet.mergeCells(1, group.start, 1, group.end);
-                    worksheet.getCell(1, group.start).value = groupName;
+        const groupHeaders = {
+            'Peligro': { start: 6, end: 8 },
+            'Controles existentes': { start: 9, end: 11 },
+            'Evaluación del riesgo': { start: 12, end: 20 },
+            'Valoración del riesgo': { start: 21, end: 21 },
+            'Criterios para establecer controles': { start: 22, end: 24 },
+            'Medidas intervención': { start: 25, end: 29 }
+        };
+        
+        worksheet.columns.forEach((col, index) => {
+            const colNum = index + 1;
+            let isGrouped = false;
+            for (const groupName in groupHeaders) {
+                const group = groupHeaders[groupName];
+                if (colNum >= group.start && colNum <= group.end) {
+                    if (colNum === group.start) {
+                        worksheet.mergeCells(1, group.start, 1, group.end);
+                        worksheet.getCell(1, group.start).value = groupName;
+                    }
+                    worksheet.getCell(2, colNum).value = col.header;
+                    isGrouped = true;
+                    break;
                 }
-                worksheet.getCell(2, colNum).value = col.header;
-                isGrouped = true;
-                break;
             }
-        }
-        if (!isGrouped) {
-            worksheet.mergeCells(1, colNum, 2, colNum);
-            worksheet.getCell(1, colNum).value = col.header;
-        }
-    });
+            if (!isGrouped) {
+                worksheet.mergeCells(1, colNum, 2, colNum);
+                worksheet.getCell(1, colNum).value = col.header;
+            }
+        });
+    } else {
+        // En la versión gratuita, simplemente ponemos los headers en la primera fila
+        worksheet.getRow(1).values = worksheet.columns.map(c => c.header);
+    }
 
 
     // --- 3. PROCESAR Y AÑADIR DATOS CON AGRUPACIÓN ---
-    // ... (lógica de agrupación de cargosPorProceso, bucles, y rowData idéntica) ...
-    let currentRowIndex = 3;
+    let currentRowIndex = options.isFree ? 2 : 3; // Empezar en la fila 2 si es gratis
     
     const cargosPorProceso = datosFormulario.cargos.reduce((acc, cargo) => {
         const proceso = cargo.area;
@@ -270,7 +294,7 @@ async function generarMatrizExcel(datosFormulario) {
     }
     
     // --- 5. ESTILOS FINALES Y BORDES ---
-    // ... (código de bordes y fuente base idéntico) ...
+    // (Ajustar el inicio del bucle de bordes)
     for (let r = 1; r <= worksheet.rowCount; r++) {
         worksheet.getRow(r).eachCell({ includeEmpty: true }, (cell) => {
             cell.border = {
@@ -279,7 +303,7 @@ async function generarMatrizExcel(datosFormulario) {
                 bottom: { style: 'thin', color: { argb: 'FF000000' } },
                 right: { style: 'thin', color: { argb: 'FF000000' } }
             };
-            if (r > 2 && !cell.font) { 
+            if (r > (options.isFree ? 1 : 2) && !cell.font) { 
                  cell.font = { name: 'Calibri', size: 10, color: { argb: 'FF000000'} };
             }
         });
