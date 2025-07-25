@@ -213,28 +213,30 @@ async function generarMatrizExcel(datosFormulario, options = { isFree: false }) 
                     };
                     const addedRow = worksheet.addRow(rowData);
 
-                    // Aplicar semaforización de celdas (ND, NE, NC, NP Categoría, NR Valor y Categoría)
-                    const ndCell = addedRow.getCell('nd');
-                    const neCell = addedRow.getCell('ne');
-                    const ncCell = addedRow.getCell('nc_valor');
-                    if (coloresNiveles.deficiencia[rowData.nd]) ndCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNiveles.deficiencia[rowData.nd] } };
-                    if (coloresNiveles.exposicion[rowData.ne]) neCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNiveles.exposicion[rowData.ne] } };
-                    if (coloresNiveles.consecuencia[rowData.nc_valor]) ncCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNiveles.consecuencia[rowData.nc_valor] } };
-                    
-                    const npCategoriaCell = addedRow.getCell('np_nivel_categoria');
-                    if (coloresNivelProbabilidadCategoria[nivelProb.nivel]) npCategoriaCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNivelProbabilidadCategoria[nivelProb.nivel] } };
-    
-                    const nrValorCell = addedRow.getCell('nr_valor_intervencion');
-                    const nrCategoriaCell = addedRow.getCell('nr_interpretacion_nivel');
-                    if (nivelRiesgo.color) {
-                        const bgColorHex = nivelRiesgo.color.replace('#', '').toUpperCase();
-                        const cellFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgColorHex } };
-                        nrValorCell.fill = cellFill;
-                        nrCategoriaCell.fill = cellFill;
-                        const fontColor = (bgColorHex === 'FF0000' || bgColorHex === 'FFA500' || bgColorHex === '000000') ? 'FFFFFFFF' : 'FF000000';
-                        const fontStyle = { color: { argb: fontColor }, name: 'Calibri', size: 10 };
-                        nrValorCell.font = fontStyle;
-                        nrCategoriaCell.font = fontStyle;
+                    // Aplicar semaforización de celdas SOLO si no es la versión gratuita
+                    if (!options.isFree) {
+                        const ndCell = addedRow.getCell('nd');
+                        const neCell = addedRow.getCell('ne');
+                        const ncCell = addedRow.getCell('nc_valor');
+                        if (coloresNiveles.deficiencia[rowData.nd]) ndCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNiveles.deficiencia[rowData.nd] } };
+                        if (coloresNiveles.exposicion[rowData.ne]) neCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNiveles.exposicion[rowData.ne] } };
+                        if (coloresNiveles.consecuencia[rowData.nc_valor]) ncCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNiveles.consecuencia[rowData.nc_valor] } };
+                        
+                        const npCategoriaCell = addedRow.getCell('np_nivel_categoria');
+                        if (coloresNivelProbabilidadCategoria[nivelProb.nivel]) npCategoriaCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: coloresNivelProbabilidadCategoria[nivelProb.nivel] } };
+        
+                        const nrValorCell = addedRow.getCell('nr_valor_intervencion');
+                        const nrCategoriaCell = addedRow.getCell('nr_interpretacion_nivel');
+                        if (nivelRiesgo.color) {
+                            const bgColorHex = nivelRiesgo.color.replace('#', '').toUpperCase();
+                            const cellFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgColorHex } };
+                            nrValorCell.fill = cellFill;
+                            nrCategoriaCell.fill = cellFill;
+                            const fontColor = (bgColorHex === 'FF0000' || bgColorHex === 'FFA500' || bgColorHex === '000000') ? 'FFFFFFFF' : 'FF000000';
+                            const fontStyle = { color: { argb: fontColor }, name: 'Calibri', size: 10 };
+                            nrValorCell.font = fontStyle;
+                            nrCategoriaCell.font = fontStyle;
+                        }
                     }
     
                     // ***************************************************
