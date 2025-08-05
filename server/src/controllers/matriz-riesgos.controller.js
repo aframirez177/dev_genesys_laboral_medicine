@@ -319,7 +319,7 @@ async function generarMatrizExcel(datosFormulario, options = { isFree: false }) 
  * NUEVO Controlador para manejar el envío del formulario.
  * Guarda los datos en la BD y devuelve una URL de redirección.
  */
-export const handleFormSubmission = async (req, res) => {
+const handleFormSubmission = async (req, res) => {
     const formData = req.body;
 
     // Extraer datos del cliente (asumiendo que vienen en el formulario)
