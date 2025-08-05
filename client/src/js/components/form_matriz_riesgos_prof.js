@@ -384,7 +384,7 @@ export function initializeForm() {
                 gesSeleccionados: []
             };
     
-            ['tareasRutinarias', 'manipulaAlimentos', 'trabajaAlturas', 'trabajaEspaciosConfinados'].forEach(name => {
+            ['tareasRutinarias', 'manipulaAlimentos', 'trabajaAlturas', 'trabajaEspaciosConfinados', 'conduceVehiculo'].forEach(name => {
                 const inputEl = cargoDiv.querySelector(`input[name="${name}"]`);
                 cargoData[name] = inputEl ? inputEl.checked : false;
             });
@@ -1480,7 +1480,8 @@ export function initializeForm() {
         togglesSection.className = 'toggles-section';
         const toggles = [
             { label: '¿Tareas rutinarias?', name: 'tareasRutinarias' }, { label: '¿Manipula alimentos?', name: 'manipulaAlimentos' },
-            { label: '¿Trabaja en alturas?', name: 'trabajaAlturas' }, { label: '¿Trabaja en espacios confinados?', name: 'trabajaEspaciosConfinados' }
+            { label: '¿Trabaja en alturas?', name: 'trabajaAlturas' }, { label: '¿Trabaja en espacios confinados?', name: 'trabajaEspaciosConfinados' },
+            { label: '¿Conduce vehículo?', name: 'conduceVehiculo' }
         ];
         toggles.forEach(toggle => { 
             const toggleDiv = document.createElement('div'); toggleDiv.className = 'toggle';

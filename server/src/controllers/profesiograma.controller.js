@@ -3,151 +3,213 @@ import 'jspdf-autotable';
 import { GES_DATOS_PREDEFINIDOS } from '../config/ges-config.js';
 import { EXAM_DETAILS } from '../config/exam-details-config.js';
 
-// Función para añadir la fuente (simplificada por ahora)
-function addPoppinsFont(doc) {
-    doc.setFont('helvetica');
+// --- Funciones de Ayuda para la Maquetación del PDF ---
+
+/**
+ * Añade un header estándar a una página del documento.
+ * @param {jsPDF} doc Instancia del documento PDF.
+ * @param {string} companyName Nombre de la empresa.
+ */
+function addHeader(doc, companyName) {
+    const pageWidth = doc.internal.pageSize.getWidth();
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(40, 40, 40);
+    doc.text('PROFESIOGRAMA DE CARGO', pageWidth / 2, 20, { align: 'center' });
+    doc.setFontSize(12);
+    doc.setTextColor(100, 100, 100);
+    doc.text(companyName, pageWidth / 2, 28, { align: 'center' });
 }
 
 /**
- * Genera el documento de Profesiograma en formato PDF.
- * @param {object} datosFormulario - Los datos del formulario de matriz de riesgos.
- * @param {object} options - Opciones para la generación (ej. { isFree: true }).
- * @returns {Buffer} - El buffer del PDF generado.
+ * Añade un footer estándar a una página del documento.
+ * @param {jsPDF} doc Instancia del documento PDF.
+ * @param {number} pageNumber Número de página actual.
+ * @param {number} totalPages Total de páginas del documento.
  */
-export async function generarProfesiogramaPDF(datosFormulario) {
-    const doc = new jsPDF();
-    doc.setFont('helvetica');
-
-    const companyName = datosFormulario.contact?.companyName || 'Nombre de la Empresa';
+function addFooter(doc, pageNumber, totalPages) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    const footerText = `Página ${pageNumber} de ${totalPages} | Documento generado por Genesys Laboral Medicine`;
+    doc.text(footerText, pageWidth / 2, pageHeight - 10, { align: 'center' });
+}
+
+/**
+ * Dibuja una sección con título y contenido de texto o lista.
+ * @param {jsPDF} doc Instancia del documento PDF.
+ * @param {number} startY Posición Y inicial para dibujar.
+ * @param {string} title Título de la sección.
+ * @param {string|string[]} content Contenido, puede ser un string o un array de strings para una lista.
+ * @returns {number} Nueva posición Y después de dibujar la sección.
+ */
+function drawSection(doc, startY, title, content) {
+    const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 15;
-    
-    // --- Estructura del Header ---
-    const addHeader = (doc, companyName) => {
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-        doc.setTextColor(40, 40, 40);
-        doc.text('PROFESIOGRAMA DE CARGOS (DIAGNÓSTICO)', pageWidth / 2, 20, { align: 'center' });
-        doc.setFontSize(12);
-        doc.setTextColor(100, 100, 100);
-        doc.text(companyName, pageWidth / 2, 28, { align: 'center' });
-    };
+    let y = startY;
 
-    // --- Estructura del Footer ---
-    const addFooter = (doc) => {
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8);
-        doc.setTextColor(150, 150, 150);
-        const footerText = `Página ${doc.internal.getNumberOfPages()} de ${doc.internal.getNumberOfPages()} | Documento de diagnóstico generado por Genesys Laboral Medicine`;
-        doc.text(footerText, pageWidth / 2, pageHeight - 10, { align: 'center' });
-    };
+    if (y > doc.internal.pageSize.getHeight() - 40) {
+        doc.addPage();
+        y = 20; // Espacio para el header que se agregará al final
+    }
 
-    // Función para añadir una sección de texto
-    const drawSection = (doc, title, content, startY) => {
-        doc.setFontSize(10).setFont('helvetica', 'bold');
-        doc.text(title, margin, startY);
-        startY += 6;
-        doc.setFontSize(9).setFont('helvetica', 'normal');
-        doc.text(content, margin, startY);
-        startY += 10; // Espacio entre secciones
-        return startY;
-    };
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(60, 60, 60);
+    doc.text(title, margin, y);
+    y += 7;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(80, 80, 80);
+
+    if (Array.isArray(content)) {
+        content.forEach(item => {
+            const splitItem = doc.splitTextToSize(`• ${item}`, pageWidth - margin * 2 - 5);
+            doc.text(splitItem, margin + 5, y);
+            y += (splitItem.length * 5) + 2;
+        });
+    } else {
+        const splitContent = doc.splitTextToSize(content || 'No especificado', pageWidth - margin * 2);
+        doc.text(splitContent, margin, y);
+        y += (splitContent.length * 5) + 2;
+    }
+
+    return y + 8; // Espacio extra post-sección
+}
+
+// --- Lógica Principal de Generación ---
+
+export async function generarProfesiogramaPDF(datosFormulario) {
+    const doc = new jsPDF('p', 'mm', 'a4');
+    doc.setFont('helvetica', 'normal');
+
+    const companyName = datosFormulario.contact?.companyName || 'Nombre de la Empresa';
 
     datosFormulario.cargos.forEach((cargo, index) => {
         if (index > 0) doc.addPage();
-        addHeader(doc, companyName);
+        let y = 40; // Posición Y inicial para el contenido del cargo
 
-        doc.setFontSize(14);
+        // --- Título del Cargo ---
         doc.setFont('helvetica', 'bold');
-        doc.setTextColor(60, 60, 60);
-        doc.text(`Cargo: ${cargo.cargoName}`, margin, 45);
-        doc.setFontSize(11);
+        doc.setFontSize(14);
+        doc.setTextColor(40, 40, 40);
+        doc.text(`Perfil del Cargo: ${cargo.cargoName}`, 15, y);
+        y += 6;
         doc.setFont('helvetica', 'normal');
-        doc.text(`Área: ${cargo.area}`, margin, 52);
-
-        // 1. Consolidar todos los exámenes y su criticidad
-        const examenesMap = new Map();
-        cargo.gesSeleccionados.forEach(ges => {
-            const gesConfig = GES_DATOS_PREDEFINIDOS[ges.ges];
-            if (!gesConfig || !gesConfig.examenesMedicos) return;
-
-            Object.entries(gesConfig.examenesMedicos).forEach(([code, criticidad]) => {
-                if (criticidad > 0 && criticidad < 3) { // Asumimos que 1 o 2 son válidos
-                    if (!examenesMap.has(code) || criticidad < examenesMap.get(code).criticidad) {
-                        examenesMap.set(code, { 
-                            criticidad: criticidad,
-                            nombre: EXAM_DETAILS[code]?.fullName || code
-                        });
-                    }
-                }
-            });
-        });
+        doc.setFontSize(11);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Área/Proceso: ${cargo.area}`, 15, y);
+        y += 15;
         
-        // Reglas obligatorias
+        // --- 1. Consolidación de Información desde GES ---
+        const examenesMap = new Map();
+        const aptitudesRequeridas = new Set();
+        const condicionesIncompatibles = new Set();
+        const eppSugeridos = new Set();
+        const gesSeleccionadosNombres = new Set();
+
+        cargo.gesSeleccionados.forEach(ges => {
+            const gesFullName = `${ges.riesgo} - ${ges.ges}`;
+            gesSeleccionadosNombres.add(gesFullName);
+            const gesConfig = GES_DATOS_PREDEFINIDOS[gesFullName];
+            if (!gesConfig) return;
+
+            // Consolidar exámenes, priorizando la criticidad más alta
+            if (gesConfig.examenesMedicos) {
+                Object.entries(gesConfig.examenesMedicos).forEach(([code, criticidad]) => {
+                    if (criticidad > 0) {
+                        if (!examenesMap.has(code) || criticidad < examenesMap.get(code).criticidad) {
+                            examenesMap.set(code, { criticidad });
+                        }
+                    }
+                });
+            }
+
+            // Consolidar el resto de la información
+            if(gesConfig.aptitudesRequeridas) gesConfig.aptitudesRequeridas.forEach(item => aptitudesRequeridas.add(item));
+            if(gesConfig.condicionesIncompatibles) gesConfig.condicionesIncompatibles.forEach(item => condicionesIncompatibles.add(item));
+            if(gesConfig.eppSugeridos) gesConfig.eppSugeridos.forEach(item => eppSugeridos.add(item));
+        });
+
+        // --- 2. Aplicación de Reglas de Negocio Obligatorias ---
+        if (!examenesMap.has('EMO') && !examenesMap.has('EMOA') && !examenesMap.has('EMOMP')) {
+            examenesMap.set('EMO', { criticidad: 1 });
+        }
         if (cargo.trabajaAlturas) {
-             examenesMap.set('EMOA', { criticidad: 1, nombre: EXAM_DETAILS['EMOA'].fullName });
+            examenesMap.set('EMOA', { criticidad: 1 });
+            examenesMap.delete('EMO'); // EMOA reemplaza a EMO
         }
         if (cargo.manipulaAlimentos) {
-             examenesMap.set('EMOMP', { criticidad: 1, nombre: EXAM_DETAILS['EMOMP'].fullName });
+            examenesMap.set('EMOMP', { criticidad: 1 });
+            examenesMap.set('FRO', { criticidad: 1 });
+            examenesMap.set('KOH', { criticidad: 1 });
+            examenesMap.set('COP', { criticidad: 1 });
+            examenesMap.delete('EMO'); // EMOMP reemplaza a EMO
+        }
+        // NUEVA REGLA: Conducción de vehículos
+        if (cargo.conduceVehiculo) {
+            examenesMap.set('PSM', { criticidad: 1 });
+            examenesMap.set('VIS', { criticidad: 1 });
         }
 
-        // 2. Crear paquetes
-        const paqueteBasico = Array.from(examenesMap.values()).filter(e => e.criticidad === 1);
-        const paqueteRecomendado = Array.from(examenesMap.values());
+        // --- 3. Generación de Secciones del PDF ---
+        y = drawSection(doc, y, 'Riesgos Ocupacionales Identificados (GES)', Array.from(gesSeleccionadosNombres));
+        y = drawSection(doc, y, 'Aptitudes y Requerimientos para el Cargo', Array.from(aptitudesRequeridas));
+        y = drawSection(doc, y, 'Condiciones Médicas Incompatibles con el Cargo', Array.from(condicionesIncompatibles));
+        y = drawSection(doc, y, 'Elementos de Protección Personal (EPP) Sugeridos', Array.from(eppSugeridos));
 
-        // 3. Maquetar el PDF
-        doc.setFontSize(12).setFont('helvetica', 'bold');
-        let y = doc.autoTable.previous.finalY ? doc.autoTable.previous.finalY + 10 : 60;
-        
-        doc.text('Paquetes de Exámenes Médicos Sugeridos', margin, y);
-        y += 6;
+        // --- 4. Maquetación de la Tabla de Exámenes ---
+        if (y > doc.internal.pageSize.getHeight() - 60) {
+            doc.addPage();
+            y = 40;
+        }
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(60, 60, 60);
+        doc.text('Protocolo de Exámenes Médicos Ocupacionales', 15, y);
+        y += 8;
 
-        // Paquete Básico
-        doc.setFontSize(10).setFont('helvetica', 'bold');
-        doc.text('Paquete Básico (Exámenes Críticos)', margin, y);
-        doc.autoTable({
-            startY: y + 2,
-            head: [['Ingreso', 'Periódicos', 'Egreso']],
-            body: [
-                [paqueteBasico.map(e => e.nombre).join('\n'), 
-                 paqueteBasico.map(e => e.nombre).join('\n'), 
-                 paqueteBasico.map(e => e.nombre).join('\n')]
-            ],
-            theme: 'striped',
-            headStyles: { fillColor: [220, 220, 220], textColor: 40 },
+        const examenesIngreso = [];
+        const examenesPeriodicos = [];
+        const examenesEgreso = [];
+
+        examenesMap.forEach((data, code) => {
+            const examName = EXAM_DETAILS[code]?.fullName || code;
+            examenesIngreso.push(examName); // Todos para ingreso
+            if (data.criticidad <= 2) examenesPeriodicos.push(examName); // Críticos y recomendados para periódicos
+            if (data.criticidad <= 2) examenesEgreso.push(examName); // Críticos y recomendados para egreso (se puede refinar)
         });
-        y = doc.autoTable.previous.finalY + 10;
-
-        // Paquete Recomendado
-        doc.setFontSize(10).setFont('helvetica', 'bold');
-        doc.text('Paquete Recomendado (Completo)', margin, y);
-        doc.autoTable({
-            startY: y + 2,
-            head: [['Ingreso', 'Periódicos', 'Egreso']],
-            body: [
-                [paqueteRecomendado.map(e => e.nombre).join('\n'), 
-                 paqueteRecomendado.map(e => e.nombre).join('\n'), 
-                 paqueteRecomendado.map(e => e.nombre).join('\n')]
-            ],
-            theme: 'striped',
-            headStyles: { fillColor: [93, 196, 175] },
-        });
-        y = doc.autoTable.previous.finalY + 15;
-
-        // Lista de Riesgos Justificativos
-        const riesgosContent = cargo.gesSeleccionados.map(ges => `- ${ges.riesgo}: ${ges.ges}`).join('\n');
-        y = drawSection(doc, 'Riesgos Ocupacionales Identificados', riesgosContent, y);
         
-        // Anotación Legal
-        y = pageHeight - 40; // Posicionar al final
-        doc.setFontSize(8).setFont('helvetica', 'italic');
-        const disclaimer = 'Este documento es una guía de diagnóstico basada en la información suministrada. El profesiograma que cumple con la resolución vigente es la versión PRO, la cual es más completa y cuenta con la validación y firma de un médico especialista en Seguridad y Salud en el Trabajo.';
-        const splitDisclaimer = doc.splitTextToSize(disclaimer, pageWidth - margin * 2);
-        doc.text(splitDisclaimer, margin, y);
+        // Se añade EMO a egreso si no está, como base
+        if (!examenesEgreso.includes(EXAM_DETAILS['EMO']?.fullName)) {
+             const emoDetails = EXAM_DETAILS['EMO']?.fullName;
+             if(emoDetails && !examenesEgreso.includes(emoDetails)) examenesEgreso.unshift(emoDetails);
+        }
+
+        doc.autoTable({
+            startY: y,
+            head: [['Examen de Ingreso', 'Examen Periódico', 'Examen de Egreso']],
+            body: [[
+                examenesIngreso.join('\n'),
+                examenesPeriodicos.join('\n'),
+                examenesEgreso.join('\n')
+            ]],
+            theme: 'grid',
+            headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+            styles: { font: 'helvetica', fontSize: 9, cellPadding: 3 },
+        });
     });
-    
-    addFooter(doc);
+
+    // --- Finalización y numeración de páginas ---
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        addHeader(doc, companyName);
+        addFooter(doc, i, totalPages);
+    }
 
     return Buffer.from(doc.output('arraybuffer'));
-} 
+}
