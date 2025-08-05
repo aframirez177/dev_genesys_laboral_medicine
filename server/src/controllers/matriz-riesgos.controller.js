@@ -393,4 +393,4 @@ export const handleFormSubmission = async (req, res) => {
 };
 
 // Exportamos ambas funciones. La antigua se usará después.
-export { generarMatrizExcel };
+export { generarMatrizExcel, handleFormSubmission };
