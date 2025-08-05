@@ -27,6 +27,8 @@ const PORT = process.env.PORT || 3000;
 const whitelist = [
     'http://localhost:5500', // Desarrollo local
     'http://localhost:8080', // Otro puerto común de desarrollo de Webpack
+    'https://genesyslm.com.co', // Dominio de producción
+    'http://genesyslm.com.co', // Dominio de producción (sin SSL)
     `http://${env.SERVER_HOST}`, // La IP de tu servidor desde .env
     `http://104.131.163.89` // Añadimos la IP directamente como respaldo
 ];
