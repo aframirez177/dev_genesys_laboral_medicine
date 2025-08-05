@@ -322,6 +322,10 @@ async function generarMatrizExcel(datosFormulario, options = { isFree: false }) 
 const handleFormSubmission = async (req, res) => {
     const formData = req.body;
 
+    console.log('--- DATOS RECIBIDOS EN EL SERVIDOR (BACKEND) ---');
+    console.log(JSON.stringify(formData, null, 2));
+    console.log('-----------------------------------------------');
+
     // Extraer datos del cliente (asumiendo que vienen en el formulario)
     // NECESITAREMOS un formulario de contacto al inicio o al final del flujo.
     // Por ahora, usaremos datos de ejemplo.

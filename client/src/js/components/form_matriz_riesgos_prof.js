@@ -1879,6 +1879,10 @@ export function initializeForm() {
                 };
             }
 
+            console.log('--- DATOS FINALES A ENVIAR (FRONTEND) ---');
+            console.log(JSON.stringify(formData, null, 2));
+            console.log('-------------------------------------------');
+
             const response = await fetch('/api/matriz-riesgos/generar', { 
                 method: 'POST',
                 headers: { 
