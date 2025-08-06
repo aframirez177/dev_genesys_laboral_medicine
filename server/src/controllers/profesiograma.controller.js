@@ -113,13 +113,11 @@ export async function generarProfesiogramaPDF(datosFormulario) {
         const caracteristicasEspeciales = [];
 
         cargo.gesSeleccionados.forEach(ges => {
-            const gesName = ges.ges; // El nombre específico del GES, ej: "Caídas al mismo nivel"
-            const riesgoName = ges.riesgo; // La categoría, ej: "Mecánico"
-            const displayName = `${riesgoName} - ${gesName}`; // El nombre completo para mostrar en el PDF
-
+            const gesName = ges.ges;
+            const riesgoName = ges.riesgo;
+            const displayName = `${riesgoName} - ${gesName}`;
             gesSeleccionadosNombres.add(displayName);
             
-            // Usar la clave correcta (solo el nombre del GES) para buscar en la configuración
             const gesConfig = GES_DATOS_PREDEFINIDOS[gesName]; 
             
             if (!gesConfig) {
@@ -141,13 +139,22 @@ export async function generarProfesiogramaPDF(datosFormulario) {
             if(gesConfig.eppSugeridos) gesConfig.eppSugeridos.forEach(item => eppSugeridos.add(item));
         });
 
-        // --- 2. Aplicación de Reglas de Negocio ---
-        if (!examenesMap.has('EMO') && !examenesMap.has('EMOA') && !examenesMap.has('EMOMP')) {
-            examenesMap.set('EMO', { criticidad: 1 });
-        }
+        // --- 2. Aplicación de Reglas de Negocio Obligatorias ---
+        
+        // Regla 1: Paquete Mínimo Universal para todo cargo.
+        examenesMap.set('EMO', { criticidad: 1 });
+        examenesMap.set('AUD', { criticidad: 1 });
+        examenesMap.set('OPTO', { criticidad: 1 });
+
+        // Regla 2: Toggles de Características Especiales
         if (cargo.trabajaAlturas) {
             examenesMap.set('EMOA', { criticidad: 1 });
-            examenesMap.delete('EMO');
+            examenesMap.set('GLI', { criticidad: 1 });
+            examenesMap.set('PL', { criticidad: 1 });
+            examenesMap.set('PE', { criticidad: 1 });
+            examenesMap.set('ESP', { criticidad: 1 });
+            examenesMap.set('ECG', { criticidad: 1 });
+            examenesMap.delete('EMO'); 
             caracteristicasEspeciales.push('Realiza trabajo en alturas.');
         }
         if (cargo.manipulaAlimentos) {
@@ -160,7 +167,8 @@ export async function generarProfesiogramaPDF(datosFormulario) {
         }
         if (cargo.conduceVehiculo) {
             examenesMap.set('PSM', { criticidad: 1 });
-            examenesMap.set('VIS', { criticidad: 1 });
+            examenesMap.set('GLI', { criticidad: 1 });
+            examenesMap.set('PL', { criticidad: 1 });
             caracteristicasEspeciales.push('Conduce vehículos motorizados como parte de sus funciones.');
         }
 
