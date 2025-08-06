@@ -113,10 +113,19 @@ export async function generarProfesiogramaPDF(datosFormulario) {
         const caracteristicasEspeciales = [];
 
         cargo.gesSeleccionados.forEach(ges => {
-            const gesFullName = `${ges.riesgo} - ${ges.ges}`;
-            gesSeleccionadosNombres.add(gesFullName);
-            const gesConfig = GES_DATOS_PREDEFINIDOS[gesFullName];
-            if (!gesConfig) return;
+            const gesName = ges.ges; // El nombre específico del GES, ej: "Caídas al mismo nivel"
+            const riesgoName = ges.riesgo; // La categoría, ej: "Mecánico"
+            const displayName = `${riesgoName} - ${gesName}`; // El nombre completo para mostrar en el PDF
+
+            gesSeleccionadosNombres.add(displayName);
+            
+            // Usar la clave correcta (solo el nombre del GES) para buscar en la configuración
+            const gesConfig = GES_DATOS_PREDEFINIDOS[gesName]; 
+            
+            if (!gesConfig) {
+                console.warn(`ADVERTENCIA: No se encontró configuración para el GES: "${gesName}"`);
+                return;
+            }
 
             if (gesConfig.examenesMedicos) {
                 Object.entries(gesConfig.examenesMedicos).forEach(([code, criticidad]) => {
