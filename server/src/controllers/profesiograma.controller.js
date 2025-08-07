@@ -188,35 +188,37 @@ export async function generarProfesiogramaPDF(datosFormulario) {
         y = drawList(doc, y, Array.from(eppSugeridos));
         
         // --- 4. Maquetación de la Tabla de Exámenes ---
-        if (y > doc.internal.pageSize.getHeight() - 70) {
+        if (y > doc.internal.pageSize.getHeight() - 80) { // Aumentar margen para firma y nota
             doc.addPage();
             y = 30;
         }
         y = drawSectionHeader(doc, y, 'Protocolo de Exámenes Médicos Ocupacionales');
 
+        let tienePruebaEmbarazo = false;
         const examenesIngreso = [];
         const examenesPeriodicos = [];
-        const examenesEgreso = [];
 
         examenesMap.forEach((data, code) => {
-            const examName = EXAM_DETAILS[code]?.fullName || code;
+            let examName = EXAM_DETAILS[code]?.fullName || code;
+            if (code === 'PE') {
+                examName += ' (*)';
+                tienePruebaEmbarazo = true;
+            }
             examenesIngreso.push(examName);
             if (data.criticidad <= 2) examenesPeriodicos.push(examName);
-            if (data.criticidad <= 2) examenesEgreso.push(examName);
         });
 
-        if (!examenesEgreso.includes(EXAM_DETAILS['EMO']?.fullName) && !examenesEgreso.includes(EXAM_DETAILS['EMOA']?.fullName) && !examenesEgreso.includes(EXAM_DETAILS['EMOMP']?.fullName)) {
-            const emoDetails = EXAM_DETAILS['EMO']?.fullName;
-            if (emoDetails) examenesEgreso.unshift(emoDetails);
-        }
-        
-        const maxRows = Math.max(examenesIngreso.length, examenesPeriodicos.length, examenesEgreso.length);
+        let examenEgreso = EXAM_DETAILS['EMO']?.fullName || 'Examen Médico Osteomuscular';
+        if (examenesMap.has('EMOA')) examenEgreso = EXAM_DETAILS['EMOA']?.fullName;
+        if (examenesMap.has('EMOMP')) examenEgreso = EXAM_DETAILS['EMOMP']?.fullName;
+
+        const maxRows = Math.max(examenesIngreso.length, examenesPeriodicos.length);
         const tableBody = [];
         for (let i = 0; i < maxRows; i++) {
             tableBody.push([
                 examenesIngreso[i] || '',
                 examenesPeriodicos[i] || '',
-                examenesEgreso[i] || ''
+                (i === 0) ? examenEgreso : ''
             ]);
         }
         
@@ -228,10 +230,39 @@ export async function generarProfesiogramaPDF(datosFormulario) {
             headStyles: { fillColor: secondaryColor, textColor: '#FFFFFF', font: 'Poppins', fontStyle: 'bold' },
             styles: { font: 'Poppins', fontSize: 9, cellPadding: 2.5, valign: 'middle' },
             alternateRowStyles: { fillColor: '#f3f0f0' },
+            didDrawPage: (data) => { // Para asegurar que Y se actualice correctamente en multipágina
+                y = data.cursor.y;
+            }
         });
+        y = doc.autoTable.previous.finalY;
+
+        if (tienePruebaEmbarazo) {
+            y += 5;
+            doc.setFont('Poppins', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(highlightColor);
+            doc.text('(*) Este examen aplica únicamente para personal femenino.', 15, y);
+        }
+        
+        // --- 5. Espacio para Firma del Médico ---
+        y += 15;
+        if (y > doc.internal.pageSize.getHeight() - 40) {
+            doc.addPage();
+            y = 30;
+        }
+        doc.setDrawColor(secondaryColor);
+        doc.line(15, y, 95, y); // Línea para la firma
+        y += 4;
+        doc.setFont('Poppins', 'bold');
+        doc.setFontSize(10);
+        doc.text('Firma Médico Especialista en SST', 15, y);
+        y += 4;
+        doc.setFont('Poppins', 'normal');
+        doc.text('Licencia No.', 15, y);
+
     });
 
-    // --- Finalización y numeración ---
+    // --- Finalización y numeración de páginas ---
     addHeaderAndFooter(doc, companyName);
 
     return Buffer.from(doc.output('arraybuffer'));

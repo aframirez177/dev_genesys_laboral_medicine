@@ -39,7 +39,11 @@ export const EXAM_DETAILS = {
     COLI: { fullName: 'COLINESTERASA' },
     CRE: { fullName: 'CREATININA' },
     ORI: { fullName: 'PARCIAL DE ORINA' },
-    TET: { fullName: 'VACUNA DEL TETANO' }
-    // NOTA: Los códigos extra (T4L, TSH, etc.) de ges-config.js se omiten por ahora
+    TET: { fullName: 'VACUNA DEL TETANO' },
+    VH: { fullName: 'VACUNA DEL VIRUS HEPATITIS' },
+    VT: { fullName: 'VACUNA DEL TETANO' },
+    VFA: { fullName: 'VACUNA DE FIEBRE AMARILLA' },
+    T4L: { fullName: 'T4 LIBRE' },
+    
     // hasta que tengan una definición oficial en calculator.js, para mantener consistencia.
 }; 
