@@ -396,11 +396,9 @@ export function initializeForm() {
                 console.log(`  Procesando GES: ${riesgoValue}`);
                 
                 try {
-                    const controlesData = {
-                        fuente: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || 'Ninguno',
-                        medio: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || 'Ninguno',
-                        individuo: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || 'Ninguno'
-                    };
+                    const controlFuente = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || 'Ninguno';
+                    const controlMedio = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || 'Ninguno';
+                    const controlIndividuo = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || 'Ninguno';
                     
                     const nivelesInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-niveles]`);
                     let niveles = {};
@@ -418,7 +416,14 @@ export function initializeForm() {
                     }
                     
                     const [riesgo, ges] = riesgoValue.split(' - ');
-                    cargoData.gesSeleccionados.push({ riesgo, ges, controles: controlesData, niveles });
+                    cargoData.gesSeleccionados.push({ 
+                        riesgo, 
+                        ges, 
+                        controlFuente, 
+                        controlMedio, 
+                        controlIndividuo, 
+                        niveles 
+                    });
                     
                     console.log(`    GES agregado: ${ges} con niveles:`, niveles);
                 } catch (e) { 
