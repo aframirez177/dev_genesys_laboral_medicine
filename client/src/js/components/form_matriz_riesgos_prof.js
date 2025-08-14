@@ -396,9 +396,11 @@ export function initializeForm() {
                 console.log(`  Procesando GES: ${riesgoValue}`);
                 
                 try {
-                    const controlFuente = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || 'Ninguno';
-                    const controlMedio = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || 'Ninguno';
-                    const controlIndividuo = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || 'Ninguno';
+                    const controlesData = {
+                        fuente: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || 'Ninguno',
+                        medio: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || 'Ninguno',
+                        individuo: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || 'Ninguno'
+                    };
                     
                     const nivelesInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-niveles]`);
                     let niveles = {};
@@ -416,14 +418,7 @@ export function initializeForm() {
                     }
                     
                     const [riesgo, ges] = riesgoValue.split(' - ');
-                    cargoData.gesSeleccionados.push({ 
-                        riesgo, 
-                        ges, 
-                        controlFuente, 
-                        controlMedio, 
-                        controlIndividuo, 
-                        niveles 
-                    });
+                    cargoData.gesSeleccionados.push({ riesgo, ges, controles: controlesData, niveles });
                     
                     console.log(`    GES agregado: ${ges} con niveles:`, niveles);
                 } catch (e) { 
@@ -814,9 +809,9 @@ export function initializeForm() {
             <div class="popup-header"><h4>${ges}</h4><span class="riesgo-label">${riesgo}</span><button class="close-popup" type="button">×</button></div>
             <div class="popup-content">
                 <div class="controles-section"><h5>Controles Existentes</h5>
-                    <div class="control-group"><label>Fuente:</label><input type="text" name="control-fuente" data-riesgo="${riesgoValue}" data-tipo="fuente" placeholder="Ninguno" list="fuente-datalist" value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || ''}"></div>
-                    <div class="control-group"><label>Medio:</label><input type="text" name="control-medio" data-riesgo="${riesgoValue}" data-tipo="medio" placeholder="Ninguno" list="medio-datalist" value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || ''}"></div>
-                    <div class="control-group"><label>Individuo:</label><input type="text" name="control-individuo" data-riesgo="${riesgoValue}" data-tipo="individuo" placeholder="Ninguno" list="individuo-datalist" value="${cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || ''}"></div>
+                    <div class="control-group"><label>Fuente:</label><input type="text" name="control-fuente" data-riesgo="${riesgoValue}" data-tipo="fuente" placeholder="Ninguno" list="fuente-datalist" value="${cargoDiv.querySelector(`input[data-riesgo='${riesgoValue}'][data-tipo='fuente']`)?.value || ''}"></div>
+                    <div class="control-group"><label>Medio:</label><input type="text" name="control-medio" data-riesgo="${riesgoValue}" data-tipo="medio" placeholder="Ninguno" list="medio-datalist" value="${cargoDiv.querySelector(`input[data-riesgo='${riesgoValue}'][data-tipo='medio']`)?.value || ''}"></div>
+                    <div class="control-group"><label>Individuo:</label><input type="text" name="control-individuo" data-riesgo="${riesgoValue}" data-tipo="individuo" placeholder="Ninguno" list="individuo-datalist" value="${cargoDiv.querySelector(`input[data-riesgo='${riesgoValue}'][data-tipo='individuo']`)?.value || ''}"></div>
                 </div>
                 <div class="niveles-section"><h5>Evaluación de Niveles</h5>${generateNivelesHTML(riesgoValue, cargoDiv)}</div>
             </div>`;
