@@ -209,7 +209,7 @@ async function generarMatrizExcel(datosFormulario, options = { isFree: false }) 
                         medida_sustitucion: datosGesPredefinidos.medidasIntervencion?.sustitucion || '',
                         medida_ctrl_ingenieria: datosGesPredefinidos.medidasIntervencion?.controlesIngenieria || '',
                         medida_ctrl_admin: datosGesPredefinidos.medidasIntervencion?.controlesAdministrativos || '',
-                        epp: datosGesPredefinidos.elementosProteccion || ''
+                        epp: (datosGesPredefinidos.eppSugeridos || []).join(', ')
                     };
                     const addedRow = worksheet.addRow(rowData);
 
