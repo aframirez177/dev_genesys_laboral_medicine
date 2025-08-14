@@ -27,7 +27,7 @@ export async function startDocumentGeneration(token) {
         const formData = record.form_data;
 
         // Generar todos los documentos gratuitos
-        const matrizGratuitaBuffer = await generarMatrizExcel(formData, { isFree: true });
+        const matrizGratuitaBuffer = await generarMatrizExcel(formData, { isFree: false });
         const profesiogramaGratuitoBuffer = await generarProfesiogramaPDF(formData, { isFree: true });
         const perfilCargoGratuitoBuffer = await generarPerfilCargoPDF(formData);
         const cotizacionBuffer = await generarCotizacionPDF(formData);
