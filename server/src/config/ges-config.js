@@ -5,8 +5,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         peorConsecuencia: "Muerte",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1,
-            PSM: 2
+            OPTO: 1
         },
         aptitudesRequeridas: [
             "Buena agudeza visual y percepción espacial.",
@@ -33,17 +32,13 @@ export const GES_DATOS_PREDEFINIDOS = {
         consecuencias: "Heridas, traumas, contusiones, fracturas.",
         peorConsecuencia: "Muerte",
         examenesMedicos: {
-            EMO: 1,
             EMOA: 1,
-            AUD: 2,
-            ESP: 2,
-            OPT: 2,
-            VIS: 1,
+            OPTO: 1,
+            AUD: 1,
             ECG: 1,
-            PSM: 2,
-            PST: 1,
-            GLI: 2,
-            PSP: 1
+            GLI: 1,
+            PL: 1,
+            PST: 2
         },
         aptitudesRequeridas: [
             "Buena agudeza visual y percepción de profundidad.",
@@ -54,7 +49,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         condicionesIncompatibles: [
             "Vértigo o mareos crónicos.",
             "Epilepsia no controlada.",
-            "Alteraciones del equilibrio o enfermedades cardiovasculares severas."
+            "Alteraciones del equilibrio o enfermedades cardiovasculares severas no controladas."
         ],
         eppSugeridos: [
             "Arnés de seguridad de cuerpo completo",
@@ -66,17 +61,17 @@ export const GES_DATOS_PREDEFINIDOS = {
             eliminacion: "Realizar trabajos a nivel del suelo siempre que sea posible.",
             sustitucion: "Uso de plataformas elevadoras en lugar de andamios.",
             controlesIngenieria: "Instalación de barandas permanentes y redes de seguridad.",
-            controlesAdministrativos: "Permisos de trabajo en altura y capacitación certificada (Res. 1409)."
+            controlesAdministrativos: "Permisos de trabajo en altura y capacitación certificada (Res. 4272 de 2021)."
         }
     },
 
     "Posibilidad de atrapamiento": {
-        consecuencias: "Heridas, traumas, contusiones, fracturas.",
+        consecuencias: "Heridas, traumas, contusiones, fracturas, amputaciones.",
         peorConsecuencia: "Muerte",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1,
-            PSM: 2
+            OPTO: 1,
+            AUD: 2
         },
         aptitudesRequeridas: [
             "Buena coordinación motriz fina y gruesa.",
@@ -84,7 +79,7 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Integridad osteomuscular en extremidades."
         ],
         condicionesIncompatibles: [
-            "Discapacidad motriz en extremidades superiores o inferiores.",
+            "Discapacidad motriz en extremidades superiores o inferiores que impida una reacción rápida.",
             "Problemas de audición que impidan escuchar alarmas o advertencias.",
             "Trastornos de la atención y la concentración."
         ],
@@ -106,16 +101,18 @@ export const GES_DATOS_PREDEFINIDOS = {
         peorConsecuencia: "Muerte",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1,
-            PSM: 2
+            OPTO: 1,
+            AUD: 1
         },
         aptitudesRequeridas: [
             "Buena agudeza visual y percepción de profundidad.",
-            "Capacidad de reacción rápida y agilidad de movimiento."
+            "Capacidad de reacción rápida y agilidad de movimiento.",
+            "Capacidad auditiva para percibir señales de advertencia."
         ],
         condicionesIncompatibles: [
             "Visión monocular o campo visual reducido.",
-            "Problemas de movilidad o trastornos del equilibrio."
+            "Problemas de movilidad o trastornos del equilibrio.",
+            "Hipoacusia severa no corregida."
         ],
         eppSugeridos: [
             "Casco de seguridad",
@@ -131,12 +128,11 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Posibilidad de proyección de partículas o fluidos a presión": {
-        consecuencias: "Heridas, traumas, contusiones, fracturas.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Heridas, traumas oculares, quemaduras, contusiones.",
+        peorConsecuencia: "Ceguera, Muerte.",
         examenesMedicos: {
-            EMO: 1,
-            VIS: 1,
-            PST: 2
+            OPTO: 1,
+            EMO: 2
         },
         aptitudesRequeridas: [
             "Agudeza visual adecuada para proteger los ojos.",
@@ -145,10 +141,10 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Hipovisión o ceguera parcial.",
-            "Uso de lentes de contacto en ambientes con partículas."
+            "Uso de lentes de contacto en ambientes con partículas (según valoración)."
         ],
         eppSugeridos: [
-            "Gafas de seguridad",
+            "Gafas de seguridad de impacto",
             "Careta facial",
             "Ropa de protección contra fluidos"
         ],
@@ -161,12 +157,11 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Posibilidad de perforación o de punzonamiento": {
-        consecuencias: "Heridas, traumas, contusiones, fracturas.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Heridas punzantes, infecciones, hemorragias.",
+        peorConsecuencia: "Muerte por hemorragia o infección grave.",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1,
-            PST: 2
+            OPTO: 2
         },
         aptitudesRequeridas: [
             "Coordinación motriz fina y gruesa.",
@@ -176,10 +171,10 @@ export const GES_DATOS_PREDEFINIDOS = {
         condicionesIncompatibles: [
             "Movimientos involuntarios o temblores.",
             "Trastornos de la sensibilidad en manos.",
-            "Amputaciones o limitaciones funcionales en extremidades."
+            "Amputaciones o limitaciones funcionales en extremidades superiores."
         ],
         eppSugeridos: [
-            "Guantes anticorte",
+            "Guantes anti-perforación",
             "Calzado de seguridad con plantilla antiperforación",
             "Mangas de protección"
         ],
@@ -192,12 +187,11 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Posibilidad de corte o seccionamiento": {
-        consecuencias: "Heridas, traumas, contusiones, fracturas.",
+        consecuencias: "Heridas cortantes, amputaciones, hemorragias.",
         peorConsecuencia: "Muerte",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1,
-            PST: 2
+            OPTO: 2
         },
         aptitudesRequeridas: [
             "Coordinación motriz fina y gruesa.",
@@ -207,7 +201,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         condicionesIncompatibles: [
             "Movimientos involuntarios o temblores.",
             "Trastornos de la sensibilidad en manos.",
-            "Amputaciones o limitaciones funcionales en extremidades."
+            "Amputaciones o limitaciones funcionales en extremidades superiores."
         ],
         eppSugeridos: [
             "Guantes anticorte",
@@ -227,14 +221,10 @@ export const GES_DATOS_PREDEFINIDOS = {
         peorConsecuencia: "Muerte",
         examenesMedicos: {
             EMOA: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
             ECG: 1,
-            PST: 1,
-            GLI: 2,
-            CH: 2,
-            PSP: 1
+            OPTO: 1,
+            AUD: 2,
+            PST: 2
         },
         aptitudesRequeridas: [
             "Salud cardiovascular y neurológica en óptimas condiciones.",
@@ -242,7 +232,7 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Capacidad para seguir protocolos estrictos y trabajar bajo presión."
         ],
         condicionesIncompatibles: [
-            "Epilepsia no controlada, arritmias cardíacas o marcapasos.",
+            "Epilepsia no controlada, arritmias cardíacas o uso de marcapasos.",
             "Angina de pecho o antecedentes de infarto.",
             "Uso de medicamentos que afecten la coordinación o la conciencia."
         ],
@@ -253,10 +243,10 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Careta de seguridad para arco eléctrico"
         ],
         medidasIntervencion: {
-            eliminacion: "Desenergización completa y verificación de ausencia de tensión.",
+            eliminacion: "Desenergización completa y verificación de ausencia de tensión (Reglas de Oro).",
             sustitucion: "Implementación de sistemas de bajo voltaje o tecnologías seguras.",
             controlesIngenieria: "Sistemas de bloqueo y etiquetado (LOTO), aislamiento y puesta a tierra.",
-            controlesAdministrativos: "Procedimientos específicos de trabajo seguro con energía."
+            controlesAdministrativos: "Procedimientos de trabajo seguro con energía eléctrica (RETIE)."
         }
     },
 
@@ -265,14 +255,10 @@ export const GES_DATOS_PREDEFINIDOS = {
         peorConsecuencia: "Muerte",
         examenesMedicos: {
             EMOA: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
             ECG: 1,
-            PST: 1,
-            GLI: 2,
-            CH: 2,
-            PSP: 1
+            OPTO: 1,
+            AUD: 2,
+            PST: 2
         },
         aptitudesRequeridas: [
             "Salud cardiovascular y neurológica en óptimas condiciones.",
@@ -290,10 +276,10 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Herramientas con aislamiento certificado"
         ],
         medidasIntervencion: {
-            eliminacion: "Reubicación de instalaciones a zonas de menor riesgo.",
+            eliminacion: "Desenergización completa y verificación de ausencia de tensión (Reglas de Oro).",
             sustitucion: "Actualización de sistemas eléctricos a tecnologías más seguras.",
             controlesIngenieria: "Aislamiento físico y señalización de áreas de media tensión.",
-            controlesAdministrativos: "Permisos de trabajo y capacitación en seguridad eléctrica."
+            controlesAdministrativos: "Permisos de trabajo y capacitación en seguridad eléctrica (RETIE)."
         }
     },
 
@@ -301,15 +287,9 @@ export const GES_DATOS_PREDEFINIDOS = {
         consecuencias: "Quemaduras, fibrilación ventricular, shock eléctrico.",
         peorConsecuencia: "Muerte",
         examenesMedicos: {
-            EMOA: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
+            EMO: 1,
             ECG: 1,
-            PST: 1,
-            GLI: 2,
-            CH: 2,
-            PSP: 1
+            OPTO: 2
         },
         aptitudesRequeridas: [
             "Salud cardiovascular y neurológica en óptimas condiciones.",
@@ -334,26 +314,18 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Electricidad estática": {
-        consecuencias: "Quemaduras, fibrilación ventricular, shock eléctrico.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Quemaduras, shock eléctrico, ignición de atmósferas inflamables.",
+        peorConsecuencia: "Muerte por explosión.",
         examenesMedicos: {
-            EMOA: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
-            ECG: 1,
-            PST: 1,
-            GLI: 2,
-            CH: 2,
-            PSP: 1
+            EMO: 1,
+            ECG: 2
         },
         aptitudesRequeridas: [
             "Ausencia de condiciones médicas que exacerben el riesgo eléctrico.",
             "Capacidad para seguir protocolos de seguridad específicos."
         ],
         condicionesIncompatibles: [
-            "Condiciones cardiacas inestables.",
-            "Sensibilidad al contacto eléctrico."
+            "Condiciones cardiacas inestables."
         ],
         eppSugeridos: [
             "Calzado antiestático",
@@ -369,10 +341,10 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Iluminación deficiente": {
-        consecuencias: "Fatiga visual, generación de accidentes.",
-        peorConsecuencia: "Accidente grave",
+        consecuencias: "Fatiga visual, caídas, golpes, generación de accidentes.",
+        peorConsecuencia: "Accidente grave.",
         examenesMedicos: {
-            VIS: 1,
+            OPTO: 1,
             PSM: 2
         },
         aptitudesRequeridas: [
@@ -380,7 +352,7 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Capacidad de adaptación a diferentes niveles de luz."
         ],
         condicionesIncompatibles: [
-            "Visión reducida o ceguera nocturna.",
+            "Visión reducida o ceguera nocturna no corregida.",
             "Problemas de adaptación a la oscuridad o al bajo contraste."
         ],
         eppSugeridos: [
@@ -396,10 +368,10 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Iluminación en exceso": {
-        consecuencias: "Fatiga visual, generación de accidentes.",
-        peorConsecuencia: "Accidente grave",
+        consecuencias: "Fatiga visual, deslumbramiento, cefalea, generación de accidentes.",
+        peorConsecuencia: "Accidente grave.",
         examenesMedicos: {
-            VIS: 1,
+            OPTO: 1,
             PSM: 2
         },
         aptitudesRequeridas: [
@@ -411,65 +383,62 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Cataratas u otras enfermedades oculares que agraven la exposición."
         ],
         eppSugeridos: [
-            "Gafas de seguridad con filtro UV",
-            "Cortinas o pantallas protectoras"
+            "Gafas de seguridad con filtro para luz visible",
+            "Pantallas anti-deslumbramiento para monitores"
         ],
         medidasIntervencion: {
-            eliminacion: "Rediseño de la iluminación para reducir la intensidad lumínica.",
-            sustitucion: "Implementación de sistemas de iluminación regulables.",
-            controlesIngenieria: "Instalación de controles automáticos de intensidad de luz.",
+            eliminacion: "Rediseño de la iluminación para reducir la intensidad lumínica y el deslumbramiento.",
+            sustitucion: "Implementación de sistemas de iluminación regulables (dimmers).",
+            controlesIngenieria: "Instalación de persianas, cortinas o películas de control solar en ventanas.",
             controlesAdministrativos: "Realización de estudios de iluminación y pausas visuales activas."
         }
     },
 
     "Presiones anormales": {
-        consecuencias: "Heridas, traumas, abrasiones, quemaduras.",
-        peorConsecuencia: "Daño severo",
+        consecuencias: "Barotrauma, enfermedad por descompresión, embolia gaseosa.",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
             AUD: 1,
-            ESP: 2,
-            VIS: 1,
-            PST: 1
+            ESP: 1,
+            ECG: 2
         },
         aptitudesRequeridas: [
-            "Estado físico y mental que permita trabajar en ambientes presurizados.",
-            "Agudeza auditiva para detectar fugas o cambios en la presión.",
-            "Conocimiento de protocolos de emergencia."
+            "Estado físico y mental que permita trabajar en ambientes hiperbáricos o hipobáricos.",
+            "Capacidad de compensación de presión en oído medio.",
+            "Salud cardiovascular y respiratoria adecuada."
         ],
         condicionesIncompatibles: [
             "Trastornos cardíacos o respiratorios graves.",
-            "Otitis crónica o perforación timpánica."
+            "Otitis crónica, perforación timpánica o sinusitis crónica.",
+            "Obesidad mórbida."
         ],
         eppSugeridos: [
-            "Equipos de protección específicos para alta/baja presión",
-            "Monitores de presión personales"
+            "Equipos de buceo (para condiciones hiperbáricas)",
+            "Equipos de oxígeno suplementario (para condiciones hipobáricas)"
         ],
         medidasIntervencion: {
-            eliminacion: "Rediseño del proceso para evitar la manipulación de sistemas presurizados.",
+            eliminacion: "Automatización de tareas en ambientes con presiones anormales.",
             sustitucion: "Implementación de equipos más seguros con sistemas de control de presión integrados.",
-            controlesIngenieria: "Instalación de sistemas de control de presión y válvulas de seguridad.",
-            controlesAdministrativos: "Procedimientos específicos y capacitación para manejo de presiones anormales."
+            controlesIngenieria: "Cámaras de descompresión, sistemas de presurización controlada.",
+            controlesAdministrativos: "Procedimientos específicos, tablas de descompresión, capacitación y aptitud médica."
         }
     },
 
     "Radiaciones ionizantes": {
-        consecuencias: "Enfermedades crónicas, quemaduras, daños genéticos.",
-        peorConsecuencia: "Cáncer",
+        consecuencias: "Enfermedades crónicas, quemaduras, daños genéticos, cáncer.",
+        peorConsecuencia: "Cáncer, Muerte.",
         examenesMedicos: {
             EMO: 1,
-            OPT: 1,
-            VIS: 1,
-            ECG: 1,
-            PST: 1,
+            OPTO: 1,
             CH: 1,
             PE: 1,
-            TGO: 1,
-            TGP: 1,
-            CRE: 1,
-            BUN: 1,
             T4L: 1,
-            TSH: 1
+            TSH: 1,
+            EMOD: 2,
+            TGO: 2,
+            TGP: 2,
+            CRE: 2
         },
         aptitudesRequeridas: [
             "Conciencia plena de los riesgos y protocolos de seguridad.",
@@ -479,7 +448,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         condicionesIncompatibles: [
             "Embarazo o intención de embarazo.",
             "Antecedentes de cáncer o enfermedades hematológicas.",
-            "Daño genético preexistente."
+            "Sistema inmunológico comprometido."
         ],
         eppSugeridos: [
             "Dosímetros personales",
@@ -490,19 +459,18 @@ export const GES_DATOS_PREDEFINIDOS = {
         medidasIntervencion: {
             eliminacion: "Sustitución de procesos con radiación por alternativas no radiológicas.",
             sustitucion: "Uso de tecnologías más seguras que minimicen la radiación.",
-            controlesIngenieria: "Blindaje de áreas, barreras de protección y sistemas de contención.",
-            controlesAdministrativos: "Control estricto del tiempo de exposición, distancia y blindaje."
+            controlesIngenieria: "Blindaje de áreas (plomo, concreto), sistemas de interbloqueo.",
+            controlesAdministrativos: "Control estricto del tiempo de exposición, distancia y blindaje (ALARA)."
         }
     },
     
     "Radiaciones no ionizantes": {
-        consecuencias: "Lesiones menores, daños en la piel y los ojos.",
+        consecuencias: "Quemaduras, daños en la piel y los ojos, cataratas.",
         peorConsecuencia: "Cáncer de piel, cataratas.",
         examenesMedicos: {
-            EMO: 1,
-            AUD: 2,
-            VIS: 1,
-            PST: 2
+            OPTO: 1,
+            EMOD: 1,
+            EMO: 2
         },
         aptitudesRequeridas: [
             "Integridad de la piel y mucosas.",
@@ -514,8 +482,8 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Cataratas o problemas visuales preexistentes."
         ],
         eppSugeridos: [
-            "Gafas con filtro UV",
-            "Ropa protectora UV (cuando aplique)",
+            "Gafas con filtro UV/IR",
+            "Ropa protectora de manga larga",
             "Protector solar"
         ],
         medidasIntervencion: {
@@ -527,44 +495,41 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Ruido": {
-        consecuencias: "Hipoacusia, alteraciones fisiológicas.",
-        peorConsecuencia: "Sordera permanente",
+        consecuencias: "Hipoacusia, acúfenos, estrés, alteraciones fisiológicas.",
+        peorConsecuencia: "Sordera profesional (Hipoacusia Neurosensorial Inducida por Ruido).",
         examenesMedicos: {
-            EMO: 1,
             AUD: 1,
-            ESP: 2,
-            PSM: 2,
+            EMO: 2,
             PST: 2
         },
         aptitudesRequeridas: [
-            "Capacidad auditiva adecuada (sin hipoacusia previa).",
+            "Capacidad auditiva dentro de límites normales.",
             "Capacidad para seguir protocolos de seguridad y usar EPP de forma correcta."
         ],
         condicionesIncompatibles: [
-            "Sordera preexistente o hipoacusia severa.",
-            "Patologías auditivas crónicas (otitis)."
+            "Hipoacusia neurosensorial preexistente que pueda agravarse.",
+            "Patologías auditivas crónicas (ej. otitis crónica supurativa)."
         ],
         eppSugeridos: [
-            "Protectores auditivos de tipo copa",
-            "Tapones auditivos desechables o reutilizables"
+            "Protectores auditivos de inserción (tapones)",
+            "Protectores auditivos de copa (orejeras)"
         ],
         medidasIntervencion: {
             eliminacion: "Reemplazo de equipos o maquinaria ruidosa.",
-            sustitucion: "Uso de equipos más silenciosos o con menor vibración.",
+            sustitucion: "Uso de equipos más silenciosos.",
             controlesIngenieria: "Encerramientos acústicos, barreras y cabinas de aislamiento.",
-            controlesAdministrativos: "Controlar el tiempo de exposición, rotación de personal y capacitación en uso de EPP."
+            controlesAdministrativos: "Controlar el tiempo de exposición, Programa de Conservación Auditiva."
         }
     },
 
     "Temperaturas extremas: calor": {
-        consecuencias: "Deshidratación, golpe de calor, quemaduras.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Deshidratación, golpe de calor, agotamiento por calor, síncope.",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
-            PST: 1
+            ECG: 2,
+            CRE: 2,
+            GLI: 2
         },
         aptitudesRequeridas: [
             "Buena salud cardiovascular y respiratoria.",
@@ -572,9 +537,9 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Condiciones de hidratación óptimas."
         ],
         condicionesIncompatibles: [
-            "Enfermedades cardiovasculares o respiratorias crónicas.",
+            "Enfermedades cardiovasculares o respiratorias crónicas no controladas.",
             "Insuficiencia renal o diabetes no controlada.",
-            "Uso de medicamentos que afecten la termorregulación."
+            "Uso de medicamentos que afecten la termorregulación (diuréticos, betabloqueadores)."
         ],
         eppSugeridos: [
             "Ropa de trabajo fresca y transpirable",
@@ -584,20 +549,18 @@ export const GES_DATOS_PREDEFINIDOS = {
         medidasIntervencion: {
             eliminacion: "Automatización de procesos en ambientes de calor extremo.",
             sustitucion: "Implementación de procesos que generen menos calor.",
-            controlesIngenieria: "Sistemas de ventilación forzada, aire acondicionado y zonas de refugio frescas.",
-            controlesAdministrativos: "Pausas programadas para hidratación y aclimatación, monitoreo de la salud."
+            controlesIngenieria: "Sistemas de ventilación forzada, aire acondicionado y zonas de refugio climatizadas.",
+            controlesAdministrativos: "Pausas programadas para hidratación y descanso, aclimatación, monitoreo de temperatura corporal."
         }
     },
 
     "Temperaturas extremas: frío": {
         consecuencias: "Congelamiento, hipotermia, quemaduras por frío.",
-        peorConsecuencia: "Hipotermia severa",
+        peorConsecuencia: "Hipotermia severa y muerte.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
-            PST: 1
+            ECG: 2,
+            ESP: 2
         },
         aptitudesRequeridas: [
             "Buena salud cardiovascular y circulatoria.",
@@ -610,22 +573,22 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Enfermedades respiratorias crónicas (asma)."
         ],
         eppSugeridos: [
-            "Ropa térmica en capas",
+            "Ropa térmica en capas (primera, segunda y tercera capa)",
             "Guantes térmicos",
-            "Calzado térmico",
+            "Calzado térmico e impermeable",
             "Gorros y pasamontañas"
         ],
         medidasIntervencion: {
             eliminacion: "Automatización de procesos para evitar la exposición directa al frío.",
             sustitucion: "Uso de procesos que requieran temperaturas menos frías.",
             controlesIngenieria: "Sistemas de calefacción, aislamiento de áreas frías y cabinas con temperatura controlada.",
-            controlesAdministrativos: "Rotación de personal en áreas frías, pausas activas y disponibilidad de bebidas calientes."
+            controlesAdministrativos: "Rotación de personal en áreas frías, pausas para recuperación térmica y disponibilidad de bebidas calientes."
         }
     },
 
     "Vibraciones mano-cuerpo": {
-        consecuencias: "Síndrome de vibración mano-brazo, trastornos vasculares y neurológicos.",
-        peorConsecuencia: "Daño permanente, incapacidad laboral.",
+        consecuencias: "Síndrome de vibración mano-brazo, trastornos vasculares (dedo blanco), neurológicos y osteomusculares.",
+        peorConsecuencia: "Daño vascular y neurológico permanente, incapacidad laboral.",
         examenesMedicos: {
             EMO: 1
         },
@@ -634,9 +597,9 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Ausencia de trastornos circulatorios."
         ],
         condicionesIncompatibles: [
-            "Síndrome de túnel carpiano.",
+            "Síndrome de túnel carpiano preexistente.",
             "Fenómeno de Raynaud o trastornos circulatorios en manos.",
-            "Enfermedades osteomusculares crónicas."
+            "Enfermedades osteomusculares crónicas en miembro superior."
         ],
         eppSugeridos: [
             "Guantes anti-vibración",
@@ -645,13 +608,13 @@ export const GES_DATOS_PREDEFINIDOS = {
         medidasIntervencion: {
             eliminacion: "Automatización de tareas que requieran herramientas vibratorias.",
             sustitucion: "Uso de herramientas de bajo impacto o con sistemas anti-vibración.",
-            controlesIngenieria: "Amortiguación y aislamiento de la fuente de vibración.",
-            controlesAdministrativos: "Limitar el tiempo de exposición y establecer pausas programadas."
+            controlesIngenieria: "Mantenimiento preventivo de herramientas para reducir vibraciones.",
+            controlesAdministrativos: "Limitar el tiempo de exposición (rotación) y establecer pausas programadas."
         }
     },
 
     "Vibraciones cuerpo completo": {
-        consecuencias: "Dolor lumbar, hernias discales, fatiga.",
+        consecuencias: "Dolor lumbar, hernias discales, trastornos digestivos, fatiga.",
         peorConsecuencia: "Daño permanente en la columna vertebral.",
         examenesMedicos: {
             EMO: 1,
@@ -663,26 +626,26 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Hernia discal o patologías de columna preexistentes.",
-            "Problemas renales o gástricos que puedan agravarse."
+            "Espondilolistesis, espondilolisis.",
+            "Embarazo."
         ],
         eppSugeridos: [
-            "Asientos y plataformas amortiguados",
-            "Mobiliario con aislamiento de vibraciones"
+            "Asientos y plataformas con suspensión y amortiguación",
+            "Sistemas de anclaje que reduzcan la transmisión de vibración"
         ],
         medidasIntervencion: {
             eliminacion: "Automatización de la conducción de vehículos que generan vibración.",
             sustitucion: "Uso de equipos más modernos y con mejores sistemas de suspensión.",
-            controlesIngenieria: "Aislamiento de la fuente de vibración en vehículos y maquinaria pesada.",
-            controlesAdministrativos: "Pausas y rotación de personal, capacitación en manejo de equipos."
+            controlesIngenieria: "Mejora de superficies de rodadura, mantenimiento de vehículos.",
+            controlesAdministrativos: "Pausas y rotación de personal, capacitación en posturas de conducción."
         }
     },
 
     "Cambios bruscos de temperatura": {
-        consecuencias: "Afecciones respiratorias, cefaleas, cambios en la tensión arterial.",
-        peorConsecuencia: "Daño permanente, enfermedades crónicas.",
+        consecuencias: "Afecciones respiratorias, cefaleas, estrés térmico.",
+        peorConsecuencia: "Agravamiento de enfermedades crónicas.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
             ESP: 2
         },
         aptitudesRequeridas: [
@@ -706,25 +669,24 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Humedad Relativa (Vapor de agua)": {
-        consecuencias: "Dificultad en la termorregulación, sequedad de piel y mucosas.",
-        peorConsecuencia: "Daño permanente en la piel, deshidratación.",
+        consecuencias: "Dificultad en la termorregulación, proliferación de hongos y bacterias, afecciones respiratorias.",
+        peorConsecuencia: "Enfermedades respiratorias crónicas.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
-            ESP: 2
+            ESP: 2,
+            EMOD: 2
         },
         aptitudesRequeridas: [
             "Integridad de la piel y mucosas.",
             "Capacidad de termorregulación adecuada."
         ],
         condicionesIncompatibles: [
-            "Enfermedades de la piel como dermatitis.",
-            "Patologías respiratorias crónicas."
+            "Enfermedades de la piel como dermatitis atópica.",
+            "Patologías respiratorias crónicas (asma, rinitis)."
         ],
         eppSugeridos: [
-            "Dehumidificadores",
-            "Humidificadores",
-            "Ropa de trabajo adecuada"
+            "Ropa de trabajo transpirable o impermeable según el caso",
+            "Sistemas de protección respiratoria si hay presencia de bioaerosoles"
         ],
         medidasIntervencion: {
             eliminacion: "Rediseño de procesos para controlar la generación de vapor de agua.",
@@ -735,14 +697,13 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
     
     "Exposición a gases vapores humos polvos no tóxicos": {
-        consecuencias: "Irritación respiratoria, intoxicaciones, alergias.",
+        consecuencias: "Irritación respiratoria, alergias, neumoconiosis benignas.",
         peorConsecuencia: "Daño respiratorio crónico.",
         examenesMedicos: {
-            EMO: 1,
-            AUD: 2,
             ESP: 1,
-            VIS: 1,
-            RXC: 2
+            EMO: 1,
+            RXC: 2,
+            OPTO: 2
         },
         aptitudesRequeridas: [
             "Buena capacidad pulmonar y salud respiratoria.",
@@ -754,34 +715,31 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Sensibilidad a partículas o sustancias en el ambiente."
         ],
         eppSugeridos: [
-            "Respiradores con filtros específicos",
-            "Mascarillas de protección contra polvo (N95)",
-            "Gafas de seguridad o careta facial"
+            "Respiradores con filtros para material particulado (N95)",
+            "Gafas de seguridad"
         ],
         medidasIntervencion: {
             eliminacion: "Implementación de procesos cerrados para contener los contaminantes.",
-            sustitucion: "Uso de productos con menor potencial de emisión de polvos o vapores.",
+            sustitucion: "Uso de productos con menor potencial de emisión de polvos o vapores (ej. pellets en vez de polvo).",
             controlesIngenieria: "Sistemas de extracción localizada y ventilación general forzada.",
             controlesAdministrativos: "Procedimientos de trabajo seguro y monitoreo ambiental de concentraciones."
         }
     },
     
     "Exposición a gases vapores humos polvos tóxicos": {
-        consecuencias: "Intoxicaciones, daños en órganos, irritación respiratoria severa.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Intoxicaciones, daños en órganos (hígado, riñón, sistema nervioso), cáncer.",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
             ESP: 1,
-            VIS: 1,
-            RXC: 2,
-            PSP: 1,
             TGO: 1,
             TGP: 1,
-            TRI: 1,
             CRE: 1,
             BUN: 1,
-            COLI: 1
+            CH: 1,
+            RXC: 2,
+            COLI: 2, // Prioridad 1 solo si son inhibidores de colinesterasa
+            PSP: 2
         },
         aptitudesRequeridas: [
             "Capacidad pulmonar y salud respiratoria óptima.",
@@ -790,12 +748,11 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Enfermedades respiratorias o cardiovasculares crónicas.",
-            "Insuficiencia renal o hepática.",
-            "Sensibilidad alérgica a las sustancias químicas."
+            "Insuficiencia renal o hepática preexistente.",
+            "Embarazo."
         ],
         eppSugeridos: [
-            "Equipo de respiración autónoma (SCBA)",
-            "Mascarillas con filtros de cartucho específicos",
+            "Equipo de respiración autónoma (SCBA) o máscaras con filtros de cartucho específicos",
             "Trajes químicos de protección total",
             "Guantes y botas de seguridad química"
         ],
@@ -808,20 +765,16 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Exposición sustancias químicas líquidas tóxicas": {
-        consecuencias: "Irritación cutánea, quemaduras químicas, intoxicación severa.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Irritación cutánea, quemaduras químicas, intoxicación sistémica.",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
-            EMO: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
-            PSP: 1,
+            EMOD: 1,
             TGO: 1,
             TGP: 1,
-            TRI: 1,
             CRE: 1,
             BUN: 1,
-            COLI: 1
+            CH: 2,
+            OPTO: 2
         },
         aptitudesRequeridas: [
             "Integridad de la piel y mucosas.",
@@ -830,13 +783,14 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Enfermedades de la piel como dermatitis atópica.",
-            "Insuficiencia renal o hepática.",
-            "Alergias cutáneas severas."
+            "Insuficiencia renal o hepática preexistente.",
+            "Alergias cutáneas severas a la sustancia."
         ],
         eppSugeridos: [
             "Trajes químicos resistentes a salpicaduras",
-            "Guantes de protección química de material adecuado",
-            "Botas de seguridad química"
+            "Guantes de protección química de material adecuado (nitrilo, neopreno, etc.)",
+            "Botas de seguridad química",
+            "Protección ocular y facial"
         ],
         medidasIntervencion: {
             eliminacion: "Reemplazo de procesos por alternativas sin químicos tóxicos.",
@@ -847,23 +801,15 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Exposición sustancias químicas líquidas no tóxicas": {
-        consecuencias: "Irritación, alergias leves, dermatitis por contacto.",
-        peorConsecuencia: "Reacción alérgica severa o quemadura leve.",
+        consecuencias: "Irritación, dermatitis por contacto, alergias leves.",
+        peorConsecuencia: "Dermatitis de contacto severa.",
         examenesMedicos: {
-            EMO: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
-            PSP: 1,
-            TGO: 1,
-            TGP: 1,
-            TRI: 1,
-            CRE: 1,
-            BUN: 1
+            EMOD: 1,
+            EMO: 2
         },
         aptitudesRequeridas: [
             "Integridad de la piel sin patologías crónicas.",
-            "Ausencia de alergias de contacto conocidas."
+            "Ausencia de alergias de contacto conocidas a la sustancia."
         ],
         condicionesIncompatibles: [
             "Dermatitis preexistente o alergias cutáneas.",
@@ -882,21 +828,18 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Exposición a sustancias químicas que generan efectos en el organismo": {
-        consecuencias: "Anestesia, daños genéticos, cáncer.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Carcinogénesis, mutagénesis, teratogénesis, toxicidad sistémica.",
+        peorConsecuencia: "Cáncer, Muerte.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
             ESP: 1,
-            VIS: 1,
-            RXC: 2,
-            PSP: 1,
+            CH: 1,
             TGO: 1,
             TGP: 1,
-            TRI: 1,
             CRE: 1,
             BUN: 1,
-            COLI: 1
+            RXC: 2,
+            COLI: 2 // Prioridad 1 solo si son inhibidores de colinesterasa
         },
         aptitudesRequeridas: [
             "Óptima salud respiratoria y de los órganos vitales.",
@@ -904,7 +847,8 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Enfermedades crónicas de los sistemas hepático, renal o respiratorio.",
-            "Antecedentes de cáncer o mutaciones genéticas."
+            "Antecedentes de cáncer o mutaciones genéticas.",
+            "Embarazo o intención de embarazo."
         ],
         eppSugeridos: [
             "Trajes especiales químicos (Nivel de protección adecuado)",
@@ -920,26 +864,19 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Presencia de animales/vectores transmisores de enfermedad": {
-        consecuencias: "Enfermedades infecciosas (dengue, fiebre amarilla, leptospirosis).",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Enfermedades infecciosas (dengue, zika, leptospirosis, fiebre amarilla).",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
-            PST: 2,
             CH: 1,
-            TGO: 1,
-            TGP: 1,
-            CRE: 1,
-            BUN: 1,
-            BRU: 1,
-            PO: 1,
-            TOX: 1,
-            LEP: 1
+            VFA: 1, // Vacuna Fiebre Amarilla
+            TET: 1, // Vacuna Tétanos
+            LEP: 2, // Según zona endémica
+            BRU: 2  // Según exposición a ganado
         },
         aptitudesRequeridas: [
             "Ausencia de enfermedades inmunosupresoras.",
+            "Esquema de vacunación completo para la zona.",
             "Conocimiento de las zonas de riesgo endémico."
         ],
         condicionesIncompatibles: [
@@ -947,7 +884,7 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Enfermedades crónicas que afecten la respuesta inmunológica."
         ],
         eppSugeridos: [
-            "Repelentes especiales de larga duración",
+            "Repelentes de insectos con Icaridina o DEET",
             "Ropa de manga larga y pantalones",
             "Botas altas o cerradas"
         ],
@@ -955,28 +892,19 @@ export const GES_DATOS_PREDEFINIDOS = {
             eliminacion: "Control integral de plagas y vectores en las instalaciones.",
             sustitucion: "No aplica.",
             controlesIngenieria: "Barreras físicas como mallas y cerramientos, limpieza de áreas verdes.",
-            controlesAdministrativos: "Programas de fumigación, vacunación del personal y capacitación en primeros auxilios para picaduras."
+            controlesAdministrativos: "Programas de fumigación, vacunación del personal y capacitación en primeros auxilios."
         }
     },
 
     "Exposición a material contaminado o con riesgo biológico": {
-        consecuencias: "Dermatopatías, enfermedades infecciosas (bacterianas, virales).",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Enfermedades infecciosas (Hepatitis B, VIH, Tuberculosis, etc.).",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
-            PST: 2,
             CH: 1,
-            TGO: 1,
-            TGP: 1,
-            CRE: 1,
-            BUN: 1,
-            BRU: 1,
-            PO: 1,
-            TOX: 1,
-            LEP: 1
+            VH: 1, // Vacuna Hepatitis B
+            TET: 1, // Vacuna Tétanos
+            ESP: 2 // Si hay riesgo de aerosoles (ej. TBC)
         },
         aptitudesRequeridas: [
             "Integridad de la piel sin heridas abiertas.",
@@ -984,14 +912,14 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Conocimiento y seguimiento de protocolos de bioseguridad."
         ],
         condicionesIncompatibles: [
-            "Enfermedades inmunosupresoras (VIH, tratamientos de quimioterapia).",
+            "Enfermedades inmunosupresoras (VIH, quimioterapia).",
             "Alergias a componentes del EPP (ej. látex).",
             "Dermatopatías activas."
         ],
         eppSugeridos: [
             "Guantes de nitrilo",
             "Mascarillas de alta filtración (N95)",
-            "Trajes de bioseguridad",
+            "Bata anti-fluidos",
             "Protección ocular y facial"
         ],
         medidasIntervencion: {
@@ -1009,23 +937,22 @@ export const GES_DATOS_PREDEFINIDOS = {
             EMOMP: 1,
             COP: 1,
             FRO: 1,
-            KOH: 1,
-            VH: 1,
-            VT: 1
+            KOH: 1
         },
         aptitudesRequeridas: [
-            "Buena higiene personal y manipulación de alimentos.",
+            "Buenas prácticas de higiene personal.",
             "Conocimiento de las Buenas Prácticas de Manufactura (BPM).",
-            "Integridad de la piel sin heridas abiertas."
+            "Integridad de la piel sin heridas abiertas o infectadas en manos y brazos."
         ],
         condicionesIncompatibles: [
-            "Enfermedades gastrointestinales infecciosas.",
-            "Heridas abiertas o lesiones en manos."
+            "Enfermedades gastrointestinales infecciosas activas.",
+            "Heridas abiertas o lesiones infectadas en manos.",
+            "Ser portador asintomático de patógenos entéricos."
         ],
         eppSugeridos: [
             "Guantes de nitrilo o polietileno",
             "Tapabocas",
-            "Cofias para el cabello",
+            "Cofia o gorro para el cabello",
             "Delantal impermeable"
         ],
         medidasIntervencion: {
@@ -1037,11 +964,11 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Manejo de cargas mayores a 25 Kg (Hombres)": {
-        consecuencias: "Lesiones osteomusculares (hernias, lumbalgias).",
-        peorConsecuencia: "Lesión permanente, incapacidad laboral.",
+        consecuencias: "Lesiones osteomusculares (hernias discales, lumbalgias).",
+        peorConsecuencia: "Lesión incapacitante permanente.",
         examenesMedicos: {
             EMO: 1,
-            RXC: 1
+            RXC: 2
         },
         aptitudesRequeridas: [
             "Buena salud osteomuscular, especialmente de la columna vertebral.",
@@ -1049,18 +976,17 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Capacitación en técnicas de levantamiento seguro."
         ],
         condicionesIncompatibles: [
-            "Hernia discal o patologías de columna preexistentes.",
+            "Hernia discal o patologías de columna preexistentes sintomáticas.",
             "Limitaciones de movilidad en extremidades.",
             "Debilidad muscular severa."
         ],
         eppSugeridos: [
-            "Fajas ergonómicas (uso no continuo)",
-            "Ayudas mecánicas (carretillas, patines)",
-            "Guantes de agarre"
+            "Guantes con buen agarre",
+            "Calzado de seguridad con puntera"
         ],
         medidasIntervencion: {
             eliminacion: "Automatización completa del levantamiento de cargas.",
-            sustitucion: "Uso de ayudas mecánicas y equipos de elevación (polipastos, montacargas).",
+            sustitucion: "Uso de ayudas mecánicas (montacargas, polipastos, estibadores).",
             controlesIngenieria: "Diseño ergonómico de puestos de trabajo para reducir la manipulación manual.",
             controlesAdministrativos: "Capacitación en manejo manual de cargas, límites de peso y rotación de tareas."
         }
@@ -1068,10 +994,10 @@ export const GES_DATOS_PREDEFINIDOS = {
 
     "Manejo de cargas mayores a 12.5 Kg (Mujeres)": {
         consecuencias: "Lesiones osteomusculares (hernias, lumbalgias).",
-        peorConsecuencia: "Lesión permanente, incapacidad laboral.",
+        peorConsecuencia: "Lesión incapacitante permanente.",
         examenesMedicos: {
             EMO: 1,
-            RXC: 1
+            RXC: 2
         },
         aptitudesRequeridas: [
             "Buena salud osteomuscular, especialmente de la columna vertebral.",
@@ -1079,14 +1005,13 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Capacitación en técnicas de levantamiento seguro."
         ],
         condicionesIncompatibles: [
-            "Hernia discal o patologías de columna preexistentes.",
+            "Hernia discal o patologías de columna preexistentes sintomáticas.",
             "Embarazo (con restricciones específicas).",
             "Debilidad muscular o limitaciones de movilidad."
         ],
         eppSugeridos: [
-            "Fajas ergonómicas (uso no continuo)",
-            "Ayudas mecánicas",
-            "Guantes de agarre"
+            "Guantes con buen agarre",
+            "Calzado de seguridad con puntera"
         ],
         medidasIntervencion: {
             eliminacion: "Automatización completa del levantamiento de cargas.",
@@ -1097,13 +1022,11 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Adopción de posturas nocivas": {
-        consecuencias: "Lesiones osteomusculares (lumbalgias, tendinitis).",
+        consecuencias: "Lesiones osteomusculares (lumbalgias, tendinitis, cervicalgias).",
         peorConsecuencia: "Lesión permanente, síndrome del túnel carpiano.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
-            VIS: 1,
-            RXC: 1
+            RXC: 2
         },
         aptitudesRequeridas: [
             "Integridad y flexibilidad osteomuscular.",
@@ -1115,45 +1038,39 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Dolor crónico o fibromialgia."
         ],
         eppSugeridos: [
-            "Sillas ergonómicas ajustables",
-            "Reposapiés, reposamuñecas",
-            "Pad mouse ergonómico"
+            "No aplica EPP. Requiere controles de ingeniería y administrativos."
         ],
         medidasIntervencion: {
             eliminacion: "Rediseño de los puestos de trabajo para evitar posturas estáticas.",
             sustitucion: "Mobiliario y equipos ergonómicos y ajustables a la medida del trabajador.",
-            controlesIngenieria: "Implementación de mesas de altura regulable y soportes para monitores.",
+            controlesIngenieria: "Implementación de sillas ergonómicas, mesas de altura regulable, soportes para monitores.",
             controlesAdministrativos: "Capacitación en higiene postural y pausas activas programadas."
         }
     },
 
     "Movimientos repetitivos (6 o más por minuto)": {
-        consecuencias: "Lesiones osteomusculares (tendinitis, epicondilitis).",
+        consecuencias: "Lesiones osteomusculares (tendinitis, epicondilitis, síndrome de túnel carpiano).",
         peorConsecuencia: "Lesión permanente, incapacidad funcional.",
         examenesMedicos: {
-            EMO: 1,
-            AUD: 2,
-            VIS: 1,
-            RXC: 1
+            EMO: 1
         },
         aptitudesRequeridas: [
             "Buena salud osteomuscular en manos, muñecas y hombros.",
             "Habilidad para realizar movimientos coordinados de forma precisa."
         ],
         condicionesIncompatibles: [
-            "Síndrome de túnel carpiano.",
-            "Tendinitis, epicondilitis o patologías articulares crónicas.",
+            "Síndrome de túnel carpiano preexistente sintomático.",
+            "Tendinitis, epicondilitis o patologías articulares crónicas en miembro superior.",
             "Limitaciones funcionales en manos o brazos."
         ],
         eppSugeridos: [
-            "Soportes ergonómicos y herramientas adaptadas",
-            "Guantes ergonómicos"
+            "No aplica EPP. Requiere controles de ingeniería y administrativos."
         ],
         medidasIntervencion: {
             eliminacion: "Automatización total de las tareas repetitivas.",
-            sustitucion: "Uso de herramientas ergonómicas o semiautomáticas.",
-            controlesIngenieria: "Ayudas mecánicas que reduzcan el esfuerzo repetitivo.",
-            controlesAdministrativos: "Rotación de tareas para evitar la sobrecarga de un solo grupo muscular."
+            sustitucion: "Uso de herramientas ergonómicas o semiautomáticas que reduzcan la fuerza y repetición.",
+            controlesIngenieria: "Diseño de puestos de trabajo que minimicen la repetición y la fuerza.",
+            controlesAdministrativos: "Rotación de tareas y pausas activas para evitar la sobrecarga."
         }
     },
 
@@ -1162,21 +1079,18 @@ export const GES_DATOS_PREDEFINIDOS = {
         peorConsecuencia: "Lesión permanente, incapacidad laboral.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
-            VIS: 1,
-            RXC: 1
+            OPTO: 2
         },
         aptitudesRequeridas: [
             "Salud osteomuscular y visual sin patologías crónicas.",
             "Capacidad de adaptación a los ajustes ergonómicos del puesto."
         ],
         condicionesIncompatibles: [
-            "Patologías de columna o articulares.",
+            "Patologías de columna o articulares que impidan la adaptación al puesto.",
             "Dificultades visuales no corregidas."
         ],
         eppSugeridos: [
-            "Mobiliario ergonómico",
-            "Soportes ajustables para equipos"
+            "No aplica EPP. Requiere controles de ingeniería y administrativos."
         ],
         medidasIntervencion: {
             eliminacion: "Rediseño completo de los puestos de trabajo con principios ergonómicos.",
@@ -1191,9 +1105,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         peorConsecuencia: "Lesión permanente, incapacidad laboral.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
-            VIS: 1,
-            RXC: 1
+            RXC: 2
         },
         aptitudesRequeridas: [
             "Integridad de la columna vertebral y sistema muscular.",
@@ -1201,26 +1113,24 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Patologías de columna o articulares crónicas.",
-            "Problemas circulatorios en extremidades inferiores."
+            "Insuficiencia venosa periférica severa."
         ],
         eppSugeridos: [
-            "Sillas ergonómicas ajustables",
-            "Colchonetas anti fatiga"
+            "No aplica EPP. Requiere controles de ingeniería y administrativos."
         ],
         medidasIntervencion: {
             eliminacion: "Diseño de puestos de trabajo que permitan alternar posturas (sentado/de pie).",
-            sustitucion: "Mobiliario y equipo que faciliten el cambio de postura y el movimiento.",
-            controlesIngenieria: "Ajustes personalizados y plataformas elevadoras para reducir la flexión.",
-            controlesAdministrativos: "Evaluación de pausas activas, capacitación en higiene postural y rotación de tareas."
+            sustitucion: "Mobiliario y equipo que faciliten el cambio de postura y el movimiento (sillas ergonómicas, reposapiés).",
+            controlesIngenieria: "Plataformas elevadoras para reducir la flexión de tronco.",
+            controlesAdministrativos: "Implementación de pausas activas, capacitación en higiene postural y rotación de tareas."
         }
     },
 
     "Competencias no definidas para el cargo": {
-        consecuencias: "Incidentes de trabajo, errores, estrés.",
+        consecuencias: "Incidentes de trabajo, errores, estrés, baja productividad.",
         peorConsecuencia: "Accidente grave, daño a la propiedad.",
         examenesMedicos: {
-            EMO: 1,
-            PST: 2
+            PST: 1
         },
         aptitudesRequeridas: [
             "Habilidades blandas y técnicas acorde a las responsabilidades.",
@@ -1237,7 +1147,7 @@ export const GES_DATOS_PREDEFINIDOS = {
             eliminacion: "No aplica.",
             sustitucion: "No aplica.",
             controlesIngenieria: "No aplica.",
-            controlesAdministrativos: "Perfiles de cargo definidos, descripciones de funciones claras y programa de inducción."
+            controlesAdministrativos: "Definición de perfiles de cargo, descripciones de funciones claras y programa de inducción y entrenamiento."
         }
     },
 
@@ -1259,7 +1169,7 @@ export const GES_DATOS_PREDEFINIDOS = {
             eliminacion: "No aplica.",
             sustitucion: "No aplica.",
             controlesIngenieria: "Sistemas a prueba de error (poka-yoke) que prevengan actos inseguros.",
-            controlesAdministrativos: "Programa de comportamiento seguro, refuerzo positivo y sanciones."
+            controlesAdministrativos: "Programa de seguridad basada en el comportamiento, retroalimentación positiva y medidas disciplinarias."
         }
     },
 
@@ -1267,8 +1177,8 @@ export const GES_DATOS_PREDEFINIDOS = {
         consecuencias: "Estrés, irritabilidad, ansiedad, violencia en el trabajo.",
         peorConsecuencia: "Síndrome de Burnout o trastornos de ansiedad.",
         examenesMedicos: {
-            EMO: 1,
-            PST: 1
+            PST: 1,
+            EMO: 2
         },
         aptitudesRequeridas: [
             "Inteligencia emocional y capacidad para manejar el estrés.",
@@ -1276,7 +1186,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Trastornos de ansiedad o depresión severa no tratada.",
-            "Intolerancia a la frustración o dificultad para gestionar emociones."
+            "Baja tolerancia a la frustración o dificultad para gestionar emociones."
         ],
         eppSugeridos: [
             "No aplica EPP. Requiere controles administrativos."
@@ -1290,11 +1200,11 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Monotonía/repetitividad de funciones": {
-        consecuencias: "Estrés, desmotivación, fatiga mental.",
+        consecuencias: "Estrés, desmotivación, fatiga mental, disminución de la alerta.",
         peorConsecuencia: "Síndrome de Burnout, depresión.",
         examenesMedicos: {
-            EMO: 1,
-            PST: 1
+            PST: 1,
+            EMO: 2
         },
         aptitudesRequeridas: [
             "Capacidad para mantener la atención y el enfoque.",
@@ -1302,7 +1212,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Trastornos de ansiedad o depresión severa no tratada.",
-            "Dificultad para manejar la frustración."
+            "Trastorno por Déficit de Atención (según valoración)."
         ],
         eppSugeridos: [
             "No aplica EPP. Requiere controles administrativos."
@@ -1319,8 +1229,8 @@ export const GES_DATOS_PREDEFINIDOS = {
         consecuencias: "Estrés, ansiedad, irritabilidad, fatiga mental.",
         peorConsecuencia: "Síndrome de Burnout, problemas cardiovasculares.",
         examenesMedicos: {
-            EMO: 1,
-            PST: 1
+            PST: 1,
+            EMO: 1
         },
         aptitudesRequeridas: [
             "Capacidad para manejar el estrés y la presión.",
@@ -1328,9 +1238,9 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Resiliencia y estabilidad emocional."
         ],
         condicionesIncompatibles: [
-            "Trastornos de ansiedad o depresión.",
+            "Trastornos de ansiedad o depresión no controlados.",
             "Hipertensión arterial no controlada.",
-            "Problemas cardíacos previos."
+            "Enfermedad cardiovascular sintomática."
         ],
         eppSugeridos: [
             "No aplica EPP. Requiere controles administrativos."
@@ -1339,7 +1249,7 @@ export const GES_DATOS_PREDEFINIDOS = {
             eliminacion: "Rediseño de procesos para reducir los picos de presión laboral.",
             sustitucion: "No aplica.",
             controlesIngenieria: "No aplica.",
-            controlesAdministrativos: "Capacitación en gestión del tiempo y del estrés, apoyo psicológico y definición de objetivos claros."
+            controlesAdministrativos: "Capacitación en gestión del tiempo y del estrés, apoyo psicológico y definición de objetivos claros y realistas."
         }
     },
 
@@ -1347,7 +1257,8 @@ export const GES_DATOS_PREDEFINIDOS = {
         consecuencias: "Golpes, contusiones, fracturas, caída de objetos.",
         peorConsecuencia: "Muerte por aplastamiento.",
         examenesMedicos: {
-            EMO: 1
+            EMO: 1,
+            OPTO: 1
         },
         aptitudesRequeridas: [
             "Buena agudeza visual y percepción de profundidad.",
@@ -1366,17 +1277,17 @@ export const GES_DATOS_PREDEFINIDOS = {
         medidasIntervencion: {
             eliminacion: "Rediseño de los espacios de almacenamiento para optimizar la seguridad.",
             sustitucion: "Implementación de sistemas de almacenamiento automatizados.",
-            controlesIngenieria: "Estanterías seguras y ancladas, pasillos demarcados.",
+            controlesIngenieria: "Estanterías seguras y ancladas, pasillos demarcados y señalizados.",
             controlesAdministrativos: "Procedimientos de almacenamiento y apilamiento seguro, capacitación en manejo de inventarios."
         }
     },
 
     "Condiciones inadecuadas de orden y aseo": {
-        consecuencias: "Caídas, golpes, contusiones, incendios.",
+        consecuencias: "Caídas al mismo nivel, golpes, contusiones, incendios.",
         peorConsecuencia: "Lesión grave, incendio de grandes proporciones.",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1
+            OPTO: 1
         },
         aptitudesRequeridas: [
             "Conciencia de los riesgos y disciplina para mantener el orden.",
@@ -1392,17 +1303,17 @@ export const GES_DATOS_PREDEFINIDOS = {
         medidasIntervencion: {
             eliminacion: "No aplica.",
             sustitucion: "No aplica.",
-            controlesIngenieria: "Sistemas de almacenamiento definidos, puntos de recolección de residuos.",
-            controlesAdministrativos: "Implementación del programa de las 5S, inspecciones periódicas de áreas de trabajo y housekeeping."
+            controlesIngenieria: "Sistemas de almacenamiento definidos, puntos de recolección de residuos señalizados.",
+            controlesAdministrativos: "Implementación del programa de las 5S, inspecciones periódicas y housekeeping."
         }
     },
 
     "Condiciones del piso": {
-        consecuencias: "Heridas, traumas, contusiones, fracturas.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Caídas, resbalones, torceduras, fracturas.",
+        peorConsecuencia: "Muerte por trauma craneoencefálico.",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1
+            OPTO: 1
         },
         aptitudesRequeridas: [
             "Buena agudeza visual para identificar superficies resbaladizas o irregulares.",
@@ -1410,7 +1321,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Vértigo o trastornos del equilibrio.",
-            "Trastornos de la marcha o uso de calzado inadecuado."
+            "Trastornos de la marcha."
         ],
         eppSugeridos: [
             "Calzado antideslizante",
@@ -1425,11 +1336,11 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Escaleras y barandas inadecuadas o mal estado": {
-        consecuencias: "Heridas, traumas, contusiones, fracturas.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Caídas, traumas, contusiones, fracturas.",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1
+            OPTO: 1
         },
         aptitudesRequeridas: [
             "Equilibrio y coordinación motriz.",
@@ -1438,27 +1349,26 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Vértigo o trastornos del equilibrio.",
-            "Dificultades de movilidad o uso de muletas/bastones.",
+            "Dificultades de movilidad o uso de ayudas externas (muletas/bastones).",
             "Hipovisión severa no corregida."
         ],
         eppSugeridos: [
-            "Calzado antideslizante",
-            "Señalización de áreas de riesgo"
+            "Calzado antideslizante"
         ],
         medidasIntervencion: {
             eliminacion: "Reemplazo total de estructuras defectuosas.",
             sustitucion: "No aplica.",
-            controlesIngenieria: "Reforzamiento de barandas, instalación de pasamanos y escalones antideslizantes.",
+            controlesIngenieria: "Reforzamiento de barandas, instalación de pasamanos dobles y cintas antideslizantes en escalones.",
             controlesAdministrativos: "Inspecciones periódicas y plan de mantenimiento preventivo."
         }
     },
 
     "Condiciones de las instalaciones": {
-        consecuencias: "Heridas, traumas, contusiones, fracturas.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Caídas, golpes, heridas, traumas.",
+        peorConsecuencia: "Muerte por colapso estructural.",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1
+            OPTO: 1
         },
         aptitudesRequeridas: [
             "Capacidad de percepción de riesgos en el entorno.",
@@ -1468,7 +1378,7 @@ export const GES_DATOS_PREDEFINIDOS = {
             "No aplica."
         ],
         eppSugeridos: [
-            "Casco de seguridad (en áreas específicas)",
+            "Casco de seguridad (en áreas de construcción o riesgo de caída de objetos)",
             "Calzado de seguridad"
         ],
         medidasIntervencion: {
@@ -1481,21 +1391,20 @@ export const GES_DATOS_PREDEFINIDOS = {
 
     "Deslizamientos": {
         consecuencias: "Heridas, traumas, contusiones, fracturas, aplastamiento.",
-        peorConsecuencia: "Muerte",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1
+            PST: 2
         },
         aptitudesRequeridas: [
             "Conocimiento del entorno y los riesgos geológicos.",
             "Capacidad de reacción y movilidad rápida en una emergencia."
         ],
         condicionesIncompatibles: [
-            "No aplica."
+            "Limitaciones de movilidad severas."
         ],
         eppSugeridos: [
-            "Botas impermeables",
-            "Chalecos salvavidas (si aplica en zonas de agua)"
+            "No aplica EPP para el evento, pero sí para la respuesta (casco, botas, etc.)."
         ],
         medidasIntervencion: {
             eliminacion: "No aplica.",
@@ -1506,16 +1415,16 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Inundación": {
-        consecuencias: "Ahogamiento, heridas, enfermedades por agua contaminada.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Ahogamiento, heridas, enfermedades transmitidas por el agua.",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1
+            PST: 2
         },
         aptitudesRequeridas: [
             "Capacidad para nadar (si aplica).",
             "Conocimiento de protocolos de emergencia y evacuación.",
-            "Buena salud gastrointestinal y de la piel."
+            "Salud general para resistir exposición a aguas contaminadas."
         ],
         condicionesIncompatibles: [
             "Fobia al agua.",
@@ -1535,10 +1444,10 @@ export const GES_DATOS_PREDEFINIDOS = {
 
     "Sismo - Terremotos": {
         consecuencias: "Heridas, traumas, contusiones, fracturas por caída de estructuras.",
-        peorConsecuencia: "Muerte",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1
+            PST: 1
         },
         aptitudesRequeridas: [
             "Capacidad para reaccionar con calma en una emergencia.",
@@ -1546,27 +1455,26 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Movilidad física sin restricciones."
         ],
         condicionesIncompatibles: [
-            "Fobia a los espacios cerrados.",
-            "Trastornos de pánico o ansiedad severa."
+            "Claustrofobia severa.",
+            "Trastornos de pánico o ansiedad severa no controlados."
         ],
         eppSugeridos: [
-            "Casco de seguridad",
-            "Kit de emergencias personal"
+            "Kit de emergencias personal (pito, linterna, etc.)"
         ],
         medidasIntervencion: {
             eliminacion: "No aplica.",
             sustitucion: "No aplica.",
-            controlesIngenieria: "Refuerzo estructural de edificaciones y anclaje de mobiliario.",
+            controlesIngenieria: "Refuerzo estructural de edificaciones sismo-resistente y anclaje de mobiliario.",
             controlesAdministrativos: "Plan de evacuación, simulacros periódicos y capacitación en respuesta a sismos."
         }
     },
 
     "Tormentas eléctricas": {
         consecuencias: "Quemaduras, shock eléctrico, paro cardíaco.",
-        peorConsecuencia: "Muerte",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
-            VIS: 1
+            ECG: 2
         },
         aptitudesRequeridas: [
             "Conocimiento de los protocolos de seguridad para tormentas.",
@@ -1576,22 +1484,21 @@ export const GES_DATOS_PREDEFINIDOS = {
             "No aplica."
         ],
         eppSugeridos: [
-            "Equipos de protección para rayos (pararrayos y jaula de Faraday en la edificación)"
+            "No aplica EPP para el trabajador. Requiere controles de ingeniería."
         ],
         medidasIntervencion: {
             eliminacion: "No aplica.",
             sustitucion: "No aplica.",
-            controlesIngenieria: "Sistemas pararrayos y de puesta a tierra.",
+            controlesIngenieria: "Sistemas pararrayos y de puesta a tierra en las instalaciones.",
             controlesAdministrativos: "Protocolos de seguridad para tormentas eléctricas y suspensión de trabajos en exteriores."
         }
     },
 
     "Lluvias granizadas": {
-        consecuencias: "Heridas, traumas, contusiones, fracturas por impacto.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Heridas, traumas, contusiones por impacto.",
+        peorConsecuencia: "Trauma craneoencefálico severo.",
         examenesMedicos: {
-            EMO: 1,
-            VIS: 1
+            EMO: 1
         },
         aptitudesRequeridas: [
             "Capacidad para identificar riesgos y buscar refugio seguro.",
@@ -1601,25 +1508,22 @@ export const GES_DATOS_PREDEFINIDOS = {
             "No aplica."
         ],
         eppSugeridos: [
-            "Impermeables",
-            "Botas de agua",
-            "Casco de seguridad"
+            "Casco de seguridad (si la tarea en exterior no puede suspenderse)"
         ],
         medidasIntervencion: {
             eliminacion: "No aplica.",
             sustitucion: "No aplica.",
             controlesIngenieria: "Techos reforzados y sistemas de protección para vehículos y áreas expuestas.",
-            controlesAdministrativos: "Procedimientos de refugio seguro en caso de granizo, monitoreo de alertas meteorológicas."
+            controlesAdministrativos: "Procedimientos de refugio seguro, suspensión de actividades en exterior, monitoreo de alertas meteorológicas."
         }
     },
 
     "Secuestros": {
-        consecuencias: "Pérdida de libertad, traumas psicológicos.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Pérdida de libertad, traumas psicológicos, lesiones físicas.",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
-            EMO: 1,
-            VIS: 1,
-            PST: 1
+            PST: 1,
+            EMO: 2
         },
         aptitudesRequeridas: [
             "Capacidad de mantener la calma y seguir protocolos de seguridad.",
@@ -1631,7 +1535,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         eppSugeridos: [
             "Sistemas de comunicación seguros",
-            "GPS integrado"
+            "Dispositivos de localización personal (GPS)"
         ],
         medidasIntervencion: {
             eliminacion: "No aplica.",
@@ -1642,11 +1546,9 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Amenazas": {
-        consecuencias: "Cuadros depresivos, ansiedad, estrés.",
-        peorConsecuencia: "Muerte por suicidio, agresión física.",
+        consecuencias: "Cuadros depresivos, ansiedad, estrés postraumático.",
+        peorConsecuencia: "Agresión física o afectación psicológica severa.",
         examenesMedicos: {
-            EMO: 1,
-            VIS: 1,
             PST: 1
         },
         aptitudesRequeridas: [
@@ -1655,7 +1557,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Trastornos de ansiedad o depresión severa.",
-            "Historial de trauma o victimización."
+            "Historial de trauma o victimización que genere vulnerabilidad."
         ],
         eppSugeridos: [
             "Sistemas de comunicación de emergencia",
@@ -1664,18 +1566,17 @@ export const GES_DATOS_PREDEFINIDOS = {
         medidasIntervencion: {
             eliminacion: "No aplica.",
             sustitucion: "No aplica.",
-            controlesIngenieria: "Sistemas de seguridad y control de acceso.",
-            controlesAdministrativos: "Protocolos de protección de testigos, apoyo psicológico y canales de denuncia confidenciales."
+            controlesIngenieria: "Sistemas de seguridad y control de acceso (CCTV, guardas).",
+            controlesAdministrativos: "Protocolos de manejo de amenazas, apoyo psicológico y canales de denuncia confidenciales."
         }
     },
 
     "Hurtos - Robos - Atracos": {
-        consecuencias: "Pérdida económica, depresión, trauma psicológico.",
+        consecuencias: "Pérdida económica, depresión, trauma psicológico, lesiones físicas.",
         peorConsecuencia: "Muerte, lesión física grave.",
         examenesMedicos: {
-            EMO: 1,
-            VIS: 1,
-            PST: 1
+            PST: 1,
+            EMO: 2
         },
         aptitudesRequeridas: [
             "Capacidad para manejar situaciones de alta tensión.",
@@ -1686,7 +1587,7 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Dificultad para mantener la calma bajo amenaza."
         ],
         eppSugeridos: [
-            "Sistemas de alarma, CCTV"
+            "No aplica EPP. Requiere controles de ingeniería y administrativos."
         ],
         medidasIntervencion: {
             eliminacion: "No aplica.",
@@ -1698,11 +1599,12 @@ export const GES_DATOS_PREDEFINIDOS = {
 
     "Accidente de Tránsito": {
         consecuencias: "Heridas, traumas, contusiones, fracturas.",
-        peorConsecuencia: "Muerte",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
+            PSM: 1,
             EMO: 1,
-            VIS: 1,
-            PSM: 1
+            OPTO: 1,
+            AUD: 1
         },
         aptitudesRequeridas: [
             "Buena agudeza visual y auditiva.",
@@ -1712,7 +1614,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         condicionesIncompatibles: [
             "Epilepsia no controlada.",
             "Trastornos de atención o somnolencia crónica.",
-            "Hipovisión severa no corregida."
+            "Hipovisión severa o campo visual muy reducido, no corregidos."
         ],
         eppSugeridos: [
             "Cinturón de seguridad",
@@ -1722,18 +1624,17 @@ export const GES_DATOS_PREDEFINIDOS = {
         medidasIntervencion: {
             eliminacion: "No aplica.",
             sustitucion: "No aplica.",
-            controlesIngenieria: "Mantenimiento preventivo de vehículos, sistemas de frenado ABS.",
+            controlesIngenieria: "Mantenimiento preventivo de vehículos, sistemas de seguridad activa y pasiva (ABS, airbags).",
             controlesAdministrativos: "Implementación del Plan Estratégico de Seguridad Vial (PESV), capacitación y exámenes de aptitud."
         }
     },
     
     "Desorden público - Atentados": {
         consecuencias: "Heridas, traumas, contusiones, fracturas, traumas psicológicos.",
-        peorConsecuencia: "Muerte",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
-            EMO: 1,
-            VIS: 1,
-            PST: 1
+            PST: 1,
+            EMO: 2
         },
         aptitudesRequeridas: [
             "Capacidad para mantener la calma en situaciones de emergencia.",
@@ -1741,7 +1642,7 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Resiliencia psicológica."
         ],
         condicionesIncompatibles: [
-            "Trastornos de ansiedad o pánico.",
+            "Trastornos de ansiedad o pánico severos.",
             "Problemas de movilidad que dificulten la evacuación."
         ],
         eppSugeridos: [
@@ -1760,8 +1661,6 @@ export const GES_DATOS_PREDEFINIDOS = {
         consecuencias: "Pérdida económica, alteración nerviosa, estrés postraumático.",
         peorConsecuencia: "Trauma psicológico severo, daño físico.",
         examenesMedicos: {
-            EMO: 1,
-            VIS: 1,
             PST: 1
         },
         aptitudesRequeridas: [
@@ -1785,16 +1684,13 @@ export const GES_DATOS_PREDEFINIDOS = {
     },
 
     "Trabajos en caliente": {
-        consecuencias: "Quemaduras, heridas por proyección de partículas, inhalación de humos.",
+        consecuencias: "Quemaduras, heridas por proyección de partículas, inhalación de humos metálicos.",
         peorConsecuencia: "Muerte, daño pulmonar permanente.",
         examenesMedicos: {
             EMO: 1,
-            EMOA: 1,
-            AUD: 2,
             ESP: 1,
-            VIS: 1,
-            ECG: 1,
-            PST: 1
+            OPTO: 1,
+            RXC: 2
         },
         aptitudesRequeridas: [
             "Buena salud cardiovascular y respiratoria.",
@@ -1804,29 +1700,30 @@ export const GES_DATOS_PREDEFINIDOS = {
         condicionesIncompatibles: [
             "Enfermedades respiratorias crónicas (asma, EPOC).",
             "Enfermedades cardiovasculares inestables.",
-            "Quemaduras previas o hipersensibilidad al calor."
+            "Epilepsia no controlada."
         ],
         eppSugeridos: [
             "Careta de soldador fotosensible",
-            "Guantes especiales para alta temperatura",
-            "Ropa ignífuga (algodón 100%)",
+            "Guantes para soldador (carnaza)",
+            "Ropa ignífuga (algodón 100% o jean)",
             "Delantal y mangas de cuero"
         ],
         medidasIntervencion: {
-            eliminacion: "Uso de procesos en frío como corte láser o unión mecánica.",
-            sustitucion: "Uso de métodos de unión más seguros y limpios.",
+            eliminacion: "Uso de procesos en frío como uniones mecánicas (atornillado, remachado).",
+            sustitucion: "Uso de métodos de soldadura que generen menos humos.",
             controlesIngenieria: "Ventilación forzada y extracción localizada de humos.",
-            controlesAdministrativos: "Permisos de trabajo en caliente, capacitación y monitoreo del área."
+            controlesAdministrativos: "Permisos de trabajo en caliente, capacitación y monitoreo de atmósferas."
         }
     },
 
     "Explosión": {
-        consecuencias: "Heridas, traumas, contusiones, fracturas, quemaduras.",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Politraumatismo, quemaduras, lesiones por onda expansiva.",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
             ESP: 1,
-            VIS: 1
+            AUD: 1,
+            OPTO: 1
         },
         aptitudesRequeridas: [
             "Conocimiento estricto de las propiedades de los materiales.",
@@ -1835,26 +1732,27 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Enfermedades respiratorias crónicas.",
-            "Patologías auditivas."
+            "Patologías auditivas severas.",
+            "Trastornos de pánico."
         ],
         eppSugeridos: [
-            "EPP específico según el riesgo explosivo (trajes antiestáticos, protección facial)."
+            "EPP específico según el riesgo (trajes antiestáticos, protección facial, protección auditiva)."
         ],
         medidasIntervencion: {
             eliminacion: "Sustitución de materiales explosivos por alternativas menos peligrosas.",
             sustitucion: "Uso de materiales menos volátiles o inflamables.",
             controlesIngenieria: "Sistemas anti-explosión, ventilación y confinamiento de procesos.",
-            controlesAdministrativos: "Procedimientos ATEX (Atmósferas explosivas), permisos de trabajo y capacitación."
+            controlesAdministrativos: "Procedimientos para atmósferas explosivas (ATEX), permisos de trabajo y capacitación."
         }
     },
     
     "Incendio": {
         consecuencias: "Quemaduras, inhalación de humos, asfixia.",
-        peorConsecuencia: "Muerte",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
             ESP: 1,
-            VIS: 1
+            ECG: 2
         },
         aptitudesRequeridas: [
             "Salud respiratoria y cardiovascular óptima.",
@@ -1863,31 +1761,28 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Enfermedades respiratorias crónicas (asma, EPOC).",
-            "Trastornos de pánico o fobia al fuego.",
+            "Trastornos de pánico o claustrofobia.",
             "Problemas de movilidad que dificulten la evacuación."
         ],
         eppSugeridos: [
-            "Trajes contra incendios",
-            "Equipos de respiración autónoma (SCBA)",
-            "Extintores portátiles"
+            "Trajes para brigadistas contra incendios",
+            "Equipos de respiración autónoma (SCBA)"
         ],
         medidasIntervencion: {
-            eliminacion: "Uso de materiales no combustibles en la construcción de instalaciones.",
-            sustitucion: "Uso de materiales retardantes de llama.",
-            controlesIngenieria: "Sistemas de detección y extinción de incendios, rociadores automáticos.",
-            controlesAdministrativos: "Plan de emergencias, simulacros y brigadas de emergencia."
+            eliminacion: "Uso de materiales no combustibles en la construcción y dotación.",
+            sustitucion: "Uso de materiales con retardo de llama.",
+            controlesIngenieria: "Sistemas de detección y extinción automática de incendios (rociadores).",
+            controlesAdministrativos: "Plan de emergencias, simulacros y conformación de brigadas de emergencia."
         }
     },
     
     "Sin disponibilidad de agua potable": {
-        consecuencias: "Deshidratación, enfermedades gastrointestinales (cólera, tifoidea).",
-        peorConsecuencia: "Deshidratación severa, brote de enfermedades.",
+        consecuencias: "Deshidratación, enfermedades gastrointestinales.",
+        peorConsecuencia: "Deshidratación severa, brote de enfermedades hídricas.",
         examenesMedicos: {
             EMO: 1,
-            ESP: 2,
-            VIS: 1,
-            PO: 1,
-            COP: 1
+            COP: 2,
+            CRE: 2
         },
         aptitudesRequeridas: [
             "Buena salud gastrointestinal y renal.",
@@ -1895,7 +1790,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         condicionesIncompatibles: [
             "Enfermedades gastrointestinales crónicas.",
-            "Problemas renales o diabetes."
+            "Insuficiencia renal."
         ],
         eppSugeridos: [
             "Filtros de agua portátiles",
@@ -1903,23 +1798,21 @@ export const GES_DATOS_PREDEFINIDOS = {
         ],
         medidasIntervencion: {
             eliminacion: "Conexión a un acueducto certificado para garantizar el suministro.",
-            sustitucion: "Uso de fuentes alternativas de agua (embotellada, de pozo tratada).",
+            sustitucion: "Suministro de agua embotellada certificada.",
             controlesIngenieria: "Sistemas de purificación y potabilización de agua in situ.",
-            controlesAdministrativos: "Control de calidad periódico del agua, protocolos de hidratación y manejo de emergencia."
+            controlesAdministrativos: "Control de calidad periódico del agua, protocolos de hidratación."
         }
     },
 
     "Enfermedades endémicas": {
-        consecuencias: "Enfermedades de diferente tipo (infecciosas, parasitarias).",
-        peorConsecuencia: "Muerte",
+        consecuencias: "Enfermedades infecciosas propias de la región (malaria, leishmaniasis, etc.).",
+        peorConsecuencia: "Muerte.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1
+            CH: 1
         },
         aptitudesRequeridas: [
-            "Sistema inmunológico competente y actualizado en vacunas.",
+            "Sistema inmunológico competente y esquema de vacunación al día.",
             "Conocimiento de las medidas de prevención para la zona geográfica."
         ],
         condicionesIncompatibles: [
@@ -1927,42 +1820,30 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Embarazo (con restricciones específicas)."
         ],
         eppSugeridos: [
-            "EPP de bioseguridad",
-            "Tapabocas N95"
+            "Repelente de insectos",
+            "Ropa de manga larga"
         ],
         medidasIntervencion: {
             eliminacion: "No aplica.",
             sustitucion: "No aplica.",
-            controlesIngenieria: "Sistemas de ventilación adecuados y control de plagas.",
+            controlesIngenieria: "Control de vectores en el lugar de trabajo.",
             controlesAdministrativos: "Protocolos sanitarios, campañas de vacunación y educación en salud pública."
         }
     },
 
     "Mordedura y Picadura de Animales": {
-        consecuencias: "Reacciones alérgicas, infecciones, transmisión de enfermedades.",
+        consecuencias: "Reacciones alérgicas, infecciones, envenenamiento.",
         peorConsecuencia: "Muerte por shock anafiláctico o veneno.",
         examenesMedicos: {
             EMO: 1,
-            AUD: 2,
-            ESP: 2,
-            VIS: 1,
-            PST: 2,
-            CH: 1,
-            TGO: 1,
-            TGP: 1,
-            BRU: 1,
-            TOX: 1,
-            LEP: 1,
-            VH: 1,
-            VT: 1,
-            VFA: 1
+            TET: 1
         },
         aptitudesRequeridas: [
-            "Ausencia de alergias graves a venenos o picaduras.",
+            "Ausencia de alergias graves conocidas a venenos o picaduras.",
             "Conocimiento de la fauna local y protocolos de primeros auxilios."
         ],
         condicionesIncompatibles: [
-            "Alergias graves (ej. a picaduras de abejas).",
+            "Alergias graves conocidas (ej. a picaduras de abejas).",
             "Condiciones que comprometan la respuesta inmunológica."
         ],
         eppSugeridos: [
@@ -1971,10 +1852,10 @@ export const GES_DATOS_PREDEFINIDOS = {
             "Botas de caña alta"
         ],
         medidasIntervencion: {
-            eliminacion: "Control de plagas y vectores en áreas de trabajo.",
+            eliminacion: "Control de plagas y fauna peligrosa en áreas de trabajo.",
             sustitucion: "No aplica.",
             controlesIngenieria: "Barreras físicas en áreas de riesgo, cerramientos y limpieza de maleza.",
-            controlesAdministrativos: "Protocolos de primeros auxilios para mordeduras y picaduras, capacitación sobre fauna peligrosa."
+            controlesAdministrativos: "Protocolos de primeros auxilios, capacitación sobre fauna peligrosa y plan de emergencias."
         }
     }
 };
