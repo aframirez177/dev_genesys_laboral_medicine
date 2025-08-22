@@ -345,7 +345,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         peorConsecuencia: "Accidente grave.",
         examenesMedicos: {
             OPTO: 1,
-            PSM: 2
+            
         },
         aptitudesRequeridas: [
             "Agudeza visual corregida y visión nocturna adecuada.",
@@ -372,7 +372,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         peorConsecuencia: "Accidente grave.",
         examenesMedicos: {
             OPTO: 1,
-            PSM: 2
+            
         },
         aptitudesRequeridas: [
             "Agudeza visual corregida y capacidad para trabajar con altos niveles de luz.",
