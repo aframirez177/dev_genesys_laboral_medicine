@@ -211,7 +211,7 @@ export const GES_DATOS_PREDEFINIDOS = {
         medidasIntervencion: {
             eliminacion: "Automatización de procesos de corte.",
             sustitucion: "Uso de herramientas con sistemas de seguridad integrados.",
-            controlesIngenieria: "Instalación de guardas y dispositivos de protección.",
+            controlesIngenieria: "Instalación de guardas y dispositivos de protección donde sea necesario.",
             controlesAdministrativos: "Procedimientos de trabajo seguro y mantenimiento preventivo de equipos."
         }
     },
@@ -494,6 +494,36 @@ export const GES_DATOS_PREDEFINIDOS = {
         }
     },
 
+
+    "Radiaciones por equipos audiovisuales": {
+        consecuencias: "Fatiga visual, ojo seco, cefaleas, trastornos osteomusculares (cervicalgia, dorsalgia), alteración de ritmos circadianos.",
+        peorConsecuencia: "Trastornos visuales crónicos y lesiones osteomusculares severas.",
+        examenesMedicos: {
+            EMO: 1,
+            OPTO: 1
+        },
+        aptitudesRequeridas: [
+            "Agudeza visual corregida.",
+            "Capacidad para adoptar y mantener posturas ergonómicas.",
+            "Conocimiento en higiene postural y visual."
+        ],
+        condicionesIncompatibles: [
+            "Patologías oftalmológicas no corregidas que se agraven con la exposición (ej. ojo seco severo).",
+            "Trastornos de columna vertebral preexistentes y sintomáticos.",
+            "Migrañas crónicas fotosensibles."
+        ],
+        eppSugeridos: [
+            "Gafas con filtro de luz azul",
+            "Pantallas de privacidad con filtro anti-reflejo"
+        ],
+        medidasIntervencion: {
+            eliminacion: "Rediseño de tareas para reducir la dependencia de pantallas.",
+            sustitucion: "Uso de pantallas con tecnologías de baja emisión de luz azul y sin parpadeo (flicker-free).",
+            controlesIngenieria: "Diseño ergonómico del puesto de trabajo (silla, mesa, altura del monitor), control de la iluminación ambiental para evitar reflejos.",
+            controlesAdministrativos: "Implementación de pausas activas visuales y osteomusculares (ej. regla 20-20-20), capacitación en ergonomía y programa de vigilancia epidemiológica."
+        }
+    },
+    
     "Ruido": {
         consecuencias: "Hipoacusia, acúfenos, estrés, alteraciones fisiológicas.",
         peorConsecuencia: "Sordera profesional (Hipoacusia Neurosensorial Inducida por Ruido).",
@@ -960,6 +990,95 @@ export const GES_DATOS_PREDEFINIDOS = {
             sustitucion: "No aplica.",
             controlesIngenieria: "Equipos de refrigeración y conservación adecuados, áreas de lavado y desinfección.",
             controlesAdministrativos: "Capacitación en BPM y HACCP, monitoreo de la salud del personal y control de proveedores."
+        }
+    },
+
+    "Exposición a Bacterias": {
+        consecuencias: "Infecciones localizadas o sistémicas, reacciones alérgicas, intoxicaciones.",
+        peorConsecuencia: "Sepsis, fallo multiorgánico, Muerte.",
+        examenesMedicos: {
+            EMO: 1
+        },
+        aptitudesRequeridas: [
+            "Sistema inmunológico competente.",
+            "Integridad de la piel y mucosas como barreras de protección.",
+            "Adherencia estricta a protocolos de higiene y bioseguridad."
+        ],
+        condicionesIncompatibles: [
+            "Condiciones de inmunosupresión (tratamientos, enfermedades).",
+            "Dermatitis o heridas abiertas que comprometan la barrera cutánea.",
+            "Enfermedades infecciosas crónicas."
+        ],
+        eppSugeridos: [
+            "Guantes de nitrilo o látex",
+            "Protección respiratoria (mascarilla quirúrgica o N95 según vía de transmisión)",
+            "Bata o traje de protección",
+            "Protección ocular y facial"
+        ],
+        medidasIntervencion: {
+            eliminacion: "Uso de procesos estériles que eliminen la presencia bacteriana.",
+            sustitucion: "Sustitución por cepas no patógenas en procesos de laboratorio.",
+            controlesIngenieria: "Cabinas de bioseguridad, sistemas de ventilación con presión negativa, superficies de fácil limpieza y desinfección.",
+            controlesAdministrativos: "Protocolos de limpieza y desinfección, programa de higiene de manos, capacitación en bioseguridad y gestión de residuos biológicos."
+        }
+    },
+
+    "Exposición a Virus": {
+        consecuencias: "Infecciones virales agudas o crónicas (respiratorias, sanguíneas, dérmicas).",
+        peorConsecuencia: "Enfermedad grave, cronicidad, Muerte.",
+        examenesMedicos: {
+            EMO: 1
+        },
+        aptitudesRequeridas: [
+            "Esquema de vacunación completo y actualizado según el riesgo.",
+            "Sistema inmunológico competente.",
+            "Aplicación rigurosa de precauciones universales y protocolos de bioseguridad."
+        ],
+        condicionesIncompatibles: [
+            "Condiciones de inmunosupresión.",
+            "Embarazo (por riesgo de infecciones congénitas).",
+            "Ausencia de vacunación para agentes virales prevenibles (ej. Hepatitis B, Influenza)."
+        ],
+        eppSugeridos: [
+            "Protección respiratoria de alta eficiencia (N95 o superior) para aerosoles",
+            "Protección ocular (monogafas) y facial (careta)",
+            "Guantes de nitrilo",
+            "Bata anti-fluidos"
+        ],
+        medidasIntervencion: {
+            eliminacion: "Evitar procedimientos que generen aerosoles infecciosos.",
+            sustitucion: "Uso de material desechable para evitar la contaminación cruzada.",
+            controlesIngenieria: "Sistemas de ventilación y filtración de aire (filtros HEPA), cabinas de bioseguridad, barreras físicas.",
+            controlesAdministrativos: "Implementación de programas de vacunación, capacitación en precauciones universales, restricción de acceso a áreas de alto riesgo."
+        }
+    },
+
+    "Exposición a Microorganismos": {
+        consecuencias: "Afecciones respiratorias, cutáneas o sistémicas por exposición a hongos, mohos, protozoos.",
+        peorConsecuencia: "Micosis sistémica, enfermedad pulmonar crónica, shock anafiláctico.",
+        examenesMedicos: {
+            EMO: 1
+        },
+        aptitudesRequeridas: [
+            "Ausencia de alergias conocidas a hongos o mohos.",
+            "Sistema inmunológico y respiratorio en buen estado.",
+            "Capacidad para utilizar equipos de protección respiratoria."
+        ],
+        condicionesIncompatibles: [
+            "Asma o enfermedades respiratorias crónicas.",
+            "Alergias severas.",
+            "Condiciones de inmunosupresión."
+        ],
+        eppSugeridos: [
+            "Respirador con filtros para partículas (N95 o P100)",
+            "Guantes de protección",
+            "Ropa de trabajo de cobertura completa"
+        ],
+        medidasIntervencion: {
+            eliminacion: "Controlar y eliminar fuentes de humedad para prevenir el crecimiento de moho.",
+            sustitucion: "Uso de materiales de construcción resistentes al moho.",
+            controlesIngenieria: "Sistemas de control de humedad (deshumidificadores), ventilación y extracción localizada.",
+            controlesAdministrativos: "Mantenimiento preventivo de sistemas de climatización, monitoreo ambiental, protocolos de limpieza en húmedo."
         }
     },
 
