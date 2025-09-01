@@ -16,6 +16,7 @@
         border-radius: 12px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         transition: all 0.3s ease;
+        margin-top: 15vh;
     }
 
     // Contenedores de estado (solo uno debe estar activo)
@@ -112,7 +113,8 @@
 
         .btn-download {
            padding: 0.6rem 1.2rem;
-           font-size: 0.9rem;
+           font-size: 1rem;
+           align-content: center;
         }
     }
 
