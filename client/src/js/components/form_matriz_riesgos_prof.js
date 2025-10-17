@@ -1626,7 +1626,9 @@ export function initializeForm() {
             }
             esPrimerCargoAgregado = false; 
         }
+    return cargoDiv;
     }
+
     
     function showRestoreBanner(state) { 
         const banner = document.createElement('div');
@@ -1689,7 +1691,7 @@ export function initializeForm() {
                 addCargo(cargoData, index === 0 && state.cargos.length === 1);
                 
                 // Obtener el último cargo agregado (siempre estará antes del hero-content)
-                const cargoEl = cargoContainer.querySelector('.cargo:last-of-type');
+                const cargoEl = addCargo(cargoData, index === 0 && state.cargos.length === 1);
                     
                 if (!cargoEl) return;
 
@@ -1952,9 +1954,7 @@ export function initializeForm() {
             }
         });
     }
-}
-
-// === FUNCIÓN TEMPORAL DE DEBUGGING ===
+    // === FUNCIÓN TEMPORAL DE DEBUGGING ===
 // Añadir esta función al objeto window para debugging manual
 window.debugNiveles = function() {
     const cargoContainer = document.getElementById('cargoContainer');
@@ -2296,3 +2296,5 @@ window.forzarActualizacionIconos = function() {
     
     console.log('\n🔄 === ACTUALIZACIÓN DE ICONOS COMPLETADA ===');
 };
+}
+
