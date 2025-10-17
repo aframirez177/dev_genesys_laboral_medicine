@@ -1694,23 +1694,23 @@ export function initializeForm() {
     
             // Recorrer los datos guardados
             state.cargos.forEach((cargoData, index) => {
-                console.log(`Restaurando Cargo ${index + 1}: ${cargoData.cargoName}`);
+                const currentCargoNameForLog = cargoData.cargoName || `(Cargo sin nombre ${index + 1})`; // Para logs claros
+                console.log(`Restaurando Cargo ${index + 1}: ${currentCargoNameForLog}`);
     
-                // === LA CORRECCIÓN ESTÁ AQUÍ ===
                 // Llamar a addCargo UNA SOLA VEZ y guardar la referencia
                 const cargoEl = addCargo(cargoData, index === 0 && state.cargos.length === 1);
-                // La línea duplicada "addCargo(cargoData, ...);" ha sido eliminada.
     
-                // Verificar si addCargo funcionó correctamente
-                if (!cargoEl) {
-                    console.error(`Error: addCargo devolvió null/undefined para el cargo ${index}. Saltando este cargo.`);
-                    return; // Usamos 'return' dentro de forEach para ir al siguiente elemento
+                if (!cargoEl || !cargoEl.isConnected) { // Verificar si se creó Y está en el DOM
+                    console.error(`Error: addCargo no creó correctamente el elemento DOM para ${currentCargoNameForLog}. Saltando este cargo.`);
+                    return;
                 }
-                console.log(`  Elemento DOM para Cargo ${index + 1} creado/encontrado.`);
+                 console.log(`  Elemento DOM para ${currentCargoNameForLog} creado y conectado.`);
+                 // Log para verificar que cargoEl es el correcto
+                 console.log(`  Verificación: Nombre en cargoEl recién creado: ${cargoEl.querySelector('input[name="cargoName"]')?.value}`);
     
                 // Restaurar GES seleccionados, controles y niveles para este cargoEl
                 if (cargoData.gesSeleccionados && cargoData.gesSeleccionados.length > 0) {
-                    console.log(`  Restaurando ${cargoData.gesSeleccionados.length} GES para Cargo ${index + 1}...`);
+                    console.log(`  Restaurando ${cargoData.gesSeleccionados.length} GES para ${currentCargoNameForLog}...`);
                     cargoData.gesSeleccionados.forEach(gesData => {
                         const gesValue = `${gesData.riesgo} - ${gesData.ges}`;
                         const checkbox = cargoEl.querySelector(`input[type="checkbox"][value="${gesValue}"]`);
@@ -1719,84 +1719,112 @@ export function initializeForm() {
                             checkbox.checked = true;
                             console.log(`    Checkbox marcado para: ${gesValue}`);
     
-                            // Restaurar Controles (Fuente, Medio, Individuo)
+                            // --- Restauración de CONTROLES Mejorada ---
                             if (gesData.controles) {
                                 ['fuente', 'medio', 'individuo'].forEach(tipo => {
-                                    if (gesData.controles[tipo] !== undefined && gesData.controles[tipo] !== null) { // Verificar que el dato existe
+                                    const valorGuardado = gesData.controles[tipo]; // Obtener valor guardado
+                                    if (valorGuardado !== undefined && valorGuardado !== null) {
+                                        console.log(`    Procesando control ${tipo} = "${valorGuardado}" para ${gesValue}`);
                                         const infoGeneralSection = cargoEl.querySelector('.info-general-section');
+    
                                         if (infoGeneralSection) {
-                                            // Buscar o crear el input hidden para el control
                                             let controlInput = cargoEl.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-tipo="${tipo}"]`);
+                                            let needsAppend = false; // Flag para saber si debemos añadirlo
+    
                                             if (!controlInput) {
                                                 controlInput = document.createElement('input');
                                                 controlInput.type = 'hidden';
                                                 controlInput.dataset.riesgo = gesValue;
                                                 controlInput.dataset.tipo = tipo;
                                                 controlInput.setAttribute('name', `control_${tipo}_${gesValue.replace(/[^a-zA-Z0-9]/g, '_')}`);
-                                                infoGeneralSection.appendChild(controlInput);
-                                                console.log(`      Input hidden CREADO para control ${tipo}: ${gesValue}`);
+                                                needsAppend = true; // Marcar para añadir después
+                                                console.log(`      Input hidden PREPARADO para control ${tipo}: ${gesValue}`);
                                             } else {
                                                  console.log(`      Input hidden ENCONTRADO para control ${tipo}: ${gesValue}`);
                                             }
-                                            // Asignar el valor guardado
-                                            controlInput.value = gesData.controles[tipo];
-                                            console.log(`      >> Valor restaurado para ${tipo}: ${controlInput.value}`);
-                                        } else {
-                                            console.error(`      Error: No se encontró .info-general-section para control ${tipo} en ${gesValue}`);
+    
+                                            // ASIGNAR EL VALOR ANTES de añadir (si es nuevo)
+                                            controlInput.value = valorGuardado;
+                                            console.log(`      >> Valor ASIGNADO a input (${tipo}): ${controlInput.value}`);
+    
+                                            // AÑADIR AL DOM (solo si era nuevo)
+                                            if (needsAppend) {
+                                                infoGeneralSection.appendChild(controlInput);
+                                                console.log(`      Input hidden AÑADIDO al DOM para control ${tipo}`);
+                                            }
+    
+                                            // VERIFICACIÓN INMEDIATA después de asignar/añadir
+                                            const verifyInput = infoGeneralSection.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-tipo="${tipo}"]`);
+                                            if (verifyInput && verifyInput.value === valorGuardado) {
+                                                console.log(`      ✅ Verificación INMEDIATA OK para ${tipo}. Valor en DOM: "${verifyInput.value}"`);
+                                            } else {
+                                                console.error(`      ❌ Verificación INMEDIATA FALLÓ para ${tipo}. Input:`, verifyInput);
+                                            }
+                                        } else { // Fin if(infoGeneralSection)
+                                            console.error(`      Error: No se encontró .info-general-section para control ${tipo} en ${gesValue} DENTRO del cargo ${currentCargoNameForLog}`);
                                         }
-                                    }
-                                });
-                            } else {
+                                    } // Fin if(valorGuardado !== undefined)
+                                }); // Fin forEach tipo control
+                            } else { // Fin if(gesData.controles)
                                  console.log(`    No hay datos de controles para ${gesValue}`);
                             }
     
-                            // Restaurar Niveles (Deficiencia, Exposición, Consecuencia)
-                            if (gesData.niveles && Object.keys(gesData.niveles).length > 0) { // Verificar que hay niveles
-                                console.log(`    Restaurando niveles para ${gesValue}:`, gesData.niveles);
-                                const infoGeneralSection = cargoEl.querySelector('.info-general-section');
-                                if (infoGeneralSection) {
-                                    // Buscar o crear el input hidden para los niveles
-                                    let nivelesInput = cargoEl.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-niveles]`);
-                                    if (!nivelesInput) {
-                                        nivelesInput = document.createElement('input');
-                                        nivelesInput.type = 'hidden';
-                                        nivelesInput.dataset.riesgo = gesValue;
-                                        nivelesInput.dataset.niveles = true; // Usar true como valor
-                                        nivelesInput.setAttribute('name', `niveles_${gesValue.replace(/[^a-zA-Z0-9]/g, '_')}`);
-                                        infoGeneralSection.appendChild(nivelesInput);
-                                        console.log(`      Input hidden CREADO para niveles: ${gesValue}`);
-                                    } else {
-                                        console.log(`      Input hidden ENCONTRADO para niveles: ${gesValue}`);
-                                    }
-                                    // Asignar el valor guardado (como JSON string)
-                                    nivelesInput.value = JSON.stringify(gesData.niveles);
-                                    console.log(`      >> Valor JSON restaurado para niveles: ${nivelesInput.value}`);
+                            // --- Restauración de NIVELES Mejorada (similar) ---
+                            if (gesData.niveles && Object.keys(gesData.niveles).length > 0) {
+                                 const valorJsonGuardado = JSON.stringify(gesData.niveles); // Convertir a JSON una vez
+                                 console.log(`    Restaurando niveles JSON = ${valorJsonGuardado} para ${gesValue}`);
+                                 const infoGeneralSection = cargoEl.querySelector('.info-general-section');
     
-                                    // Verificar inmediatamente después de asignar
-                                    const verificacion = cargoEl.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-niveles]`);
-                                    console.log(`      Verificación inmediata post-asignación:`, verificacion ? `Valor="${verificacion.value}"` : '¡NO ENCONTRADO!');
+                                 if (infoGeneralSection) {
+                                     let nivelesInput = cargoEl.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-niveles]`);
+                                     let needsAppendNiveles = false;
     
-                                } else {
-                                    console.error(`      Error: No se encontró .info-general-section para niveles en ${gesValue}`);
-                                }
-                                 // Llamar a updateNiveles puede ser redundante si la creación directa funciona,
-                                 // pero lo dejamos como backup por ahora. Asegúrate que updateNiveles
-                                 // también use el selector input[type="hidden"] si busca antes de crear.
-                                 // updateNiveles(gesValue, cargoEl, gesData.niveles);
+                                     if (!nivelesInput) {
+                                         nivelesInput = document.createElement('input');
+                                         nivelesInput.type = 'hidden';
+                                         nivelesInput.dataset.riesgo = gesValue;
+                                         nivelesInput.dataset.niveles = "true"; // Usar string "true"
+                                         nivelesInput.setAttribute('name', `niveles_${gesValue.replace(/[^a-zA-Z0-9]/g, '_')}`);
+                                         needsAppendNiveles = true;
+                                         console.log(`      Input hidden PREPARADO para niveles: ${gesValue}`);
+                                     } else {
+                                         console.log(`      Input hidden ENCONTRADO para niveles: ${gesValue}`);
+                                     }
     
-                            } else {
+                                     // Asignar valor JSON ANTES de añadir
+                                     nivelesInput.value = valorJsonGuardado;
+                                     console.log(`      >> Valor JSON ASIGNADO a input (niveles): ${nivelesInput.value}`);
+    
+                                     // Añadir al DOM si es nuevo
+                                     if (needsAppendNiveles) {
+                                         infoGeneralSection.appendChild(nivelesInput);
+                                         console.log(`      Input hidden AÑADIDO al DOM para niveles`);
+                                     }
+    
+                                     // Verificación INMEDIATA
+                                     const verifyNiveles = infoGeneralSection.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-niveles]`);
+                                     if (verifyNiveles && verifyNiveles.value === valorJsonGuardado) {
+                                        console.log(`      ✅ Verificación INMEDIATA OK para niveles. Valor JSON en DOM: "${verifyNiveles.value}"`);
+                                     } else {
+                                         console.error(`      ❌ Verificación INMEDIATA FALLÓ para niveles. Input:`, verifyNiveles);
+                                     }
+                                 } else { // Fin if(infoGeneralSection)
+                                     console.error(`      Error: No se encontró .info-general-section para niveles en ${gesValue} DENTRO del cargo ${currentCargoNameForLog}`);
+                                 }
+                            } else { // Fin if(gesData.niveles)
                                 console.log(`    No hay datos de niveles para ${gesValue}`);
                             }
-                        } else {
-                             console.warn(`    Checkbox no encontrado en DOM para: ${gesValue}`);
+                        } else { // Fin if(checkbox)
+                             console.warn(`    Checkbox no encontrado en DOM para: ${gesValue} dentro del cargo ${currentCargoNameForLog}`);
                         }
                     }); // Fin forEach gesData
     
                     // Actualizar el resumen del cargo DESPUÉS de procesar todos sus GES
-                    console.log(`  Actualizando resumen final para Cargo ${index + 1}`);
+                    console.log(`  Actualizando resumen final para ${currentCargoNameForLog}`);
                     updateGesResumen(cargoEl);
-                } else {
-                     console.log(`  Cargo ${index + 1} no tiene GES seleccionados.`);
+    
+                } else { // Fin if(cargoData.gesSeleccionados)
+                     console.log(`  ${currentCargoNameForLog} no tiene GES seleccionados.`);
                      // Asegurarse que el resumen muestre "No hay GES" si estaba vacío
                      updateGesResumen(cargoEl);
                 }
@@ -1821,7 +1849,7 @@ export function initializeForm() {
                 console.log("Tutorial marcado como visto debido a la restauración.");
             }
     
-        } catch (error) {
+        } catch (error) { // Fin try principal
             console.error('Error GRAVE durante restoreFormState:', error);
             alert("Ocurrió un error al restaurar los datos guardados. Se cargará un formulario nuevo.");
             // Limpiar en caso de error grave para evitar estado inconsistente
@@ -1829,75 +1857,114 @@ export function initializeForm() {
             const cargosToRemove = cargoContainer.querySelectorAll('.cargo');
             cargosToRemove.forEach(cargo => cargo.remove());
             addCargo({}, true); // Añadir un cargo vacío por defecto
-        }
+        } finally { // Asegurarnos que la verificación se ejecute incluso si hay errores leves
+            // --- Verificaciones Post-Restauración (con logs mejorados) ---
+            console.log('\n🔧 === VERIFICACIÓN POST-RESTAURACIÓN (Delayed) ===');
+            setTimeout(() => {
+                console.log('--- Iniciando verificación retardada ---');
+                 const cargosDespuesRestauracion = cargoContainer.querySelectorAll('.cargo');
+                 console.log(`Verificando ${cargosDespuesRestauracion.length} cargos después de restauración...`);
     
-        // --- Verificaciones Post-Restauración (Mantener como estaban) ---
-        console.log('\n🔧 === VERIFICACIÓN POST-RESTAURACIÓN ===');
-        setTimeout(() => {
-            // ... tu código de verificación ...
-             const cargosDespuesRestauracion = cargoContainer.querySelectorAll('.cargo');
-             console.log(`Verificando ${cargosDespuesRestauracion.length} cargos después de restauración...`);
-                
-             cargosDespuesRestauracion.forEach((cargoVerificar, index) => {
-                 const cargoName = cargoVerificar.querySelector('input[name="cargoName"]')?.value || 'Sin nombre';
-                 console.log(`\n--- CARGO ${index + 1}: ${cargoName} ---`);
-                    
-                 const gesCheckboxes = cargoVerificar.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked');
-                 console.log(`GES seleccionados: ${gesCheckboxes.length}`);
-                    
-                 gesCheckboxes.forEach(checkbox => {
-                     const gesValue = checkbox.value;
-                     console.log(`🔍 Verificando GES: ${gesValue}`);
-                     
-                     // Verificar input hidden de CONTROLES
-                     ['fuente', 'medio', 'individuo'].forEach(tipo => {
-                        const controlInput = cargoVerificar.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-tipo="${tipo}"]`);
-                        if(controlInput) {
-                            console.log(`    ✅ Control ${tipo}: Existe. Valor="${controlInput.value}"`);
-                        } else {
-                            console.warn(`    ❌ Control ${tipo}: ¡INPUT HIDDEN FALTANTE!`);
-                            // Intentar buscar en localStorage para diagnóstico
-                             try {
-                                const savedData = localStorage.getItem('matrizRiesgosData');
-                                if (savedData) {
-                                    const parsed = JSON.parse(savedData);
-                                    const cargoEncontrado = parsed.cargos[index];
-                                    const gesEncontrado = cargoEncontrado?.gesSeleccionados.find(g => `${g.riesgo} - ${g.ges}` === gesValue);
-                                    console.warn(`      (Valor esperado según localStorage: "${gesEncontrado?.controles?.[tipo] || 'No encontrado'}")`);
+                 if (cargosDespuesRestauracion.length === 0) {
+                     console.warn("¡No se encontraron cargos en el DOM para verificar!");
+                     return;
+                 }
+    
+                 cargosDespuesRestauracion.forEach((cargoVerificar, index) => {
+                     const cargoName = cargoVerificar.querySelector('input[name="cargoName"]')?.value || `(Cargo sin nombre ${index + 1})`;
+                     console.log(`\n--- VERIFICANDO CARGO ${index + 1}: ${cargoName} ---`);
+    
+                     const infoGeneral = cargoVerificar.querySelector('.info-general-section');
+                     if(!infoGeneral) {
+                        console.error("  ¡Error crítico! No se encontró .info-general-section en este cargo.");
+                        return; // No podemos verificar más si falta esto
+                     }
+    
+                     const gesCheckboxes = cargoVerificar.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked');
+                     console.log(`  GES seleccionados encontrados: ${gesCheckboxes.length}`);
+    
+                     // Obtener TODOS los inputs hidden de control/nivel DENTRO de infoGeneral para este cargo
+                     const todosLosHiddenEnInfo = infoGeneral.querySelectorAll('input[type="hidden"][data-riesgo]');
+                     console.log(`  Total inputs hidden [data-riesgo] en .info-general: ${todosLosHiddenEnInfo.length}`);
+                     todosLosHiddenEnInfo.forEach(inp => {
+                         const tipo = inp.dataset.tipo ? `Control ${inp.dataset.tipo}` : (inp.dataset.niveles ? 'Niveles' : 'Desconocido');
+                         console.log(`    Input encontrado: ${tipo} para ${inp.dataset.riesgo}, Valor="${inp.value}"`);
+                     });
+    
+    
+                     // Ahora verificar específicamente los GES que deberían estar marcados
+                     gesCheckboxes.forEach(checkbox => {
+                         const gesValue = checkbox.value;
+                         console.log(`  🔍 Verificando datos para GES marcado: ${gesValue}`);
+    
+                         // Verificar input hidden de CONTROLES
+                         ['fuente', 'medio', 'individuo'].forEach(tipo => {
+                            // Buscar DENTRO de infoGeneral
+                            const controlInput = infoGeneral.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-tipo="${tipo}"]`);
+                            const valorEsperado = state.cargos[index]?.gesSeleccionados?.find(g => `${g.riesgo} - ${g.ges}` === gesValue)?.controles?.[tipo];
+    
+                            if(controlInput) {
+                                console.log(`    ✅ Control ${tipo}: Existe. Valor DOM="${controlInput.value}". (Esperado: "${valorEsperado || ''}")`);
+                                if (controlInput.value !== (valorEsperado || '')) {
+                                    console.warn(`      ¡Advertencia! El valor restaurado (${controlInput.value}) no coincide con el esperado (${valorEsperado || ''})`);
                                 }
-                            } catch(e) {}
+                            } else {
+                                // Solo mostrar error si SE ESPERABA un valor
+                                if (valorEsperado !== undefined && valorEsperado !== null && valorEsperado !== '') {
+                                    console.error(`    ❌ Control ${tipo}: ¡INPUT HIDDEN FALTANTE! (Esperado: "${valorEsperado}")`);
+                                } else {
+                                     console.log(`    Control ${tipo}: No existe (y no se esperaba valor).`);
+                                }
+                            }
+                         });
+    
+    
+                         // Verificar input hidden de NIVELES
+                         const nivelesInput = infoGeneral.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-niveles]`);
+                         const nivelesEsperadosObj = state.cargos[index]?.gesSeleccionados?.find(g => `${g.riesgo} - ${g.ges}` === gesValue)?.niveles;
+                         const nivelesEsperadosJson = nivelesEsperadosObj ? JSON.stringify(nivelesEsperadosObj) : undefined;
+    
+                         if (!nivelesInput) {
+                            // Solo mostrar error si SE ESPERABAN niveles
+                            if (nivelesEsperadosJson && nivelesEsperadosJson !== '{}') {
+                               console.error(`    ❌ Niveles: ¡INPUT HIDDEN FALTANTE! (Esperado JSON: ${nivelesEsperadosJson})`);
+                            } else {
+                               console.log(`    Niveles: No existe (y no se esperaban niveles).`);
+                            }
+                         } else {
+                             console.log(`    ✅ Niveles: Existe. Valor JSON en DOM="${nivelesInput.value}". (Esperado JSON: ${nivelesEsperadosJson || '{}'})`);
+                             if (nivelesInput.value !== (nivelesEsperadosJson || '{}')) {
+                                // Comparar objetos parseados para ser más precisos con el orden de claves
+                                try {
+                                    const domObj = JSON.parse(nivelesInput.value || '{}');
+                                    const expectedObj = nivelesEsperadosObj || {};
+                                    if (JSON.stringify(domObj) !== JSON.stringify(expectedObj)) {
+                                         console.warn(`      ¡Advertencia! El valor JSON restaurado no coincide exactamente con el esperado.`);
+                                         console.warn(`        DOM:`, domObj);
+                                         console.warn(`        Esperado:`, expectedObj);
+                                    }
+                                } catch(e) {
+                                    console.warn(`      Error al comparar JSON de niveles: ${e}`);
+                                }
+                             }
+                         }
+                     }); // Fin forEach checkbox
+    
+                     // Verificar si hay inputs hidden "huérfanos" (para GES no marcados)
+                     const gesMarcados = Array.from(gesCheckboxes).map(cb => cb.value);
+                     todosLosHiddenEnInfo.forEach(inp => {
+                        if (!gesMarcados.includes(inp.dataset.riesgo)) {
+                            const tipo = inp.dataset.tipo ? `Control ${inp.dataset.tipo}` : (inp.dataset.niveles ? 'Niveles' : 'Desconocido');
+                            console.warn(`  Input "huérfano" encontrado: ${tipo} para ${inp.dataset.riesgo} (GES no está marcado). Valor="${inp.value}"`);
                         }
                      });
     
     
-                     // Verificar input hidden de NIVELES
-                     let inputNiveles = cargoVerificar.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-niveles]`);
-                        
-                     if (!inputNiveles) {
-                         console.warn(`    ❌ Niveles: ¡INPUT HIDDEN FALTANTE!`);
-                         // Ya no intentamos recrear aquí, solo diagnosticamos
-                         try {
-                                const savedData = localStorage.getItem('matrizRiesgosData');
-                                if (savedData) {
-                                    const parsed = JSON.parse(savedData);
-                                    const cargoEncontrado = parsed.cargos[index];
-                                    const gesEncontrado = cargoEncontrado?.gesSeleccionados.find(ges => `${ges.riesgo} - ${ges.ges}` === gesValue);
-                                    console.warn(`      (Valor esperado según localStorage: ${JSON.stringify(gesEncontrado?.niveles) || 'No encontrado'})`);
-                                }
-                            } catch(e) {}
+                 }); // Fin forEach cargoVerificar
     
-                     } else {
-                         console.log(`    ✅ Niveles: Existe. Valor JSON="${inputNiveles.value}"`);
-                     }
-                 });
-             });
-                
-             console.log('🔧 === FIN VERIFICACIÓN POST-RESTAURACIÓN ===\n');
-        }, 1500); // Aumentar un poco el delay para asegurar que el DOM esté 100% listo
-    
-        // === FORZAR ACTUALIZACIÓN DE RESUMEN DESPUÉS DE RESTAURACIÓN ===
-        // (Lo movimos dentro del forEach principal para asegurar que se haga por cada cargo)
-        // setTimeout(() => { ... }, 1000); // Ya no es necesario aquí
+                 console.log('🔧 === FIN VERIFICACIÓN POST-RESTAURACIÓN (Delayed) ===\n');
+            }, 1500); // Mantener un delay razonable para que el DOM se estabilice
+        } // Fin finally
     }
     
     cleanupHistoricalValues();
