@@ -1705,7 +1705,7 @@ export function initializeForm() {
                                         // CREAR DIRECTAMENTE EN INFO-GENERAL-SECTION
                                         const infoGeneralSection = cargoEl.querySelector('.info-general-section');
                                         if (infoGeneralSection) {
-                                            let controlInput = cargoEl.querySelector(`[data-riesgo="${gesValue}"][data-tipo="${tipo}"]`);
+                                            let controlInput = cargoEl.querySelector(`input[type="hidden"][data-riesgo="${gesValue}"][data-tipo="${tipo}"]`);
                                             if (!controlInput) {
                                                 controlInput = document.createElement('input'); 
                                                 controlInput.type = 'hidden';
