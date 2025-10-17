@@ -1964,7 +1964,7 @@ export function initializeForm() {
     
                  console.log('🔧 === FIN VERIFICACIÓN POST-RESTAURACIÓN (Delayed) ===\n');
             }, 1500); // Mantener un delay razonable para que el DOM se estabilice
-        } // Fin finally
+        } 
     }
     
     cleanupHistoricalValues();
