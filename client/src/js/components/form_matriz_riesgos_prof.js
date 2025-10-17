@@ -397,9 +397,9 @@ export function initializeForm() {
                 
                 try {
                     const controlesData = {
-                        fuente: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || 'Ninguno',
-                        medio: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || 'Ninguno',
-                        individuo: cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || 'Ninguno'
+                        fuente: cargoDiv.querySelector(`input[type="hidden"][data-riesgo="${riesgoValue}"][data-tipo="fuente"]`)?.value || 'Ninguno',
+                        medio: cargoDiv.querySelector(`input[type="hidden"][data-riesgo="${riesgoValue}"][data-tipo="medio"]`)?.value || 'Ninguno',
+                        individuo: cargoDiv.querySelector(`input[type="hidden"][data-riesgo="${riesgoValue}"][data-tipo="individuo"]`)?.value || 'Ninguno'
                     };
                     
                     const nivelesInput = cargoDiv.querySelector(`[data-riesgo="${riesgoValue}"][data-niveles]`);
