@@ -1,0 +1,43 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: genesys_api
+    ports:
+      - "3000:3000" 
+    volumes:
+      - ./server:/usr/src/app/server
+      - ./package.json:/usr/src/app/package.json
+      - ./knexfile.js:/usr/src/app/knexfile.js
+    
+    env_file:
+      - ./server/.env 
+    
+    command: >
+      sh -c "npx nodemon --watch ./server -e js,json --exec 'node ./server/src/app.js'"
+    depends_on:
+      - db 
+    networks:
+      - genesys_net
+
+  db:
+    image: postgres:16-alpine
+    container_name: genesys_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432" 
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - genesys_net
+
+volumes:
+  postgres_data: 
+
+networks:
+  genesys_net:

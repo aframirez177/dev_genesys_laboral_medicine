@@ -1,0 +1,21 @@
+# Dependencias
+node_modules
+client/node_modules
+server/node_modules
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Entorno y logs
+.env
+.env.development
+npm-debug.log
+
+# Metadatos
+.vscode
+.cursor
