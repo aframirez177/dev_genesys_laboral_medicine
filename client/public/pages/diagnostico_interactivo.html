@@ -968,6 +968,48 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjHr3DJQXXQJsbG7rhKl5tkQoSbDP1UDc"></script>
     <!--             <script src="../js/ham_menu.js"></script>
             <script src="../js/animacion.js"></script> -->
+            <div id="registroModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>¡Casi listo! Completa tu registro</h2>
+      <button type="button" class="close-modal-btn" aria-label="Cerrar">&times;</button>
+    </div>
+    <form id="registroModalForm">
+      <p>Para guardar tu matriz de riesgos y crear tu cuenta, por favor completa:</p>
+
+      <div class="form-group">
+        <label for="modalNombreEmpresa">Nombre de la Empresa <span class="required">*</span></label>
+        <input type="text" id="modalNombreEmpresa" name="nombreEmpresa" required placeholder="Ej: Ferretería Central SAS">
+      </div>
+
+      <div class="form-group">
+        <label for="modalNit">NIT <span class="required">*</span></label>
+        <input type="text" id="modalNit" name="nit" required placeholder="Ej: 900123456-7" pattern="[0-9-]*">
+      </div>
+
+      <div class="form-group">
+        <label for="modalEmail">Tu Email <span class="required">*</span></label>
+        <input type="email" id="modalEmail" name="email" required placeholder="tu@correo-corporativo.com">
+      </div>
+
+      <div class="form-group">
+        <label for="modalPassword">Crea una Contraseña <span class="required">*</span></label>
+        <input type="password" id="modalPassword" name="password" required minlength="6" placeholder="Mínimo 6 caracteres">
+      </div>
+
+       <div class="form-group">
+        <label for="modalNombreContacto">Tu Nombre (Opcional)</label>
+        <input type="text" id="modalNombreContacto" name="nombre" placeholder="Ej: Carlos Rodriguez">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-modal-btn">Cancelar</button>
+        <button type="submit" class="submit-modal-btn cta-button">Registrar y Continuar</button>
+      </div>
+      <div id="modalError" style="color: red; margin-top: 10px; font-size: 0.9em; text-align: center; display: none;"></div>
+    </form>
+  </div>
+</div>
 </body>
 </html> 
 <!-- fuck -->

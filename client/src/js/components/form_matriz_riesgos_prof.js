@@ -280,6 +280,7 @@ const tooltipManager = new TooltipManager();
 import { initContactForm } from './informacion_de_contacto.js';
 
 export function initializeForm() {
+    
     const cargoContainer = document.getElementById('cargoContainer');
     const addCargoBtn = document.getElementById('addCargoBtn');
     const matrizRiesgosForm = document.getElementById('matrizRiesgosForm');
@@ -294,6 +295,7 @@ export function initializeForm() {
     let tutorialActualmenteActivo = false;
     let esPrimerCargoAgregado = true;
     let observerTutorialPopup = null; // Para el MutationObserver
+    let datosFormularioPrincipal = null; // Para guardar temporalmente los datos
 
     const historicalValues = { /* ... (como antes) ... */
         cargos: new Set(),
@@ -1985,62 +1987,23 @@ export function initializeForm() {
         saveData();
     });
 
-    matrizRiesgosForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!validateCargosData()) return;
+    matrizRiesgosForm.addEventListener('submit', async (e) => { // 1. Guarda los datos del formulario principal en la variable global
+   datosFormularioPrincipal = gatherFormData();
+   console.log("Datos del formulario principal guardados temporalmente:", datosFormularioPrincipal);
 
-        const submitButton = matrizRiesgosForm.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton.textContent;
-        submitButton.disabled = true;
-        submitButton.textContent = 'Generando tus documentos...';
-
-        try {
-            const formData = gatherFormData();
-            // Agregar datos de contacto del nuevo formulario
-            const contactForm = document.getElementById('contact-info-form');
-            if (contactForm) {
-                formData.contact = {
-                    fullName: contactForm.querySelector('#contact-fullname').value,
-                    email: contactForm.querySelector('#contact-email').value,
-                    phone: contactForm.querySelector('#contact-phone').value,
-                    companyName: contactForm.querySelector('#contact-company').value,
-                };
-            }
-
-            console.log('--- DATOS FINALES A ENVIAR (FRONTEND) ---');
-            console.log(JSON.stringify(formData, null, 2));
-            console.log('-------------------------------------------');
-
-            const response = await fetch('/api/matriz-riesgos/generar', { 
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json' // ¡Cambiado! Esperamos un JSON ahora.
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const result = await response.json(); // Leemos la respuesta como JSON
-
-            if (!response.ok || !result.success) {
-                throw new Error(result.message || 'Error desconocido del servidor.');
-            }
-
-            // ¡Éxito! Redirigir a la página de resultados.
-            if (result.redirectUrl) {
-                // Limpiar datos guardados para no mostrar el banner de restauración al volver.
-                localStorage.removeItem('matrizRiesgosData');
-                window.location.href = result.redirectUrl;
-            } else {
-                throw new Error('El servidor no proporcionó una URL de redirección.');
-            }
-
-        } catch (error) {
-            console.error('Error detallado:', error);
-            alert(`Error al procesar la solicitud: ${error.message}`);
-            submitButton.disabled = false;
-            submitButton.textContent = originalButtonText;
-        }
+   // 2. Muestra el modal de registro
+   const modal = document.getElementById('registroModal');
+   if (modal) {
+       modal.style.display = 'block'; // Muestra el overlay
+       // Opcional: enfoca el primer campo del modal
+       setTimeout(() => {
+           const firstInput = modal.querySelector('input');
+           if (firstInput) firstInput.focus();
+       }, 50);
+   } else {
+       console.error("El modal de registro ('#registroModal') no se encontró en el DOM.");
+       alert("Error: No se pudo mostrar el formulario de registro. Contacte soporte.");
+   }
     });
 
     if (btnReactivarTutorial) {
@@ -2403,6 +2366,129 @@ window.forzarActualizacionIconos = function() {
             console.log(`   ${icon} ${gesText} - ${isComplete ? 'COMPLETO' : 'INCOMPLETO'}`);
         });
     });
+
+    // ==================== INICIO CÓDIGO MANEJO MODAL REGISTRO ====================
+
+// Función para cerrar el modal limpiamente
+function cerrarModalRegistro() {
+    const modal = document.getElementById('registroModal');
+    const modalError = document.getElementById('modalError');
+    if (modal) modal.style.display = 'none';
+    if (modalError) modalError.style.display = 'none'; // Oculta errores
+    // No limpiamos datosFormularioPrincipal aquí por si el usuario reintenta
+}
+
+// Añadimos listeners cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('registroModal');
+    const modalForm = document.getElementById('registroModalForm');
+    const closeModalBtn = modal?.querySelector('.close-modal-btn');
+    const cancelModalBtn = modal?.querySelector('.cancel-modal-btn');
+    const modalError = document.getElementById('modalError'); // Para mostrar errores
+
+    if (!modal || !modalForm || !closeModalBtn || !cancelModalBtn || !modalError) {
+        console.warn("Faltan elementos del modal para añadir listeners. Verifica los IDs.");
+        return;
+    }
+
+    // --- Listeners para CERRAR el modal ---
+    closeModalBtn.addEventListener('click', cerrarModalRegistro);
+    cancelModalBtn.addEventListener('click', cerrarModalRegistro);
+    modal.addEventListener('click', (e) => { // Cerrar al hacer clic fuera del contenido
+        if (e.target === modal) {
+            cerrarModalRegistro();
+        }
+    });
+    // Cerrar con tecla Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            cerrarModalRegistro();
+        }
+    });
+
+    // --- Listener para el ENVÍO del modal ---
+    modalForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Previene el envío normal del formulario
+        modalError.style.display = 'none'; // Oculta errores previos
+
+        // Recoge los datos del MODAL
+        const userData = {
+            nombreEmpresa: document.getElementById('modalNombreEmpresa').value.trim(),
+            nit: document.getElementById('modalNit').value.trim(),
+            email: document.getElementById('modalEmail').value.trim(),
+            password: document.getElementById('modalPassword').value, // No hacer trim a la contraseña
+            nombre: document.getElementById('modalNombreContacto').value.trim() || null // Nombre opcional, envía null si está vacío
+        };
+
+        // Verifica que aún tengamos los datos del formulario principal
+        if (!datosFormularioPrincipal || !datosFormularioPrincipal.cargos || datosFormularioPrincipal.cargos.length === 0) {
+            modalError.textContent = "Error: Se perdieron los datos del formulario principal. Por favor, cierre este pop-up y vuelva a intentarlo.";
+            modalError.style.display = 'block';
+            return;
+        }
+
+        // --- Feedback Visual: Deshabilitar botón y mostrar carga ---
+        const submitModalBtn = modalForm.querySelector('.submit-modal-btn');
+        const originalModalBtnText = submitModalBtn.textContent;
+        submitModalBtn.disabled = true;
+        submitModalBtn.textContent = 'Registrando...';
+
+        try {
+            console.log("Enviando datos al backend:", { formData: datosFormularioPrincipal, userData: userData });
+
+            // Llamada a la NUEVA ruta del backend
+            const response = await fetch('/api/flujo-ia/registrar-y-generar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    formData: datosFormularioPrincipal,
+                    userData: userData
+                })
+            });
+
+            // Leer la respuesta del backend como JSON
+            const result = await response.json();
+            console.log("Respuesta del backend:", result);
+
+            // Verificar si la respuesta fue exitosa (código 2xx y success: true)
+            if (!response.ok || !result.success) {
+                // Si falla, muestra el mensaje de error del backend
+                throw new Error(result.message || `Error del servidor (${response.status})`);
+            }
+
+            // --- ¡ÉXITO! ---
+            cerrarModalRegistro(); // Cierra el pop-up
+
+            // Limpia los datos guardados del formulario principal para evitar el banner de restauración
+            localStorage.removeItem('matrizRiesgosData');
+
+            // Verifica si tenemos una URL de pago válida
+            if (result.paymentUrl && result.paymentUrl !== 'URL_DE_PAGO_DE_PAYU_IRA_AQUI') {
+                alert("¡Cuenta creada! Serás redirigido a la pasarela de pago para completar la compra."); // Mensaje claro
+                window.location.href = result.paymentUrl; // Redirige al usuario a PayU
+            } else {
+                // Si el backend aún no devuelve la URL (porque falta el Paso 3 del MVP)
+                alert("¡Cuenta creada con éxito! La integración con la pasarela de pago está en proceso.");
+                // Aquí podrías redirigir a una página de "gracias" o simplemente no hacer nada más
+                // window.location.href = '/pagina-gracias-registro.html'; // Ejemplo
+            }
+
+        } catch (error) {
+            console.error('Error al registrar y generar:', error);
+            // Muestra el error específico en el modal
+            modalError.textContent = `Error: ${error.message}`;
+            modalError.style.display = 'block';
+            // Rehabilita el botón para que el usuario pueda intentar de nuevo
+            submitModalBtn.disabled = false;
+            submitModalBtn.textContent = originalModalBtnText;
+        }
+    }); // Fin del listener del submit del modal
+}); // Fin del listener DOMContentLoaded
+
+// ===================== FIN CÓDIGO MANEJO MODAL REGISTRO =====================
     
     console.log('\n🔄 === ACTUALIZACIÓN DE ICONOS COMPLETADA ===');
 };

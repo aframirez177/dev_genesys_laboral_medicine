@@ -8,6 +8,7 @@ import matrizRiesgosRoutes from './routes/matriz-riesgos.routes.js';
 import documentosRoutes from './routes/documentos.routes.js';
 import whatsappRoutes from './routes/whatsapp.routes.js';
 import config from './config/whatsappConfig.js';
+import flujoIaRoutes from './routes/flujoIa.routes.js';
 
 
 const env = getEnvVars();
@@ -62,6 +63,7 @@ app.use(fileUpload({
 app.use('/api/matriz-riesgos', matrizRiesgosRoutes);
 app.use('/api/documentos', documentosRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
+app.use('/api/flujo-ia', flujoIaRoutes);
 
 app.use('/', whatsappRoutes);
 

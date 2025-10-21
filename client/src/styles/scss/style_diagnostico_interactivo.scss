@@ -1039,6 +1039,155 @@
   }
 }
 
+/* --- Estilos del Modal de Registro --- */
+.modal-overlay {
+  position: fixed; /* Se queda fijo */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(56, 61, 71, 0.8); /* Usa tu color secundario con opacidad */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* Muy alto para estar encima de todo */
+  opacity: 0;
+  pointer-events: none; /* No interactuable cuando está oculto */
+  transition: opacity 0.3s ease-in-out;
+  padding: 15px;
+}
+
+/* Estado visible */
+.modal-overlay[style*="display: block"] {
+  opacity: 1;
+  pointer-events: auto; /* Interactuable cuando está visible */
+}
+
+.modal-content {
+  background-color: #ffffff; /* Fondo blanco */
+  padding: 30px 35px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  max-width: 550px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: translateY(-20px); /* Efecto de entrada */
+  transition: transform 0.3s ease-in-out;
+}
+
+.modal-overlay[style*="display: block"] .modal-content {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0; /* Línea divisora sutil */
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.6em; /* Más grande */
+  color: #383d47; /* Tu color secundario */
+  font-weight: 700;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  font-size: 2em; /* Más grande */
+  cursor: pointer;
+  color: #aaaaaa; /* Gris claro */
+  padding: 0;
+  line-height: 1; /* Alinear mejor la 'x' */
+}
+.close-modal-btn:hover {
+  color: #383d47; /* Tu color secundario */
+}
+
+/* Estilos del formulario dentro del modal */
+#registroModalForm p {
+  font-size: 1.1em; /* Ligeramente más grande */
+  color: #555;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+#registroModalForm .form-group {
+  margin-bottom: 18px; /* Un poco más de espacio */
+}
+
+#registroModalForm label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 1em; /* Tamaño base */
+  color: #444; /* Un poco más oscuro */
+}
+
+#registroModalForm input[type="text"],
+#registroModalForm input[type="email"],
+#registroModalForm input[type="password"] {
+  width: 100%;
+  padding: 12px 15px; /* Más padding */
+  border: 1px solid #cccccc;
+  border-radius: 6px; /* Bordes más redondeados */
+  font-size: 1em;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+#registroModalForm input:focus {
+  border-color: #5dc4af; /* Tu color primario */
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(93, 196, 175, 0.25); /* Sombra de foco más notable */
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end; /* Alinea a la derecha */
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Reutiliza tus clases de botón si es posible, o usa estas */
+.cancel-modal-btn {
+  padding: 10px 20px;
+  border-radius: 34px; /* Coincide con tu %button-base */
+  cursor: pointer;
+  font-size: 1.4rem; /* Coincide */
+  font-weight: 500;
+  background-color: #f0f0f0;
+  color: #555;
+  border: 1px solid #d0d0d0;
+  transition: background-color 0.2s ease;
+}
+.cancel-modal-btn:hover {
+  background-color: #e0e0e0;
+}
+
+/* Asegúrate que .submit-modal-btn.cta-button herede tus estilos cta-button */
+.submit-modal-btn {
+  /* Si usas tus clases cta-button, no necesitas repetir estilos aquí */
+  padding: 10px 20px; /* Asegúrate que el padding sea suficiente */
+}
+
+.submit-modal-btn:disabled {
+  background-color: #cccccc; /* Gris cuando está deshabilitado */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.required {
+  color: #d9534f; /* Rojo estándar para requerido */
+  margin-left: 2px;
+}
+
 //===================================================================
 // ANIMACIONES PERSONALIZADAS
 //===================================================================
