@@ -1987,10 +1987,11 @@ export function initializeForm() {
         saveData();
     });
 
-    matrizRiesgosForm.addEventListener('submit', async (e) => { // 1. Guarda los datos del formulario principal en la variable global
+    matrizRiesgosForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); // <-- Evita que la página se recargue // 1. Guarda los datos del formulario principal en la variable global
    datosFormularioPrincipal = gatherFormData();
    console.log("Datos del formulario principal guardados temporalmente:", datosFormularioPrincipal);
-
+        if (!validateCargosData()) return;
    // 2. Muestra el modal de registro
    const modal = document.getElementById('registroModal');
    if (modal) {
