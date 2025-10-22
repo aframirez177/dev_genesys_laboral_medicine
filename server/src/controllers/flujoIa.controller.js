@@ -152,14 +152,11 @@ export const registrarYGenerar = async (req, res) => {
         // AQUÍ IRÁ LA LÓGICA PARA LLAMAR A PAYU (Paso 3 del MVP)
         // Por ahora, solo respondemos con éxito
         // ----------------------------------------------------
-        const paymentUrl = 'URL_DE_PAGO_DE_PAYU_IRA_AQUI'; // Placeholder
-
-        res.status(200).json({ // Cambiado a 200 OK ya que aún no se crea el recurso final (el pago)
-            success: true,
-            message: '¡Cuenta creada! Redirigiendo al pago...',
-            paymentUrl: paymentUrl // Envía la URL de pago al frontend
-            // Aquí también podrías enviar un token JWT para auto-loguear al usuario
-        });
+        res.status(201).json({ 
+    success: true,
+    message: '¡Cuenta creada! Redirigiendo a tus resultados...',
+    documentToken: documentToken // <-- Envía el token generado
+});
 
     } catch (error) {
         // Si ALGO falló (ej: email duplicado, rol no encontrado), deshace todo

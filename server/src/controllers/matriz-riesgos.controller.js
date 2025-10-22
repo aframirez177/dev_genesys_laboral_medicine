@@ -67,7 +67,7 @@ worksheet.getCell('A1').value = `MATRIZ DE RIESGOS - ${companyName}`;
 worksheet.getCell('A1').font = { size: 14, bold: true, name: 'Calibri' };
 worksheet.getCell('A1').alignment = { vertical: 'middle', horizontal: 'left' };
 // Mueve la fila de inicio de datos si añadiste un encabezado
-currentRowIndex = (options.isFree ? 2 : 3) + 1;
+let currentRowIndex = (options.isFree ? 2 : 3) + 1;
 if (isPreview) {
     // Puedes añadir una imagen o un texto grande y semitransparente.
     // Ejemplo simple con texto en una celda fusionada (ajústalo como prefieras):
