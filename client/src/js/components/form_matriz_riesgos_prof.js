@@ -2804,33 +2804,173 @@ export function initializeForm() {
     saveData();
   });
 
-  matrizRiesgosForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // <-- Evita que la página se recargue // 1. Guarda los datos del formulario principal en la variable global
-    modalError.style.display = "none"; // Oculta errores previos
-    datosFormularioPrincipal = gatherFormData();
-    console.log(
-      "Datos del formulario principal guardados temporalmente:",
-      datosFormularioPrincipal
-    );
-    if (!validateCargosData()) return;
-    // 2. Muestra el modal de registro
-    const modal = document.getElementById("registroModal");
-    if (modal) {
-      modal.style.display = "block"; // Muestra el overlay
-      // Opcional: enfoca el primer campo del modal
-      setTimeout(() => {
-        const firstInput = modal.querySelector("input");
-        if (firstInput) firstInput.focus();
-      }, 50);
-    } else {
-      console.error(
-        "El modal de registro ('#registroModal') no se encontró en el DOM."
-      );
-      alert(
-        "Error: No se pudo mostrar el formulario de registro. Contacte soporte."
-      );
+// ==================== CÓDIGO DEL MODAL - CONFIGURAR UNA SOLA VEZ ====================
+const modal = document.getElementById("registroModal");
+const modalForm = document.getElementById("registroModalForm");
+const closeModalBtn = modal?.querySelector(".close-modal-btn");
+const cancelModalBtn = modal?.querySelector(".cancel-modal-btn");
+const modalError = document.getElementById("modalError");
+
+// Verificar que existan los elementos
+if (!modal || !modalForm || !closeModalBtn || !cancelModalBtn || !modalError) {
+  console.warn("⚠️ Faltan elementos del modal. Verifica los IDs en el HTML.");
+}
+
+// Función para cerrar el modal
+function cerrarModalRegistro() {
+  if (modal) modal.style.display = "none";
+  if (modalError) modalError.style.display = "none";
+  if (modalForm) modalForm.reset(); // Limpia los campos
+}
+
+// CERRAR MODAL: Botón X
+if (closeModalBtn) {
+  closeModalBtn.addEventListener("click", cerrarModalRegistro);
+}
+
+// CERRAR MODAL: Botón Cancelar
+if (cancelModalBtn) {
+  cancelModalBtn.addEventListener("click", cerrarModalRegistro);
+}
+
+// CERRAR MODAL: Click fuera del modal
+if (modal) {
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      cerrarModalRegistro();
     }
   });
+}
+
+// CERRAR MODAL: Tecla Escape
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && modal && modal.style.display === "block") {
+    cerrarModalRegistro();
+  }
+});
+
+// ==================== ENVIAR DATOS DEL MODAL AL BACKEND ====================
+if (modalForm) {
+  modalForm.addEventListener("submit", async (e) => {
+    e.preventDefault(); // ¡IMPORTANTE! Evita que la página se recargue
+    console.log("🚀 Formulario del modal enviado");
+
+    if (modalError) modalError.style.display = "none";
+
+    // Recoger datos del modal
+    const userData = {
+      nombreEmpresa: document.getElementById("modalNombreEmpresa")?.value.trim() || "",
+      nit: document.getElementById("modalNit")?.value.trim() || "",
+      email: document.getElementById("modalEmail")?.value.trim() || "",
+      password: document.getElementById("modalPassword")?.value || "",
+      nombre: document.getElementById("modalNombreContacto")?.value.trim() || null,
+    };
+
+    console.log("👤 Datos del usuario:", userData);
+
+    // Verificar que tengamos los datos del formulario principal
+    if (
+      !datosFormularioPrincipal ||
+      !datosFormularioPrincipal.cargos ||
+      datosFormularioPrincipal.cargos.length === 0
+    ) {
+      console.error("❌ No hay datos del formulario principal");
+      if (modalError) {
+        modalError.textContent = "Error: Se perdieron los datos. Cierre y reintente.";
+        modalError.style.display = "block";
+      }
+      return;
+    }
+
+    // Deshabilitar botón mientras se procesa
+    const submitModalBtn = modalForm.querySelector(".submit-modal-btn");
+    const originalBtnText = submitModalBtn?.textContent || "Registrar";
+    if (submitModalBtn) {
+      submitModalBtn.disabled = true;
+      submitModalBtn.textContent = "Registrando...";
+    }
+
+    try {
+      console.log("📤 Enviando al backend...");
+
+      const response = await fetch("/api/flujo-ia/registrar-y-generar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          formData: datosFormularioPrincipal,
+          userData: userData,
+        }),
+      });
+
+      const result = await response.json();
+      console.log("📥 Respuesta:", result);
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || `Error ${response.status}`);
+      }
+
+      // ¡TODO BIEN!
+      console.log("✅ Registro exitoso");
+      cerrarModalRegistro();
+      localStorage.removeItem("matrizRiesgosData");
+
+      // Redirigir a pago
+      if (result.paymentUrl && result.paymentUrl !== "URL_DE_PAGO_DE_PAYU_IRA_AQUI") {
+        alert("¡Cuenta creada! Redirigiendo al pago...");
+        window.location.href = result.paymentUrl;
+      } else {
+        alert("¡Cuenta creada! La pasarela de pago estará lista pronto.");
+      }
+
+    } catch (error) {
+      console.error("❌ Error:", error);
+      if (modalError) {
+        modalError.textContent = `Error: ${error.message}`;
+        modalError.style.display = "block";
+      }
+      // Rehabilitar botón
+      if (submitModalBtn) {
+        submitModalBtn.disabled = false;
+        submitModalBtn.textContent = originalBtnText;
+      }
+    }
+  });
+}
+
+// ==================== FORMULARIO PRINCIPAL - ABRIR MODAL ====================
+matrizRiesgosForm.addEventListener("submit", (e) => {
+  e.preventDefault(); // ¡IMPORTANTE! Evita que la página se recargue
+  console.log("📋 Formulario principal enviado");
+
+  if (modalError) modalError.style.display = "none";
+
+  // Guardar datos
+  datosFormularioPrincipal = gatherFormData();
+  console.log("💾 Datos guardados:", datosFormularioPrincipal);
+
+  // Validar
+  if (!validateCargosData()) {
+    console.log("❌ Validación fallida");
+    return;
+  }
+
+  // Mostrar modal
+  console.log("🎭 Abriendo modal...");
+  if (modal) {
+    modal.style.display = "block";
+    setTimeout(() => {
+      const firstInput = modal.querySelector("input");
+      if (firstInput) firstInput.focus();
+    }, 50);
+  } else {
+    console.error("❌ Modal no encontrado");
+    alert("Error: No se pudo abrir el formulario de registro.");
+  }
+});
+// ==================== FIN CÓDIGO MODAL ====================
 
   if (btnReactivarTutorial) {
     btnReactivarTutorial.addEventListener("click", () => {
@@ -3256,156 +3396,6 @@ export function initializeForm() {
       });
     });
 
-    // ==================== INICIO CÓDIGO MANEJO MODAL REGISTRO ====================
-
-    // Función para cerrar el modal limpiamente
-    function cerrarModalRegistro() {
-      const modal = document.getElementById("registroModal");
-      const modalError = document.getElementById("modalError");
-      if (modal) modal.style.display = "none";
-      if (modalError) modalError.style.display = "none"; // Oculta errores
-      // No limpiamos datosFormularioPrincipal aquí por si el usuario reintenta
-    }
-
-    // Añadimos listeners cuando el DOM esté listo
-    document.addEventListener("DOMContentLoaded", () => {
-      const modal = document.getElementById("registroModal");
-      const modalForm = document.getElementById("registroModalForm");
-      const closeModalBtn = modal?.querySelector(".close-modal-btn");
-      const cancelModalBtn = modal?.querySelector(".cancel-modal-btn");
-      const modalError = document.getElementById("modalError"); // Para mostrar errores
-
-      if (
-        !modal ||
-        !modalForm ||
-        !closeModalBtn ||
-        !cancelModalBtn ||
-        !modalError
-      ) {
-        console.warn(
-          "Faltan elementos del modal para añadir listeners. Verifica los IDs."
-        );
-        return;
-      }
-
-      // --- Listeners para CERRAR el modal ---
-      closeModalBtn.addEventListener("click", cerrarModalRegistro);
-      cancelModalBtn.addEventListener("click", cerrarModalRegistro);
-      modal.addEventListener("click", (e) => {
-        // Cerrar al hacer clic fuera del contenido
-        if (e.target === modal) {
-          cerrarModalRegistro();
-        }
-      });
-      // Cerrar con tecla Escape
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && modal.style.display === "block") {
-          cerrarModalRegistro();
-        }
-      });
-
-      // --- Listener para el ENVÍO del modal ---
-      modalForm.addEventListener("submit", async (e) => {
-        e.preventDefault(); // Previene el envío normal del formulario
-        modalError.style.display = "none"; // Oculta errores previos
-
-        // Recoge los datos del MODAL
-        const userData = {
-          nombreEmpresa: document
-            .getElementById("modalNombreEmpresa")
-            .value.trim(),
-          nit: document.getElementById("modalNit").value.trim(),
-          email: document.getElementById("modalEmail").value.trim(),
-          password: document.getElementById("modalPassword").value, // No hacer trim a la contraseña
-          nombre:
-            document.getElementById("modalNombreContacto").value.trim() || null, // Nombre opcional, envía null si está vacío
-        };
-
-        // Verifica que aún tengamos los datos del formulario principal
-        if (
-          !datosFormularioPrincipal ||
-          !datosFormularioPrincipal.cargos ||
-          datosFormularioPrincipal.cargos.length === 0
-        ) {
-          modalError.textContent =
-            "Error: Se perdieron los datos del formulario principal. Por favor, cierre este pop-up y vuelva a intentarlo.";
-          modalError.style.display = "block";
-          return;
-        }
-
-        // --- Feedback Visual: Deshabilitar botón y mostrar carga ---
-        const submitModalBtn = modalForm.querySelector(".submit-modal-btn");
-        const originalModalBtnText = submitModalBtn.textContent;
-        submitModalBtn.disabled = true;
-        submitModalBtn.textContent = "Registrando...";
-
-        try {
-          console.log("Enviando datos al backend:", {
-            formData: datosFormularioPrincipal,
-            userData: userData,
-          });
-
-          // Llamada a la NUEVA ruta del backend
-          const response = await fetch("/api/flujo-ia/registrar-y-generar", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({
-              formData: datosFormularioPrincipal,
-              userData: userData,
-            }),
-          });
-
-          // Leer la respuesta del backend como JSON
-          const result = await response.json();
-          console.log("Respuesta del backend:", result);
-
-          // Verificar si la respuesta fue exitosa (código 2xx y success: true)
-          if (!response.ok || !result.success) {
-            // Si falla, muestra el mensaje de error del backend
-            throw new Error(
-              result.message || `Error del servidor (${response.status})`
-            );
-          }
-
-          // --- ¡ÉXITO! ---
-          cerrarModalRegistro(); // Cierra el pop-up
-
-          // Limpia los datos guardados del formulario principal para evitar el banner de restauración
-          localStorage.removeItem("matrizRiesgosData");
-
-          // Verifica si tenemos una URL de pago válida
-          if (
-            result.paymentUrl &&
-            result.paymentUrl !== "URL_DE_PAGO_DE_PAYU_IRA_AQUI"
-          ) {
-            alert(
-              "¡Cuenta creada! Serás redirigido a la pasarela de pago para completar la compra."
-            ); // Mensaje claro
-            window.location.href = result.paymentUrl; // Redirige al usuario a PayU
-          } else {
-            // Si el backend aún no devuelve la URL (porque falta el Paso 3 del MVP)
-            alert(
-              "¡Cuenta creada con éxito! La integración con la pasarela de pago está en proceso."
-            );
-            // Aquí podrías redirigir a una página de "gracias" o simplemente no hacer nada más
-            // window.location.href = '/pagina-gracias-registro.html'; // Ejemplo
-          }
-        } catch (error) {
-          console.error("Error al registrar y generar:", error);
-          // Muestra el error específico en el modal
-          modalError.textContent = `Error: ${error.message}`;
-          modalError.style.display = "block";
-          // Rehabilita el botón para que el usuario pueda intentar de nuevo
-          submitModalBtn.disabled = false;
-          submitModalBtn.textContent = originalModalBtnText;
-        }
-      }); // Fin del listener del submit del modal
-    }); // Fin del listener DOMContentLoaded
-
-    // ===================== FIN CÓDIGO MANEJO MODAL REGISTRO =====================
 
     console.log("\n🔄 === ACTUALIZACIÓN DE ICONOS COMPLETADA ===");
   };
