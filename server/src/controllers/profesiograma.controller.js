@@ -106,8 +106,7 @@ export async function generarProfesiogramaPDF(
   const doc = new jsPDF("p", "mm", "a4");
   addPoppinsFont(doc);
 
-  const companyName =
-/*     datosFormulario.contact?.companyName || "Nombre de la Empresa"; */
+  
 
   datosFormulario.cargos.forEach((cargo, index) => {
     if (index > 0) doc.addPage();
