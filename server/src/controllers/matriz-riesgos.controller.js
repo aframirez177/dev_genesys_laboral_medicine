@@ -8,7 +8,7 @@ import { startDocumentGeneration } from './documentos.controller.js'; // <-- AÑ
 
 // La función generarMatrizExcel se actualiza para aceptar opciones y generar
 // tanto la versión gratuita como la pro.
-async function generarMatrizExcel(datosFormulario, options = { isFree: false }) {
+async function generarMatrizExcel(datosFormulario, { isPreview = false, companyName = 'Genesys Laboral Medicine', isFree = false } = {}) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Matriz de Riesgos GTC45');
 
@@ -62,7 +62,22 @@ async function generarMatrizExcel(datosFormulario, options = { isFree: false }) 
 
     // Se elige qué conjunto de columnas usar
     worksheet.columns = options.isFree ? columnasGratuitas : columnasCompletas;
-    
+    worksheet.mergeCells('A1:C1'); // Fusiona unas celdas al principio
+worksheet.getCell('A1').value = `MATRIZ DE RIESGOS - ${companyName}`;
+worksheet.getCell('A1').font = { size: 14, bold: true, name: 'Calibri' };
+worksheet.getCell('A1').alignment = { vertical: 'middle', horizontal: 'left' };
+// Mueve la fila de inicio de datos si añadiste un encabezado
+currentRowIndex = (options.isFree ? 2 : 3) + 1;
+if (isPreview) {
+    // Puedes añadir una imagen o un texto grande y semitransparente.
+    // Ejemplo simple con texto en una celda fusionada (ajústalo como prefieras):
+    worksheet.mergeCells('D2:H4'); // Fusiona celdas en el centro superior
+    const watermarkCell = worksheet.getCell('D2');
+    watermarkCell.value = 'VISTA PREVIA';
+    watermarkCell.font = { size: 48, bold: true, color: { argb: '40FF0000'} }; // Rojo semitransparente
+    watermarkCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    // Si usas ExcelJS más avanzado, podrías añadir texto rotado o imagen de fondo.
+}
     // El resto de la función (colores, estilos de cabecera, procesamiento de datos)
     // se mantiene igual, ya que solo se usan las columnas definidas arriba.
     // Colores para semaforización (AJUSTAR A LOS COLORES DEL FORMULARIO)
@@ -377,10 +392,11 @@ const handleFormSubmission = async (req, res) => {
         // 4. Enviar la URL de redirección al frontend
         const redirectUrl = `/pages/resultados.html?token=${token}`; 
         
-        res.status(200).json({
+        // Respondemos con 201 Created y el token del documento
+        res.status(201).json({ 
             success: true,
-            message: 'Datos guardados correctamente.',
-            redirectUrl: redirectUrl
+            message: '¡Cuenta creada! Redirigiendo a tus resultados...',
+            documentToken: documentToken // <-- Envía el token generado
         });
 
     } catch (error) {

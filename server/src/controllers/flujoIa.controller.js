@@ -1,6 +1,13 @@
-// server/src/controllers/flujoIa.controller.js
-import db from '../config/database.js'; // Importa tu conexión Knex
-import bcrypt from 'bcryptjs'; // Para hashear la contraseña
+// Al inicio de flujoIa.controller.js
+import db from '../config/database.js'; 
+import bcrypt from 'bcryptjs'; 
+import crypto from 'crypto'; // <--- Añade esta para generar el token
+// Importa tus funciones de generación (asegúrate que las rutas sean correctas)
+import { generarMatrizExcel } from './matriz-riesgos.controller.js';
+import { generarProfesiogramaPDF } from './profesiograma.controller.js';
+import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
+// Importa la función que acabamos de crear
+import { uploadToSpaces } from '../utils/spaces.js';
 
 // Función principal que maneja el registro y guardado de datos
 export const registrarYGenerar = async (req, res) => {
@@ -89,7 +96,55 @@ export const registrarYGenerar = async (req, res) => {
                 }
             }
         }
+// --- INICIO CÓDIGO NUEVO ---
 
+        // 6. Generar Token Único para el documento
+        const documentToken = crypto.randomBytes(32).toString('hex');
+        console.log(`Token generado para documento ${documento.id}: ${documentToken}`);
+
+        // 7. Generar Documentos PREVIEW con Marca de Agua
+        console.log("Generando previews para:", empresa.nombre_legal);
+        // Asegúrate que tus funciones acepten { isPreview: true, companyName: '...' }
+        const companyName = empresa.nombre_legal; 
+
+        // Genera los archivos en memoria (como buffers)
+        const [matrizPreviewBuffer, profesiogramaPreviewBuffer, perfilPreviewBuffer] = await Promise.all([
+            generarMatrizExcel(formData, { isPreview: true, companyName: companyName }),
+            generarProfesiogramaPDF(formData, { isPreview: true, companyName: companyName }),
+            generarPerfilCargoPDF(formData, { isPreview: false, companyName: companyName }) // ¿Perfil necesita preview?
+        ]);
+        console.log("Buffers de preview generados.");
+
+        // 8. Subir Previews a Spaces
+        console.log("Subiendo previews a Spaces...");
+        const previewUrls = {}; // Objeto para guardar las URLs
+
+        // Usamos Promise.all para subir en paralelo
+        const [matrizUrl, profesiogramaUrl, perfilUrl] = await Promise.all([
+            uploadToSpaces(matrizPreviewBuffer, 'matriz-riesgos.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', true),
+            uploadToSpaces(profesiogramaPreviewBuffer, 'profesiograma.pdf', 'application/pdf', true),
+            uploadToSpaces(perfilPreviewBuffer, 'perfil-cargo.pdf', 'application/pdf', false) // Sin sufijo preview?
+        ]);
+
+        // Guardamos las URLs obtenidas
+        previewUrls.matriz = matrizUrl;
+        previewUrls.profesiograma = profesiogramaUrl;
+        previewUrls.perfil = perfilUrl;
+        console.log("URLs de preview obtenidas:", previewUrls);
+
+        // 9. ACTUALIZAR el documento en la BD con el Token y las URLs de Preview
+        // Usamos 'trx' para que sea parte de la misma transacción
+        await trx('documentos_generados')
+            .where({ id: documento.id })
+            .update({
+                token: documentToken,
+                preview_urls: JSON.stringify(previewUrls) // Guarda el objeto como texto JSON
+            });
+        console.log(`Documento ${documento.id} actualizado con token y preview_urls.`);
+
+        // --- FIN CÓDIGO NUEVO ---
+
+        
         // Si llegamos aquí, todas las inserciones fueron exitosas.
         await trx.commit(); // Confirma la transacción
 

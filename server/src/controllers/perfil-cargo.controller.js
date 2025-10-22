@@ -10,7 +10,7 @@ function addPoppinsFont(doc) {
  * @param {object} datosFormulario - Los datos del formulario de matriz de riesgos.
  * @returns {Buffer} - El buffer del PDF generado.
  */
-export async function generarPerfilCargoPDF(datosFormulario) {
+export async function generarPerfilCargoPDF(datosFormulario, { isPreview = false, companyName = 'Empresa Cliente' } = {}) {
     const doc = new jsPDF();
     addPoppinsFont(doc);
 
@@ -20,14 +20,14 @@ export async function generarPerfilCargoPDF(datosFormulario) {
     const margin = 15;
 
     // --- Estructura del Header ---
-    const addHeader = () => {
+    const addHeader = (companyNameForHeader) => {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(16);
         doc.setTextColor(40, 40, 40);
         doc.text('PERFIL DE CARGO (DIAGNÓSTICO)', pageWidth / 2, 20, { align: 'center' });
         doc.setFontSize(12);
         doc.setTextColor(100, 100, 100);
-        doc.text(companyName, pageWidth / 2, 28, { align: 'center' });
+        doc.text(companyNameForHeader, pageWidth / 2, 28, { align: 'center' });
     };
 
     // --- Estructura del Footer ---
@@ -64,7 +64,7 @@ export async function generarPerfilCargoPDF(datosFormulario) {
 
     datosFormulario.cargos.forEach((cargo, index) => {
         if (index > 0) doc.addPage();
-        addHeader();
+        addHeader(companyName);
         
         let y = 45;
 
@@ -83,6 +83,20 @@ export async function generarPerfilCargoPDF(datosFormulario) {
     const totalPages = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
+        // --- CAMBIO 3: Añadir Marca de Agua si es Preview ---
+    if (isPreview) {
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        doc.setFontSize(72); 
+        doc.setTextColor(255, 0, 0, 0.15); 
+        doc.text('BORRADOR', pageWidth / 2, pageHeight / 2, { 
+            align: 'center', 
+            angle: 45,
+            baseline: 'middle' 
+        });
+        doc.setFontSize(10); 
+        doc.setTextColor(80, 80, 80); // Restaura color del texto normal
+    }
         addFooter(i, totalPages);
     }
 
