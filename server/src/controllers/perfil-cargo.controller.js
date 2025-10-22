@@ -14,7 +14,7 @@ export async function generarPerfilCargoPDF(datosFormulario, { isPreview = false
     const doc = new jsPDF();
     addPoppinsFont(doc);
 
-    const companyName = datosFormulario.contact?.companyName || 'Nombre de la Empresa';
+    /* const companyName = datosFormulario.contact?.companyName || 'Nombre de la Empresa'; */
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 15;

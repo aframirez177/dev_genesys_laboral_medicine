@@ -1,10 +1,10 @@
 // server/src/controllers/matriz-riesgos.controller.js
 import ExcelJS from 'exceljs';
-import crypto from 'crypto';
-import db from '../config/database.js'; // <-- Importamos la conexión a la BD
+
+
 import { calcularNivelProbabilidad, calcularNivelRiesgo } from '../utils/risk-calculations.js';
 import { GES_DATOS_PREDEFINIDOS } from '../config/ges-config.js';
-import { startDocumentGeneration } from './documentos.controller.js'; // <-- AÑADIDO
+
 
 // La función generarMatrizExcel se actualiza para aceptar opciones y generar
 // tanto la versión gratuita como la pro.
@@ -146,7 +146,7 @@ if (isPreview) {
 
 
     // --- 3. PROCESAR Y AÑADIR DATOS CON AGRUPACIÓN ---
-    let currentRowIndex = options.isFree ? 2 : 3; // Empezar en la fila 2 si es gratis
+    /* let currentRowIndex = options.isFree ? 2 : 3;  */// Empezar en la fila 2 si es gratis
     
     const cargosPorProceso = datosFormulario.cargos.reduce((acc, cargo) => {
         const proceso = cargo.area;
@@ -334,7 +334,7 @@ if (isPreview) {
  * NUEVO Controlador para manejar el envío del formulario.
  * Guarda los datos en la BD y devuelve una URL de redirección.
  */
-const handleFormSubmission = async (req, res) => {
+/* const handleFormSubmission = async (req, res) => {
     const formData = req.body;
 
     console.log('--- DATOS RECIBIDOS EN EL SERVIDOR (BACKEND) ---');
@@ -410,7 +410,7 @@ const handleFormSubmission = async (req, res) => {
             message: 'Error interno del servidor al procesar su solicitud.'
         });
     }
-};
+}; */
 
 // Exportamos ambas funciones. La antigua se usará después.
-export { generarMatrizExcel, handleFormSubmission };
+export { generarMatrizExcel/* , handleFormSubmission  */};
