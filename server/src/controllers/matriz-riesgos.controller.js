@@ -61,13 +61,13 @@ async function generarMatrizExcel(datosFormulario, { isPreview = false, companyN
     ];
 
     // Se elige qué conjunto de columnas usar
-    worksheet.columns = options.isFree ? columnasGratuitas : columnasCompletas;
+    worksheet.columns = isFree ? columnasGratuitas : columnasCompletas;
     worksheet.mergeCells('A1:C1'); // Fusiona unas celdas al principio
 worksheet.getCell('A1').value = `MATRIZ DE RIESGOS - ${companyName}`;
 worksheet.getCell('A1').font = { size: 14, bold: true, name: 'Calibri' };
 worksheet.getCell('A1').alignment = { vertical: 'middle', horizontal: 'left' };
 // Mueve la fila de inicio de datos si añadiste un encabezado
-let currentRowIndex = (options.isFree ? 2 : 3) + 1;
+let currentRowIndex = (isFree ? 2 : 3) + 1;
 if (isPreview) {
     // Puedes añadir una imagen o un texto grande y semitransparente.
     // Ejemplo simple con texto en una celda fusionada (ajústalo como prefieras):
@@ -103,7 +103,7 @@ if (isPreview) {
     mainHeaderRow.height = 30;
 
     // Aplicar estilos a la sub-cabecera (fila 2) si no es la versión gratuita
-    if (!options.isFree) {
+    if (!isFree) {
         const subHeaderRow = worksheet.getRow(2);
         subHeaderRow.font = headerFont;
         subHeaderRow.fill = headerFill;
@@ -229,7 +229,7 @@ if (isPreview) {
                     const addedRow = worksheet.addRow(rowData);
 
                     // Aplicar semaforización de celdas SOLO si no es la versión gratuita
-                    if (!options.isFree) {
+                    if (!isFree) {
                         const ndCell = addedRow.getCell('nd');
                         const neCell = addedRow.getCell('ne');
                         const ncCell = addedRow.getCell('nc_valor');
@@ -272,7 +272,7 @@ if (isPreview) {
                 });
 
                 // Combinar celda "Clasificación" - SOLO PARA VERSIÓN PRO
-                if (!options.isFree && gesDeMismaClasificacion.length > 1) {
+                if (!isFree && gesDeMismaClasificacion.length > 1) {
                     const endRowForClasificacion = currentRowIndex - 1;
                     worksheet.mergeCells(startRowForClasificacion, worksheet.getColumn('peligro_clasificacion').number, endRowForClasificacion, worksheet.getColumn('peligro_clasificacion').number);
                     const cellClasificacion = worksheet.getCell(startRowForClasificacion, worksheet.getColumn('peligro_clasificacion').number);
@@ -282,7 +282,7 @@ if (isPreview) {
 
             // Combinar celdas comunes del CARGO - SOLO PARA VERSIÓN PRO
             const endRowForCurrentCargo = currentRowIndex - 1;
-            if (!options.isFree && endRowForCurrentCargo >= startRowForCurrentCargo && gesSeleccionados.length > 0) {
+            if (!isFree && endRowForCurrentCargo >= startRowForCurrentCargo && gesSeleccionados.length > 0) {
                 const keysCargoComun = ['zona_lugar', 'actividades', 'tareas', 'rutinario', 'nro_expuestos', 'requisito_legal'];
                 keysCargoComun.forEach(key => {
                     const colNum = worksheet.getColumn(key).number;
@@ -300,11 +300,11 @@ if (isPreview) {
 
         // Combinar celda "Proceso" - SOLO PARA VERSIÓN PRO
         const finFilasProceso = currentRowIndex - 1;
-        if (!options.isFree && finFilasProceso >= inicioFilasProceso && finFilasProceso > inicioFilasProceso) { 
+        if (!isFree && finFilasProceso >= inicioFilasProceso && finFilasProceso > inicioFilasProceso) { 
             worksheet.mergeCells(inicioFilasProceso, worksheet.getColumn('proceso').number, finFilasProceso, worksheet.getColumn('proceso').number);
             const cellProceso = worksheet.getCell(inicioFilasProceso, worksheet.getColumn('proceso').number);
             cellProceso.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
-        } else if (!options.isFree && finFilasProceso === inicioFilasProceso && cargosEnEsteProceso.length > 0 && cargosEnEsteProceso[0].gesSeleccionados.length > 0) {
+        } else if (!isFree && finFilasProceso === inicioFilasProceso && cargosEnEsteProceso.length > 0 && cargosEnEsteProceso[0].gesSeleccionados.length > 0) {
             const cellProceso = worksheet.getCell(inicioFilasProceso, worksheet.getColumn('proceso').number);
             cellProceso.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
         }
