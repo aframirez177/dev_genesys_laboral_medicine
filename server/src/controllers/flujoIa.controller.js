@@ -49,8 +49,8 @@ export const registrarYGenerar = async (req, res) => {
         const rolClienteId = rolCliente.id;
 
         // 3. Crear el User (hasheando la contraseña)
-        const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash(userData.password, salt);
+    /*     const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(userData.password, salt); */
 
         const [user] = await trx('users').insert({
             email: userData.email,
