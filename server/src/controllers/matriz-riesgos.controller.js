@@ -162,15 +162,9 @@ async function generarMatrizExcel(
 
   // Se elige qué conjunto de columnas usar
   worksheet.columns = isFree ? columnasGratuitas : columnasCompletas;
-  worksheet.mergeCells("A1:C1"); // Fusiona unas celdas al principio
-  worksheet.getCell("A1").value = `MATRIZ DE RIESGOS - ${companyName}`;
-  worksheet.getCell("A1").font = { size: 14, bold: true, name: "Calibri" };
-  worksheet.getCell("A1").alignment = {
-    vertical: "middle",
-    horizontal: "left",
-  };
+
   // Mueve la fila de inicio de datos si añadiste un encabezado
-  let currentRowIndex = (isFree ? 2 : 3) + 1;
+  let currentRowIndex = isFree ? 2 : 3;
   if (isPreview) {
     // Puedes añadir una imagen o un texto grande y semitransparente.
     // Ejemplo simple con texto en una celda fusionada (ajústalo como prefieras):
@@ -271,6 +265,14 @@ async function generarMatrizExcel(
   } else {
     // En la versión gratuita, simplemente ponemos los headers en la primera fila
     worksheet.getRow(1).values = worksheet.columns.map((c) => c.header);
+    // --- AÑADIR ESTAS LÍNEAS AQUÍ DENTRO DEL ELSE ---
+    worksheet.mergeCells("A1:C1"); // Fusiona unas celdas al principio
+    worksheet.getCell("A1").value = `MATRIZ DE RIESGOS - ${companyName}`;
+    worksheet.getCell("A1").font = { size: 14, bold: true, name: "Calibri" };
+    worksheet.getCell("A1").alignment = {
+      vertical: "middle",
+      horizontal: "left",
+    };
   }
 
   // --- 3. PROCESAR Y AÑADIR DATOS CON AGRUPACIÓN ---
@@ -594,7 +596,7 @@ async function generarMatrizExcel(
         bottom: { style: "thin", color: { argb: "FF000000" } },
         right: { style: "thin", color: { argb: "FF000000" } },
       };
-      if (r > (options.isFree ? 1 : 2) && !cell.font) {
+      if (r > (isFree ? 1 : 2) && !cell.font) {
         cell.font = { name: "Calibri", size: 10, color: { argb: "FF000000" } };
       }
     });
