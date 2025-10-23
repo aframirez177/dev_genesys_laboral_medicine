@@ -1,13 +1,14 @@
-// Al inicio de flujoIa.controller.js
-import db from '../config/database.js'; 
-import bcrypt from 'bcryptjs'; 
-import crypto from 'crypto'; // <--- Añade esta para generar el token
+// server/src/controllers/flujoIa.controller.js
+import db from '../config/database.js';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 // Importa tus funciones de generación (asegúrate que las rutas sean correctas)
 import { generarMatrizExcel } from './matriz-riesgos.controller.js';
 import { generarProfesiogramaPDF } from './profesiograma.controller.js';
 import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
-// Importa la función que acabamos de crear
-import { uploadToSpaces } from '../utils/spaces.js';
+// (Opcional: Descomenta si también generarás la cotización aquí)
+// import { generarCotizacionPDF } from './cotizacion.controller.js';
+import { uploadToSpaces } from '../utils/spaces.js'; // Asegúrate que esta ruta sea correcta
 
 // Función principal que maneja el registro y guardado de datos
 export const registrarYGenerar = async (req, res) => {
@@ -16,29 +17,29 @@ export const registrarYGenerar = async (req, res) => {
     // userData = { nombreEmpresa: '...', nit: '...', email: '...', password: '...' }
     const { formData, userData } = req.body;
 
-    // --- Validaciones básicas (puedes añadir más) ---
+    // --- Validaciones básicas ---
     if (!formData || !userData || !userData.email || !userData.password || !userData.nombreEmpresa || !userData.nit) {
         return res.status(400).json({ success: false, message: 'Faltan datos requeridos.' });
     }
+    if (!formData.cargos || !Array.isArray(formData.cargos) || formData.cargos.length === 0) {
+        return res.status(400).json({ success: false, message: 'Se requiere al menos un cargo.' });
+    }
 
-    // Iniciamos una transacción para asegurar que todo se guarde o nada se guarde
-    let trx; // Declara trx fuera del try para poder usarlo en el catch si es necesario
+
+    let trx;
     try {
         trx = await db.transaction(); // Inicia la transacción
 
         // 1. Crear la Empresa
-        // 'returning('*')' nos devuelve el objeto completo de la empresa creada
         const [empresa] = await trx('empresas').insert({
             nombre_legal: userData.nombreEmpresa,
             nit: userData.nit,
-            password_hash: 'temporal' // Puedes quitar esto si solo el usuario inicia sesión
+            // Considera si necesitas un password_hash aquí o solo para el usuario
         }).returning('*');
 
         // 2. Buscar el ID del rol 'cliente_empresa'
-        // (Asume que ya existe en tu tabla 'roles')
         const rolCliente = await trx('roles').where({ nombre: 'cliente_empresa' }).first();
         if (!rolCliente) {
-            // Si el rol no existe, detenemos todo (rollback)
             throw new Error("El rol 'cliente_empresa' no se encontró en la base de datos.");
         }
         const rolClienteId = rolCliente.id;
@@ -49,131 +50,170 @@ export const registrarYGenerar = async (req, res) => {
 
         const [user] = await trx('users').insert({
             email: userData.email,
-            // Asume que pides 'full_name' en el modal, si no, usa el email o un placeholder
-            full_name: userData.nombre || userData.email,
+            full_name: userData.nombre || userData.email, // Usa nombre si viene, si no email
             password_hash: passwordHash,
             rol_id: rolClienteId,
-            empresa_id: empresa.id // Vinculamos al usuario con la empresa creada
+            empresa_id: empresa.id
         }).returning('*');
 
         // 4. Crear el Documento Generado (estado inicial 'pendiente_pago')
+        // Generar Token Único para el documento ANTES de insertarlo
+        const documentToken = crypto.randomBytes(32).toString('hex');
+        console.log(`Token generado para nuevo documento: ${documentToken}`);
+
         const [documento] = await trx('documentos_generados').insert({
             empresa_id: empresa.id,
-            usuario_lead_id: user.id, // El usuario que llenó el formulario
-            tipo_documento: 'matriz_riesgos', // O 'profesiograma', etc.
-            form_data: JSON.stringify(formData), // Guardamos todo el formulario como backup
-            estado: 'pendiente_pago' // Estado inicial
+            usuario_lead_id: user.id,
+            tipo_documento: 'paquete_inicial', // Tipo genérico para el conjunto
+            form_data: JSON.stringify(formData), // Guardamos todo el formulario
+            estado: 'pendiente_pago',
+            token: documentToken, // Guarda el token único
+            preview_urls: '{}' // Inicializa como JSON vacío, se actualizará después
         }).returning('*');
+        console.log(`Documento ${documento.id} creado con estado pendiente_pago.`);
+
 
         // 5. Crear los Cargos y Riesgos (Iterando sobre formData)
-        if (formData.cargos && Array.isArray(formData.cargos)) {
-            for (const cargo of formData.cargos) {
-                // Guarda el cargo
-                const [cargoDB] = await trx('cargos_documento').insert({
-                    documento_id: documento.id,
-                    nombre_cargo: cargo.cargoName,
-                    area: cargo.area,
-                    descripcion_tareas: cargo.descripcionTareas
-                    // Añade aquí los otros campos del cargo si los necesitas
-                }).returning('*');
+        for (const cargo of formData.cargos) {
+            const [cargoDB] = await trx('cargos_documento').insert({
+                documento_id: documento.id,
+                nombre_cargo: cargo.cargoName,
+                area: cargo.area,
+                descripcion_tareas: cargo.descripcionTareas,
+                zona: cargo.zona, // Asegúrate que estos campos existan en tu form y BD
+                num_trabajadores: cargo.numTrabajadores,
+                tareas_rutinarias: cargo.tareasRutinarias || false // Añade valor por defecto si es necesario
+                // Añade aquí los otros campos del cargo si los necesitas
+            }).returning('*');
 
-                // Guarda los riesgos asociados a ese cargo
-                if (cargo.gesSeleccionados && Array.isArray(cargo.gesSeleccionados)) {
-                    for (const ges of cargo.gesSeleccionados) {
-                        await trx('riesgos_cargo').insert({
-                            cargo_id: cargoDB.id,
-                            tipo_riesgo: ges.riesgo,
-                            descripcion_riesgo: ges.ges,
-                            // Asegúrate de que los nombres coincidan con tu formData y BD
-                            nivel_deficiencia: ges.niveles?.deficiencia?.value,
-                            nivel_exposicion: ges.niveles?.exposicion?.value,
-                            nivel_consecuencia: ges.niveles?.consecuencia?.value,
-                            controles_fuente: ges.controles?.fuente,
-                            controles_medio: ges.controles?.medio,
-                            controles_individuo: ges.controles?.individuo
-                        });
-                    }
+            if (cargo.gesSeleccionados && Array.isArray(cargo.gesSeleccionados)) {
+                for (const ges of cargo.gesSeleccionados) {
+                    // Validar que los niveles existan y tengan valor, o usar null/0
+                    const nivelDeficiencia = ges.niveles?.deficiencia?.value;
+                    const nivelExposicion = ges.niveles?.exposicion?.value;
+                    const nivelConsecuencia = ges.niveles?.consecuencia?.value;
+
+                    await trx('riesgos_cargo').insert({
+                        cargo_id: cargoDB.id,
+                        tipo_riesgo: ges.riesgo,
+                        descripcion_riesgo: ges.ges,
+                        nivel_deficiencia: nivelDeficiencia !== undefined ? nivelDeficiencia : null,
+                        nivel_exposicion: nivelExposicion !== undefined ? nivelExposicion : null,
+                        nivel_consecuencia: nivelConsecuencia !== undefined ? nivelConsecuencia : null,
+                        controles_fuente: ges.controles?.fuente || null,
+                        controles_medio: ges.controles?.medio || null,
+                        controles_individuo: ges.controles?.individuo || null
+                    });
                 }
             }
         }
-// --- INICIO CÓDIGO NUEVO ---
+        console.log("Cargos y riesgos guardados en la BD.");
 
-        // 6. Generar Token Único para el documento
-        const documentToken = crypto.randomBytes(32).toString('hex');
-        console.log(`Token generado para documento ${documento.id}: ${documentToken}`);
+        // --- INICIO GENERACIÓN DOCUMENTOS FINALES ---
 
-        // 7. Generar Documentos PREVIEW con Marca de Agua
-        console.log("Generando previews para:", empresa.nombre_legal);
-        // Asegúrate que tus funciones acepten { isPreview: true, companyName: '...' }
-        const companyName = empresa.nombre_legal; 
+        // 6. Generar Documentos FINALES (Sin isPreview)
+        console.log("Generando documentos finales para:", empresa.nombre_legal);
+        const companyName = empresa.nombre_legal;
 
         // Genera los archivos en memoria (como buffers)
-        const [matrizPreviewBuffer, profesiogramaPreviewBuffer, perfilPreviewBuffer] = await Promise.all([
-            generarMatrizExcel(formData, { isPreview: true, companyName: companyName }),
-            generarProfesiogramaPDF(formData, { isPreview: true, companyName: companyName }),
-            generarPerfilCargoPDF(formData, { isPreview: false, companyName: companyName }) // ¿Perfil necesita preview?
-        ]);
-        console.log("Buffers de preview generados.");
+        // Asegúrate que tus funciones acepten solo (formData, { companyName })
+        // Opcional: Podrías generar la cotización aquí también si lo deseas
+        const generationPromises = [
+            generarMatrizExcel(formData, { companyName: companyName }),
+            generarProfesiogramaPDF(formData, { companyName: companyName }),
+            generarPerfilCargoPDF(formData, { companyName: companyName }),
+            // generarCotizacionPDF(formData) // Descomenta si la incluyes aquí
+        ];
 
-        // 8. Subir Previews a Spaces
-        console.log("Subiendo previews a Spaces...");
-        const previewUrls = {}; // Objeto para guardar las URLs
+        const [matrizBuffer, profesiogramaBuffer, perfilBuffer /*, cotizacionBuffer */] = await Promise.all(generationPromises);
+        console.log("Buffers de documentos finales generados.");
 
-        // Usamos Promise.all para subir en paralelo
-        const [matrizUrl, profesiogramaUrl, perfilUrl] = await Promise.all([
-            uploadToSpaces(matrizPreviewBuffer, 'matriz-riesgos.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', true),
-            uploadToSpaces(profesiogramaPreviewBuffer, 'profesiograma.pdf', 'application/pdf', true),
-            uploadToSpaces(perfilPreviewBuffer, 'perfil-cargo.pdf', 'application/pdf', false) // Sin sufijo preview?
-        ]);
+        // 7. Subir Documentos Finales a Spaces
+        console.log("Subiendo documentos finales a Spaces...");
+        const finalUrls = {}; // Objeto para guardar las URLs
+
+        // Usamos nombres de archivo únicos con el token
+        const uploadPromises = [
+             uploadToSpaces(
+                matrizBuffer,
+                `matriz-riesgos-${documentToken}.xlsx`,
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+             ),
+             uploadToSpaces(
+                profesiogramaBuffer,
+                `profesiograma-${documentToken}.pdf`,
+                'application/pdf'
+            ),
+             uploadToSpaces(
+                perfilBuffer,
+                `perfil-cargo-${documentToken}.pdf`,
+                'application/pdf'
+            ),
+            // uploadToSpaces(cotizacionBuffer, `cotizacion-${documentToken}.pdf`, 'application/pdf') // Descomenta si la incluyes
+        ];
+
+        const [matrizUrl, profesiogramaUrl, perfilUrl /*, cotizacionUrl */] = await Promise.all(uploadPromises);
 
         // Guardamos las URLs obtenidas
-        previewUrls.matriz = matrizUrl;
-        previewUrls.profesiograma = profesiogramaUrl;
-        previewUrls.perfil = perfilUrl;
-        console.log("URLs de preview obtenidas:", previewUrls);
+        finalUrls.matriz = matrizUrl;
+        finalUrls.profesiograma = profesiogramaUrl;
+        finalUrls.perfil = perfilUrl;
+        // finalUrls.cotizacion = cotizacionUrl; // Descomenta si la incluyes
+        console.log("URLs finales obtenidas:", finalUrls);
 
-        // 9. ACTUALIZAR el documento en la BD con el Token y las URLs de Preview
+        // 8. ACTUALIZAR el documento en la BD con las URLs Finales
         // Usamos 'trx' para que sea parte de la misma transacción
         await trx('documentos_generados')
             .where({ id: documento.id })
             .update({
-                token: documentToken,
-                preview_urls: JSON.stringify(previewUrls) // Guarda el objeto como texto JSON
+                // Si renombraste la columna, usa 'final_urls' aquí
+                preview_urls: JSON.stringify(finalUrls) // Guarda el objeto como texto JSON
             });
-        console.log(`Documento ${documento.id} actualizado con token y preview_urls.`);
+        console.log(`Documento ${documento.id} actualizado con URLs finales.`);
 
-        // --- FIN CÓDIGO NUEVO ---
+        // --- FIN GENERACIÓN DOCUMENTOS FINALES ---
 
-        
-        // Si llegamos aquí, todas las inserciones fueron exitosas.
+
+        // Si llegamos aquí, todo fue exitoso.
         await trx.commit(); // Confirma la transacción
 
-        // ----------------------------------------------------
-        // AQUÍ IRÁ LA LÓGICA PARA LLAMAR A PAYU (Paso 3 del MVP)
-        // Por ahora, solo respondemos con éxito
-        // ----------------------------------------------------
-        res.status(201).json({ 
-    success: true,
-    message: '¡Cuenta creada! Redirigiendo a tus resultados...',
-    documentToken: documentToken // <-- Envía el token generado
-});
+        // Respondemos al frontend con éxito y el token para la página de resultados
+        res.status(201).json({
+            success: true,
+            message: '¡Cuenta creada y documentos generados! Redirigiendo...',
+            documentToken: documentToken // Envía el token para redirigir a resultados.html?token=...
+        });
 
     } catch (error) {
-        // Si ALGO falló (ej: email duplicado, rol no encontrado), deshace todo
+        // Si ALGO falló, deshace todo
         if (trx) {
             await trx.rollback();
+            console.log("Transacción revertida debido a error.");
         }
-        console.error('Error en el flujo de registro y generación:', error);
+        console.error('Error detallado en flujo de registro y generación:', error);
 
-        // Envía un error específico si es posible (ej: email duplicado)
-        if (error.message.includes('duplicate key value violates unique constraint "users_email_unique"')) {
-            return res.status(409).json({ success: false, message: 'El correo electrónico ya está registrado.' });
+        // Envía un error específico si es posible
+        if (error.code === '23505') { // Código de error PostgreSQL para violación de unicidad
+             if (error.constraint === 'users_email_unique') {
+                return res.status(409).json({ success: false, message: 'El correo electrónico ya está registrado.' });
+            }
+            if (error.constraint === 'empresas_nit_unique') {
+                return res.status(409).json({ success: false, message: 'El NIT de la empresa ya está registrado.' });
+            }
+             if (error.constraint === 'documentos_generados_token_unique') {
+                // Muy raro, pero podría pasar si el token generado colisiona
+                 console.error("Colisión de token detectada.");
+                return res.status(500).json({ success: false, message: 'Error interno temporal, por favor intente de nuevo.', code: 'TOKEN_COLLISION' });
+            }
         }
-        if (error.message.includes('duplicate key value violates unique constraint "empresas_nit_unique"')) {
-            return res.status(409).json({ success: false, message: 'El NIT de la empresa ya está registrado.' });
-        }
+
 
         // Error genérico si no es uno conocido
-        res.status(500).json({ success: false, message: 'Error interno al procesar la solicitud.', error: error.message });
+        // Incluye el mensaje de error real para depuración (considera quitarlo en producción final)
+        res.status(500).json({
+             success: false,
+             message: 'Error interno al procesar la solicitud.',
+             error: error.message // Mensaje de error específico para depuración
+        });
     }
 };
