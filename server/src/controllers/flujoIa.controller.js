@@ -29,12 +29,16 @@ export const registrarYGenerar = async (req, res) => {
     let trx;
     try {
         trx = await db.transaction(); // Inicia la transacción
-
+        // --- CALCULAR HASH PRIMERO ---
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(userData.password, salt);
+        // --- FIN CALCULAR HASH ---
         // 1. Crear la Empresa
         const [empresa] = await trx('empresas').insert({
             nombre_legal: userData.nombreEmpresa,
             nit: userData.nit,
-            // Considera si necesitas un password_hash aquí o solo para el usuario
+            password_hash: passwordHash
+            
         }).returning('*');
 
         // 2. Buscar el ID del rol 'cliente_empresa'

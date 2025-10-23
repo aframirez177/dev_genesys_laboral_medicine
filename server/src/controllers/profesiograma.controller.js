@@ -28,7 +28,7 @@ function addHeaderAndFooter(doc, companyName) {
 
     // Encabezado
     // Eliminamos el try-catch para que el error de logo sea más visible si ocurre
-    if (logoBase64 && logoBase64.startsWith("data:image")) {
+    /* if (logoBase64 && logoBase64.startsWith("data:image")) {
         doc.addImage(logoBase64, "PNG", margin, 5, 38, 15);
     } else {
         console.warn("logoBase64 no es válido o está ausente.");
@@ -36,7 +36,7 @@ function addHeaderAndFooter(doc, companyName) {
         doc.setFontSize(10);
         doc.setTextColor(200, 0, 0);
         doc.text("Logo Inválido", margin, 15);
-    }
+    } */
 
     doc.setFont("Poppins", "bold");
     doc.setFontSize(14);
