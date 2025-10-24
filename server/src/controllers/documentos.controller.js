@@ -27,12 +27,11 @@ export const getDocumentStatus = async (req, res) => {
 
         // Parsea las URLs (asumiendo que están en 'preview_urls' como JSON string)
         let urls = {};
-        try {
-            // Usa 'preview_urls' o 'final_urls' según el nombre final de tu columna
-            urls = JSON.parse(documento.preview_urls || '{}');
-        } catch (parseError) {
-            console.error(`Error parseando URLs JSON para token ${token}:`, parseError, documento.preview_urls);
-            // Devolver URLs vacías si falla el parseo, pero no fallar la solicitud completa
+        if (documento.preview_urls && typeof documento.preview_urls === 'object') {
+            urls = documento.preview_urls;
+        } else {
+            console.warn(`preview_urls para token ${token} no es un objeto válido o está vacío/nulo.`);
+            urls = {}; // Asegura que siempre sea un objeto
         }
 
         // Devuelve el estado y las URLs encontradas
