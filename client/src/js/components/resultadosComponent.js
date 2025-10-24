@@ -1,21 +1,49 @@
 // client/src/js/components/resultadosComponent.js
 
 export function initResultadosPage() {
+    // IDs existentes en tu HTML
     const loaderContainer = document.getElementById('loader-container');
-    const resultsContainer = document.getElementById('results-container');
+    const resultsContainer = document.getElementById('results-container'); // El contenedor principal de resultados
     const errorContainer = document.getElementById('error-container');
-    const documentList = document.querySelector('.document-list'); // UL o DIV donde van los docs
-    const paymentButtonContainer = document.getElementById('payment-button-container'); // Contenedor para el botón Pagar
-    const statusMessage = document.getElementById('status-message'); // Elemento para mostrar estado (ej. Procesando, Listo)
+    const documentList = resultsContainer.querySelector('.document-list'); // Busca DENTRO de results-container
     const errorMessage = document.getElementById('error-message');
 
-    // Verifica que todos los elementos necesarios existan
-    if (!loaderContainer || !resultsContainer || !errorContainer || !documentList || !paymentButtonContainer || !statusMessage) {
-        console.error('Faltan elementos de UI esenciales en resultados.html.');
-        // Muestra un error genérico si faltan elementos
-        document.body.innerHTML = '<p style="color: red; padding: 20px;">Error: La página de resultados no se cargó correctamente. Faltan elementos esenciales.</p>';
+    // IDs que añadiremos/buscaremos (si no existen, los creamos o adaptamos)
+    let paymentButtonContainer = document.getElementById('payment-button-container');
+    let statusMessageElement = document.getElementById('status-message'); // Podría estar dentro del loader o results
+
+    // --- Verificación robusta de elementos ---
+    let missingElements = [];
+    if (!loaderContainer) missingElements.push('loader-container');
+    if (!resultsContainer) missingElements.push('results-container');
+    if (!errorContainer) missingElements.push('error-container');
+    if (!documentList) missingElements.push('.document-list within results-container');
+    if (!errorMessage) missingElements.push('error-message');
+
+    if (missingElements.length > 0) {
+        console.error('Faltan elementos de UI esenciales en resultados.html:', missingElements.join(', '));
+        document.body.innerHTML = `<p style="color: red; padding: 20px;">Error: La página de resultados no se cargó correctamente. Faltan elementos: ${missingElements.join(', ')}.</p>`;
         return;
     }
+
+    // --- Crear elementos faltantes si es necesario (o adaptar a tu HTML) ---
+    // Si no tienes un sitio específico para el mensaje de estado, lo añadimos antes de la lista
+    if (!statusMessageElement) {
+        statusMessageElement = document.createElement('p');
+        statusMessageElement.id = 'status-message';
+        statusMessageElement.className = 'text-lg text-center mb-4 text-gray-700'; // Estilos de ejemplo
+        resultsContainer.insertBefore(statusMessageElement, documentList); // Insertar antes de la lista
+    }
+
+    // Si no tienes un contenedor específico para el botón de pago, lo añadimos después de la lista
+    if (!paymentButtonContainer) {
+        paymentButtonContainer = document.createElement('div');
+        paymentButtonContainer.id = 'payment-button-container';
+        paymentButtonContainer.className = 'mt-8 text-center';
+        resultsContainer.appendChild(paymentButtonContainer); // Añadir al final
+    }
+    // --- Fin creación/adaptación ---
+
 
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
@@ -25,177 +53,165 @@ export function initResultadosPage() {
         return;
     }
 
-    let pollingInterval = null; // Variable para guardar el ID del intervalo
+    let pollingInterval = null;
 
-    // --- Funciones de UI ---
     function showLoader(message = 'Consultando estado...') {
-        loaderContainer.classList.add('active');
-        resultsContainer.classList.remove('active');
-        errorContainer.classList.remove('active');
-        if (statusMessage) statusMessage.textContent = message; // Mostrar mensaje en loader
+        loaderContainer.style.display = 'block'; // Mostrar loader
+        resultsContainer.style.display = 'none'; // Ocultar resultados
+        errorContainer.style.display = 'none'; // Ocultar error
+        // Actualiza el mensaje DENTRO del loader si existe, si no, no hace nada
+        const loaderMsg = loaderContainer.querySelector('p'); // Asume que hay un <p> dentro
+        if (loaderMsg) loaderMsg.textContent = message;
     }
 
-    // --- FUNCIÓN MODIFICADA ---
-    // Recibe el objeto { status: '...', urls: {...} } completo
-    function showResults(data) {
-        loaderContainer.classList.remove('active');
-        resultsContainer.classList.add('active');
-        errorContainer.classList.remove('active');
+    // --- FUNCIÓN showResults ADAPTADA ---
+    // Recibe el objeto { status: '...', urls: {...} }
+    function showResultsUI(data) {
+        loaderContainer.style.display = 'none'; // Ocultar loader
+        resultsContainer.style.display = 'block'; // Mostrar resultados
+        errorContainer.style.display = 'none'; // Ocultar error
 
-        if (statusMessage) {
-            statusMessage.textContent = data.status === 'pagado' ? 'Documentos listos para descargar.' : 'Tus documentos están listos. Realiza el pago para descargarlos.';
+        const status = data.status;
+        const urls = data.urls || {}; // Asegura que urls sea un objeto
+
+        if (statusMessageElement) {
+            statusMessageElement.textContent = status === 'pagado'
+                ? '¡Pago completado! Tus documentos están listos para descargar.'
+                : 'Tus documentos han sido generados. Realiza el pago para habilitar la descarga.';
         }
 
-        if (documentList) {
-            documentList.innerHTML = ''; // Limpiar lista
-            const urls = data.urls || {}; // Asegurar que urls sea un objeto
+        documentList.innerHTML = ''; // Limpiar lista
 
-            // Crear elementos para cada documento encontrado en las URLs
-            const docTypes = [
-                { key: 'matriz', name: 'Matriz de Riesgos', icon: '🧾' }, // Añade iconos o clases
-                { key: 'profesiograma', name: 'Profesiograma', icon: '🩺' },
-                { key: 'perfil', name: 'Perfil de Cargo', icon: '👤' },
-                // { key: 'cotizacion', name: 'Cotización', icon: '💲' } // Si la generas
-            ];
+        const docTypes = [
+            { key: 'matriz', name: 'Matriz de Riesgos', icon: '🧾' },
+            { key: 'profesiograma', name: 'Profesiograma', icon: '🩺' },
+            { key: 'perfil', name: 'Perfil de Cargo', icon: '👤' },
+            // { key: 'cotizacion', name: 'Cotización', icon: '💲' } // Descomenta si aplica
+        ];
 
-            docTypes.forEach(docType => {
-                const url = urls[docType.key];
-                const docItem = document.createElement('li'); // O 'div' si prefieres
-                docItem.className = 'document-item bg-gray-100 p-4 rounded shadow flex justify-between items-center mb-3'; // Clases de ejemplo
+        docTypes.forEach(docType => {
+            const url = urls[docType.key];
+            const docItem = document.createElement('li'); // Usa 'li' si documentList es 'ul'
+            docItem.className = 'document-item bg-gray-100 p-4 rounded shadow flex justify-between items-center mb-3';
 
-                let buttonHtml = '';
-                if (url) {
-                    if (data.status === 'pagado') {
-                        // Botón de Descarga (si está pagado)
-                        buttonHtml = `<a href="${url}" target="_blank" rel="noopener noreferrer" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200">Descargar</a>`;
-                    } else {
-                        // Indicador de 'Bloqueado' o 'Requiere Pago'
-                        buttonHtml = `<span class="text-gray-500 text-sm italic">(Pago requerido)</span>`;
-                    }
+            let buttonHtml = '';
+            if (url) {
+                if (status === 'pagado') {
+                    buttonHtml = `<a href="${url}" target="_blank" rel="noopener noreferrer" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200 text-sm font-medium">Descargar</a>`;
                 } else {
-                    // Mensaje si falta la URL (raro, pero posible)
-                    buttonHtml = `<span class="text-red-500 text-sm">No disponible</span>`;
+                    // Mostrar como bloqueado o deshabilitado si no está pagado
+                    buttonHtml = `<button disabled class="bg-gray-300 text-gray-500 px-4 py-2 rounded cursor-not-allowed text-sm font-medium">Descargar (Pago Requerido)</button>`;
                 }
-
-                docItem.innerHTML = `
-                    <div class="flex items-center">
-                         <span class="text-xl mr-3">${docType.icon}</span>
-                         <span>${docType.name}</span>
-                    </div>
-                    <div>
-                         ${buttonHtml}
-                    </div>
-                `;
-                documentList.appendChild(docItem);
-            });
-        }
-
-        // Mostrar u ocultar botón de pago según el estado
-        if (paymentButtonContainer) {
-            if (data.status === 'pendiente_pago') {
-                paymentButtonContainer.innerHTML = `
-                    <button id="payButton" class="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-200 shadow-md">
-                        Pagar $XXX.XXX para Descargar Documentos
-                    </button>`;
-                // Añadir event listener al botón de pago
-                const payButton = document.getElementById('payButton');
-                if (payButton) {
-                    payButton.addEventListener('click', handlePayment);
-                }
-                paymentButtonContainer.style.display = 'block';
             } else {
-                paymentButtonContainer.innerHTML = ''; // Vaciar si ya está pagado
-                paymentButtonContainer.style.display = 'none';
+                buttonHtml = `<span class="text-red-500 text-sm italic">No disponible</span>`;
             }
+
+            docItem.innerHTML = `
+                <div class="flex items-center">
+                    <span class="text-xl mr-3">${docType.icon}</span>
+                    <span class="font-medium text-gray-800">${docType.name}</span>
+                </div>
+                <div>
+                    ${buttonHtml}
+                </div>
+            `;
+            documentList.appendChild(docItem);
+        });
+
+        // Botón de Pago
+        if (status === 'pendiente_pago') {
+            paymentButtonContainer.innerHTML = `
+                <button id="payButton" class="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-200 shadow-md">
+                    Pagar $XXX.XXX para Descargar
+                </button>`;
+            const payButton = document.getElementById('payButton');
+            if (payButton) {
+                payButton.addEventListener('click', handlePayment);
+            }
+            paymentButtonContainer.style.display = 'block';
+        } else {
+            paymentButtonContainer.innerHTML = '';
+            paymentButtonContainer.style.display = 'none';
         }
     }
-
 
     function showError(message) {
-        loaderContainer.classList.remove('active');
-        resultsContainer.classList.remove('active');
-        errorContainer.classList.add('active');
+        loaderContainer.style.display = 'none';
+        resultsContainer.style.display = 'none';
+        errorContainer.style.display = 'block';
         if (errorMessage) {
             errorMessage.textContent = message || 'Ha ocurrido un error inesperado.';
         }
     }
 
-    // --- Lógica de Pago (Placeholder) ---
     async function handlePayment() {
-        showLoader('Redirigiendo a la pasarela de pago...'); // Mensaje mientras se obtiene URL
+        showLoader('Iniciando proceso de pago...');
         try {
-             // 1. Llamar al backend para crear la orden en PayU
-             const response = await fetch(`/api/payments/create-order/${token}`, { method: 'POST' });
-             if (!response.ok) {
-                 const errData = await response.json();
-                 throw new Error(errData.message || 'Error al iniciar el pago.');
-             }
-             const data = await response.json();
-
-             // 2. Redirigir a la URL de pago de PayU
-             if (data.paymentUrl) {
-                 window.location.href = data.paymentUrl;
-             } else {
-                 throw new Error('No se recibió la URL de pago.');
-             }
-
+            const response = await fetch(`/api/payments/create-order/${token}`, { method: 'POST' });
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.message || 'Error al crear la orden de pago.');
+            }
+            const data = await response.json();
+            if (data.paymentUrl) {
+                window.location.href = data.paymentUrl;
+            } else {
+                throw new Error('No se recibió la URL de pago del servidor.');
+            }
         } catch (error) {
-             console.error('Error al procesar el pago:', error);
-             showError(`Error al iniciar el pago: ${error.message}`);
+            console.error('Error en handlePayment:', error);
+            showError(`Error al iniciar el pago: ${error.message}`);
         }
     }
 
-
-    // --- Lógica de sondeo (Polling) MODIFICADA ---
     async function checkDocumentStatus() {
-        console.log("Polling status..."); // Log para ver que sigue funcionando
+        console.log("Polling status...");
         try {
-            const response = await fetch(`/api/documentos/status/${token}`);
+            // Ajusta la URL si tu API está en otro dominio/puerto en desarrollo
+            const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:3000' // O tu puerto de backend local
+                : ''; // Vacío para producción (ruta relativa)
+            const response = await fetch(`${apiUrl}/api/documentos/status/${token}`);
+
 
             if (!response.ok) {
-                 // Si la respuesta es 404 u otro error, detener polling y mostrar error
-                const errorData = await response.json().catch(() => ({ message: `Error del servidor: ${response.status}` }));
+                const errorText = await response.text(); // Lee el texto para ver el error
+                console.error(`Error ${response.status} en polling:`, errorText);
+                const errorData = JSON.parse(errorText || '{}'); // Intenta parsear si es JSON
                 throw new Error(errorData.message || `Error del servidor: ${response.status}`);
             }
 
             const data = await response.json();
 
-            // --- LÓGICA MEJORADA ---
             if (data.success) {
-                if (data.status === 'pagado' || data.status === 'completed') { // Acepta 'completed' también por si acaso
-                    console.log("Status completed/paid. Stopping polling.");
-                    clearInterval(pollingInterval); // Detener polling
-                    showResults(data); // Mostrar resultados finales (ya tiene URLs)
-                } else if (data.status === 'pendiente_pago') {
-                     console.log("Status pending_payment. Displaying results and pay button.");
-                     // Si está pendiente de pago, MOSTRAMOS los documentos (sin link de descarga)
-                     // y el botón de pago, PERO NO DETENEMOS el polling (por si paga en otra pestaña y vuelve).
-                     // Opcional: Podríamos detener el polling aquí si preferimos que solo se actualice al recargar.
-                     // clearInterval(pollingInterval); // <--- DESCOMENTA SI QUIERES DETENER POLLING EN PENDIENTE_PAGO
-                     showResults(data); // Muestra estado pendiente y botón pagar
-                } else if (data.status === 'failed') {
-                    console.error("Status failed. Stopping polling.");
+                // SIEMPRE llama a showResultsUI para actualizar la vista
+                showResultsUI(data);
+
+                // Detener polling SOLO si el estado es final (pagado o fallido)
+                if (data.status === 'pagado' || data.status === 'completed' || data.status === 'failed') {
+                    console.log(`Status final: ${data.status}. Stopping polling.`);
                     clearInterval(pollingInterval);
-                    showError(data.message || 'La generación de documentos ha fallado.');
+                    if (data.status === 'failed') {
+                        // Podrías querer mostrar un mensaje de error más específico aquí si falla
+                        showError(data.message || 'La generación de documentos ha fallado.');
+                    }
                 } else {
-                    // Estado desconocido o aún procesando (si hubiera un estado intermedio)
                     console.log(`Status: ${data.status}. Continuing poll.`);
-                    showLoader(`Procesando... Estado: ${data.status}`); // Actualizar mensaje loader
+                    // Ya no necesitamos mostrar el loader aquí, showResultsUI maneja la vista
                 }
             } else {
-                 // Si data.success es false
-                 throw new Error(data.message || 'Respuesta inválida del servidor.');
+                throw new Error(data.message || 'Respuesta inválida (success: false).');
             }
 
         } catch (error) {
-            console.error('Error durante el sondeo:', error);
-            clearInterval(pollingInterval); // Detener en cualquier error
-            showError(`Error al consultar estado: ${error.message}`);
+            console.error('Error fatal durante el sondeo:', error);
+            clearInterval(pollingInterval);
+            showError(`No se pudo verificar el estado: ${error.message}. Por favor, recarga la página.`);
         }
     }
 
     // --- Iniciar ---
-    showLoader(); // Mostrar loader inicialmente
-    pollingInterval = setInterval(checkDocumentStatus, 5000); // Consulta cada 5 segundos
-    checkDocumentStatus(); // Llamada inicial inmediata
+    showLoader(); // Muestra el loader al principio
+    pollingInterval = setInterval(checkDocumentStatus, 5000); // Consulta cada 5 seg
+    checkDocumentStatus(); // Llamada inicial
 }
