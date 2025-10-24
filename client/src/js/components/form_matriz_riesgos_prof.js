@@ -2917,9 +2917,15 @@ if (modalForm) {
       cerrarModalRegistro();
       localStorage.removeItem("matrizRiesgosData");
 
-      // Redirigir a pago
-      alert("¡Cuenta creada exitosamente! Redirigiendo a tus resultados...");
-      window.location.href = "/pages/resultados.html"
+      // Redirigir a resultados
+    if (result.documentToken) {
+    window.location.href = `../pages/resultados.html?token=${result.documentToken}`;
+    } 
+    else {
+          // Manejo de error por si el backend no envió el token (aunque debería)
+          console.error("❌ ¡Error crítico! El backend no devolvió un documentToken.");
+          showError("Ocurrió un error inesperado al preparar la redirección. Contacta a soporte.");
+      }
 
     } catch (error) {
       console.error("❌ Error:", error);
