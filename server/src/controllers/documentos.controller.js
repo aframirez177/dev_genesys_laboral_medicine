@@ -1,122 +1,72 @@
-import db from '../config/database.js';
-// Importamos las funciones de generación de documentos reales
-import { generarMatrizExcel } from './matriz-riesgos.controller.js';
-import { generarProfesiogramaPDF } from './profesiograma.controller.js';
-import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
-import { generarCotizacionPDF } from './cotizacion.controller.js';
+// server/src/controllers/documentos.controller.js
+import db from '../config/database.js'; // Asegúrate que la ruta sea correcta
 
-// Usaremos un mapa en memoria para almacenar temporalmente los archivos generados.
-// La clave será el token, y el valor será un mapa de los buffers de los archivos.
-const jobStore = new Map();
+// NO NECESITAS las funciones de generación aquí
+// NO NECESITAS jobStore
 
 /**
- * Inicia la generación real de los documentos.
- * Por ahora, solo genera la matriz de riesgos gratuita.
+ * Obtiene el estado y las URLs de un documento basado en su token.
+ * Reemplaza la antigua función checkDocumentStatus.
  */
-export async function startDocumentGeneration(token) {
+export const getDocumentStatus = async (req, res) => {
+    const { token } = req.params;
+
+    if (!token) {
+        return res.status(400).json({ success: false, message: 'Token no proporcionado.' });
+    }
+
     try {
-        // 1. Marcar el trabajo como 'pending'
-        jobStore.set(token, { status: 'pending', files: new Map() });
+        // Busca el documento en la BASE DE DATOS usando el token
+        const documento = await db('documentos_generados').where({ token }).first();
 
-        // 2. Obtener los datos del formulario desde la BD
-        const record = await db('document_sets').where({ token }).first();
-        if (!record) {
-            throw new Error('No se encontró el registro en la base de datos.');
+        if (!documento) {
+            // Si no se encuentra el documento con ese token
+            console.warn(`Documento no encontrado para token: ${token}`);
+            return res.status(404).json({ success: false, message: 'Trabajo no encontrado.' });
         }
-        // CORRECCIÓN: Los datos ya vienen como un objeto JSON desde la BD con Knex/pg, no es necesario parsearlos.
-        const formData = record.form_data;
 
-        // Generar todos los documentos gratuitos
-        const matrizGratuitaBuffer = await generarMatrizExcel(formData, { isFree: false });
-        const profesiogramaGratuitoBuffer = await generarProfesiogramaPDF(formData, { isFree: true });
-        const perfilCargoGratuitoBuffer = await generarPerfilCargoPDF(formData);
-        const cotizacionBuffer = await generarCotizacionPDF(formData);
+        // Parsea las URLs (asumiendo que están en 'preview_urls' como JSON string)
+        let urls = {};
+        try {
+            // Usa 'preview_urls' o 'final_urls' según el nombre final de tu columna
+            urls = JSON.parse(documento.preview_urls || '{}');
+        } catch (parseError) {
+            console.error(`Error parseando URLs JSON para token ${token}:`, parseError, documento.preview_urls);
+            // Devolver URLs vacías si falla el parseo, pero no fallar la solicitud completa
+        }
 
-        // Almacenar todos los buffers en memoria
-        const currentJob = jobStore.get(token);
-        
-        currentJob.files.set('matriz-riesgos-gratuita', {
-            buffer: matrizGratuitaBuffer,
-            filename: 'matriz-de-riesgos-diagnostico.xlsx',
-            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        // Devuelve el estado y las URLs encontradas
+        console.log(`Estado encontrado para token ${token}: ${documento.estado}`);
+        res.status(200).json({
+            success: true,
+            status: documento.estado, // 'pendiente_pago' o 'pagado'
+            urls: urls // Objeto con { matriz: '...', profesiograma: '...', perfil: '...' }
         });
-        currentJob.files.set('profesiograma-gratuito', {
-            buffer: profesiogramaGratuitoBuffer,
-            filename: 'profesiograma-diagnostico.pdf',
-            contentType: 'application/pdf'
-        });
-        currentJob.files.set('perfil-cargo-gratuito', {
-            buffer: perfilCargoGratuitoBuffer,
-            filename: 'perfil-de-cargo.pdf',
-            contentType: 'application/pdf'
-        });
-        currentJob.files.set('cotizacion-examenes', {
-            buffer: cotizacionBuffer,
-            filename: 'cotizacion-examenes.pdf',
-            contentType: 'application/pdf'
-        });
-
-        // Actualizar el estado a 'completed'
-        currentJob.status = 'completed';
-        
-        // 8. Actualizar el estado en la base de datos
-        await db('document_sets').where({ token }).update({ status: 'completed' });
 
     } catch (error) {
-        console.error(`Error en la generación de documentos para el token ${token}:`, error);
-        // Marcar el trabajo como fallido
-        jobStore.set(token, { status: 'failed', message: error.message });
-        await db('document_sets').where({ token }).update({ status: 'failed' });
-    }
-}
-
-/**
- * Controlador para verificar el estado de la generación de documentos.
- */
-export const checkDocumentStatus = async (req, res) => {
-    const { token } = req.params;
-    const job = jobStore.get(token);
-
-    if (!job) {
-        return res.status(404).json({ success: false, message: 'Trabajo no encontrado.' });
-    }
-
-    if (job.status === 'completed') {
-        // Crear los enlaces de descarga dinámicamente
-        const documents = [
-            { name: 'Matriz de Riesgos (Diagnóstico)', url: `/api/documentos/download/${token}/matriz-riesgos-gratuita` },
-            { name: 'Profesiograma (Diagnóstico)', url: `/api/documentos/download/${token}/profesiograma-gratuito` },
-            { name: 'Perfil de Cargo', url: `/api/documentos/download/${token}/perfil-cargo-gratuito` },
-            { name: 'Cotización de Exámenes', url: `/api/documentos/download/${token}/cotizacion-examenes` }
-        ];
-        res.status(200).json({ status: 'completed', documents: documents });
-    } else if (job.status === 'failed') {
-        res.status(500).json({ status: 'failed', message: job.message || 'La generación de documentos ha fallado.' });
-    } else { // 'pending'
-        res.status(200).json({ status: 'pending' });
+        console.error(`Error buscando documento por token ${token}:`, error);
+        res.status(500).json({ success: false, message: 'Error interno del servidor al buscar el documento.' });
     }
 };
 
 /**
- * Controlador para descargar un documento específico.
+ * Controlador para descargar un documento específico (Ajustado para usar BD si es necesario).
+ * ESTA PARTE ES OPCIONAL AHORA, ya que las URLs son directas a Spaces.
+ * Podrías necesitarla si quieres añadir lógica de autenticación antes de la descarga.
+ * Por ahora, la dejamos comentada o simplificada, ya que el frontend podría usar las URLs directamente.
  */
+/*
 export const downloadDocument = async (req, res) => {
     const { token, tipo } = req.params;
-    const job = jobStore.get(token);
 
-    if (!job || job.status !== 'completed' || !job.files.has(tipo)) {
-        return res.status(404).send('Documento no encontrado o no está listo.');
-    }
+    // Aquí podrías añadir lógica para verificar si el documento está 'pagado' antes de permitir la descarga,
+    // buscando el documento por token en la BD.
+    // Por simplicidad, si las URLs son públicas en Spaces, el frontend podría usarlas directamente.
+    // Si necesitas proteger las descargas, esta función debería buscar la URL en la BD
+    // y luego redirigir al usuario o hacer un stream del archivo desde Spaces.
 
-    try {
-        const file = job.files.get(tipo);
-        
-        res.setHeader('Content-Type', file.contentType);
-        res.setHeader('Content-Disposition', `attachment; filename=${file.filename}`);
-        res.send(file.buffer);
-        
-    } catch (error) {
-        console.error(`Error al enviar el documento ${tipo} para el token ${token}:`, error);
-        res.status(500).send('Error interno al enviar el documento.');
-    }
-}; 
+    res.status(501).send('Funcionalidad de descarga directa desde el servidor no implementada en esta versión.');
+};
+*/
+
+// Asegúrate de que documentos.routes.js importe y use getDocumentStatus en lugar de checkDocumentStatus
