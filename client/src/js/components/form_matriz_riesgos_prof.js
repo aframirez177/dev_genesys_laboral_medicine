@@ -2918,12 +2918,8 @@ if (modalForm) {
       localStorage.removeItem("matrizRiesgosData");
 
       // Redirigir a pago
-      if (result.paymentUrl && result.paymentUrl !== "URL_DE_PAGO_DE_PAYU_IRA_AQUI") {
-        alert("¡Cuenta creada! Redirigiendo al pago...");
-        window.location.href = result.paymentUrl;
-      } else {
-        alert("¡Cuenta creada! La pasarela de pago estará lista pronto.");
-      }
+      alert("¡Cuenta creada exitosamente! Redirigiendo a tus resultados...");
+      window.location.href = "/pages/resultados.html"
 
     } catch (error) {
       console.error("❌ Error:", error);
