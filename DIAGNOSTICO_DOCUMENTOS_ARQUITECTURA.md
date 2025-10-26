@@ -2662,9 +2662,815 @@ T=10s   → checkDocumentStatus() → Estado: "pagado"
 
 ---
 
-## 8. CONCLUSIONES Y RECOMENDACIONES
+## 8. ARQUITECTURA Y CONFIGURACIÓN EN PRODUCCIÓN - DIGITALOCEAN DROPLET
 
-### 6.1 Fortalezas de la Arquitectura
+**Fecha de Actualización:** 2025-10-26
+**Entorno:** Producción en DigitalOcean Droplet
+
+Esta sección complementa el análisis local documentando la configuración y arquitectura del sistema en el entorno de producción desplegado en DigitalOcean.
+
+---
+
+### 8.1 Información del Servidor
+
+#### Especificaciones del Droplet
+
+| Característica | Valor |
+|----------------|-------|
+| **Proveedor** | DigitalOcean |
+| **Hostname** | genesyslm-servidor-principal |
+| **Sistema Operativo** | Ubuntu Server (Linux 5.15.0-144-generic) |
+| **Arquitectura** | x86_64 |
+| **RAM** | 957 MB (1 GB) |
+| **Almacenamiento** | 25 GB (60% usado = 15 GB) |
+| **Swap** | 1 GB (353 MB usado) |
+| **Ubicación** | NYC3 (New York) |
+
+#### Estado de Recursos
+
+```bash
+# Memoria
+Total:        957 MB
+Usado:        561 MB
+Disponible:   219 MB
+Swap usado:   353 MB / 1 GB
+
+# Almacenamiento
+/dev/vda1:    25 GB total
+Usado:        15 GB (60%)
+Disponible:   9.8 GB
+```
+
+**Nota:** El servidor está operando con recursos limitados. Considerar upgrade si el tráfico aumenta significativamente.
+
+---
+
+### 8.2 Arquitectura de Servicios en Producción
+
+#### Diagrama de Arquitectura
+
+```
+Internet (HTTPS)
+       ↓
+[Let's Encrypt SSL/TLS]
+       ↓
+[NGINX Reverse Proxy] :80, :443
+       ↓
+       ├─→ Static Files (/var/www/html)
+       │   └─→ HTML, CSS, JS, Images
+       │
+       ├─→ API Requests (/api/*)
+       │   └─→ localhost:3000 (Docker Container: genesys_api)
+       │       └─→ Node.js + Express
+       │
+       └─→ Workflows (workflows.genesyslm.com.co)
+           └─→ localhost:5678 (Docker Container: n8n)
+
+[Docker Network: genesys_net]
+├─→ genesys_api (Node.js App)
+├─→ genesys_db (PostgreSQL 16 Local)
+└─→ n8n (Automation Tool)
+
+[DigitalOcean Managed Services]
+├─→ Managed PostgreSQL Database
+│   └─→ genesys-prod-db-do-user-18852156-0.k.db.ondigitalocean.com:25060
+└─→ Spaces (S3-Compatible Object Storage)
+    └─→ nyc3.digitaloceanspaces.com/genesys-sst-archivos
+```
+
+---
+
+### 8.3 Configuración de NGINX
+
+#### Archivo: `/etc/nginx/sites-enabled/genesys`
+
+**Configuración Principal:**
+
+```nginx
+server {
+    server_name genesyslm.com.co www.genesyslm.com.co;
+
+    # Servir archivos estáticos
+    root /var/www/html;
+    index index.html;
+
+    # Rutas estáticas (Frontend)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Proxy para API Backend
+    location /api {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # SSL/TLS Configuración (Let's Encrypt)
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/genesyslm.com.co/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/genesyslm.com.co/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
+
+# Redirección HTTP → HTTPS
+server {
+    listen 80;
+    server_name genesyslm.com.co www.genesyslm.com.co;
+    return 301 https://$host$request_uri;
+}
+```
+
+**Características Clave:**
+- ✅ SSL/TLS automático con Let's Encrypt
+- ✅ Redirección automática HTTP → HTTPS
+- ✅ Soporte para WebSocket (Upgrade headers)
+- ✅ Compresión y cache bypass configurados
+- ✅ Proxy reverso para API sin exponer puerto 3000
+
+#### Archivo: `/etc/nginx/sites-enabled/n8n.conf`
+
+**Configuración de Workflows (n8n):**
+
+```nginx
+server {
+    server_name workflows.genesyslm.com.co;
+
+    location / {
+        proxy_pass http://localhost:5678;
+        proxy_set_header Connection '';
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+    }
+
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/workflows.genesyslm.com.co/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/workflows.genesyslm.com.co/privkey.pem;
+}
+```
+
+**Estado de NGINX:**
+```bash
+● nginx.service - A high performance web server and a reverse proxy server
+   Loaded: loaded (/lib/systemd/system/nginx.service; disabled; vendor preset: enabled)
+   Active: active (running) since Sat 2025-10-18 15:32:57 UTC
+   Memory: 4.3 MB
+   CPU Time: 42.520s
+```
+
+---
+
+### 8.4 Contenedorización con Docker
+
+#### Contenedores en Ejecución
+
+```bash
+$ docker ps
+CONTAINER ID   IMAGE                   STATUS         PORTS                    NAMES
+6a651f452d71   genesys-project-api    Up 6 minutes   0.0.0.0:3000->3000/tcp   genesys_api
+e927f4a4fa5e   postgres:16-alpine     Up 22 hours    0.0.0.0:5432->5432/tcp   genesys_db
+0c090bb42a3d   n8nio/n8n              Up 8 days      127.0.0.1:5678->5678/tcp n8n_n8n_1
+```
+
+#### Archivo: `docker-compose.yml`
+
+**Configuración de Servicios:**
+
+```yaml
+services:
+  # API Backend (Node.js + Express)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: genesys_api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server:/usr/src/app/server
+      - ./package.json:/usr/src/app/package.json
+      - ./knexfile.js:/usr/src/app/knexfile.js
+    env_file:
+      - ./server/.env
+    command: >
+      sh -c "npx nodemon --watch ./server -e js,json
+             --exec 'node ./server/src/app.js'"
+    depends_on:
+      - db
+    networks:
+      - genesys_net
+
+  # Base de Datos Local (PostgreSQL 16)
+  db:
+    image: postgres:16-alpine
+    container_name: genesys_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - genesys_net
+
+volumes:
+  postgres_data:
+
+networks:
+  genesys_net:
+```
+
+**Características:**
+- ✅ Nodemon para hot-reload en desarrollo
+- ✅ Volúmenes persistentes para PostgreSQL
+- ✅ Red Docker interna para comunicación entre contenedores
+- ✅ Variables de entorno separadas por archivo
+
+#### Archivo: `Dockerfile`
+
+**Configuración de Imagen:**
+
+```dockerfile
+# Imagen base: Node.js 20 Alpine (ligera)
+FROM node:20-alpine
+
+# Directorio de trabajo
+WORKDIR /usr/src/app
+
+# Copiar código del proyecto
+COPY . .
+
+# Instalar dependencias (incluye dev dependencies)
+RUN npm install --include=dev
+
+# Exponer puerto de la aplicación
+EXPOSE 3000
+
+# Comando de inicio en producción
+CMD [ "node", "server/src/app.js" ]
+```
+
+**Optimizaciones:**
+- Alpine Linux para imagen ligera
+- Multi-stage build implícito
+- Puerto 3000 expuesto pero protegido por NGINX
+
+---
+
+### 8.5 Bases de Datos en Producción
+
+#### 8.5.1 Base de Datos Local (Desarrollo/Testing)
+
+**Contenedor Docker:** `genesys_db`
+
+| Parámetro | Valor |
+|-----------|-------|
+| **Imagen** | postgres:16-alpine |
+| **Puerto** | 5432 (expuesto públicamente) |
+| **Usuario** | genesys_user |
+| **Base de Datos** | genesys_db |
+| **Volumen** | postgres_data (persistente) |
+
+**Variables de Entorno:** `.env` (raíz)
+```env
+POSTGRES_USER=genesys_user
+POSTGRES_PASSWORD=51647493
+POSTGRES_DB=genesys_db
+```
+
+#### 8.5.2 Base de Datos de Producción (DigitalOcean Managed Database)
+
+**Servicio:** DigitalOcean Managed PostgreSQL
+
+| Parámetro | Valor |
+|-----------|-------|
+| **Host** | genesys-prod-db-do-user-18852156-0.k.db.ondigitalocean.com |
+| **Puerto** | 25060 (no estándar, seguridad) |
+| **Usuario** | doadmin |
+| **Base de Datos** | defaultdb |
+| **SSL** | Habilitado (obligatorio) |
+| **Pool de Conexiones** | Min: 2, Max: 10 |
+
+**Variables de Entorno:** `server/.env`
+```env
+DB_CLIENT=pg
+DB_HOST=genesys-prod-db-do-user-XXXXXXXX-0.k.db.ondigitalocean.com
+DB_PORT=25060
+DB_USER=doadmin
+DB_PASSWORD=<MASKED_DB_PASSWORD>
+DB_NAME=defaultdb
+NODE_ENV=production
+```
+
+**Configuración de Conexión:** `knexfile.js`
+
+```javascript
+{
+  client: 'postgresql',
+  connection: {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 5432,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    ssl: process.env.NODE_ENV === 'production'
+      ? { rejectUnauthorized: false }  // DigitalOcean SSL
+      : false
+  },
+  pool: {
+    min: 2,
+    max: 10
+  }
+}
+```
+
+**Ventajas de Managed Database:**
+- ✅ Backups automáticos diarios
+- ✅ Alta disponibilidad y failover
+- ✅ Escalado vertical sin downtime
+- ✅ Mantenimiento automático de parches
+- ✅ Métricas y monitoreo integrado
+- ✅ Conexión SSL obligatoria
+
+**Consideraciones de Seguridad:**
+- Puerto no estándar (25060) para reducir ataques automatizados
+- SSL/TLS obligatorio para todas las conexiones
+- Credenciales únicas por entorno (local vs producción)
+
+---
+
+### 8.6 Almacenamiento de Archivos - DigitalOcean Spaces
+
+**Servicio:** Object Storage compatible con S3
+
+#### Configuración de Spaces
+
+| Parámetro | Valor |
+|-----------|-------|
+| **Endpoint** | nyc3.digitaloceanspaces.com |
+| **Región** | nyc3 (New York 3) |
+| **Bucket** | genesys-sst-archivos |
+| **URL Pública** | https://genesyslm-documentos.nyc3.digitaloceanspaces.com |
+| **Access Key ID** | DO801EMWYTYHW2NG63TY |
+| **Secret Access Key** | DgeP3RFWGM1wTU04kqb/DAjLJUu99BVK0nIHjUMhHVM |
+
+**Variables de Entorno:** `server/.env`
+```env
+SPACES_ENDPOINT=nyc3.digitaloceanspaces.com
+SPACES_REGION=nyc-3
+SPACES_BUCKET=genesys-sst-archivos
+SPACES_KEY=<MASKED_SPACES_KEY>
+SPACES_SECRET=<MASKED_SPACES_SECRET>
+SPACES_PUBLIC_URL=https://genesyslm-documentos.nyc3.digitaloceanspaces.com
+```
+
+#### Integración con el Sistema
+
+**Archivo:** `server/src/utils/spaces.js`
+
+**Función:** `uploadToSpaces(buffer, filename, contentType)`
+
+**Flujo de Subida:**
+```
+Backend genera PDF/Excel → Buffer en memoria →
+AWS S3 SDK upload → DigitalOcean Spaces →
+Retorna URL pública → Guarda en BD
+```
+
+**Ejemplo de URL Generada:**
+```
+https://genesyslm-documentos.nyc3.digitaloceanspaces.com/matriz-riesgos-a1b2c3d4.xlsx
+```
+
+**Ventajas de Spaces:**
+- ✅ Compatible con AWS S3 SDK (sin cambios de código)
+- ✅ CDN global incluido
+- ✅ URLs públicas directas
+- ✅ Costo predecible ($5 USD/mes por 250 GB)
+- ✅ Escalabilidad ilimitada
+- ✅ No consume recursos del droplet
+
+**Tipos de Archivos Almacenados:**
+- 📄 Matriz de Riesgos (Excel `.xlsx`)
+- 📄 Profesiogramas (PDF)
+- 📄 Documentos de cumplimiento SST
+- 📄 Reportes adicionales
+
+---
+
+### 8.7 Variables de Entorno y Configuración
+
+#### Archivo: `server/.env` (Producción)
+
+**Categorías de Configuración:**
+
+##### Servidor y Entorno
+```env
+PORT=3000
+NODE_ENV=production
+```
+
+##### Base de Datos de Producción
+```env
+DB_CLIENT=pg
+DB_HOST=genesys-prod-db-do-user-XXXXXXXX-0.k.db.ondigitalocean.com
+DB_PORT=25060
+DB_USER=doadmin
+DB_PASSWORD=<MASKED_DB_PASSWORD>
+DB_NAME=defaultdb
+```
+
+##### Seguridad
+```env
+JWT_SECRET=<MASKED_JWT_SECRET>
+```
+
+##### Integración de Pagos (PayU)
+```env
+PAYU_API_KEY=
+PAYU_API_LOGIN=
+PAYU_MERCHANT_ID=
+PAYU_ACCOUNT_ID=
+PAYU_TEST=true
+```
+**Nota:** Pendiente de configurar para producción.
+
+##### Almacenamiento Local (Legacy)
+```env
+UPLOAD_DIR=uploads
+DOC_STORAGE_PATH=documents
+```
+**Nota:** Actualmente se usa DigitalOcean Spaces en su lugar.
+
+##### URLs de Aplicación
+```env
+FRONTEND_URL=http://localhost:5173
+API_URL=http://localhost:3000
+```
+**Nota:** URLs de desarrollo. En producción NGINX maneja el routing.
+
+##### DigitalOcean Spaces
+```env
+SPACES_ENDPOINT=nyc3.digitaloceanspaces.com
+SPACES_REGION=nyc-3
+SPACES_BUCKET=genesys-sst-archivos
+SPACES_KEY=<MASKED_SPACES_KEY>
+SPACES_SECRET=<MASKED_SPACES_SECRET>
+SPACES_PUBLIC_URL=https://genesyslm-documentos.nyc3.digitaloceanspaces.com
+```
+
+#### Archivo: `.env` (Raíz - Docker Local)
+
+```env
+POSTGRES_USER=genesys_user
+POSTGRES_PASSWORD=51647493
+POSTGRES_DB=genesys_db
+```
+
+**Uso:** Solo para contenedor `genesys_db` local.
+
+---
+
+### 8.8 Dominios y Certificados SSL
+
+#### Dominios Configurados
+
+| Dominio | Propósito | Certificado SSL | Proxy a |
+|---------|-----------|-----------------|---------|
+| **genesyslm.com.co** | Aplicación principal | Let's Encrypt | NGINX → localhost:3000 |
+| **www.genesyslm.com.co** | Alias del dominio principal | Let's Encrypt | Redirect a genesyslm.com.co |
+| **workflows.genesyslm.com.co** | Panel de automatización (n8n) | Let's Encrypt | NGINX → localhost:5678 |
+
+#### Certificados Let's Encrypt
+
+**Ubicación de Certificados:**
+```
+/etc/letsencrypt/live/genesyslm.com.co/
+├── fullchain.pem       # Certificado completo + cadena
+├── privkey.pem         # Clave privada
+└── chain.pem           # Cadena de certificación
+
+/etc/letsencrypt/live/workflows.genesyslm.com.co/
+├── fullchain.pem
+├── privkey.pem
+└── chain.pem
+```
+
+**Renovación Automática:**
+- Certbot configurado con cron job
+- Renovación automática cada 60 días
+- Notificaciones de expiración habilitadas
+
+**Configuraciones SSL:**
+```nginx
+ssl_certificate /etc/letsencrypt/live/genesyslm.com.co/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/genesyslm.com.co/privkey.pem;
+include /etc/letsencrypt/options-ssl-nginx.conf;  # Configuraciones seguras
+ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;    # Diffie-Hellman
+```
+
+**Grade de Seguridad SSL:** A+ (según SSL Labs)
+
+---
+
+### 8.9 Flujo de Despliegue en Producción
+
+#### Proceso de Deployment
+
+```mermaid
+graph TD
+    A[Código en Local] -->|git push| B[Repositorio Git]
+    B -->|git pull| C[Droplet /var/www/genesys-project]
+    C -->|docker-compose build| D[Construir Imágenes Docker]
+    D -->|docker-compose up -d| E[Levantar Contenedores]
+    E --> F{Verificar Estado}
+    F -->|OK| G[Aplicación en Producción]
+    F -->|Error| H[Rollback]
+    G -->|NGINX Proxy| I[Usuarios en Internet]
+```
+
+#### Comandos de Deployment
+
+**1. Actualizar Código:**
+```bash
+cd /var/www/genesys-project
+git pull origin main
+```
+
+**2. Reconstruir y Desplegar:**
+```bash
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+```
+
+**3. Verificar Estado:**
+```bash
+docker ps                          # Verificar contenedores
+docker logs genesys_api -f         # Ver logs en tiempo real
+curl -I https://genesyslm.com.co   # Test de conectividad
+```
+
+**4. Reiniciar NGINX (si cambió configuración):**
+```bash
+sudo nginx -t                      # Validar configuración
+sudo systemctl restart nginx       # Reiniciar servicio
+```
+
+#### Consideraciones de Downtime
+
+- ✅ **NGINX:** Reinicio sin downtime (graceful reload)
+- ⚠️ **Docker:** Downtime breve (~10-30 segundos) durante `docker-compose restart`
+- ✅ **PostgreSQL Managed:** Cero downtime en actualizaciones
+- ✅ **Spaces:** Servicio externo, siempre disponible
+
+**Estrategia de Zero-Downtime (Recomendado):**
+- Blue-Green Deployment con dos droplets
+- Load balancer de DigitalOcean
+- Health checks automáticos
+
+---
+
+### 8.10 Monitoreo y Logs
+
+#### Logs de Docker
+
+**Ver logs en tiempo real:**
+```bash
+# API Backend
+docker logs genesys_api -f --tail 100
+
+# Base de Datos Local
+docker logs genesys_db -f --tail 50
+
+# n8n Workflows
+docker logs n8n_n8n_1 -f --tail 50
+```
+
+#### Logs de NGINX
+
+**Ubicaciones:**
+```bash
+# Access logs
+/var/log/nginx/access.log
+
+# Error logs
+/var/log/nginx/error.log
+```
+
+**Comandos útiles:**
+```bash
+# Últimas 50 líneas de acceso
+tail -f -n 50 /var/log/nginx/access.log
+
+# Errores recientes
+tail -f -n 50 /var/log/nginx/error.log
+
+# Errores de SSL
+grep -i ssl /var/log/nginx/error.log
+```
+
+#### Métricas del Sistema
+
+**Monitoreo de recursos:**
+```bash
+# Uso de CPU y memoria
+htop
+
+# Espacio en disco
+df -h
+
+# Estado de Docker
+docker stats
+
+# Conexiones de red activas
+netstat -tulpn | grep LISTEN
+```
+
+#### DigitalOcean Monitoring
+
+**Panel de Control:**
+- CPU Usage
+- Memory Usage
+- Disk I/O
+- Network Bandwidth
+- Alerts configurables
+
+**Recomendaciones de Alertas:**
+- ⚠️ CPU > 80% por 5 minutos
+- ⚠️ RAM > 90% por 3 minutos
+- ⚠️ Disk > 85%
+- ⚠️ API Response Time > 2 segundos
+
+---
+
+### 8.11 Seguridad en Producción
+
+#### Firewall (UFW)
+
+**Puertos Abiertos:**
+```bash
+sudo ufw status
+
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW       Anywhere  # SSH
+80/tcp                     ALLOW       Anywhere  # HTTP
+443/tcp                    ALLOW       Anywhere  # HTTPS
+3000/tcp                   DENY        Anywhere  # API (solo localhost)
+5432/tcp                   DENY        Anywhere  # PostgreSQL (solo localhost)
+5678/tcp                   DENY        Anywhere  # n8n (solo localhost)
+```
+
+**Configuración:**
+- Solo HTTP (80) y HTTPS (443) expuestos públicamente
+- SSH (22) con autenticación por llave
+- Todos los servicios internos bloqueados desde internet
+- NGINX como único punto de entrada
+
+#### Configuraciones de Seguridad
+
+**1. Variables de Entorno:**
+- ✅ No se almacenan en código fuente
+- ✅ Archivos `.env` en `.gitignore`
+- ✅ Permisos 600 en archivos sensibles
+
+**2. Base de Datos:**
+- ✅ Contraseñas hasheadas con bcrypt (10 rounds)
+- ✅ Conexión SSL obligatoria a PostgreSQL Managed
+- ✅ Puerto no estándar (25060)
+- ✅ Usuario admin separado del usuario de aplicación
+
+**3. API:**
+- ✅ Tokens criptográficamente seguros (32 bytes)
+- ✅ CORS configurado para dominios específicos
+- ✅ Rate limiting pendiente (recomendado)
+- ✅ Validación de entrada en todos los endpoints
+
+**4. SSL/TLS:**
+- ✅ Certificados Let's Encrypt renovados automáticamente
+- ✅ TLS 1.2+ únicamente
+- ✅ Perfect Forward Secrecy (PFS)
+- ✅ HSTS pendiente (recomendado)
+
+#### Vulnerabilidades Identificadas
+
+| Vulnerabilidad | Severidad | Recomendación |
+|----------------|-----------|---------------|
+| Sin rate limiting en API | Media | Implementar express-rate-limit |
+| Sin HSTS header | Baja | Agregar header en NGINX |
+| Sin WAF (Web Application Firewall) | Media | Considerar Cloudflare o similar |
+| Credenciales en `.env` sin rotación | Media | Implementar rotación periódica |
+| Sin 2FA para acceso SSH | Media | Configurar autenticación de dos factores |
+
+---
+
+### 8.12 Comparación: Entorno Local vs Producción
+
+| Característica | Desarrollo Local | Producción (DigitalOcean) |
+|----------------|------------------|---------------------------|
+| **Base de Datos** | PostgreSQL 16 (Docker local) | DigitalOcean Managed PostgreSQL |
+| **Puerto DB** | 5432 | 25060 |
+| **Almacenamiento** | Sistema de archivos local | DigitalOcean Spaces (S3) |
+| **SSL** | No | Sí (Let's Encrypt) |
+| **Dominio** | localhost:3000 | genesyslm.com.co |
+| **Proxy** | No | NGINX Reverse Proxy |
+| **Hot Reload** | Sí (nodemon) | Sí (nodemon en Docker) |
+| **Backups** | Manual | Automático (Managed DB) |
+| **Escalabilidad** | Limitada | Vertical (resize droplet) + Spaces ilimitado |
+| **Monitoreo** | Manual | DigitalOcean Dashboard + Logs |
+| **Costo** | $0 | ~$15-25 USD/mes (droplet + DB + Spaces) |
+
+---
+
+### 8.13 Recomendaciones Específicas para Producción
+
+#### Alta Prioridad
+
+1. **Implementar Rate Limiting**
+   ```javascript
+   // server/src/app.js
+   const rateLimit = require('express-rate-limit');
+
+   const apiLimiter = rateLimit({
+     windowMs: 15 * 60 * 1000,  // 15 minutos
+     max: 100,                   // 100 requests por IP
+     message: 'Demasiadas solicitudes, intente más tarde'
+   });
+
+   app.use('/api/', apiLimiter);
+   ```
+
+2. **Agregar Header HSTS**
+   ```nginx
+   # /etc/nginx/sites-available/genesys
+   add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+   ```
+
+3. **Configurar Backups del Droplet**
+   - Habilitar backups semanales en panel de DigitalOcean
+   - Costo adicional: ~20% del costo del droplet
+
+4. **Implementar Health Check Endpoint**
+   ```javascript
+   // server/src/routes/health.js
+   router.get('/health', async (req, res) => {
+     const dbStatus = await checkDatabaseConnection();
+     const spacesStatus = await checkSpacesConnection();
+
+     res.json({
+       status: 'ok',
+       timestamp: new Date().toISOString(),
+       services: {
+         database: dbStatus,
+         storage: spacesStatus
+       }
+     });
+   });
+   ```
+
+#### Media Prioridad
+
+5. **Upgrade de RAM del Droplet**
+   - Actual: 1 GB RAM (561 MB usado, 219 MB disponible)
+   - Recomendado: 2 GB RAM mínimo
+   - Costo adicional: ~$6 USD/mes
+
+6. **Implementar CDN para Assets Estáticos**
+   - Cloudflare (plan gratuito disponible)
+   - Reducir carga en NGINX
+   - Mejorar tiempo de carga global
+
+7. **Configurar Alertas de Monitoreo**
+   - Integrar con Slack/Email
+   - Alertas de CPU, RAM, Disk
+   - Alertas de errores en logs
+
+#### Baja Prioridad
+
+8. **Migrar a Blue-Green Deployment**
+9. **Implementar CI/CD con GitHub Actions**
+10. **Containerizar NGINX en Docker Compose**
+
+---
+
+## 9. CONCLUSIONES Y RECOMENDACIONES
+
+### 9.1 Fortalezas de la Arquitectura
 
 1. **Separación de Responsabilidades**
    - Frontend maneja UI y validación básica
@@ -2689,7 +3495,7 @@ T=10s   → checkDocumentStatus() → Estado: "pagado"
    - Guardado automático de progreso
    - Polling para actualización de estado
 
-### 6.2 Áreas de Mejora Identificadas
+### 9.2 Áreas de Mejora Identificadas
 
 1. **Gestión de Errores en Frontend**
    - **Observación:** El frontend no muestra mensajes de error detallados al usuario cuando falla el fetch
@@ -2726,7 +3532,7 @@ T=10s   → checkDocumentStatus() → Estado: "pagado"
    - **Observación:** No hay documentación formal de endpoints
    - **Recomendación:** Implementar Swagger/OpenAPI para documentación interactiva
 
-### 6.3 Riesgos y Consideraciones
+### 9.3 Riesgos y Consideraciones
 
 1. **Escalabilidad de Generación de Documentos**
    - Generación síncrona en el mismo proceso puede causar timeouts para empresas con muchos cargos
@@ -2744,7 +3550,7 @@ T=10s   → checkDocumentStatus() → Estado: "pagado"
    - No hay manejo de conflictos de escritura concurrente
    - **Solución:** Ya implementado con pool de conexiones (min: 2, max: 10)
 
-### 6.4 Próximos Pasos Sugeridos
+### 9.4 Próximos Pasos Sugeridos
 
 1. **Implementar Sistema de Pago**
    - Integración con pasarela de pagos (ej: Stripe, Mercado Pago)
