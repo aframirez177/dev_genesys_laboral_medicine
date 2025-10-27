@@ -6,16 +6,43 @@ import crypto from 'crypto';
 import { generarMatrizExcel } from './matriz-riesgos.controller.js';
 import { generarProfesiogramaPDF } from './profesiograma.controller.js';
 import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
-// (Opcional: Descomenta si también generarás la cotización aquí)
-// import { generarCotizacionPDF } from './cotizacion.controller.js';
+// Importar generador de cotización
+import { generarCotizacionPDF } from './cotizacion.controller.js';
 import { uploadToSpaces } from '../utils/spaces.js'; // Asegúrate que esta ruta sea correcta
 
 // Función principal que maneja el registro y guardado de datos
 export const registrarYGenerar = async (req, res) => {
     // Recibe los datos del frontend:
     // formData = { cargos: [{ cargoName: '...', area: '...', gesSeleccionados: [...] }, ...] }
-    // userData = { nombreEmpresa: '...', nit: '...', email: '...', password: '...' }
+    // userData = { nombreEmpresa: '...', nit: '...', email: '...', password: '...', nombreContacto: '...' }
     const { formData, userData } = req.body;
+
+    // Capturar nombre del responsable que diligencia
+    const nombreResponsable = userData.nombreContacto || userData.nombre || userData.email || 'N/A';
+
+    // Calcular número de cargos
+    const numCargos = formData.cargos ? formData.cargos.length : 0;
+
+    // Calcular pricing (COP$ 30,000 por cargo)
+    const precioBase = 30000;
+    const precioMatriz = precioBase * numCargos;
+    const precioProfesiograma = precioBase * numCargos;
+    const precioPerfil = precioBase * numCargos;
+    const precioCotizacion = 0; // GRATIS
+
+    const pricing = {
+        precioBase,
+        numCargos,
+        precioMatriz,
+        precioProfesiograma,
+        precioPerfil,
+        precioCotizacion,
+        subtotal: precioMatriz + precioProfesiograma + precioPerfil,
+        descuento: 0,
+        total: precioMatriz + precioProfesiograma + precioPerfil
+    };
+
+    console.log('💰 Pricing calculado:', pricing);
 
     // --- Validaciones básicas ---
     if (!formData || !userData || !userData.email || !userData.password || !userData.nombreEmpresa || !userData.nit) {
@@ -72,7 +99,10 @@ export const registrarYGenerar = async (req, res) => {
             form_data: JSON.stringify(formData), // Guardamos todo el formulario
             estado: 'pendiente_pago',
             token: documentToken, // Guarda el token único
-            preview_urls: '{}' // Inicializa como JSON vacío, se actualizará después
+            preview_urls: '{}', // Inicializa como JSON vacío, se actualizará después
+            nombre_responsable: nombreResponsable, // 🆕 Metadata
+            num_cargos: numCargos, // 🆕 Metadata
+            pricing: JSON.stringify(pricing) // 🆕 Metadata
         }).returning('*');
         console.log(`Documento ${documento.id} creado con estado pendiente_pago.`);
 
@@ -121,15 +151,14 @@ export const registrarYGenerar = async (req, res) => {
 
         // Genera los archivos en memoria (como buffers)
         // Asegúrate que tus funciones acepten solo (formData, { companyName })
-        // Opcional: Podrías generar la cotización aquí también si lo deseas
         const generationPromises = [
             generarMatrizExcel(formData, { companyName: companyName }),
             generarProfesiogramaPDF(formData, { companyName: companyName }),
             generarPerfilCargoPDF(formData, { companyName: companyName }),
-            // generarCotizacionPDF(formData) // Descomenta si la incluyes aquí
+            generarCotizacionPDF(formData) // 🆕 Generar cotización
         ];
 
-        const [matrizBuffer, profesiogramaBuffer, perfilBuffer /*, cotizacionBuffer */] = await Promise.all(generationPromises);
+        const [matrizBuffer, profesiogramaBuffer, perfilBuffer, cotizacionBuffer] = await Promise.all(generationPromises);
         console.log("Buffers de documentos finales generados.");
 
         // 7. Subir Documentos Finales a Spaces
@@ -153,16 +182,16 @@ export const registrarYGenerar = async (req, res) => {
                 `perfil-cargo-${documentToken}.pdf`,
                 'application/pdf'
             ),
-            // uploadToSpaces(cotizacionBuffer, `cotizacion-${documentToken}.pdf`, 'application/pdf') // Descomenta si la incluyes
+            uploadToSpaces(cotizacionBuffer, `cotizacion-${documentToken}.pdf`, 'application/pdf') // 🆕 Subir cotización
         ];
 
-        const [matrizUrl, profesiogramaUrl, perfilUrl /*, cotizacionUrl */] = await Promise.all(uploadPromises);
+        const [matrizUrl, profesiogramaUrl, perfilUrl, cotizacionUrl] = await Promise.all(uploadPromises);
 
         // Guardamos las URLs obtenidas
         finalUrls.matriz = matrizUrl;
         finalUrls.profesiograma = profesiogramaUrl;
         finalUrls.perfil = perfilUrl;
-        // finalUrls.cotizacion = cotizacionUrl; // Descomenta si la incluyes
+        finalUrls.cotizacion = cotizacionUrl; // 🆕 URL cotización
         console.log("URLs finales obtenidas:", finalUrls);
 
         // 8. ACTUALIZAR el documento en la BD con las URLs Finales

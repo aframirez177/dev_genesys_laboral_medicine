@@ -809,42 +809,90 @@
       <main>
         <section id="resultados-section" class="resultados-section">
             <div class="container">
+                <!-- ============================================ -->
+                <!-- LOADER CONTAINER -->
+                <!-- ============================================ -->
                 <div id="loader-container" class="loader-container active">
                     <div class="loader"></div>
                     <h1>Generando tus documentos...</h1>
                     <p>Estamos procesando la información para crear tus documentos de Seguridad y Salud en el Trabajo. Esto puede tardar unos momentos.</p>
                     <p class="subtle-text">Por favor, no cierres ni actualices esta página.</p>
-                    <p></p>
                 </div>
 
+                <!-- ============================================ -->
+                <!-- RESULTS CONTAINER -->
+                <!-- ============================================ -->
                 <div id="results-container" class="results-container">
                     <div class="results-header">
                         <span class="success-icon">✓</span>
                         <h1>¡Tus documentos están listos!</h1>
-                        <p>Gracias por usar Genesys Laboral Medicine. A continuación, puedes descargar los documentos generados.</p>
-                    </div>
-                    <div class="document-list-container">
-                        <ul class="document-list"></ul><!-- Los botones de descarga se insertarán aquí dinámicamente -->
-                        <!-- Ejemplo:
-                        <div class="document-item">
-                            <span class="document-icon">📄</span>
-                            <span class="document-name">Matriz de Riesgos y Peligros</span>
-                            <a href="#" class="btn-download cta-button" download>Descargar</a>
+                        <p class="results-subtitle">Gracias por usar Genesys Laboral Medicine. A continuación, puedes descargar los documentos generados.</p>
+
+                        <!-- Metadata Info -->
+                        <div class="metadata-info">
+                            <div class="metadata-item">
+                                <span class="metadata-icon">📋</span>
+                                <span class="metadata-label">Empresa:</span>
+                                <span id="empresa-nombre" class="metadata-value">---</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="metadata-icon">👥</span>
+                                <span class="metadata-label">Cargos evaluados:</span>
+                                <span id="num-cargos" class="metadata-value">---</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="metadata-icon">📅</span>
+                                <span class="metadata-label">Generado:</span>
+                                <span id="fecha-generacion" class="metadata-value">---</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="metadata-icon">👤</span>
+                                <span class="metadata-label">Diligenciado por:</span>
+                                <span id="nombre-responsable" class="metadata-value">---</span>
+                            </div>
                         </div>
-                        -->
                     </div>
+
+                    <!-- Documents Grid (4 tarjetas premium) -->
+                    <div id="documents-grid" class="documents-grid">
+                        <!-- Las tarjetas se insertarán aquí dinámicamente -->
+                    </div>
+
                     <div class="results-footer">
                         <p>¿Tienes alguna pregunta? <a href="/pages/Contacto.html">Contáctanos</a>.</p>
                     </div>
                 </div>
-                 <div id="error-container" class="error-container">
+
+                <!-- ============================================ -->
+                <!-- ERROR CONTAINER -->
+                <!-- ============================================ -->
+                <div id="error-container" class="error-container">
                     <div class="error-header">
                         <span class="error-icon">❌</span>
                         <h1>Ocurrió un error</h1>
                         <p id="error-message">No pudimos procesar tu solicitud. Por favor, intenta de nuevo o contacta a soporte si el problema persiste.</p>
                     </div>
-                     <div class="error-actions">
+                    <div class="error-actions">
                         <a href="/pages/diagnostico_interactivo.html" class="cta-button-1">Volver a intentarlo</a>
+                    </div>
+                </div>
+
+                <!-- ============================================ -->
+                <!-- CARRITO STICKY (SE MUESTRA CUANDO HAY ITEMS) -->
+                <!-- ============================================ -->
+                <div id="cart-container" class="cart-sticky" style="display:none;">
+                    <div class="cart-header">
+                        <span class="cart-icon">🛒</span>
+                        <span class="cart-title">Carrito: <span id="cart-count">0</span> documentos</span>
+                    </div>
+                    <div class="cart-body">
+                        <div class="cart-subtotal">
+                            <span>Subtotal:</span>
+                            <span id="cart-total" class="cart-total-value">COP$ 0</span>
+                        </div>
+                        <button id="proceed-payment-btn" class="cta-button proceed-payment-btn">
+                            Proceder al Pago →
+                        </button>
                     </div>
                 </div>
             </div>
