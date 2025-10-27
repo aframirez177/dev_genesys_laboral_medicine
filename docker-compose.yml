@@ -40,4 +40,4 @@ volumes:
   postgres_data: 
 
 networks:
-  genesys_net:2
+  genesys_net:
