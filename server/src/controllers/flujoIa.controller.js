@@ -9,7 +9,7 @@ import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
 // Importar generador de cotización
 import { generarCotizacionPDF } from './cotizacion.controller.js';
 import { uploadToSpaces } from '../utils/spaces.js'; // Asegúrate que esta ruta sea correcta
-import { generatePDFThumbnail } from '../utils/pdfThumbnail.js';
+import { generatePDFThumbnail, generateExcelThumbnail } from '../utils/pdfThumbnail.js';
 
 // Función principal que maneja el registro y guardado de datos
 export const registrarYGenerar = async (req, res) => {
@@ -162,16 +162,17 @@ export const registrarYGenerar = async (req, res) => {
         const [matrizBuffer, profesiogramaBuffer, perfilBuffer, cotizacionBuffer] = await Promise.all(generationPromises);
         console.log("Buffers de documentos finales generados.");
 
-        // 7. Generar Thumbnails de los PDFs
-        console.log("Generando thumbnails de los PDFs...");
+        // 7. Generar Thumbnails de los PDFs y Excel
+        console.log("Generando thumbnails de documentos...");
         const thumbnailPromises = [
-            generatePDFThumbnail(profesiogramaBuffer),
-            generatePDFThumbnail(perfilBuffer),
-            generatePDFThumbnail(cotizacionBuffer)
+            generateExcelThumbnail(matrizBuffer, { width: 400, rows: 12 }), // Excel con 12 filas
+            generatePDFThumbnail(profesiogramaBuffer, { cropHeader: true, quality: 90 }), // Crop header
+            generatePDFThumbnail(perfilBuffer, { cropHeader: true, quality: 90 }), // Crop header
+            generatePDFThumbnail(cotizacionBuffer, { cropHeader: true, quality: 90 }) // Crop header
         ];
 
-        const [profesiogramaThumbnail, perfilThumbnail, cotizacionThumbnail] = await Promise.all(thumbnailPromises);
-        console.log("Thumbnails generados exitosamente.");
+        const [matrizThumbnail, profesiogramaThumbnail, perfilThumbnail, cotizacionThumbnail] = await Promise.all(thumbnailPromises);
+        console.log("Thumbnails generados exitosamente (Excel + PDFs).");
 
         // 8. Subir Documentos Finales y Thumbnails a Spaces
         console.log("Subiendo documentos finales y thumbnails a Spaces...");
@@ -197,13 +198,14 @@ export const registrarYGenerar = async (req, res) => {
                 'application/pdf'
             ),
             uploadToSpaces(cotizacionBuffer, `cotizacion-${documentToken}.pdf`, 'application/pdf'),
-            // Thumbnails
+            // Thumbnails (TODOS los documentos ahora tienen thumbnail)
+            uploadToSpaces(matrizThumbnail, `matriz-riesgos-${documentToken}-thumb.jpg`, 'image/jpeg'),
             uploadToSpaces(profesiogramaThumbnail, `profesiograma-${documentToken}-thumb.jpg`, 'image/jpeg'),
             uploadToSpaces(perfilThumbnail, `perfil-cargo-${documentToken}-thumb.jpg`, 'image/jpeg'),
             uploadToSpaces(cotizacionThumbnail, `cotizacion-${documentToken}-thumb.jpg`, 'image/jpeg')
         ];
 
-        const [matrizUrl, profesiogramaUrl, perfilUrl, cotizacionUrl, profesiogramaThumbnailUrl, perfilThumbnailUrl, cotizacionThumbnailUrl] = await Promise.all(uploadPromises);
+        const [matrizUrl, profesiogramaUrl, perfilUrl, cotizacionUrl, matrizThumbnailUrl, profesiogramaThumbnailUrl, perfilThumbnailUrl, cotizacionThumbnailUrl] = await Promise.all(uploadPromises);
 
         // Guardamos las URLs obtenidas
         finalUrls.matriz = matrizUrl;
@@ -211,11 +213,11 @@ export const registrarYGenerar = async (req, res) => {
         finalUrls.perfil = perfilUrl;
         finalUrls.cotizacion = cotizacionUrl;
 
-        // Guardamos las URLs de thumbnails
+        // Guardamos las URLs de thumbnails (TODOS los documentos)
+        thumbnailUrls.matriz = matrizThumbnailUrl; // 🆕 Ahora la matriz también tiene thumbnail
         thumbnailUrls.profesiograma = profesiogramaThumbnailUrl;
         thumbnailUrls.perfil = perfilThumbnailUrl;
         thumbnailUrls.cotizacion = cotizacionThumbnailUrl;
-        // La matriz no tiene thumbnail porque es Excel
 
         console.log("URLs finales obtenidas:", finalUrls);
         console.log("URLs de thumbnails obtenidas:", thumbnailUrls);
