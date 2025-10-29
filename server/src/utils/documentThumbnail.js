@@ -67,7 +67,7 @@ export async function generatePDFThumbnail(pdfBuffer, options = {}) {
         });
 
         // Esperar a que se renderice
-        await page.waitForTimeout(1000);
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Capturar screenshot de alta calidad
         const screenshot = await page.screenshot({
@@ -133,7 +133,7 @@ export async function generateExcelThumbnail(excelBuffer, options = {}) {
         });
 
         // Esperar renderizado
-        await page.waitForTimeout(500);
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         // Screenshot de la tabla
         const element = await page.$('table');
