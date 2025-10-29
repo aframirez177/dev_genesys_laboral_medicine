@@ -1,26 +1,66 @@
-# 1. Imagen base
-# Usamos una imagen oficial de Node.js v20 (ligera)
-FROM node:20-alpine
+# ============================================
+# Dockerfile optimizado para Puppeteer
+# ============================================
 
-# 2. Directorio de trabajo
-# Creamos y nos movemos a la carpeta /usr/src/app dentro del contenedor
+# 1. Imagen base - Debian (necesaria para Puppeteer)
+# Cambiamos de Alpine a Debian porque Puppeteer necesita más dependencias
+FROM node:20-slim
+
+# 2. Instalar dependencias del sistema para Puppeteer
+RUN apt-get update && apt-get install -y \
+    # Chromium y dependencias básicas
+    chromium \
+    chromium-sandbox \
+    # Fuentes
+    fonts-liberation \
+    fonts-noto-color-emoji \
+    # Librerías gráficas
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libxshmfence1 \
+    # Utilidades
+    xdg-utils \
+    ca-certificates \
+    # Limpieza
+    && rm -rf /var/lib/apt/lists/*
+
+# 3. Variables de entorno para Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium \
+    CHROME_BIN=/usr/bin/chromium \
+    NODE_ENV=production
+
+# 4. Directorio de trabajo
 WORKDIR /usr/src/app
 
-# 3. Copiar solo el package.json de la raíz
-# Tu package.json raíz ya tiene TODAS las dependencias
-COPY . .
-# 4. Instalar todas las dependencias
-RUN npm install --include=dev
+# 5. Copiar archivos de dependencias primero (para cache de Docker)
+COPY package*.json ./
+COPY server/package*.json ./server/
+COPY client/package*.json ./client/
 
-# 5. Copiar todo el código del proyecto
-# Copia todo (server, client, etc.) al directorio de trabajo
+# 6. Instalar dependencias
+RUN npm install --include=dev && \
+    cd server && npm install && \
+    cd ../client && npm install && \
+    cd ..
+
+# 7. Copiar todo el código del proyecto
 COPY . .
 
-# 6. Exponer el puerto
-# Le dice a Docker que tu app corre en el puerto 3000
+# 8. Exponer el puerto
 EXPOSE 3000
 
-# 7. Comando por defecto (para producción)
-# El script "start" de tu package.json apunta a "src/app.js",
-# pero tu app está en "server/src/app.js". Lo corremos directamente.
+# 9. Comando por defecto
 CMD [ "node", "server/src/app.js" ]
