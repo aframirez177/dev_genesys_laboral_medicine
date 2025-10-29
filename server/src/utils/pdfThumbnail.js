@@ -19,7 +19,7 @@ export async function generatePDFThumbnail(pdfBuffer, options = {}) {
         // Convertir la primera página del PDF a PNG
         const pngPages = await pdfToPng(pdfBuffer, {
             outputType: 'buffer',
-            pagesToProcess: 1, // Solo la primera página
+            pagesToProcess: [1], // Solo la primera página (debe ser array)
             strictPagesToProcess: true,
             viewportScale: 2.0 // Mejor calidad
         });
