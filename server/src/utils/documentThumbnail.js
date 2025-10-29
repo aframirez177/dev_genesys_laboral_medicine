@@ -127,9 +127,10 @@ export async function generateExcelThumbnail(excelBuffer, options = {}) {
             deviceScaleFactor: 2
         });
 
-        // Cargar HTML
+        // Cargar HTML (domcontentloaded es suficiente para HTML estático)
         await page.setContent(html, {
-            waitUntil: 'networkidle0'
+            waitUntil: 'domcontentloaded',
+            timeout: 10000
         });
 
         // Esperar renderizado
