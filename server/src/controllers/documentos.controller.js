@@ -28,19 +28,22 @@ export const getDocumentStatus = async (req, res) => {
         console.log(`✅ Documento encontrado: ID ${documento.id}, Estado: ${documento.estado}`);
 
         // ============================================
-        // PARSEAR URLS
+        // PARSEAR URLS (incluye thumbnails)
         // ============================================
-        let urls = {};
+        let urlsData = {};
         if (documento.preview_urls && typeof documento.preview_urls === 'object') {
-            urls = documento.preview_urls;
+            urlsData = documento.preview_urls;
         } else if (typeof documento.preview_urls === 'string') {
             try {
-                urls = JSON.parse(documento.preview_urls || '{}');
+                urlsData = JSON.parse(documento.preview_urls || '{}');
             } catch (e) {
                 console.error(`❌ Error parseando preview_urls (token ${token}):`, e);
-                urls = {};
+                urlsData = {};
             }
         }
+
+        // Separar URLs de documentos y thumbnails
+        const { thumbnails, ...urls } = urlsData;
 
         // ============================================
         // PARSEAR PRICING
@@ -88,6 +91,7 @@ export const getDocumentStatus = async (req, res) => {
             success: true,
             status: documento.estado,
             urls,
+            thumbnails: thumbnails || {}, // 🆕 URLs de thumbnails
             metadata // 🆕 Metadata enriquecida
         });
 

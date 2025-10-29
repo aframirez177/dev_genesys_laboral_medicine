@@ -100,6 +100,8 @@ server/src/
 ├── routes/            # Express route definitions
 ├── services/          # Business logic layer
 ├── utils/             # Utility functions
+│   ├── spaces.js      # DigitalOcean Spaces upload utility
+│   └── pdfThumbnail.js # PDF thumbnail generation (pdf-to-png + sharp)
 └── database/
     ├── init.js        # Database initialization
     └── migrations/    # Knex migration files
@@ -201,6 +203,86 @@ This project follows comprehensive UI/UX design principles defined in `.cursor/r
 - **Visual Design**: Clear hierarchy, cohesive color palette, sufficient contrast, consistent typography
 - **User Feedback**: Loading indicators, clear error messages, analytics tracking
 
+### Design System
+
+**Color Palette** (defined in `_variables.scss`):
+- Primary: `#5dc4af` (verde agua) - Botones principales, enlaces, acciones primarias
+- Secondary: `#383d47` (gris oscuro) - Títulos, texto importante
+- Text: `#2d3238` - Texto general
+- Background: `#f3f0f0` - Fondo general
+- Success: `#4caf50` - Estados exitosos, botones de descarga
+- Warning: `#ffeb3b` - Alertas
+- Attention: `#ff9800` - Atención
+- Danger: `#f44336` - Errores, estados críticos
+
+**Typography System**:
+- Base: `html { font-size: 62.5%; }` → 1rem = 10px
+- Title Font: Poppins (weights: 400, 500, 600, 700, 800)
+- Body Font: Raleway (weights: 400, 500, 600, 700, 800)
+- Scale: Use rem units for all sizes (1.4rem = 14px, 1.6rem = 16px, 2.4rem = 24px, etc.)
+
+**Design Principles**:
+- NO gradients (use solid colors from the palette)
+- Clean, professional design
+- Adequate whitespace
+- Consistent border-radius (8px-16px)
+- Smooth transitions (0.3s ease)
+
+## PDF Thumbnail Generation
+
+The system generates thumbnails for PDF documents to display in the results page:
+
+**Technology Stack**:
+- `pdf-to-png-converter`: Converts PDF first page to PNG buffer
+- `sharp`: Optimizes and resizes images to JPEG format
+
+**Implementation** (`server/src/utils/pdfThumbnail.js`):
+```javascript
+import { pdfToPng } from 'pdf-to-png-converter';
+import sharp from 'sharp';
+
+// Generates 400px wide JPEG thumbnails at 85% quality
+// Processes only first page for performance
+// Returns optimized buffer ready for upload to Spaces
+```
+
+**Usage in Flow**:
+1. PDF documents are generated (profesiograma, perfil, cotización)
+2. Thumbnails are generated in parallel from PDF buffers
+3. Both original PDFs and thumbnails are uploaded to DigitalOcean Spaces
+4. Thumbnail URLs are stored in database alongside document URLs
+5. Frontend displays thumbnails in result cards
+
+**Data Structure**:
+```javascript
+preview_urls: {
+  matriz: "url_to_excel",
+  profesiograma: "url_to_pdf",
+  perfil: "url_to_pdf",
+  cotizacion: "url_to_pdf",
+  thumbnails: {
+    profesiograma: "url_to_thumbnail.jpg",
+    perfil: "url_to_thumbnail.jpg",
+    cotizacion: "url_to_thumbnail.jpg"
+    // Note: matriz doesn't have thumbnail (Excel file)
+  }
+}
+```
+
+## Results Page System
+
+**Key Features**:
+- Optimized polling: Cards render only once (no flickering on status checks)
+- Clean design: No gradients, uses project color palette
+- Thumbnail previews: Real PDF thumbnails, not placeholder icons
+- Minimal data display: Only essential info (price, company, document name, cargo count)
+
+**Frontend Component** (`client/src/js/components/resultadosComponent.js`):
+- `isFirstRender` flag prevents unnecessary re-renders during polling
+- `ShoppingCart` class manages cart state and UI updates
+- `DocumentCard` class renders simplified cards with thumbnails
+- Polling continues until final state (pagado/completed/failed)
+
 ## Important Notes
 
 - Node.js version: 18.20.4 or higher (see `.nvmrc`)
@@ -210,3 +292,4 @@ This project follows comprehensive UI/UX design principles defined in `.cursor/r
 - Port 3000 conflicts are handled automatically by incrementing the port
 - Production domain: https://genesyslm.com.co
 - The `postclientbuild` script fixes inline CSS paths after webpack build
+- PDF thumbnail generation requires sufficient memory (recommend 512MB+ for Node process)

@@ -9,6 +9,7 @@ import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
 // Importar generador de cotización
 import { generarCotizacionPDF } from './cotizacion.controller.js';
 import { uploadToSpaces } from '../utils/spaces.js'; // Asegúrate que esta ruta sea correcta
+import { generatePDFThumbnail } from '../utils/pdfThumbnail.js';
 
 // Función principal que maneja el registro y guardado de datos
 export const registrarYGenerar = async (req, res) => {
@@ -161,12 +162,25 @@ export const registrarYGenerar = async (req, res) => {
         const [matrizBuffer, profesiogramaBuffer, perfilBuffer, cotizacionBuffer] = await Promise.all(generationPromises);
         console.log("Buffers de documentos finales generados.");
 
-        // 7. Subir Documentos Finales a Spaces
-        console.log("Subiendo documentos finales a Spaces...");
+        // 7. Generar Thumbnails de los PDFs
+        console.log("Generando thumbnails de los PDFs...");
+        const thumbnailPromises = [
+            generatePDFThumbnail(profesiogramaBuffer),
+            generatePDFThumbnail(perfilBuffer),
+            generatePDFThumbnail(cotizacionBuffer)
+        ];
+
+        const [profesiogramaThumbnail, perfilThumbnail, cotizacionThumbnail] = await Promise.all(thumbnailPromises);
+        console.log("Thumbnails generados exitosamente.");
+
+        // 8. Subir Documentos Finales y Thumbnails a Spaces
+        console.log("Subiendo documentos finales y thumbnails a Spaces...");
         const finalUrls = {}; // Objeto para guardar las URLs
+        const thumbnailUrls = {}; // Objeto para guardar las URLs de thumbnails
 
         // Usamos nombres de archivo únicos con el token
         const uploadPromises = [
+             // Documentos originales
              uploadToSpaces(
                 matrizBuffer,
                 `matriz-riesgos-${documentToken}.xlsx`,
@@ -182,27 +196,42 @@ export const registrarYGenerar = async (req, res) => {
                 `perfil-cargo-${documentToken}.pdf`,
                 'application/pdf'
             ),
-            uploadToSpaces(cotizacionBuffer, `cotizacion-${documentToken}.pdf`, 'application/pdf') // 🆕 Subir cotización
+            uploadToSpaces(cotizacionBuffer, `cotizacion-${documentToken}.pdf`, 'application/pdf'),
+            // Thumbnails
+            uploadToSpaces(profesiogramaThumbnail, `profesiograma-${documentToken}-thumb.jpg`, 'image/jpeg'),
+            uploadToSpaces(perfilThumbnail, `perfil-cargo-${documentToken}-thumb.jpg`, 'image/jpeg'),
+            uploadToSpaces(cotizacionThumbnail, `cotizacion-${documentToken}-thumb.jpg`, 'image/jpeg')
         ];
 
-        const [matrizUrl, profesiogramaUrl, perfilUrl, cotizacionUrl] = await Promise.all(uploadPromises);
+        const [matrizUrl, profesiogramaUrl, perfilUrl, cotizacionUrl, profesiogramaThumbnailUrl, perfilThumbnailUrl, cotizacionThumbnailUrl] = await Promise.all(uploadPromises);
 
         // Guardamos las URLs obtenidas
         finalUrls.matriz = matrizUrl;
         finalUrls.profesiograma = profesiogramaUrl;
         finalUrls.perfil = perfilUrl;
-        finalUrls.cotizacion = cotizacionUrl; // 🆕 URL cotización
-        console.log("URLs finales obtenidas:", finalUrls);
+        finalUrls.cotizacion = cotizacionUrl;
 
-        // 8. ACTUALIZAR el documento en la BD con las URLs Finales
+        // Guardamos las URLs de thumbnails
+        thumbnailUrls.profesiograma = profesiogramaThumbnailUrl;
+        thumbnailUrls.perfil = perfilThumbnailUrl;
+        thumbnailUrls.cotizacion = cotizacionThumbnailUrl;
+        // La matriz no tiene thumbnail porque es Excel
+
+        console.log("URLs finales obtenidas:", finalUrls);
+        console.log("URLs de thumbnails obtenidas:", thumbnailUrls);
+
+        // 9. ACTUALIZAR el documento en la BD con las URLs Finales y Thumbnails
         // Usamos 'trx' para que sea parte de la misma transacción
         await trx('documentos_generados')
             .where({ id: documento.id })
             .update({
-                // Si renombraste la columna, usa 'final_urls' aquí
-                preview_urls: JSON.stringify(finalUrls) // Guarda el objeto como texto JSON
+                // Guardamos las URLs de los documentos
+                preview_urls: JSON.stringify({
+                    ...finalUrls,
+                    thumbnails: thumbnailUrls
+                }) // Incluye thumbnails en el mismo objeto
             });
-        console.log(`Documento ${documento.id} actualizado con URLs finales.`);
+        console.log(`Documento ${documento.id} actualizado con URLs finales y thumbnails.`);
 
         // --- FIN GENERACIÓN DOCUMENTOS FINALES ---
 

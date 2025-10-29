@@ -37,10 +37,13 @@
 
 ### Librerías Principales
 - **ExcelJS**: Generación de matrices en formato Excel
-- **PDFKit**: Creación de documentos PDF
+- **jsPDF + jsPDF-AutoTable**: Creación de documentos PDF
+- **pdf-to-png-converter**: Conversión de PDFs a thumbnails PNG
+- **sharp**: Optimización y redimensionamiento de imágenes
 - **JWT**: Autenticación basada en tokens
 - **Bcrypt**: Hash seguro de contraseñas
 - **Axios**: Cliente HTTP para APIs externas
+- **@aws-sdk/client-s3**: Integración con DigitalOcean Spaces
 
 ### DevOps
 - **Docker & Docker Compose**: Containerización y orquestación
@@ -478,7 +481,10 @@ Si encuentras un bug o tienes una sugerencia:
 | Framework Backend | Express | Latest |
 | Bundler Frontend | Webpack | 5.x |
 | Generación Excel | ExcelJS | 4.4.0 |
-| Generación PDF | PDFKit | 0.16.0 |
+| Generación PDF | jsPDF + jsPDF-AutoTable | 2.5.1 + 3.8.4 |
+| PDF a Imágenes | pdf-to-png-converter | Latest |
+| Procesamiento Imágenes | sharp | Latest |
+| Cloud Storage | @aws-sdk/client-s3 | Latest |
 | Autenticación | JWT | 9.0.2 |
 | Seguridad Password | Bcrypt | 5.1.1 |
 | HTTP Client | Axios | 1.7.9 |

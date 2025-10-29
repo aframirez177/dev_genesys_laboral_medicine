@@ -1,12 +1,16 @@
 // ============================================
 // PÁGINA DE RESULTADOS PREMIUM - REDISEÑADA
-// Basada en mockup con thumbnails de documentos
+// Colores del proyecto: primary #5dc4af, secondary #383d47
+// Sin gradientes, diseño limpio y profesional
+// 1rem = 10px (html font-size: 62.5%)
 // ============================================
+
+@import '../base/variables';
 
 .resultados-section {
   min-height: 100vh;
   padding: 4rem 2rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  background: map-get($colors, 'background');
 
   .container {
     max-width: 1400px;
@@ -30,7 +34,7 @@
 
   .loader {
     border: 8px solid #f3f3f3;
-    border-top: 8px solid #667eea;
+    border-top: 8px solid map-get($colors, 'primary');
     border-radius: 50%;
     width: 80px;
     height: 80px;
@@ -39,21 +43,21 @@
   }
 
   h1 {
-    font-size: 2rem;
-    color: #2d3748;
+    font-size: 2.4rem; // 24px
+    color: map-get($colors, 'secondary');
     margin-bottom: 1rem;
     font-weight: 700;
   }
 
   p {
-    font-size: 1.1rem;
-    color: #718096;
+    font-size: 1.6rem; // 16px
+    color: map-get($colors, 'text');
     margin-bottom: 0.5rem;
   }
 
   .subtle-text {
-    font-size: 0.95rem;
-    color: #a0aec0;
+    font-size: 1.4rem; // 14px
+    color: #999;
   }
 }
 
@@ -80,31 +84,31 @@
 
   .results-header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
 
     .success-icon {
       display: inline-block;
       width: 80px;
       height: 80px;
       line-height: 80px;
-      font-size: 3rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-size: 4rem; // 40px
+      background: map-get($colors, 'primary');
       color: white;
       border-radius: 50%;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 24px rgba(93, 196, 175, 0.3);
     }
 
     h1 {
-      font-size: 2.5rem;
-      color: #2d3748;
-      margin-bottom: 1rem;
+      font-size: 3.2rem; // 32px
+      color: map-get($colors, 'secondary');
+      margin-bottom: 1.5rem;
       font-weight: 800;
     }
 
     .results-subtitle {
-      font-size: 1.1rem;
-      color: #718096;
+      font-size: 1.8rem; // 18px
+      color: map-get($colors, 'text');
       margin-bottom: 2rem;
       line-height: 1.6;
     }
@@ -112,22 +116,22 @@
 
   .results-footer {
     text-align: center;
-    margin-top: 4rem;
-    padding-top: 2rem;
-    border-top: 2px solid #e2e8f0;
+    margin-top: 6rem;
+    padding-top: 3rem;
+    border-top: 2px solid map-get($colors, 'border-color');
 
     p {
-      font-size: 1rem;
-      color: #718096;
+      font-size: 1.6rem; // 16px
+      color: map-get($colors, 'text');
     }
 
     a {
-      color: #667eea;
+      color: map-get($colors, 'primary');
       text-decoration: underline;
       font-weight: 600;
 
       &:hover {
-        color: #5568d3;
+        opacity: 0.8;
       }
     }
   }
@@ -139,39 +143,39 @@
 .metadata-info {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  gap: 2rem;
+  margin-top: 3rem;
+  padding: 2.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 
   .metadata-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
 
     .metadata-icon {
-      font-size: 1.5rem;
+      font-size: 2.4rem; // 24px
     }
 
     .metadata-label {
       font-weight: 600;
-      color: #667eea;
-      font-size: 0.9rem;
+      color: map-get($colors, 'primary');
+      font-size: 1.4rem; // 14px
       white-space: nowrap;
     }
 
     .metadata-value {
-      color: #2d3748;
+      color: map-get($colors, 'secondary');
       font-weight: 500;
-      font-size: 1rem;
+      font-size: 1.6rem; // 16px
     }
   }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 }
 
@@ -181,42 +185,30 @@
 .documents-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 2.5rem;
-  margin-top: 3rem;
+  gap: 3rem;
+  margin-top: 4rem;
 
   @media (max-width: 955px) {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 2.5rem;
   }
 }
 
 // ============================================
-// TARJETA DE DOCUMENTO (REDISEÑADA)
+// TARJETA DE DOCUMENTO (SIMPLIFICADA)
 // ============================================
 .document-card {
   background: white;
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  animation: slideUp 0.5s ease;
 
   &:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   }
 }
 
@@ -224,30 +216,24 @@
 // BARRA SUPERIOR DE PRECIO
 // ============================================
 .card-price-banner {
-  padding: 1rem 1.5rem;
+  padding: 1.5rem 2rem;
   text-align: center;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.8rem; // 18px
 
   &.free {
-    background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
-    color: #22543d;
+    background: map-get($colors, 'success');
+    color: white;
   }
 
   &.paid {
-    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
-    color: #2d3748;
+    background: map-get($colors, 'primary');
+    color: white;
   }
 
   .price-text {
     display: block;
-    font-size: 1.15rem;
-  }
-
-  .price-multiplier {
-    font-size: 0.9rem;
-    font-weight: 600;
-    opacity: 0.8;
+    font-size: 2rem; // 20px
   }
 }
 
@@ -257,15 +243,17 @@
 .card-thumbnail-wrapper {
   position: relative;
   width: 100%;
-  height: 280px;
+  height: 300px;
   overflow: hidden;
-  background: #f7fafc;
+  background: map-get($colors, 'background');
 
   .card-thumbnail-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    padding: 2rem;
+    background: white;
   }
 
   .card-thumbnail-fallback,
@@ -275,10 +263,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: map-get($colors, 'background');
 
     .card-icon {
-      font-size: 5rem;
-      filter: brightness(1.2) contrast(0.85);
+      font-size: 8rem; // 80px
+      opacity: 0.6;
       user-select: none;
     }
   }
@@ -289,16 +278,15 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(93, 196, 175, 0.95);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.8rem; // 18px
     font-weight: 700;
-    backdrop-filter: blur(4px);
   }
 
   &:hover {
@@ -313,127 +301,74 @@
 }
 
 // ============================================
-// CUERPO DE LA TARJETA
+// CUERPO DE LA TARJETA (SIMPLIFICADO)
 // ============================================
 .card-body {
-  padding: 1.5rem;
+  padding: 2rem;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 .card-document-title {
-  font-size: 1rem;
+  font-size: 2rem; // 20px
   font-weight: 700;
-  color: #2d3748;
-  margin: 0 0 1rem 0;
-  letter-spacing: 0.5px;
+  color: map-get($colors, 'secondary');
+  margin: 0 0 1.5rem 0;
   line-height: 1.3;
 }
 
-.card-info-section {
-  margin-bottom: 1rem;
+// Información esencial (solo empresa y número de cargos)
+.card-info-simple {
+  margin-bottom: 2rem;
+  flex: 1;
 
   p {
-    font-size: 0.9rem;
-    color: #4a5568;
-    margin: 0.4rem 0;
+    font-size: 1.6rem; // 16px
+    margin: 0.8rem 0;
     line-height: 1.5;
-
-    strong {
-      color: #2d3748;
-      font-weight: 600;
-    }
-  }
-}
-
-.card-risk-section {
-  background: linear-gradient(135deg, #81e6d9 0%, #4fd1c5 100%);
-  padding: 1rem;
-  border-radius: 12px;
-  margin-bottom: 1rem;
-
-  .risk-section-title {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #234e52;
-    margin: 0 0 0.5rem 0;
   }
 
-  .risk-section-content {
-    font-size: 0.8rem;
-    color: #2c5f63;
-    margin: 0;
-    line-height: 1.4;
-  }
-}
-
-// ============================================
-// FOOTER DE METADATA
-// ============================================
-.card-footer-metadata {
-  border-top: 1px solid #e2e8f0;
-  padding-top: 1rem;
-  margin-bottom: 1rem;
-
-  .metadata-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.4rem;
-    font-size: 0.85rem;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  .metadata-label {
-    font-weight: 700;
-    color: #2d3748;
-  }
-
-  .metadata-company {
+  .card-company-name {
+    color: map-get($colors, 'secondary');
     font-weight: 600;
-    color: #4a5568;
   }
 
-  .metadata-detail {
-    color: #718096;
-    font-size: 0.8rem;
+  .card-cargos-count {
+    color: map-get($colors, 'text');
+    font-weight: 500;
   }
 }
 
 // ============================================
-// ICONOS DE ACCIÓN
+// ICONOS DE ACCIÓN (COLORES DEL PROYECTO)
 // ============================================
 .card-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 1rem;
   justify-content: flex-end;
   margin-top: auto;
 
   .btn-icon {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    border: none;
+    border: 2px solid transparent;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
     svg {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
     }
 
     &:hover:not(:disabled) {
-      transform: scale(1.15);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      transform: scale(1.1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
 
     &:active:not(:disabled) {
@@ -448,7 +383,7 @@
   }
 
   .btn-cart {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: map-get($colors, 'primary');
     color: white;
 
     svg {
@@ -456,13 +391,13 @@
     }
 
     &.active {
-      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      background: map-get($colors, 'success');
       animation: cartPulse 0.5s ease;
     }
   }
 
   .btn-download {
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    background: map-get($colors, 'success');
     color: white;
 
     svg {
@@ -470,17 +405,17 @@
     }
 
     &:disabled {
-      background: #e2e8f0;
-      color: #a0aec0;
+      background: map-get($colors, 'border-color');
+      color: #999;
 
       svg {
-        color: #a0aec0;
+        color: #999;
       }
     }
   }
 
   .btn-lock {
-    background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+    background: map-get($colors, 'danger');
     color: white;
     pointer-events: none;
 
@@ -495,7 +430,7 @@
     transform: scale(1);
   }
   50% {
-    transform: scale(1.25);
+    transform: scale(1.2);
   }
 }
 
@@ -505,7 +440,7 @@
 .error-container {
   display: none;
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 6rem 2rem;
 
   &.active {
     display: block;
@@ -515,20 +450,20 @@
   .error-header {
     .error-icon {
       display: inline-block;
-      font-size: 4rem;
-      margin-bottom: 1.5rem;
+      font-size: 6rem; // 60px
+      margin-bottom: 2rem;
     }
 
     h1 {
-      font-size: 2rem;
-      color: #2d3748;
-      margin-bottom: 1rem;
+      font-size: 2.8rem; // 28px
+      color: map-get($colors, 'secondary');
+      margin-bottom: 1.5rem;
       font-weight: 700;
     }
 
     p {
-      font-size: 1.1rem;
-      color: #718096;
+      font-size: 1.8rem; // 18px
+      color: map-get($colors, 'text');
       max-width: 600px;
       margin: 0 auto;
       line-height: 1.6;
@@ -536,23 +471,24 @@
   }
 
   .error-actions {
-    margin-top: 2rem;
+    margin-top: 3rem;
 
     .cta-button-1 {
       display: inline-block;
-      padding: 1rem 2.5rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 1.5rem 3rem;
+      background: map-get($colors, 'primary');
       color: white;
-      border-radius: 12px;
+      border-radius: 8px;
       font-weight: 700;
+      font-size: 1.6rem; // 16px
       text-decoration: none;
       transition: all 0.3s ease;
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 4px 12px rgba(93, 196, 175, 0.3);
 
       &:hover {
-        background: linear-gradient(135deg, #5568d3 0%, #653a8a 100%);
+        background: darken(#5dc4af, 10%);
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 6px 16px rgba(93, 196, 175, 0.4);
       }
     }
   }
@@ -563,32 +499,33 @@
 // ============================================
 .cart-sticky {
   position: fixed;
-  bottom: 2.5rem;
-  right: 2.5rem;
+  bottom: 3rem;
+  right: 3rem;
   background: white;
-  border-radius: 24px;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
-  padding: 1.75rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  padding: 2rem;
   min-width: 320px;
   z-index: 1000;
   animation: slideInUp 0.4s ease;
+  border: 2px solid map-get($colors, 'primary');
 
   .cart-header {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #e2e8f0;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid map-get($colors, 'border-color');
 
     .cart-icon {
-      font-size: 1.75rem;
+      font-size: 2.4rem; // 24px
     }
 
     .cart-title {
       font-weight: 700;
-      color: #2d3748;
-      font-size: 1.1rem;
+      color: map-get($colors, 'secondary');
+      font-size: 1.8rem; // 18px
     }
   }
 
@@ -597,46 +534,46 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.25rem;
-      font-size: 1rem;
-      color: #718096;
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem; // 16px
+      color: map-get($colors, 'text');
 
       .cart-total-value {
-        font-size: 1.5rem;
+        font-size: 2.4rem; // 24px
         font-weight: 800;
-        color: #2d3748;
+        color: map-get($colors, 'secondary');
       }
     }
 
     .proceed-payment-btn {
       width: 100%;
-      padding: 1rem;
-      font-size: 1.05rem;
+      padding: 1.5rem;
+      font-size: 1.6rem; // 16px
       font-weight: 700;
-      border-radius: 14px;
+      border-radius: 8px;
       border: none;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: map-get($colors, 'primary');
       color: white;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 4px 12px rgba(93, 196, 175, 0.4);
 
       &:hover {
-        background: linear-gradient(135deg, #5568d3 0%, #653a8a 100%);
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        background: darken(#5dc4af, 10%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(93, 196, 175, 0.5);
       }
 
       &:active {
-        transform: translateY(-1px);
+        transform: translateY(0);
       }
     }
   }
 
   @media (max-width: 768px) {
-    bottom: 1.5rem;
-    right: 1.5rem;
-    left: 1.5rem;
+    bottom: 2rem;
+    right: 2rem;
+    left: 2rem;
     min-width: auto;
   }
 }
@@ -657,71 +594,59 @@
 // ============================================
 @media (max-width: 768px) {
   .resultados-section {
-    padding: 2rem 1rem;
+    padding: 3rem 1.5rem;
   }
 
   .results-container .results-header {
     h1 {
-      font-size: 1.75rem;
+      font-size: 2.4rem; // 24px
     }
 
     .success-icon {
       width: 60px;
       height: 60px;
       line-height: 60px;
-      font-size: 2rem;
+      font-size: 3rem; // 30px
     }
 
     .results-subtitle {
-      font-size: 1rem;
+      font-size: 1.6rem; // 16px
     }
   }
 
   .document-card {
     .card-document-title {
-      font-size: 0.95rem;
+      font-size: 1.8rem; // 18px
     }
 
     .card-thumbnail-wrapper {
-      height: 200px;
+      height: 240px;
 
       .card-icon {
-        font-size: 3.5rem;
+        font-size: 6rem; // 60px
       }
     }
 
     .card-body {
-      padding: 1.25rem;
+      padding: 1.5rem;
     }
 
-    .card-info-section p {
-      font-size: 0.85rem;
-    }
-
-    .card-risk-section {
-      padding: 0.85rem;
-
-      .risk-section-title {
-        font-size: 0.8rem;
-      }
-
-      .risk-section-content {
-        font-size: 0.75rem;
-      }
+    .card-info-simple p {
+      font-size: 1.4rem; // 14px
     }
 
     .card-actions .btn-icon {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
 
       svg {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
       }
     }
   }
 
   .loader-container h1 {
-    font-size: 1.5rem;
+    font-size: 2rem; // 20px
   }
 }

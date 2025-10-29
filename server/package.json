@@ -38,7 +38,9 @@
         "knex": "^3.1.0",
         "morgan": "^1.10.0",
         "mysql2": "^3.10.0",
-        "pg": "^8.16.3"
+        "pdf-to-png-converter": "^3.10.0",
+        "pg": "^8.16.3",
+        "sharp": "^0.34.4"
     },
     "devDependencies": {
         "jest": "^29.7.0",

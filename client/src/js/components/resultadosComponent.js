@@ -12,28 +12,28 @@ export function initResultadosPage() {
             key: 'matriz',
             name: 'Matriz de Riesgos',
             icon: '📊',
-            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: '#5dc4af', // primary color
             isFree: false
         },
         {
             key: 'profesiograma',
             name: 'Profesiograma',
             icon: '🩺',
-            gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            color: '#383d47', // secondary color
             isFree: false
         },
         {
             key: 'perfil',
             name: 'Perfil de Cargo',
             icon: '👤',
-            gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            color: '#5dc4af', // primary color
             isFree: false
         },
         {
             key: 'cotizacion',
             name: 'Cotización de Exámenes',
             icon: '💰',
-            gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            color: '#fff27d', // alternative color
             isFree: true
         }
     ];
@@ -138,9 +138,10 @@ export function initResultadosPage() {
     // CLASE: TARJETA DE DOCUMENTO (REDISEÑADA)
     // ============================================
     class DocumentCard {
-        constructor(config, url, pricing, metadata) {
+        constructor(config, url, thumbnailUrl, pricing, metadata) {
             this.config = config;
             this.url = url;
+            this.thumbnailUrl = thumbnailUrl; // 🆕 URL del thumbnail
             this.pricing = pricing;
             this.metadata = metadata;
         }
@@ -157,76 +158,58 @@ export function initResultadosPage() {
             const pricePerCargo = this.pricing.precioBase || 30000;
             const numCargos = this.pricing.numCargos || 0;
 
-            // HTML de la tarjeta (nuevo diseño basado en mockup)
+            // HTML de la tarjeta (diseño simplificado - solo datos esenciales)
             card.innerHTML = `
                 <!-- Barra superior con precio o "Gratis!" -->
                 <div class="card-price-banner ${this.config.isFree ? 'free' : 'paid'}">
                     ${this.config.isFree
                         ? '<span class="price-text">Gratis!</span>'
-                        : `<span class="price-text">COP$${pricePerCargo.toLocaleString('es-CO')} <span class="price-multiplier">X cargo</span></span>`
+                        : `<span class="price-text">$${pricePerCargo.toLocaleString('es-CO')}</span>`
                     }
                 </div>
 
                 <!-- Thumbnail del documento -->
                 <div class="card-thumbnail-wrapper" ${isAvailable ? `data-url="${this.url}"` : ''}>
-                    ${isAvailable
-                        ? `<img src="${this.url}" alt="Preview ${this.config.name}" class="card-thumbnail-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                           <div class="card-thumbnail-fallback" style="background: ${this.config.gradient}; display: none;">
+                    ${isAvailable && this.thumbnailUrl
+                        ? `<img src="${this.thumbnailUrl}" alt="Preview ${this.config.name}" class="card-thumbnail-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                           <div class="card-thumbnail-fallback" style="display: none;">
                                <span class="card-icon">${this.config.icon}</span>
                            </div>`
-                        : `<div class="card-thumbnail-placeholder" style="background: ${this.config.gradient};">
+                        : `<div class="card-thumbnail-placeholder">
                                <span class="card-icon">${this.config.icon}</span>
                            </div>`
                     }
-                    ${isAvailable ? '<div class="thumbnail-overlay">👁️ Vista Previa</div>' : ''}
+                    ${isAvailable ? '<div class="thumbnail-overlay">Vista Previa</div>' : ''}
                 </div>
 
-                <!-- Cuerpo de la tarjeta -->
+                <!-- Cuerpo de la tarjeta (solo datos esenciales) -->
                 <div class="card-body">
-                    <h3 class="card-document-title">${this.config.name.toUpperCase()}</h3>
+                    <h3 class="card-document-title">${this.config.name}</h3>
 
-                    <div class="card-info-section">
-                        <p class="card-cargo-info"><strong>Perfil del Cargo:</strong> ${this.getCargoExample()}</p>
-                        <p class="card-area-info"><strong>Área/Proceso:</strong> ${this.metadata.nombreEmpresa || 'N/A'}</p>
-                    </div>
-
-                    <div class="card-risk-section">
-                        <h4 class="risk-section-title">Resumen del Cargo y Riesgos Identificados</h4>
-                        <p class="risk-section-content">${this.getRiskDescription()}</p>
-                    </div>
-
-                    <!-- Footer con metadata -->
-                    <div class="card-footer-metadata">
-                        <div class="metadata-row">
-                            <span class="metadata-label">${this.config.name}</span>
-                        </div>
-                        <div class="metadata-row">
-                            <span class="metadata-company">${this.metadata.nombreEmpresa || 'N/A'}</span>
-                        </div>
-                        <div class="metadata-row">
-                            <span class="metadata-detail"># de cargos: ${numCargos}</span>
-                            <span class="metadata-detail">ratizado ${this.getFormattedDate()}</span>
-                        </div>
+                    <!-- Información esencial -->
+                    <div class="card-info-simple">
+                        <p class="card-company-name">${this.metadata.nombreEmpresa || 'N/A'}</p>
+                        <p class="card-cargos-count">${numCargos} cargo${numCargos !== 1 ? 's' : ''}</p>
                     </div>
 
                     <!-- Iconos de acción -->
                     <div class="card-actions">
                         ${!this.config.isFree ? `
                             <button class="btn-icon btn-cart" data-action="cart" title="Agregar al carrito" aria-label="Agregar al carrito">
-                                <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M2 2H10L15.36 28.78C15.5429 29.7008 16.0438 30.5279 16.7751 31.1166C17.5064 31.7053 18.4214 32.018 19.36 32H38.8C39.7386 32.018 40.6536 31.7053 41.3849 31.1166C42.1162 30.5279 42.6171 29.7008 42.8 28.78L46 12H12M20 42C20 43.1046 19.1046 44 18 44C16.8954 44 16 43.1046 16 42C16 40.8954 16.8954 40 18 40C19.1046 40 20 40.8954 20 42ZM42 42C42 43.1046 41.1046 44 40 44C38.8954 44 38 43.1046 38 42C38 40.8954 38.8954 40 40 40C41.1046 40 42 40.8954 42 42Z" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2 2H10L15.36 28.78C15.5429 29.7008 16.0438 30.5279 16.7751 31.1166C17.5064 31.7053 18.4214 32.018 19.36 32H38.8C39.7386 32.018 40.6536 31.7053 41.3849 31.1166C42.1162 30.5279 42.6171 29.7008 42.8 28.78L46 12H12M20 42C20 43.1046 19.1046 44 18 44C16.8954 44 16 43.1046 16 42C16 40.8954 16.8954 40 18 40C19.1046 40 20 40.8954 20 42ZM42 42C42 43.1046 41.1046 44 40 44C38.8954 44 38 43.1046 38 42C38 40.8954 38.8954 40 40 40C41.1046 40 42 40.8954 42 42Z" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </button>
                         ` : ''}
                         <button class="btn-icon btn-download" ${!isAvailable ? 'disabled' : ''} data-action="download" title="Descargar" aria-label="Descargar documento">
-                            <svg width="24" height="24" viewBox="0 0 57 57" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="20" height="20" viewBox="0 0 57 57" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M28.5 38L16.625 26.125L19.95 22.6813L26.125 28.8563V9.5H30.875V28.8563L37.05 22.6813L40.375 26.125L28.5 38ZM14.25 47.5C12.9437 47.5 11.8255 47.0349 10.8953 46.1047C9.9651 45.1745 9.5 44.0563 9.5 42.75V35.625H14.25V42.75H42.75V35.625H47.5V42.75C47.5 44.0563 47.0349 45.1745 46.1047 46.1047C45.1745 47.0349 44.0563 47.5 42.75 47.5H14.25Z" fill="currentColor"/>
                             </svg>
                         </button>
                         ${!this.config.isFree ? `
                             <div class="btn-icon btn-lock" title="Pago requerido" aria-label="Pago requerido">
-                                <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M14 22V14C14 11.3478 15.0536 8.8043 16.9289 6.92893C18.8043 5.05357 21.3478 4 24 4C26.6522 4 29.1957 5.05357 31.0711 6.92893C32.9464 8.8043 34 11.3478 34 14V22M10 22H38C40.2091 22 42 23.7909 42 26V40C42 42.2091 40.2091 44 38 44H10C7.79086 44 6 42.2091 6 40V26C6 23.7909 7.79086 22 10 22Z" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg width="16" height="16" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14 22V14C14 11.3478 15.0536 8.8043 16.9289 6.92893C18.8043 5.05357 21.3478 4 24 4C26.6522 4 29.1957 5.05357 31.0711 6.92893C32.9464 8.8043 34 11.3478 34 14V22M10 22H38C40.2091 22 42 23.7909 42 26V40C42 42.2091 40.2091 44 38 44H10C7.79086 44 6 42.2091 6 40V26C6 23.7909 7.79086 22 10 22Z" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
                         ` : ''}
@@ -259,31 +242,6 @@ export function initResultadosPage() {
             }
 
             return card;
-        }
-
-        getCargoExample() {
-            const examples = {
-                'matriz': 'Operario de producción',
-                'profesiograma': 'Gestor de marketing',
-                'perfil': 'Analista de sistemas',
-                'cotizacion': 'Varios cargos'
-            };
-            return examples[this.config.key] || 'Cargo general';
-        }
-
-        getRiskDescription() {
-            const descriptions = {
-                'matriz': 'Riesgos identificados: físicos, químicos, ergonómicos. Nivel de exposición: medio-alto.',
-                'profesiograma': 'Descripción de tareas: editar videos, realizar campañas, coordinación de equipos.',
-                'perfil': 'Aptitudes requeridas: análisis de datos, comunicación efectiva, trabajo en equipo.',
-                'cotizacion': 'Cotización detallada de exámenes médicos ocupacionales según perfil de riesgo.'
-            };
-            return descriptions[this.config.key] || 'Documento generado con información detallada del cargo.';
-        }
-
-        getFormattedDate() {
-            const fecha = new Date(this.metadata.fechaGeneracion || Date.now());
-            return `${fecha.getDate()} ${fecha.toLocaleString('es-CO', { month: 'short' })} ${fecha.getFullYear()}`;
         }
 
         capitalize(str) {
@@ -321,6 +279,8 @@ export function initResultadosPage() {
     // ============================================
     // FUNCIONES DE ESTADO UI
     // ============================================
+    let isFirstRender = true; // Flag para controlar el primer renderizado
+
     function showLoader(message = 'Generando tus documentos...') {
         console.log('⏳ Mostrando loader:', message);
         loaderContainer.classList.add('active');
@@ -333,9 +293,13 @@ export function initResultadosPage() {
 
     function showResults(data) {
         console.log('✅ Mostrando resultados:', data);
-        loaderContainer.classList.remove('active');
-        resultsContainer.classList.add('active');
-        errorContainer.classList.remove('active');
+
+        // Solo cambiar la visibilidad en el primer render
+        if (isFirstRender) {
+            loaderContainer.classList.remove('active');
+            resultsContainer.classList.add('active');
+            errorContainer.classList.remove('active');
+        }
 
         // ============================================
         // ACTUALIZAR METADATA
@@ -361,18 +325,26 @@ export function initResultadosPage() {
         }
 
         // ============================================
-        // RENDERIZAR TARJETAS
+        // RENDERIZAR TARJETAS (solo la primera vez)
         // ============================================
-        documentsGrid.innerHTML = ''; // Limpiar
+        if (isFirstRender) {
+            documentsGrid.innerHTML = ''; // Limpiar solo la primera vez
 
-        DOCUMENTS_CONFIG.forEach(docConfig => {
-            const url = data.urls[docConfig.key];
-            const card = new DocumentCard(docConfig, url, metadata.pricing || {}, metadata);
-            const cardElement = card.render();
-            documentsGrid.appendChild(cardElement);
+            DOCUMENTS_CONFIG.forEach(docConfig => {
+                const url = data.urls[docConfig.key];
+                const thumbnailUrl = data.thumbnails?.[docConfig.key] || null;
+                const card = new DocumentCard(docConfig, url, thumbnailUrl, metadata.pricing || {}, metadata);
+                const cardElement = card.render();
+                documentsGrid.appendChild(cardElement);
 
-            console.log(`📄 Tarjeta creada: ${docConfig.name} - URL: ${url ? 'Disponible' : 'No disponible'}`);
-        });
+                console.log(`📄 Tarjeta creada: ${docConfig.name} - URL: ${url ? 'Disponible' : 'No disponible'}`);
+            });
+
+            isFirstRender = false;
+        } else {
+            // En renders posteriores, solo actualizar si hay cambios necesarios
+            console.log('ℹ️ Tarjetas ya renderizadas, omitiendo recarga');
+        }
     }
 
     function showError(message) {
