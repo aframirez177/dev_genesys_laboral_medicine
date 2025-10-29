@@ -1,13 +1,12 @@
 // ============================================
-// PÁGINA DE RESULTADOS PREMIUM
-// Diseño moderno con tarjetas, carrito y metadata
-// Reescrito desde cero para diseño premium
+// PÁGINA DE RESULTADOS PREMIUM - REDISEÑADA
+// Basada en mockup con thumbnails de documentos
 // ============================================
 
 .resultados-section {
   min-height: 100vh;
   padding: 4rem 2rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
 
   .container {
     max-width: 1400px;
@@ -26,6 +25,7 @@
 
   &.active {
     display: block;
+    animation: fadeIn 0.4s ease;
   }
 
   .loader {
@@ -42,6 +42,7 @@
     font-size: 2rem;
     color: #2d3748;
     margin-bottom: 1rem;
+    font-weight: 700;
   }
 
   p {
@@ -61,11 +62,17 @@
   100% { transform: rotate(360deg); }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 // ============================================
 // RESULTS CONTAINER
 // ============================================
 .results-container {
   display: none;
+  animation: fadeIn 0.6s ease;
 
   &.active {
     display: block;
@@ -85,18 +92,21 @@
       color: white;
       border-radius: 50%;
       margin-bottom: 1.5rem;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
     }
 
     h1 {
       font-size: 2.5rem;
       color: #2d3748;
       margin-bottom: 1rem;
+      font-weight: 800;
     }
 
     .results-subtitle {
       font-size: 1.1rem;
       color: #718096;
       margin-bottom: 2rem;
+      line-height: 1.6;
     }
   }
 
@@ -114,6 +124,7 @@
     a {
       color: #667eea;
       text-decoration: underline;
+      font-weight: 600;
 
       &:hover {
         color: #5568d3;
@@ -170,152 +181,231 @@
 .documents-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 3rem;
+  gap: 2.5rem;
   margin-top: 3rem;
 
   @media (max-width: 955px) {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
+    gap: 2rem;
   }
 }
 
 // ============================================
-// TARJETA DE DOCUMENTO
+// TARJETA DE DOCUMENTO (REDISEÑADA)
 // ============================================
 .document-card {
-  aspect-ratio: 4 / 5;
-  border-radius: 24px;
-  overflow: hidden;
   background: white;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.5s ease;
 
   &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
 // ============================================
-// THUMBNAIL (60% SUPERIOR)
+// BARRA SUPERIOR DE PRECIO
 // ============================================
-.card-thumbnail {
-  height: 60%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  overflow: hidden;
-  background-size: cover;
-  background-position: center;
+.card-price-banner {
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
 
-  .card-icon {
-    font-size: 6rem;
-    filter: brightness(1.3) contrast(0.85);
-    user-select: none;
+  &.free {
+    background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+    color: #22543d;
   }
 
-  .preview-overlay {
+  &.paid {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+    color: #2d3748;
+  }
+
+  .price-text {
+    display: block;
+    font-size: 1.15rem;
+  }
+
+  .price-multiplier {
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+}
+
+// ============================================
+// THUMBNAIL DEL DOCUMENTO
+// ============================================
+.card-thumbnail-wrapper {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  background: #f7fafc;
+
+  .card-thumbnail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .card-thumbnail-fallback,
+  .card-thumbnail-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .card-icon {
+      font-size: 5rem;
+      filter: brightness(1.2) contrast(0.85);
+      user-select: none;
+    }
+  }
+
+  .thumbnail-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
     color: white;
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-size: 1.5rem;
+    font-weight: 700;
     backdrop-filter: blur(4px);
   }
 
-  &:hover .preview-overlay {
-    opacity: 1;
+  &:hover {
+    .thumbnail-overlay {
+      opacity: 1;
+    }
+
+    .card-thumbnail-image {
+      transform: scale(1.05);
+    }
   }
 }
 
 // ============================================
-// FOOTER (40% INFERIOR)
+// CUERPO DE LA TARJETA
 // ============================================
-.card-footer {
-  height: 40%;
-  padding: 1.75rem;
+.card-body {
+  padding: 1.5rem;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  background: white;
 }
 
-.card-title {
-  font-size: 1.35rem;
+.card-document-title {
+  font-size: 1rem;
   font-weight: 700;
   color: #2d3748;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.5px;
   line-height: 1.3;
 }
 
-// ============================================
-// PRICING
-// ============================================
-.card-pricing {
-  margin-bottom: 0.5rem;
+.card-info-section {
+  margin-bottom: 1rem;
 
-  .price-unit {
+  p {
+    font-size: 0.9rem;
+    color: #4a5568;
+    margin: 0.4rem 0;
+    line-height: 1.5;
+
+    strong {
+      color: #2d3748;
+      font-weight: 600;
+    }
+  }
+}
+
+.card-risk-section {
+  background: linear-gradient(135deg, #81e6d9 0%, #4fd1c5 100%);
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+
+  .risk-section-title {
     font-size: 0.85rem;
-    color: #718096;
-    margin: 0 0 0.25rem 0;
+    font-weight: 700;
+    color: #234e52;
+    margin: 0 0 0.5rem 0;
   }
 
-  .price-total {
-    font-size: 1.15rem;
+  .risk-section-content {
+    font-size: 0.8rem;
+    color: #2c5f63;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+// ============================================
+// FOOTER DE METADATA
+// ============================================
+.card-footer-metadata {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+  margin-bottom: 1rem;
+
+  .metadata-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .metadata-label {
     font-weight: 700;
     color: #2d3748;
-    margin: 0;
   }
-}
 
-.price-free {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #48bb78;
-  margin: 0 0 0.5rem 0;
-}
-
-// ============================================
-// STATUS BADGE
-// ============================================
-.card-status {
-  margin: 0.75rem 0;
-
-  .badge {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    border-radius: 12px;
-    font-size: 0.85rem;
+  .metadata-company {
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: #4a5568;
+  }
 
-    &.badge-free {
-      background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
-      color: #22543d;
-    }
-
-    &.badge-locked {
-      background: linear-gradient(135deg, #fed7d7 0%, #fc8181 100%);
-      color: #742a2a;
-    }
+  .metadata-detail {
+    color: #718096;
+    font-size: 0.8rem;
   }
 }
 
 // ============================================
-// CARD ACTIONS (BOTONES)
+// ICONOS DE ACCIÓN
 // ============================================
 .card-actions {
   display: flex;
@@ -324,17 +414,22 @@
   margin-top: auto;
 
   .btn-icon {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     border: none;
-    font-size: 1.35rem;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: white;
+
+    svg {
+      width: 22px;
+      height: 22px;
+    }
 
     &:hover:not(:disabled) {
       transform: scale(1.15);
@@ -356,9 +451,13 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
 
+    svg {
+      color: white;
+    }
+
     &.active {
       background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-      animation: pulse 0.5s ease;
+      animation: cartPulse 0.5s ease;
     }
   }
 
@@ -366,18 +465,37 @@
     background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
     color: white;
 
+    svg {
+      color: white;
+    }
+
     &:disabled {
       background: #e2e8f0;
+      color: #a0aec0;
+
+      svg {
+        color: #a0aec0;
+      }
+    }
+  }
+
+  .btn-lock {
+    background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+    color: white;
+    pointer-events: none;
+
+    svg {
+      color: white;
     }
   }
 }
 
-@keyframes pulse {
+@keyframes cartPulse {
   0%, 100% {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(1.25);
   }
 }
 
@@ -391,6 +509,7 @@
 
   &.active {
     display: block;
+    animation: fadeIn 0.4s ease;
   }
 
   .error-header {
@@ -404,6 +523,7 @@
       font-size: 2rem;
       color: #2d3748;
       margin-bottom: 1rem;
+      font-weight: 700;
     }
 
     p {
@@ -411,6 +531,7 @@
       color: #718096;
       max-width: 600px;
       margin: 0 auto;
+      line-height: 1.6;
     }
   }
 
@@ -420,16 +541,18 @@
     .cta-button-1 {
       display: inline-block;
       padding: 1rem 2.5rem;
-      background: #667eea;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border-radius: 12px;
-      font-weight: 600;
+      font-weight: 700;
       text-decoration: none;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
 
       &:hover {
-        background: #5568d3;
+        background: linear-gradient(135deg, #5568d3 0%, #653a8a 100%);
         transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
       }
     }
   }
@@ -548,15 +671,57 @@
       line-height: 60px;
       font-size: 2rem;
     }
+
+    .results-subtitle {
+      font-size: 1rem;
+    }
   }
 
   .document-card {
-    .card-title {
-      font-size: 1.15rem;
+    .card-document-title {
+      font-size: 0.95rem;
     }
 
-    .card-thumbnail .card-icon {
-      font-size: 4.5rem;
+    .card-thumbnail-wrapper {
+      height: 200px;
+
+      .card-icon {
+        font-size: 3.5rem;
+      }
     }
+
+    .card-body {
+      padding: 1.25rem;
+    }
+
+    .card-info-section p {
+      font-size: 0.85rem;
+    }
+
+    .card-risk-section {
+      padding: 0.85rem;
+
+      .risk-section-title {
+        font-size: 0.8rem;
+      }
+
+      .risk-section-content {
+        font-size: 0.75rem;
+      }
+    }
+
+    .card-actions .btn-icon {
+      width: 40px;
+      height: 40px;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .loader-container h1 {
+    font-size: 1.5rem;
   }
 }
