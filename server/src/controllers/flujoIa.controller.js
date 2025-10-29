@@ -9,7 +9,7 @@ import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
 // Importar generador de cotización
 import { generarCotizacionPDF } from './cotizacion.controller.js';
 import { uploadToSpaces } from '../utils/spaces.js'; // Asegúrate que esta ruta sea correcta
-import { generatePDFThumbnail, generateExcelThumbnail } from '../utils/documentThumbnail.js';
+import { generatePDFThumbnail, generateExcelThumbnail } from '../utils/pdfThumbnail.js';
 
 // Función principal que maneja el registro y guardado de datos
 export const registrarYGenerar = async (req, res) => {
@@ -162,17 +162,17 @@ export const registrarYGenerar = async (req, res) => {
         const [matrizBuffer, profesiogramaBuffer, perfilBuffer, cotizacionBuffer] = await Promise.all(generationPromises);
         console.log("Buffers de documentos finales generados.");
 
-        // 7. Generar Thumbnails de ALTA FIDELIDAD con Puppeteer
-        console.log("📸 Generando thumbnails de alta fidelidad con Puppeteer...");
+        // 7. Generar Thumbnails de los PDFs y Excel
+        console.log("Generando thumbnails de documentos...");
         const thumbnailPromises = [
-            generateExcelThumbnail(matrizBuffer, { width: 800, quality: 95, maxRows: 15 }),
-            generatePDFThumbnail(profesiogramaBuffer, { width: 800, quality: 95 }),
-            generatePDFThumbnail(perfilBuffer, { width: 800, quality: 95 }),
-            generatePDFThumbnail(cotizacionBuffer, { width: 800, quality: 95 })
+            generateExcelThumbnail(matrizBuffer, { width: 400, rows: 12 }),
+            generatePDFThumbnail(profesiogramaBuffer, { cropHeader: true, quality: 90 }),
+            generatePDFThumbnail(perfilBuffer, { cropHeader: true, quality: 90 }),
+            generatePDFThumbnail(cotizacionBuffer, { cropHeader: true, quality: 90 })
         ];
 
         const [matrizThumbnail, profesiogramaThumbnail, perfilThumbnail, cotizacionThumbnail] = await Promise.all(thumbnailPromises);
-        console.log("✅ Thumbnails de alta fidelidad generados exitosamente.");
+        console.log("Thumbnails generados exitosamente (Excel + PDFs).");
 
         // 8. Subir Documentos Finales y Thumbnails a Spaces
         console.log("Subiendo documentos finales y thumbnails a Spaces...");
