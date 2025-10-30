@@ -283,6 +283,66 @@ preview_urls: {
 - `DocumentCard` class renders simplified cards with thumbnails
 - Polling continues until final state (pagado/completed/failed)
 
+## Thumbnail Generation System
+
+**Architecture**: Hybrid strategy using different tools for optimal results
+
+**Implementation** (`server/src/controllers/flujoIa.controller.js`):
+
+```javascript
+// Excel: Puppeteer for HTML rendering
+generateExcelThumbnail(matrizBuffer, {
+    width: 800,
+    quality: 95,
+    maxRows: 12,
+    maxCols: 8  // Zoom to top-left corner
+});
+
+// PDFs: pdf-to-png-converter (faster than Puppeteer)
+generatePDFThumbnailFast(pdfBuffer, {
+    width: 600,
+    cropHeader: true,  // Show 35% of top (header + table start)
+    quality: 95,
+    viewportScale: 3.5-4.0  // High resolution for text clarity
+});
+```
+
+**Why This Strategy?**
+1. **Puppeteer cannot open PDFs directly** with `page.goto('file://...')`
+2. **pdf-to-png-converter is 3-5x faster** than Puppeteer for PDF rendering
+3. **Puppeteer excels at HTML** - perfect for Excel → HTML → Screenshot
+4. **Result**: 2-3 seconds total (vs 15+ seconds with pure Puppeteer)
+
+**Critical Requirements**:
+- **All PDFs must use Poppins fonts** (not helvetica)
+  - Why? pdf-to-png-converter doesn't render helvetica text from jsPDF
+  - Solution: Import `addPoppinsFont()` in all PDF controllers
+
+```javascript
+// profesiograma.controller.js, perfil-cargo.controller.js, cotizacion.controller.js
+import { addPoppinsFont } from "../utils/poppins-font-definitions.js";
+
+const doc = new jsPDF('p', 'mm', 'a4');
+addPoppinsFont(doc);
+doc.setFont('Poppins', 'normal');  // NOT 'helvetica'
+```
+
+**Utilities**:
+- `server/src/utils/pdfThumbnail.js`: Fast PDF → PNG → JPEG converter
+- `server/src/utils/documentThumbnail.js`: Puppeteer-based for Excel and fallback
+
+**Quality Parameters**:
+- Width: 600-800px (balanced between quality and file size)
+- JPEG Quality: 95% (high quality, mozjpeg compression)
+- ViewportScale: 3.5-4.0 (2x-3x higher than default for text clarity)
+- NO sharpen filter (causes paleness/washing out of colors)
+
+**Expected Output Sizes**:
+- Profesiograma: ~30-35 KB
+- Perfil de Cargo: ~28-32 KB
+- Cotización: ~32-38 KB
+- Matriz Excel: ~60-70 KB
+
 ## Important Notes
 
 - Node.js version: 18.20.4 or higher (see `.nvmrc`)

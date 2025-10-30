@@ -169,7 +169,7 @@ export const registrarYGenerar = async (req, res) => {
         const thumbnailPromises = [
             generateExcelThumbnail(matrizBuffer, { width: 800, quality: 95, maxRows: 12, maxCols: 8 }), // Puppeteer - zoom esquina superior izquierda
             generatePDFThumbnailFast(profesiogramaBuffer, { width: 600, cropHeader: true, quality: 95, viewportScale: 3.5 }), // pdf-to-png optimizado
-            generatePDFThumbnailFast(perfilBuffer, { width: 600, cropHeader: false, quality: 95, viewportScale: 4.0 }), // pdf-to-png - página completa, viewport MUY alto
+            generatePDFThumbnailFast(perfilBuffer, { width: 600, cropHeader: true, quality: 95, viewportScale: 4.0 }), // pdf-to-png - crop header como los demás
             generatePDFThumbnailFast(cotizacionBuffer, { width: 600, cropHeader: true, quality: 95, viewportScale: 4.0 }) // pdf-to-png - viewport MUY alto
         ];
 
