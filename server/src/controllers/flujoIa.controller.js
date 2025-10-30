@@ -9,8 +9,8 @@ import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
 // Importar generador de cotización
 import { generarCotizacionPDF } from './cotizacion.controller.js';
 import { uploadToSpaces } from '../utils/spaces.js'; // Asegúrate que esta ruta sea correcta
-// Estrategia híbrida: Puppeteer para Excel (alta fidelidad) + pdf-to-png para PDFs (velocidad)
-import { generatePDFThumbnail } from '../utils/pdfThumbnail.js';
+// Estrategia optimizada: pdf-to-png para PDFs (rápido) + Puppeteer solo para Excel
+import { generatePDFThumbnail as generatePDFThumbnailFast } from '../utils/pdfThumbnail.js';
 import { generateExcelThumbnail } from '../utils/documentThumbnail.js';
 
 // Función principal que maneja el registro y guardado de datos
@@ -164,13 +164,13 @@ export const registrarYGenerar = async (req, res) => {
         const [matrizBuffer, profesiogramaBuffer, perfilBuffer, cotizacionBuffer] = await Promise.all(generationPromises);
         console.log("Buffers de documentos finales generados.");
 
-        // 7. Generar Thumbnails: Puppeteer para Excel + pdf-to-png para PDFs (velocidad)
+        // 7. Generar Thumbnails: Estrategia selectiva según renderizado
         console.log("Generando thumbnails de documentos...");
         const thumbnailPromises = [
-            generateExcelThumbnail(matrizBuffer, { width: 400, rows: 12 }), // Puppeteer - Alta fidelidad
-            generatePDFThumbnail(profesiogramaBuffer, { cropHeader: true, quality: 90 }), // pdf-to-png - Rápido
-            generatePDFThumbnail(perfilBuffer, { cropHeader: true, quality: 90 }),
-            generatePDFThumbnail(cotizacionBuffer, { cropHeader: true, quality: 90 })
+            generateExcelThumbnail(matrizBuffer, { width: 800, quality: 95, maxRows: 12, maxCols: 8 }), // Puppeteer - zoom esquina superior izquierda
+            generatePDFThumbnailFast(profesiogramaBuffer, { cropHeader: true, quality: 92, viewportScale: 3.5 }), // pdf-to-png optimizado
+            generatePDFThumbnailFast(perfilBuffer, { cropHeader: false, quality: 92, viewportScale: 3.5 }), // pdf-to-png - viewport alto para helvetica
+            generatePDFThumbnailFast(cotizacionBuffer, { cropHeader: true, quality: 92, viewportScale: 3.5 }) // pdf-to-png - viewport alto
         ];
 
         const [matrizThumbnail, profesiogramaThumbnail, perfilThumbnail, cotizacionThumbnail] = await Promise.all(thumbnailPromises);

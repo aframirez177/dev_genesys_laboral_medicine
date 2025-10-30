@@ -98,7 +98,7 @@ export async function generatePDFThumbnail(pdfBuffer, options = {}) {
  * @returns {Promise<Buffer>} Buffer JPEG del thumbnail
  */
 export async function generateExcelThumbnail(excelBuffer, options = {}) {
-    const { width = 800, quality = 95, maxRows = 15 } = options;
+    const { width = 800, quality = 95, maxRows = 15, maxCols = 10 } = options;
 
     let page = null;
 
@@ -114,8 +114,8 @@ export async function generateExcelThumbnail(excelBuffer, options = {}) {
             throw new Error('No se encontró ninguna hoja en el Excel');
         }
 
-        // Generar HTML fiel al Excel
-        const html = generateExcelHTML(worksheet, maxRows);
+        // Generar HTML fiel al Excel (zoom esquina superior izquierda)
+        const html = generateExcelHTML(worksheet, maxRows, maxCols);
 
         const browser = await getBrowser();
         page = await browser.newPage();
@@ -157,8 +157,11 @@ export async function generateExcelThumbnail(excelBuffer, options = {}) {
 
 /**
  * Genera HTML estilizado del Excel para renderizado fiel
+ * @param {Object} worksheet - Hoja de Excel
+ * @param {number} maxRows - Máximo de filas a renderizar
+ * @param {number} maxCols - Máximo de columnas a renderizar (zoom izquierda)
  */
-function generateExcelHTML(worksheet, maxRows) {
+function generateExcelHTML(worksheet, maxRows, maxCols = 10) {
     let html = `
     <!DOCTYPE html>
     <html>
@@ -172,33 +175,30 @@ function generateExcelHTML(worksheet, maxRows) {
             }
             table {
                 border-collapse: collapse;
-                width: 100%;
                 background: white;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             }
             th, td {
                 border: 1px solid #d0d0d0;
-                padding: 8px 12px;
+                padding: 10px 15px;
                 text-align: left;
-                font-size: 11px;
+                font-size: 12px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 200px;
+                max-width: 180px;
+                min-width: 80px;
             }
             th {
                 background: #5dc4af;
                 color: white;
                 font-weight: bold;
                 text-transform: uppercase;
-                font-size: 10px;
+                font-size: 11px;
                 letter-spacing: 0.5px;
             }
             tr:nth-child(even) {
                 background: #f9f9f9;
-            }
-            tr:hover {
-                background: #f0f0f0;
             }
             .number {
                 text-align: right;
@@ -219,7 +219,11 @@ function generateExcelHTML(worksheet, maxRows) {
         const isHeader = rowNumber === 1;
         html += isHeader ? '<thead><tr>' : '<tr>';
 
-        row.eachCell({ includeEmpty: true }, (cell) => {
+        let colCount = 0;
+        row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+            // Limitar columnas (zoom a esquina superior izquierda)
+            if (colCount >= maxCols) return;
+
             const value = getCellDisplayValue(cell);
             const alignment = cell.alignment?.horizontal || 'left';
             const isBold = cell.font?.bold;
@@ -234,6 +238,7 @@ function generateExcelHTML(worksheet, maxRows) {
             const classAttr = classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
 
             html += `<${cellTag}${classAttr} style="${style}">${value}</${cellTag}>`;
+            colCount++; // Incrementar contador de columnas
         });
 
         html += isHeader ? '</tr></thead><tbody>' : '</tr>';

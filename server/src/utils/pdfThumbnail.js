@@ -13,17 +13,17 @@ import ExcelJS from 'exceljs';
  * @returns {Promise<Buffer>} Buffer de la imagen JPEG optimizada
  */
 export async function generatePDFThumbnail(pdfBuffer, options = {}) {
-    const { width = 400, quality = 90, cropHeader = true } = options;
+    const { width = 400, quality = 90, cropHeader = true, viewportScale = 3.0 } = options;
 
     try {
-        console.log('🖼️ Generando thumbnail del PDF...');
+        console.log('🖼️ Generando thumbnail del PDF con pdf-to-png...');
 
         // Convertir la primera página del PDF a PNG con ALTA CALIDAD
         const pngPages = await pdfToPng(pdfBuffer, {
             outputType: 'buffer',
             pagesToProcess: [1], // Solo la primera página (debe ser array)
             strictPagesToProcess: true,
-            viewportScale: 3.0 // Mejor calidad para texto pequeño
+            viewportScale // Configurable según necesidad (3.5 para helvetica, 3.0 para Poppins)
         });
 
         if (!pngPages || pngPages.length === 0) {
