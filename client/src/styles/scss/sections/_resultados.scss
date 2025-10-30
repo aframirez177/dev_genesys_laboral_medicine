@@ -96,7 +96,8 @@
       color: white;
       border-radius: 50%;
       margin-bottom: 2rem;
-      box-shadow: 0 8px 24px rgba(93, 196, 175, 0.3);
+      box-shadow:  20px 20px 60px #4fa795,
+             -20px -20px 60px #6be1c9;
     }
 
     h1 {
@@ -146,9 +147,10 @@
   gap: 2rem;
   margin-top: 3rem;
   padding: 2.5rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  background: map-get($colors, 'accordion-header-bg');
+  border-radius: 40px;
+  box-shadow:  20px 20px 60px #c4c4c4,
+             -20px -20px 60px #ffffff;
 
   .metadata-item {
     display: flex;
@@ -222,14 +224,15 @@
   text-align: center;
   font-weight: 800;
   font-size: 1.8rem; // 18px
+  text-align: end;
 
   &.free {
-    background: map-get($colors, 'border-color');
+    background: map-get($colors, 'accordion-header-bg');
     color: map-get($colors, 'secondary');
   }
 
   &.paid {
-    background: map-get($colors, 'border-color');
+    background: map-get($colors, 'accordion-header-bg');
     color: map-get($colors, 'secondary');
   }
 

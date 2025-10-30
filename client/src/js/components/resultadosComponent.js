@@ -164,7 +164,7 @@ export function initResultadosPage() {
                 <div class="card-price-banner ${this.config.isFree ? 'free' : 'paid'}">
                     ${this.config.isFree
                         ? '<span class="price-text">Gratis!</span>'
-                        : `<span class="price-text">$${pricePerCargo.toLocaleString('es-CO')}</span>`
+                        : `<span class="price-text">$${pricePerCargo.toLocaleString('es-CO')} X cargo</span>`
                     }
                 </div>
 
