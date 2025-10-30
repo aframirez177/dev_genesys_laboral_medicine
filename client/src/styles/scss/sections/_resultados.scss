@@ -9,7 +9,7 @@
 
 .resultados-section {
   min-height: 100vh;
-  padding: 4rem 2rem;
+  padding: 4rem 15rem;
   background: map-get($colors, 'accordion-header-bg');
 
   .container {
@@ -189,7 +189,7 @@
 .documents-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 3rem;
+  gap: 5rem;
   margin-top: 4rem;
 
   @media (max-width: 955px) {
@@ -352,10 +352,12 @@
 // ICONOS DE ACCIÓN (COLORES DEL PROYECTO)
 // ============================================
 .card-actions {
+  position: absolute;
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
   margin-top: auto;
+  align-self: end;
 
   .btn-icon {
     width: 48px;
