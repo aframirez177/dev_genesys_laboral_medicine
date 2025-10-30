@@ -62,10 +62,10 @@ async function generarMatrizExcel(
             worksheet.getRow(2).height = 30;
             worksheet.getRow(3).height = 30;
 
-            // Insertar imagen en A1 (3 filas x 1.5 columnas)
+            // Insertar imagen en A1 (3 filas x 1.65 columnas)
             worksheet.addImage(logoImage, {
                 tl: { col: 0, row: 0 },      // Top-left: A1 (col 0, row 0)
-                br: { col: 1.5, row: 3 },    // Bottom-right: mitad de B, fila 3
+                br: { col: 1.65, row: 3 },   // Bottom-right: 1.65 columnas, fila 3
                 editAs: 'oneCell'
             });
 
