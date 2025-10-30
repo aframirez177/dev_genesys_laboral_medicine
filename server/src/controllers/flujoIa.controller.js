@@ -168,9 +168,9 @@ export const registrarYGenerar = async (req, res) => {
         console.log("Generando thumbnails de documentos...");
         const thumbnailPromises = [
             generateExcelThumbnail(matrizBuffer, { width: 800, quality: 95, maxRows: 12, maxCols: 8 }), // Puppeteer - zoom esquina superior izquierda
-            generatePDFThumbnailFast(profesiogramaBuffer, { cropHeader: true, quality: 92, viewportScale: 3.5 }), // pdf-to-png optimizado
-            generatePDFThumbnailFast(perfilBuffer, { cropHeader: false, quality: 92, viewportScale: 3.5 }), // pdf-to-png - viewport alto para helvetica
-            generatePDFThumbnailFast(cotizacionBuffer, { cropHeader: true, quality: 92, viewportScale: 3.5 }) // pdf-to-png - viewport alto
+            generatePDFThumbnailFast(profesiogramaBuffer, { width: 600, cropHeader: true, quality: 95, viewportScale: 3.5 }), // pdf-to-png optimizado
+            generatePDFThumbnailFast(perfilBuffer, { width: 600, cropHeader: false, quality: 95, viewportScale: 4.0 }), // pdf-to-png - página completa, viewport MUY alto
+            generatePDFThumbnailFast(cotizacionBuffer, { width: 600, cropHeader: true, quality: 95, viewportScale: 4.0 }) // pdf-to-png - viewport MUY alto
         ];
 
         const [matrizThumbnail, profesiogramaThumbnail, perfilThumbnail, cotizacionThumbnail] = await Promise.all(thumbnailPromises);

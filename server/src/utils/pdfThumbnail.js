@@ -61,8 +61,8 @@ export async function generatePDFThumbnail(pdfBuffer, options = {}) {
                 withoutEnlargement: true,
                 kernel: sharp.kernel.lanczos3 // Mejor algoritmo para texto
             })
-            .sharpen() // Afilar para mejorar legibilidad
-            .jpeg({ quality, progressive: true })
+            // NO usar sharpen() - causa palidez en thumbnails
+            .jpeg({ quality, progressive: true, mozjpeg: true }) // mozjpeg para mejor compresión
             .toBuffer();
 
         console.log(`✅ Thumbnail generado: ${(optimizedBuffer.length / 1024).toFixed(2)} KB`);
