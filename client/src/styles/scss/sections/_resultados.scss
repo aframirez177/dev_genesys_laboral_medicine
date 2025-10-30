@@ -10,7 +10,7 @@
 .resultados-section {
   min-height: 100vh;
   padding: 4rem 2rem;
-  background: map-get($colors, 'background');
+  background: map-get($colors, 'accordion-header-bg');
 
   .container {
     max-width: 1400px;
@@ -202,10 +202,11 @@
 // TARJETA DE DOCUMENTO (SIMPLIFICADA)
 // ============================================
 .document-card {
-  background: white;
-  border-radius: 12px;
+  background: map-get($colors, 'accordion-header-bg');
+  border-radius: 40px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow:  20px 20px 60px #c4c4c4,
+             -20px -20px 60px #ffffff;;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
