@@ -87,16 +87,18 @@
     margin-bottom: 0rem;
 
     .success-icon {
-      display: inline-block;
-      width: 80px;
-      height: 80px;
-      line-height: 80px;
-      font-size: 4rem; // 40px
-      background: map-get($colors, 'primary');
-      color: white;
-      border-radius: 50%;
-      margin-bottom: 2rem;
-      box-shadow:  5px 5px 30px #4fa795,-5px -5px 30px #6be1c9;
+      background: #5dc4af;
+    border-radius: 50%;
+    box-shadow: 5px 5px 30px #4fa795, -5px -5px 30px #6be1c9;
+    color: #fff;
+    display: inline-block;
+    font-size: 5rem;
+    height: 100px;
+    line-height: 100px;
+    margin-bottom: 2rem;
+    width: 100px;
+    position: absolute;
+    left: 90%;
     }
 
     h1 {
@@ -104,6 +106,8 @@
       color: map-get($colors, 'secondary');
       margin-bottom: 1.5rem;
       font-weight: 800;
+      text-align: left;
+      max-width: 80rem;
     }
 
     .results-subtitle {
@@ -111,6 +115,8 @@
       color: map-get($colors, 'text');
       margin-bottom: 2rem;
       line-height: 1.6;
+      text-align: left;
+      max-width: 80rem;
     }
   }
 

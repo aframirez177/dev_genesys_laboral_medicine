@@ -34,25 +34,52 @@ async function generarMatrizExcel(
     const colorText = "2d3238";    // Color de texto del proyecto
 
     // Insertar logo en A1
-    const logoPath = path.join(__dirname, "../../client/src/assets/images/Logo_compuesto_fullcolor_horizontal_negro@2x.png");
+    // Intentar múltiples rutas para desarrollo y producción
+    const possibleLogoPaths = [
+        path.join(__dirname, "../../client/src/assets/images/Logo_compuesto_fullcolor_horizontal_negro@2x.png"),
+        path.join(__dirname, "../../../client/src/assets/images/Logo_compuesto_fullcolor_horizontal_negro@2x.png"),
+        path.join(process.cwd(), "client/src/assets/images/Logo_compuesto_fullcolor_horizontal_negro@2x.png"),
+        "/app/client/src/assets/images/Logo_compuesto_fullcolor_horizontal_negro@2x.png", // Docker path
+    ];
 
-    if (fs.existsSync(logoPath)) {
-        const logoImage = workbook.addImage({
-            filename: logoPath,
-            extension: 'png',
-        });
-
-        // Insertar imagen en A1:C3 (fusionada)
-        worksheet.addImage(logoImage, {
-            tl: { col: 0, row: 0 },    // Top-left: A1
-            br: { col: 2.5, row: 3 },  // Bottom-right: cerca de C3
-            editAs: 'oneCell'
-        });
+    let logoPath = null;
+    for (const testPath of possibleLogoPaths) {
+        if (fs.existsSync(testPath)) {
+            logoPath = testPath;
+            break;
+        }
     }
 
-    // Fusionar celdas para el título principal
-    worksheet.mergeCells('D1:H2');
-    const titleCell = worksheet.getCell('D1');
+    try {
+        if (logoPath) {
+            const logoImage = workbook.addImage({
+                filename: logoPath,
+                extension: 'png',
+            });
+
+            // Ajustar altura de filas 1-3 para el logo
+            worksheet.getRow(1).height = 30;
+            worksheet.getRow(2).height = 30;
+            worksheet.getRow(3).height = 30;
+
+            // Insertar imagen en A1:D3
+            worksheet.addImage(logoImage, {
+                tl: { col: 0, row: 0 },      // Top-left: A1 (col 0, row 0)
+                br: { col: 4, row: 3 },      // Bottom-right: E3 (col 4, row 3)
+                editAs: 'oneCell'
+            });
+
+            console.log("✅ Logo agregado al Excel desde:", logoPath);
+        } else {
+            console.warn("⚠️ Logo no encontrado en ninguna de las rutas posibles");
+        }
+    } catch (error) {
+        console.error("❌ Error al agregar logo:", error.message);
+    }
+
+    // Fusionar celdas para el título principal (al lado derecho del logo)
+    worksheet.mergeCells('F1:M3');
+    const titleCell = worksheet.getCell('F1');
     titleCell.value = 'MATRIZ DE IDENTIFICACIÓN DE PELIGROS, EVALUACIÓN Y VALORACIÓN DE RIESGOS';
     titleCell.font = {
         name: 'Raleway',
@@ -103,115 +130,143 @@ async function generarMatrizExcel(
     // FIN SECCIÓN DE ENCABEZADO
     // ============================================
 
-    // Columnas siempre serán las completas
+    // Definir columnas SIN encabezados automáticos (solo keys y anchos)
     const columnasCompletas = [
-        { header: "Proceso", key: "proceso", width: 25 },
-        { header: "Zona/Lugar", key: "zona_lugar", width: 25 },
-        { header: "Actividades", key: "actividades", width: 30 },
-        { header: "Tareas", key: "tareas", width: 35 },
-        { header: "Rutinario (Si o No)", key: "rutinario", width: 12, style: { alignment: { horizontal: "center" } } },
-        { header: "Descripción", key: "peligro_descripcion", width: 35 },
-        { header: "Clasificación", key: "peligro_clasificacion", width: 20 },
-        { header: "Efectos posibles", key: "efectos_posibles", width: 35 },
-        { header: "Fuente", key: "control_fuente", width: 25 },
-        { header: "Medio", key: "control_medio", width: 25 },
-        { header: "Individuo", key: "control_individuo", width: 25 },
-        { header: "Nivel de deficiencia", key: "nd", width: 10, style: { alignment: { horizontal: "center" } } },
-        { header: "Nivel de exposición", key: "ne", width: 10, style: { alignment: { horizontal: "center" } } },
-        { header: "Nivel de probabilidad (NP)", key: "np_valor", width: 12, style: { alignment: { horizontal: "center" } } },
-        { header: "Nivel de Probabilidad (Categoría)", key: "np_nivel_categoria", width: 18, style: { alignment: { horizontal: "center" } } },
-        { header: "Interpretación del nivel de probabilidad", key: "np_interpretacion", width: 30 },
-        { header: "Nivel de consecuencia", key: "nc_valor", width: 10, style: { alignment: { horizontal: "center" } } },
-        { header: "Nivel de riesgo (NR) e intervención", key: "nr_valor_intervencion", width: 12, style: { alignment: { horizontal: "center" } } },
-        { header: "Nivel de Riesgo (Categoría)", key: "nr_interpretacion_nivel", width: 15, style: { alignment: { horizontal: "center" } } },
-        { header: "Interpretación del NR", key: "nr_interpretacion_texto", width: 35 },
-        { header: "Aceptabilidad del riesgo", key: "aceptabilidad_riesgo", width: 30 },
-        { header: "Nro. Expuestos", key: "nro_expuestos", width: 10, style: { alignment: { horizontal: "center" } } },
-        { header: "Peor consecuencia", key: "peor_consecuencia", width: 30 },
-        { header: "Existencia requisito legal específico asociado (Si o No)", key: "requisito_legal", width: 18, style: { alignment: { horizontal: "center" } } },
-        { header: "Eliminación", key: "medida_eliminacion", width: 30 },
-        { header: "Sustitución", key: "medida_sustitucion", width: 30 },
-        { header: "Controles de ingeniería", key: "medida_ctrl_ingenieria", width: 35 },
-        { header: "Controles administrativos, Señalización, Advertencia", key: "medida_ctrl_admin", width: 40 },
-        { header: "Equipos/ Elementos de protección personal", key: "epp", width: 40 },
+        { key: "proceso", width: 25 },
+        { key: "zona_lugar", width: 25 },
+        { key: "actividades", width: 30 },
+        { key: "tareas", width: 35 },
+        { key: "rutinario", width: 12 },
+        { key: "peligro_descripcion", width: 35 },
+        { key: "peligro_clasificacion", width: 20 },
+        { key: "efectos_posibles", width: 35 },
+        { key: "control_fuente", width: 25 },
+        { key: "control_medio", width: 25 },
+        { key: "control_individuo", width: 25 },
+        { key: "nd", width: 10 },
+        { key: "ne", width: 10 },
+        { key: "np_valor", width: 12 },
+        { key: "np_nivel_categoria", width: 18 },
+        { key: "np_interpretacion", width: 30 },
+        { key: "nc_valor", width: 10 },
+        { key: "nr_valor_intervencion", width: 12 },
+        { key: "nr_interpretacion_nivel", width: 15 },
+        { key: "nr_interpretacion_texto", width: 35 },
+        { key: "aceptabilidad_riesgo", width: 30 },
+        { key: "nro_expuestos", width: 10 },
+        { key: "peor_consecuencia", width: 30 },
+        { key: "requisito_legal", width: 18 },
+        { key: "medida_eliminacion", width: 30 },
+        { key: "medida_sustitucion", width: 30 },
+        { key: "medida_ctrl_ingenieria", width: 35 },
+        { key: "medida_ctrl_admin", width: 40 },
+        { key: "epp", width: 40 },
     ];
 
+    // Configurar columnas sin crear encabezados automáticos
     worksheet.columns = columnasCompletas;
+
+    // Nombres de los encabezados (los vamos a poner manualmente en filas 7-8)
+    const headersNombres = [
+        "Proceso",
+        "Zona/Lugar",
+        "Actividades",
+        "Tareas",
+        "Rutinario (Si o No)",
+        "Descripción",
+        "Clasificación",
+        "Efectos posibles",
+        "Fuente",
+        "Medio",
+        "Individuo",
+        "Nivel de deficiencia",
+        "Nivel de exposición",
+        "Nivel de probabilidad (NP)",
+        "Nivel de Probabilidad (Categoría)",
+        "Interpretación del nivel de probabilidad",
+        "Nivel de consecuencia",
+        "Nivel de riesgo (NR) e intervención",
+        "Nivel de Riesgo (Categoría)",
+        "Interpretación del NR",
+        "Aceptabilidad del riesgo",
+        "Nro. Expuestos",
+        "Peor consecuencia",
+        "Existencia requisito legal específico asociado (Si o No)",
+        "Eliminación",
+        "Sustitución",
+        "Controles de ingeniería",
+        "Controles administrativos, Señalización, Advertencia",
+        "Equipos/ Elementos de protección personal",
+    ];
 
     // --- ESTILOS DE CABECERA ---
     const headerFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF87e2d0" } }; // Color verde agua claro
     const headerFont = { bold: true, color: { argb: "FF2d3238" }, name: "Raleway", size: 10 }; // Color de texto del proyecto
     const headerAlignment = { vertical: "middle", horizontal: "center", wrapText: true };
 
+    // Definir grupos de encabezados (columnas que se agrupan bajo un título común)
+    // Los números son índices de columnas (1-based)
     const groupHeaders = {
         Peligro: { start: 6, end: 8 },
         "Controles existentes": { start: 9, end: 11 },
         "Evaluación del riesgo": { start: 12, end: 20 },
-        "Valoración del riesgo": { start: 21, end: 21 }, // Revisar si esto es correcto, parece un grupo de 1
+        "Valoración del riesgo": { start: 21, end: 21 },
         "Criterios para establecer controles": { start: 22, end: 24 },
         "Medidas intervención": { start: 25, end: 29 },
     };
 
-    // --- LÓGICA DE ENCABEZADOS CORREGIDA ---
-    const headersRow1 = worksheet.getRow(7); // Cambio: ahora los encabezados empiezan en fila 7
-    const headersRow2 = worksheet.getRow(8); // Cambio: segunda fila de encabezados en fila 8
-    headersRow1.height = 30; // Altura fila 7 (grupos)
-    headersRow2.height = 40; // Altura fila 8 (específicos)
+    // --- LÓGICA DE ENCABEZADOS SIMPLIFICADA ---
+    const headersRow1 = worksheet.getRow(7);
+    const headersRow2 = worksheet.getRow(8);
+    headersRow1.height = 30;
+    headersRow2.height = 40;
 
-    // Aplicar estilos base a ambas filas de encabezado
-    [headersRow1, headersRow2].forEach(row => {
-        row.font = headerFont;
-        row.fill = headerFill;
-        row.alignment = headerAlignment;
-    });
+    // Procesar TODAS las columnas (incluyendo las primeras 5)
+    for (let colIndex = 1; colIndex <= headersNombres.length; colIndex++) {
+        const headerName = headersNombres[colIndex - 1];
 
-    // Colocar encabezados específicos en la Fila 2
-    worksheet.columns.forEach((column, index) => {
-        headersRow2.getCell(index + 1).value = column.header;
-    });
+        // Verificar si esta columna pertenece a un grupo
+        let isGrouped = false;
+        let groupName = null;
 
-    // Colocar encabezados agrupados en la Fila 1 y fusionar
-    let currentHeaderCol = 1;
-    worksheet.columns.forEach((col, index) => {
-        const colNum = index + 1;
-        let grouped = false;
-        if (colNum >= currentHeaderCol) { // Solo procesar si no hemos saltado esta columna
-            for (const groupName in groupHeaders) {
-                const group = groupHeaders[groupName];
-                if (colNum === group.start) {
-                     // Asegurarse de que el rango de fusión sea válido (end >= start)
-                    if (group.end >= group.start) {
-                        worksheet.mergeCells(7, group.start, 7, group.end); // Cambio: fila 7 en lugar de 1
-                        headersRow1.getCell(group.start).value = groupName;
-                        // Establecer estilo explícito para la celda fusionada (a veces se pierde)
-                        headersRow1.getCell(group.start).fill = headerFill;
-                        headersRow1.getCell(group.start).font = headerFont;
-                        headersRow1.getCell(group.start).alignment = headerAlignment;
-                    } else {
-                         // Si end < start, solo poner el título en la celda start sin fusionar
-                        headersRow1.getCell(group.start).value = groupName;
+        for (const [gName, gRange] of Object.entries(groupHeaders)) {
+            if (colIndex >= gRange.start && colIndex <= gRange.end) {
+                isGrouped = true;
+                groupName = gName;
+
+                // Si es el inicio del grupo, fusionar y poner el título del grupo en fila 7
+                if (colIndex === gRange.start) {
+                    if (gRange.end > gRange.start) {
+                        worksheet.mergeCells(7, gRange.start, 7, gRange.end);
                     }
-                    currentHeaderCol = group.end + 1; // Saltar al final del grupo + 1
-                    grouped = true;
-                    break;
+                    const groupCell = headersRow1.getCell(gRange.start);
+                    groupCell.value = gName;
+                    groupCell.fill = headerFill;
+                    groupCell.font = headerFont;
+                    groupCell.alignment = headerAlignment;
                 }
-            }
-            // Si no pertenece a ningún grupo (y no hemos saltado ya)
-            if (!grouped) {
-                // Fusionar verticalmente la celda de la columna no agrupada
-                worksheet.mergeCells(7, colNum, 8, colNum); // Cambio: filas 7-8 en lugar de 1-2
-                headersRow1.getCell(colNum).value = col.header; // Poner header original en Fila 7
-                 // Establecer estilo explícito para la celda fusionada
-                headersRow1.getCell(colNum).fill = headerFill;
-                headersRow1.getCell(colNum).font = headerFont;
-                headersRow1.getCell(colNum).alignment = headerAlignment;
 
-                headersRow2.getCell(colNum).value = ''; // Vaciar celda en Fila 2 ya que se fusionó
-                currentHeaderCol = colNum + 1; // Mover a la siguiente columna
+                // Poner el encabezado específico en fila 8
+                const specificCell = headersRow2.getCell(colIndex);
+                specificCell.value = headerName;
+                specificCell.fill = headerFill;
+                specificCell.font = headerFont;
+                specificCell.alignment = headerAlignment;
+
+                break;
             }
         }
-        // Si la columna está dentro de un grupo ya procesado (colNum < currentHeaderCol), no hacer nada para la fila 1.
-    });
+
+        // Si NO pertenece a ningún grupo (columnas 1-5), fusionar verticalmente filas 7-8
+        if (!isGrouped) {
+            worksheet.mergeCells(7, colIndex, 8, colIndex);
+            const cell = headersRow1.getCell(colIndex);
+            cell.value = headerName;
+            cell.fill = headerFill;
+            cell.font = headerFont;
+            cell.alignment = headerAlignment;
+        }
+    }
     // --- FIN LÓGICA ENCABEZADOS ---
 
 
