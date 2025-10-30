@@ -1,18 +1,107 @@
 // server/src/controllers/matriz-riesgos.controller.js
 import ExcelJS from "exceljs";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import {
     calcularNivelProbabilidad,
     calcularNivelRiesgo,
 } from "../utils/risk-calculations.js";
 import { GES_DATOS_PREDEFINIDOS } from "../config/ges-config.js";
 
+// Para obtener __dirname en ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Genera SIEMPRE la matriz completa (versión Pro)
 async function generarMatrizExcel(
     datosFormulario,
-    { companyName = "Genesys Laboral Medicine" } = {} // Solo necesita companyName
+    {
+        companyName = "Genesys Laboral Medicine",
+        nit = "N/A",
+        diligenciadoPor = "N/A"
+    } = {}
 ) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Matriz de Riesgos GTC45");
+
+    // ============================================
+    // SECCIÓN DE ENCABEZADO INFORMATIVO
+    // ============================================
+
+    // Colores del proyecto
+    const colorPrimary = "87e2d0"; // Color verde agua claro para encabezados
+    const colorText = "2d3238";    // Color de texto del proyecto
+
+    // Insertar logo en A1
+    const logoPath = path.join(__dirname, "../../client/src/assets/images/Logo_compuesto_fullcolor_horizontal_negro@2x.png");
+
+    if (fs.existsSync(logoPath)) {
+        const logoImage = workbook.addImage({
+            filename: logoPath,
+            extension: 'png',
+        });
+
+        // Insertar imagen en A1:C3 (fusionada)
+        worksheet.addImage(logoImage, {
+            tl: { col: 0, row: 0 },    // Top-left: A1
+            br: { col: 2.5, row: 3 },  // Bottom-right: cerca de C3
+            editAs: 'oneCell'
+        });
+    }
+
+    // Fusionar celdas para el título principal
+    worksheet.mergeCells('D1:H2');
+    const titleCell = worksheet.getCell('D1');
+    titleCell.value = 'MATRIZ DE IDENTIFICACIÓN DE PELIGROS, EVALUACIÓN Y VALORACIÓN DE RIESGOS';
+    titleCell.font = {
+        name: 'Raleway',
+        size: 14,
+        bold: true,
+        color: { argb: colorText }
+    };
+    titleCell.alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+        wrapText: true
+    };
+    titleCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: colorPrimary }
+    };
+
+    // Fila 4: Información de la matriz
+    worksheet.getCell('A4').value = 'Basado en: GTC-45';
+    worksheet.getCell('A4').font = { name: 'Raleway', size: 10, bold: true, color: { argb: colorText } };
+
+    worksheet.mergeCells('C4:D4');
+    worksheet.getCell('C4').value = `Empresa: ${companyName}`;
+    worksheet.getCell('C4').font = { name: 'Raleway', size: 10, bold: false, color: { argb: colorText } };
+
+    worksheet.mergeCells('E4:F4');
+    worksheet.getCell('E4').value = `NIT: ${nit}`;
+    worksheet.getCell('E4').font = { name: 'Raleway', size: 10, bold: false, color: { argb: colorText } };
+
+    // Fila 5: Información del diligenciamiento
+    worksheet.mergeCells('A5:B5');
+    worksheet.getCell('A5').value = `Diligenciado por: ${diligenciadoPor}`;
+    worksheet.getCell('A5').font = { name: 'Raleway', size: 10, bold: false, color: { argb: colorText } };
+
+    worksheet.mergeCells('C5:D5');
+    worksheet.getCell('C5').value = 'Genesys Laboral Medicine';
+    worksheet.getCell('C5').font = { name: 'Raleway', size: 10, bold: true, color: { argb: colorText } };
+
+    worksheet.mergeCells('E5:F5');
+    worksheet.getCell('E5').value = 'Powered by Genesys BI';
+    worksheet.getCell('E5').font = { name: 'Raleway', size: 10, bold: false, color: { argb: "5dc4af" } }; // Color primary del proyecto
+
+    // Agregar espacio visual (fila 6 vacía)
+    worksheet.getRow(6).height = 10;
+
+    // ============================================
+    // FIN SECCIÓN DE ENCABEZADO
+    // ============================================
 
     // Columnas siempre serán las completas
     const columnasCompletas = [
@@ -50,8 +139,8 @@ async function generarMatrizExcel(
     worksheet.columns = columnasCompletas;
 
     // --- ESTILOS DE CABECERA ---
-    const headerFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFD9D9D9" } };
-    const headerFont = { bold: true, color: { argb: "FF000000" }, name: "Calibri", size: 10 };
+    const headerFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF87e2d0" } }; // Color verde agua claro
+    const headerFont = { bold: true, color: { argb: "FF2d3238" }, name: "Raleway", size: 10 }; // Color de texto del proyecto
     const headerAlignment = { vertical: "middle", horizontal: "center", wrapText: true };
 
     const groupHeaders = {
@@ -64,10 +153,10 @@ async function generarMatrizExcel(
     };
 
     // --- LÓGICA DE ENCABEZADOS CORREGIDA ---
-    const headersRow1 = worksheet.getRow(1);
-    const headersRow2 = worksheet.getRow(2);
-    headersRow1.height = 30; // Altura fila 1 (grupos)
-    headersRow2.height = 40; // Altura fila 2 (específicos)
+    const headersRow1 = worksheet.getRow(7); // Cambio: ahora los encabezados empiezan en fila 7
+    const headersRow2 = worksheet.getRow(8); // Cambio: segunda fila de encabezados en fila 8
+    headersRow1.height = 30; // Altura fila 7 (grupos)
+    headersRow2.height = 40; // Altura fila 8 (específicos)
 
     // Aplicar estilos base a ambas filas de encabezado
     [headersRow1, headersRow2].forEach(row => {
@@ -92,7 +181,7 @@ async function generarMatrizExcel(
                 if (colNum === group.start) {
                      // Asegurarse de que el rango de fusión sea válido (end >= start)
                     if (group.end >= group.start) {
-                        worksheet.mergeCells(1, group.start, 1, group.end);
+                        worksheet.mergeCells(7, group.start, 7, group.end); // Cambio: fila 7 en lugar de 1
                         headersRow1.getCell(group.start).value = groupName;
                         // Establecer estilo explícito para la celda fusionada (a veces se pierde)
                         headersRow1.getCell(group.start).fill = headerFill;
@@ -110,8 +199,8 @@ async function generarMatrizExcel(
             // Si no pertenece a ningún grupo (y no hemos saltado ya)
             if (!grouped) {
                 // Fusionar verticalmente la celda de la columna no agrupada
-                worksheet.mergeCells(1, colNum, 2, colNum);
-                headersRow1.getCell(colNum).value = col.header; // Poner header original en Fila 1
+                worksheet.mergeCells(7, colNum, 8, colNum); // Cambio: filas 7-8 en lugar de 1-2
+                headersRow1.getCell(colNum).value = col.header; // Poner header original en Fila 7
                  // Establecer estilo explícito para la celda fusionada
                 headersRow1.getCell(colNum).fill = headerFill;
                 headersRow1.getCell(colNum).font = headerFont;
@@ -127,7 +216,7 @@ async function generarMatrizExcel(
 
 
     // --- PROCESAR Y AÑADIR DATOS ---
-    let currentRowIndex = 3; // Los datos siempre empiezan en la fila 3
+    let currentRowIndex = 9; // Los datos ahora empiezan en la fila 9 (después del encabezado informativo + encabezados de matriz)
     const cargosPorProceso = datosFormulario.cargos.reduce((acc, cargo) => {
         const proceso = cargo.area || "Sin Área"; // Default si no hay área
         if (!acc[proceso]) acc[proceso] = [];
@@ -306,27 +395,30 @@ async function generarMatrizExcel(
     // --- ESTILOS FINALES Y BORDES ---
     for (let r = 1; r <= worksheet.rowCount; r++) {
         worksheet.getRow(r).eachCell({ includeEmpty: true }, (cell) => {
-            cell.border = {
-                top: { style: "thin", color: { argb: "FF000000" } },
-                left: { style: "thin", color: { argb: "FF000000" } },
-                bottom: { style: "thin", color: { argb: "FF000000" } },
-                right: { style: "thin", color: { argb: "FF000000" } },
-            };
-            // Aplica fuente base a celdas de datos (a partir de fila 3) si no tienen ya una fuente específica
-            if (r >= 3 && !cell.font) {
+            // Aplicar bordes solo a la matriz (desde fila 7 en adelante)
+            if (r >= 7) {
+                cell.border = {
+                    top: { style: "thin", color: { argb: "FF2d3238" } },
+                    left: { style: "thin", color: { argb: "FF2d3238" } },
+                    bottom: { style: "thin", color: { argb: "FF2d3238" } },
+                    right: { style: "thin", color: { argb: "FF2d3238" } },
+                };
+            }
+            // Aplica fuente base a celdas de datos (a partir de fila 9) si no tienen ya una fuente específica
+            if (r >= 9 && !cell.font) {
                  // Asegúrate de no sobrescribir fuentes aplicadas por semaforización
                 const existingFontColor = cell.font?.color?.argb;
                 cell.font = {
-                     name: "Calibri",
+                     name: "Raleway",
                      size: 10,
-                     // Mantiene el color si ya existía (ej. texto blanco en celda oscura) o usa negro
-                    color: { argb: existingFontColor || "FF000000" }
+                     // Mantiene el color si ya existía (ej. texto blanco en celda oscura) o usa color del proyecto
+                    color: { argb: existingFontColor || "FF2d3238" }
                  };
             }
              // Asegurar wrapText en todas las celdas de datos por si acaso
-            if (r >= 3 && cell.alignment) {
+            if (r >= 9 && cell.alignment) {
                 cell.alignment.wrapText = true;
-            } else if (r >= 3) {
+            } else if (r >= 9) {
                  cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
             }
 

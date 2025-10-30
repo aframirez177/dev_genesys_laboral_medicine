@@ -151,11 +151,16 @@ export const registrarYGenerar = async (req, res) => {
         // 6. Generar Documentos FINALES (Sin isPreview)
         console.log("Generando documentos finales para:", empresa.nombre_legal);
         const companyName = empresa.nombre_legal;
+        const companyNit = userData.nit; // NIT de la empresa
 
         // Genera los archivos en memoria (como buffers)
         // Asegúrate que tus funciones acepten solo (formData, { companyName })
         const generationPromises = [
-            generarMatrizExcel(formData, { companyName: companyName }),
+            generarMatrizExcel(formData, {
+                companyName: companyName,
+                nit: companyNit,
+                diligenciadoPor: nombreResponsable
+            }),
             generarProfesiogramaPDF(formData, { companyName: companyName }),
             generarPerfilCargoPDF(formData, { companyName: companyName }),
             generarCotizacionPDF(formData) // 🆕 Generar cotización
