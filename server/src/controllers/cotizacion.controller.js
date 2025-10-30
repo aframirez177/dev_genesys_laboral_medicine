@@ -3,6 +3,7 @@ import 'jspdf-autotable';
 import { EXAM_CONFIG, DISCOUNT_RANGES } from '../config/exam-prices-config.js';
 import { GES_DATOS_PREDEFINIDOS } from '../config/ges-config.js';
 import { EXAM_DETAILS } from '../config/exam-details-config.js';
+import { addPoppinsFont } from "../utils/poppins-font-definitions.js";
 
 // --- Funciones de Utilidad ---
 const formatCurrency = (amount) => {
@@ -26,7 +27,16 @@ const calculateVolumeDiscount = (totalWorkers) => {
 // --- Función Principal de Generación de PDF ---
 export async function generarCotizacionPDF(datosFormulario) {
     const doc = new jsPDF('p', 'mm', 'a4');
-    doc.setFont('helvetica');
+
+    // Añadir fuentes Poppins
+    try {
+        addPoppinsFont(doc);
+        doc.setFont('Poppins', 'normal');
+        console.log("Fuentes Poppins añadidas a Cotización.");
+    } catch (e) {
+        console.error("Error al añadir fuentes Poppins:", e);
+        doc.setFont('helvetica');
+    }
 
     // --- Lógica de Cálculo (Replicando calculator.js) ---
     const cargosDetails = [];
@@ -83,11 +93,11 @@ export async function generarCotizacionPDF(datosFormulario) {
     // Por simplicidad, se genera una tabla con los datos calculados.
     
     y += margin;
-    doc.setFontSize(20).setFont('helvetica', 'bold');
+    doc.setFontSize(20).setFont('Poppins', 'bold');
     doc.text('Cotización de Exámenes Médicos Ocupacionales', pageWidth / 2, y, { align: 'center' });
     y += 15;
 
-    doc.setFontSize(10).setFont('helvetica', 'normal');
+    doc.setFontSize(10).setFont('Poppins', 'normal');
     doc.text(`Empresa: ${companyName}`, margin, y);
     doc.text(`Fecha: ${date}`, pageWidth - margin, y, { align: 'right' });
     y += 6;
@@ -121,7 +131,7 @@ export async function generarCotizacionPDF(datosFormulario) {
     doc.text(`-${formatCurrency(overallSubtotal * volumeDiscount)}`, pageWidth - margin, y, { align: 'right' });
     y += 10;
 
-    doc.setFont('helvetica', 'bold');
+    doc.setFont('Poppins', 'bold');
     doc.setFontSize(14);
     doc.text('Valor Total Estimado:', pageWidth - margin - 50, y, { align: 'right' });
     doc.text(formatCurrency(finalPrice), pageWidth - margin, y, { align: 'right' });

@@ -1,8 +1,8 @@
 // server/src/controllers/perfil-cargo.controller.js
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-// Asumiendo que tienes una función similar para fuentes aquí o usas las estándar
-// import { addPoppinsFont } from "../utils/poppins-font-definitions.js";
+// Importar fuentes Poppins para mejor renderizado en thumbnails
+import { addPoppinsFont } from "../utils/poppins-font-definitions.js";
 
 // --- Constantes y Colores (Ajusta según tu diseño) ---
 const primaryColor = "#5dc4af"; // Verde azulado
@@ -12,17 +12,15 @@ const highlightColor = "#566E8F"; // Azul grisáceo
 
 // --- Funciones Auxiliares de PDF ---
 
-// Añade fuentes (si usas personalizadas)
+// Añade fuentes Poppins
 function addCustomFonts(doc) {
-    // Intenta usar Poppins si existe, si no, usa helvetica
     try {
-        // Suponiendo que tienes una función `addPoppinsFont` similar a la de profesiograma
-        // addPoppinsFont(doc);
-        // Si no, simplemente usa la fuente estándar:
-        doc.setFont('helvetica'); // O 'times', 'courier'
-        console.log("Usando fuente helvetica para Perfil de Cargo.");
+        addPoppinsFont(doc);
+        doc.setFont('Poppins', 'normal');
+        console.log("Fuentes Poppins añadidas a Perfil de Cargo.");
     } catch (e) {
-        console.warn("No se pudo cargar fuente personalizada, usando helvetica.", e);
+        console.error("Error al añadir fuentes Poppins:", e);
+        // Fallback a helvetica si falla
         doc.setFont('helvetica');
     }
 }
@@ -37,7 +35,7 @@ function addHeaderAndFooter(doc, companyName) {
     const margin = 15;
 
     // Encabezado
-    doc.setFont('helvetica', 'bold');
+    doc.setFont('Poppins', 'bold');
     doc.setFontSize(16);
     doc.setTextColor(secondaryColor); // Usa color definido
     doc.text('PERFIL DE CARGO', pageWidth / 2, 20, { align: 'center' });
@@ -47,7 +45,7 @@ function addHeaderAndFooter(doc, companyName) {
 
     // Pie de página
     const footerY = pageHeight - 10;
-    doc.setFont('helvetica', 'normal');
+    doc.setFont('Poppins', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(secondaryColor);
     doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, footerY, { align: 'center' });
@@ -69,14 +67,14 @@ function drawSection(doc, y, title, content) {
     }
 
     // Dibujar Título de Sección
-    doc.setFont('helvetica', 'bold');
+    doc.setFont('Poppins', 'bold');
     doc.setFontSize(11);
     doc.setTextColor(primaryColor); // Color primario para títulos
     doc.text(title, margin, currentY);
     currentY += 6;
 
     // Dibujar Contenido
-    doc.setFont('helvetica', 'normal');
+    doc.setFont('Poppins', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(textColor); // Color de texto normal
     const splitContent = doc.splitTextToSize(content || 'No especificado', pageWidth - margin * 2);
