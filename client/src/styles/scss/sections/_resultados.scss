@@ -84,7 +84,7 @@
 
   .results-header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: 0rem;
 
     .success-icon {
       display: inline-block;
@@ -96,8 +96,7 @@
       color: white;
       border-radius: 50%;
       margin-bottom: 2rem;
-      box-shadow:  20px 20px 60px #4fa795,
-             -20px -20px 60px #6be1c9;
+      box-shadow:  5px 5px 30px #4fa795,-5px -5px 30px #6be1c9;
     }
 
     h1 {
@@ -144,9 +143,9 @@
 .metadata-info {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 0.6rem;
   margin-top: 3rem;
-  padding: 2.5rem;
+  padding: 2.2rem;
   background: map-get($colors, 'accordion-header-bg');
   border-radius: 40px;
   box-shadow:  20px 20px 60px #c4c4c4,
@@ -165,7 +164,7 @@
       font-weight: 800;
       font-family: map-get($fonts, "title");
       color: map-get($colors, 'primary');
-      font-size: 2.7rem; // 14px
+      font-size: 2rem; // 14px
       white-space: nowrap;
     }
 
@@ -190,7 +189,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 5rem;
-  margin-top: 4rem;
+  margin-top: 3rem;
 
   @media (max-width: 955px) {
     grid-template-columns: 1fr;
@@ -322,13 +321,13 @@
   font-size: 2rem; // 20px
   font-weight: 700;
   color: map-get($colors, 'secondary');
-  margin: 0 0 1.5rem 0;
+  
   line-height: 1.3;
 }
 
 // Información esencial (solo empresa y número de cargos)
 .card-info-simple {
-  margin-bottom: 2rem;
+  
   flex: 1;
 
   p {
@@ -638,7 +637,7 @@
     }
 
     .card-body {
-      padding: 1.5rem;
+      padding: 2rem 2rem 2rem 3rem;
     }
 
     .card-info-simple p {
