@@ -116,7 +116,15 @@ export async function generarCotizacionPDF(datosFormulario) {
         head: [['Cargo', 'Nº Trabajadores', 'Valor Unitario por Trabajador', 'Valor Total por Cargo']],
         body: tableData,
         theme: 'grid',
-        headStyles: { fillColor: [93, 196, 175] },
+        headStyles: {
+            fillColor: [93, 196, 175],
+            font: 'Poppins',
+            fontStyle: 'bold'
+        },
+        bodyStyles: {
+            font: 'Poppins',
+            fontStyle: 'normal'
+        },
     });
 
     y = doc.autoTable.previous.finalY + 10;
