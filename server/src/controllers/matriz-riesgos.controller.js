@@ -62,10 +62,10 @@ async function generarMatrizExcel(
             worksheet.getRow(2).height = 30;
             worksheet.getRow(3).height = 30;
 
-            // Insertar imagen en A1:D3
+            // Insertar imagen en A1:B3 (proporción 1:2.4 = ~2.4 columnas)
             worksheet.addImage(logoImage, {
                 tl: { col: 0, row: 0 },      // Top-left: A1 (col 0, row 0)
-                br: { col: 4, row: 3 },      // Bottom-right: E3 (col 4, row 3)
+                br: { col: 2.4, row: 3 },    // Bottom-right: ~C3 (col 2.4, row 3)
                 editAs: 'oneCell'
             });
 
@@ -78,8 +78,8 @@ async function generarMatrizExcel(
     }
 
     // Fusionar celdas para el título principal (al lado derecho del logo)
-    worksheet.mergeCells('F1:M3');
-    const titleCell = worksheet.getCell('F1');
+    worksheet.mergeCells('C1:M3');
+    const titleCell = worksheet.getCell('C1');
     titleCell.value = 'MATRIZ DE IDENTIFICACIÓN DE PELIGROS, EVALUACIÓN Y VALORACIÓN DE RIESGOS';
     titleCell.font = {
         name: 'Raleway',

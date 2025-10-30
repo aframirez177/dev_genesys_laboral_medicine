@@ -186,30 +186,39 @@ export const registrarYGenerar = async (req, res) => {
         const finalUrls = {}; // Objeto para guardar las URLs
         const thumbnailUrls = {}; // Objeto para guardar las URLs de thumbnails
 
-        // Usamos nombres de archivo únicos con el token
+        // Generar nombres de archivo descriptivos con empresa y fecha
+        const fechaActual = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const empresaNormalizada = companyName
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") // Quitar acentos
+            .replace(/[^a-zA-Z0-9]/g, "-")   // Reemplazar caracteres especiales con guión
+            .replace(/-+/g, "-")             // Evitar múltiples guiones consecutivos
+            .toLowerCase();
+
+        // Usamos nombres de archivo únicos con empresa, fecha y token
         const uploadPromises = [
              // Documentos originales
              uploadToSpaces(
                 matrizBuffer,
-                `matriz-riesgos-${documentToken}.xlsx`,
+                `matriz-riesgos-profesional-${empresaNormalizada}-${fechaActual}-${documentToken}.xlsx`,
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
              ),
              uploadToSpaces(
                 profesiogramaBuffer,
-                `profesiograma-${documentToken}.pdf`,
+                `profesiograma-${empresaNormalizada}-${fechaActual}-${documentToken}.pdf`,
                 'application/pdf'
             ),
              uploadToSpaces(
                 perfilBuffer,
-                `perfil-cargo-${documentToken}.pdf`,
+                `perfil-cargo-${empresaNormalizada}-${fechaActual}-${documentToken}.pdf`,
                 'application/pdf'
             ),
-            uploadToSpaces(cotizacionBuffer, `cotizacion-${documentToken}.pdf`, 'application/pdf'),
+            uploadToSpaces(cotizacionBuffer, `cotizacion-${empresaNormalizada}-${fechaActual}-${documentToken}.pdf`, 'application/pdf'),
             // Thumbnails (TODOS los documentos ahora tienen thumbnail)
-            uploadToSpaces(matrizThumbnail, `matriz-riesgos-${documentToken}-thumb.jpg`, 'image/jpeg'),
-            uploadToSpaces(profesiogramaThumbnail, `profesiograma-${documentToken}-thumb.jpg`, 'image/jpeg'),
-            uploadToSpaces(perfilThumbnail, `perfil-cargo-${documentToken}-thumb.jpg`, 'image/jpeg'),
-            uploadToSpaces(cotizacionThumbnail, `cotizacion-${documentToken}-thumb.jpg`, 'image/jpeg')
+            uploadToSpaces(matrizThumbnail, `matriz-riesgos-profesional-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg'),
+            uploadToSpaces(profesiogramaThumbnail, `profesiograma-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg'),
+            uploadToSpaces(perfilThumbnail, `perfil-cargo-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg'),
+            uploadToSpaces(cotizacionThumbnail, `cotizacion-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg')
         ];
 
         const [matrizUrl, profesiogramaUrl, perfilUrl, cotizacionUrl, matrizThumbnailUrl, profesiogramaThumbnailUrl, perfilThumbnailUrl, cotizacionThumbnailUrl] = await Promise.all(uploadPromises);
