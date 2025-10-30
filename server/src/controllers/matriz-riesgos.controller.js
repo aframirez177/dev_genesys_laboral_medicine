@@ -62,10 +62,10 @@ async function generarMatrizExcel(
             worksheet.getRow(2).height = 30;
             worksheet.getRow(3).height = 30;
 
-            // Insertar imagen en A1:B3 (proporción 1:2.4 = ~2.4 columnas)
+            // Insertar imagen en A1 (3 filas x 1.5 columnas)
             worksheet.addImage(logoImage, {
                 tl: { col: 0, row: 0 },      // Top-left: A1 (col 0, row 0)
-                br: { col: 2.4, row: 3 },    // Bottom-right: ~C3 (col 2.4, row 3)
+                br: { col: 1.5, row: 3 },    // Bottom-right: mitad de B, fila 3
                 editAs: 'oneCell'
             });
 
@@ -227,12 +227,10 @@ async function generarMatrizExcel(
 
         // Verificar si esta columna pertenece a un grupo
         let isGrouped = false;
-        let groupName = null;
 
         for (const [gName, gRange] of Object.entries(groupHeaders)) {
             if (colIndex >= gRange.start && colIndex <= gRange.end) {
                 isGrouped = true;
-                groupName = gName;
 
                 // Si es el inicio del grupo, fusionar y poner el título del grupo en fila 7
                 if (colIndex === gRange.start) {
