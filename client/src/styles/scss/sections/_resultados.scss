@@ -14,7 +14,7 @@
 
   .container {
     max-width: 1400px;
-    margin: 0 auto;
+    margin: 10rem auto;
     position: relative;
   }
 }
@@ -142,7 +142,7 @@
 // ============================================
 .metadata-info {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-top: 3rem;
   padding: 2.5rem;
@@ -160,13 +160,15 @@
     }
 
     .metadata-label {
-      font-weight: 600;
+      font-weight: 800;
+      font-family: map-get($fonts, "title");
       color: map-get($colors, 'primary');
-      font-size: 1.4rem; // 14px
+      font-size: 2.7rem; // 14px
       white-space: nowrap;
     }
 
     .metadata-value {
+      font-family: map-get($fonts, "title");
       color: map-get($colors, 'secondary');
       font-weight: 500;
       font-size: 1.6rem; // 16px
@@ -232,6 +234,7 @@
   }
 
   .price-text {
+    font-family: map-get($fonts, "title");
     display: block;
     font-size: 2rem; // 20px
   }
