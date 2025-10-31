@@ -12,6 +12,8 @@ import { uploadToSpaces } from '../utils/spaces.js'; // Asegúrate que esta ruta
 // Estrategia optimizada: pdf-to-png para PDFs (rápido) + Puppeteer solo para Excel
 import { generatePDFThumbnail as generatePDFThumbnailFast } from '../utils/pdfThumbnail.js';
 import { generateExcelThumbnail } from '../utils/documentThumbnail.js';
+// 🆕 Importar service de riesgos (FASE 1)
+import riesgosService from '../services/riesgos.service.js';
 
 // Función principal que maneja el registro y guardado de datos
 export const registrarYGenerar = async (req, res) => {
@@ -109,9 +111,46 @@ export const registrarYGenerar = async (req, res) => {
         }).returning('*');
         console.log(`Documento ${documento.id} creado con estado pendiente_pago.`);
 
+        // 🆕 NUEVO (FASE 1): Enriquecer formData con cálculos de NR ANTES de guardar y generar
+        console.log("🔄 Calculando NP/NR y consolidando controles para cada cargo...");
+        const formDataEnriquecido = {
+            ...formData,
+            cargos: formData.cargos.map((cargo, index) => {
+                try {
+                    // Consolidar controles para el cargo
+                    const controlesConsolidados = riesgosService.consolidarControlesCargo(cargo);
 
-        // 5. Crear los Cargos y Riesgos (Iterando sobre formData)
-        for (const cargo of formData.cargos) {
+                    console.log(`  ✓ Cargo "${cargo.cargoName}": ${controlesConsolidados.metadata.numGESAnalizados} GES analizados, ${controlesConsolidados.metadata.numGESConControles} con controles`);
+
+                    return {
+                        ...cargo,
+
+                        // Enriquecer gesSeleccionados con NP/NR calculado
+                        gesSeleccionados: (cargo.gesSeleccionados || []).map(ges => {
+                            try {
+                                const niveles = riesgosService.calcularNivelesRiesgo(ges);
+                                return {
+                                    ...ges,
+                                    ...niveles // Agrega np, nr, npNivel, nrNivel, etc.
+                                };
+                            } catch (error) {
+                                console.error(`  ⚠️ Error calculando niveles para GES "${ges.ges}":`, error.message);
+                                return ges; // Devolver sin enriquecer
+                            }
+                        }),
+
+                        // Agregar controles consolidados
+                        controlesConsolidados
+                    };
+                } catch (error) {
+                    console.error(`❌ Error consolidando controles para cargo "${cargo.cargoName}":`, error.message);
+                    return cargo; // Devolver sin enriquecer
+                }
+            })
+        };
+
+        // 5. Crear los Cargos y Riesgos (AHORA CON NP/NR PERSISTIDO)
+        for (const cargo of formDataEnriquecido.cargos) {
             const [cargoDB] = await trx('cargos_documento').insert({
                 documento_id: documento.id,
                 nombre_cargo: cargo.cargoName,
@@ -126,17 +165,30 @@ export const registrarYGenerar = async (req, res) => {
             if (cargo.gesSeleccionados && Array.isArray(cargo.gesSeleccionados)) {
                 for (const ges of cargo.gesSeleccionados) {
                     // Validar que los niveles existan y tengan valor, o usar null/0
-                    const nivelDeficiencia = ges.niveles?.deficiencia?.value;
-                    const nivelExposicion = ges.niveles?.exposicion?.value;
-                    const nivelConsecuencia = ges.niveles?.consecuencia?.value;
+                    const nivelDeficiencia = ges.niveles?.deficiencia?.value || ges.nd;
+                    const nivelExposicion = ges.niveles?.exposicion?.value || ges.ne;
+                    const nivelConsecuencia = ges.niveles?.consecuencia?.value || ges.nc;
 
                     await trx('riesgos_cargo').insert({
                         cargo_id: cargoDB.id,
                         tipo_riesgo: ges.riesgo,
                         descripcion_riesgo: ges.ges,
+
+                        // Niveles de entrada
                         nivel_deficiencia: nivelDeficiencia !== undefined ? nivelDeficiencia : null,
                         nivel_exposicion: nivelExposicion !== undefined ? nivelExposicion : null,
                         nivel_consecuencia: nivelConsecuencia !== undefined ? nivelConsecuencia : null,
+
+                        // 🆕 Niveles calculados (FASE 1) - Las columnas se agregan en Fase 2
+                        // nivel_probabilidad: ges.np || null,
+                        // nivel_probabilidad_categoria: ges.npNivel || null,
+                        // nivel_riesgo: ges.nr || null,
+                        // nivel_riesgo_categoria: ges.nrNivel || null,
+                        // interpretacion_riesgo: ges.nrInterpretacion || null,
+                        // aceptabilidad: ges.nrAceptabilidad || null,
+                        // fecha_calculo: ges.fechaCalculo || null,
+
+                        // Controles
                         controles_fuente: ges.controles?.fuente || null,
                         controles_medio: ges.controles?.medio || null,
                         controles_individuo: ges.controles?.individuo || null
@@ -148,22 +200,22 @@ export const registrarYGenerar = async (req, res) => {
 
         // --- INICIO GENERACIÓN DOCUMENTOS FINALES ---
 
-        // 6. Generar Documentos FINALES (Sin isPreview)
-        console.log("Generando documentos finales para:", empresa.nombre_legal);
+        // 6. Generar Documentos FINALES (AHORA CON formDataEnriquecido)
+        console.log("📄 Generando documentos finales para:", empresa.nombre_legal);
         const companyName = empresa.nombre_legal;
         const companyNit = userData.nit; // NIT de la empresa
 
-        // Genera los archivos en memoria (como buffers)
-        // Asegúrate que tus funciones acepten solo (formData, { companyName })
+        // 🆕 Genera los archivos en memoria usando formDataEnriquecido
+        // Esto asegura que profesiograma y matriz usen los mismos cálculos de NR
         const generationPromises = [
-            generarMatrizExcel(formData, {
+            generarMatrizExcel(formDataEnriquecido, {
                 companyName: companyName,
                 nit: companyNit,
                 diligenciadoPor: nombreResponsable
             }),
-            generarProfesiogramaPDF(formData, { companyName: companyName }),
-            generarPerfilCargoPDF(formData, { companyName: companyName }),
-            generarCotizacionPDF(formData) // 🆕 Generar cotización
+            generarProfesiogramaPDF(formDataEnriquecido, { companyName: companyName }),
+            generarPerfilCargoPDF(formDataEnriquecido, { companyName: companyName }),
+            generarCotizacionPDF(formDataEnriquecido)
         ];
 
         const [matrizBuffer, profesiogramaBuffer, perfilBuffer, cotizacionBuffer] = await Promise.all(generationPromises);

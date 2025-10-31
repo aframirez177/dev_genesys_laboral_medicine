@@ -4,6 +4,8 @@ import "jspdf-autotable";
 import { GES_DATOS_PREDEFINIDOS } from "../config/ges-config.js";
 import { EXAM_DETAILS } from "../config/exam-details-config.js";
 import { addPoppinsFont } from "../utils/poppins-font-definitions.js"; // Asegúrate que la ruta sea correcta
+// 🆕 FASE 1: Import riesgosService para fallback
+import riesgosService from "../services/riesgos.service.js";
 
 // --- Constantes de Diseño y Branding ---
 const primaryColor = "#5dc4af";
@@ -157,84 +159,44 @@ export async function generarProfesiogramaPDF(
         doc.text(`Área/Proceso: ${cargo.area || 'N/A'}`, 15, y);
         y += 10;
 
-        // --- 1. Consolidación de Información ---
-        const examenesMap = new Map();
-        const aptitudesRequeridas = new Set();
-        const condicionesIncompatibles = new Set();
-        const eppSugeridos = new Set();
+        // 🆕 NUEVO (FASE 1): Usar controles consolidados calculados por riesgosService
+        let controles = cargo.controlesConsolidados;
+
+        if (!controles) {
+            console.warn(`⚠️ Cargo "${cargo.cargoName}" no tiene controlesConsolidados. Generando fallback...`);
+            // Fallback: generar en el momento (no ideal, pero evita errores)
+            controles = riesgosService.consolidarControlesCargo(cargo);
+        }
+
+        // Preparar listas para el PDF
         const gesSeleccionadosNombres = new Set();
         const caracteristicasEspeciales = [];
 
         // Validar que gesSeleccionados sea un array
         const gesList = Array.isArray(cargo.gesSeleccionados) ? cargo.gesSeleccionados : [];
 
+        // Construir lista de GES para mostrar
         gesList.forEach((ges) => {
-             if (!ges || !ges.ges || !ges.riesgo) {
-                 console.warn("GES inválido encontrado en cargo:", cargo.cargoName, ges);
-                 return; // Saltar GES inválido
+            if (!ges || !ges.ges || !ges.riesgo) {
+                console.warn("GES inválido encontrado en cargo:", cargo.cargoName, ges);
+                return;
             }
             const gesName = ges.ges;
             const riesgoName = ges.riesgo;
-            const displayName = `${riesgoName} - ${gesName}`;
+            const nr = ges.nr || 'N/A';
+            const displayName = `${riesgoName} - ${gesName} (NR=${nr})`;
             gesSeleccionadosNombres.add(displayName);
-
-            const gesConfig = GES_DATOS_PREDEFINIDOS[gesName];
-
-            if (!gesConfig) {
-                console.warn(`ADVERTENCIA: No se encontró configuración para el GES: "${gesName}" en cargo ${cargo.cargoName}`);
-                return;
-            }
-
-            // Procesar exámenes, aptitudes, etc. (sin cambios aquí)
-             if (gesConfig.examenesMedicos) {
-                Object.entries(gesConfig.examenesMedicos).forEach(([code, periodicidad]) => {
-                     // Asumiendo que periodicidad > 0 significa que se requiere.
-                     // Guardamos el código del examen. Podríamos guardar periodicidad si fuera relevante.
-                    if (periodicidad > 0) {
-                         // Si ya existe, nos quedamos con la periodicidad más frecuente (menor número > 0) o simplemente lo añadimos si no está.
-                         // Por simplicidad, solo añadimos si no está o si la nueva periodicidad es más restrictiva.
-                        if (!examenesMap.has(code) /* || periodicidad < examenesMap.get(code).periodicidad */ ) {
-                             examenesMap.set(code, { periodicidad }); // Guardamos periodicidad por si acaso
-                        }
-                    }
-                });
-            }
-             if (gesConfig.aptitudesRequeridas) gesConfig.aptitudesRequeridas.forEach(item => aptitudesRequeridas.add(item));
-             if (gesConfig.condicionesIncompatibles) gesConfig.condicionesIncompatibles.forEach(item => condicionesIncompatibles.add(item));
-             if (gesConfig.eppSugeridos) gesConfig.eppSugeridos.forEach(item => eppSugeridos.add(item));
-
         });
 
-        // --- 2. Aplicación de Reglas de Negocio Obligatorias ---
-        // Regla 1: Paquete Mínimo Universal
-        examenesMap.set("EMO", { periodicidad: 1 }); // Usamos periodicidad 1 como 'obligatorio'
-        examenesMap.set("AUD", { periodicidad: 1 });
-        examenesMap.set("OPTO", { periodicidad: 1 });
-
-        // Regla 2: Características Especiales (Toggles)
+        // Construir características especiales (toggles)
         if (cargo.trabajaAlturas) {
-            examenesMap.set("EMOA", { periodicidad: 1 });
-            examenesMap.set("GLI", { periodicidad: 1 });
-            examenesMap.set("PL", { periodicidad: 1 });
-            examenesMap.set("PE", { periodicidad: 1 });
-            examenesMap.set("ESP", { periodicidad: 1 });
-            examenesMap.set("ECG", { periodicidad: 1 });
-            examenesMap.delete("EMO"); // Reemplaza EMO básico
-            caracteristicasEspeciales.push("Realiza trabajo seguro en alturas.");
+            caracteristicasEspeciales.push("Realiza trabajo seguro en alturas (Res. 1409/2012 y 4272/2021).");
         }
         if (cargo.manipulaAlimentos) {
-            examenesMap.set("EMOMP", { periodicidad: 1 });
-            examenesMap.set("FRO", { periodicidad: 1 });
-            examenesMap.set("KOH", { periodicidad: 1 });
-            examenesMap.set("COP", { periodicidad: 1 });
-             if (!examenesMap.has("EMOA")) examenesMap.delete("EMO"); // Reemplaza EMO si no es de alturas
-            caracteristicasEspeciales.push("Realiza manipulación de alimentos.");
+            caracteristicasEspeciales.push("Realiza manipulación de alimentos (Res. 2674/2013).");
         }
         if (cargo.conduceVehiculo) {
-            examenesMap.set("PSM", { periodicidad: 1 });
-            examenesMap.set("GLI", { periodicidad: 1 }); // Ya puede estar por alturas
-            examenesMap.set("PL", { periodicidad: 1 }); // Ya puede estar por alturas
-            caracteristicasEspeciales.push("Conduce vehículos motorizados.");
+            caracteristicasEspeciales.push("Conduce vehículos motorizados (Res. 1565/2014 - PESV).");
         }
 
         // --- 3. Generación de Secciones del PDF ---
@@ -248,12 +210,13 @@ export async function generarProfesiogramaPDF(
             y = drawList(doc, y, "Características Específicas (Justificación Exámenes)", caracteristicasEspeciales);
         }
 
-        y = drawList(doc, y, "Aptitudes y Requerimientos para el Cargo", Array.from(aptitudesRequeridas));
-        y = drawList(doc, y, "Condiciones Médicas Incompatibles", Array.from(condicionesIncompatibles));
-        y = drawList(doc, y, "Elementos de Protección Personal (EPP) Sugeridos", Array.from(eppSugeridos));
+        // 🆕 NUEVO (FASE 1): Usar controles consolidados
+        y = drawList(doc, y, "Aptitudes y Requerimientos para el Cargo", controles.consolidado.aptitudes);
+        y = drawList(doc, y, "Condiciones Médicas Incompatibles", controles.consolidado.condicionesIncompatibles);
+        y = drawList(doc, y, "Elementos de Protección Personal (EPP) Requeridos", controles.consolidado.epp);
 
 
-        // --- 4. Maquetación de la Tabla de Exámenes ---
+        // --- 4. Maquetación de la Tabla de Exámenes (USANDO CONTROLES CONSOLIDADOS) ---
         const pageHeight = doc.internal.pageSize.getHeight();
         if (y > pageHeight - 95) { // Aumentar margen inferior para tabla y firma
             doc.addPage();
@@ -263,30 +226,29 @@ export async function generarProfesiogramaPDF(
 
         let tienePruebaEmbarazo = false;
         const examenesIngreso = [];
-        const examenesPeriodicos = []; // Usaremos periodicidad para esto si existe
+        const examenesPeriodicos = [];
 
-        examenesMap.forEach((data, code) => {
+        // 🆕 Usar controles consolidados para construir listas de exámenes
+        (controles.consolidado.examenes || []).forEach((code) => {
             let examName = EXAM_DETAILS[code]?.fullName || code;
             if (code === "PE") {
                 examName += " (*)";
                 tienePruebaEmbarazo = true;
             }
             examenesIngreso.push(examName);
-            // Asumiendo que data.periodicidad indica cada cuántos años o 0/1 si es periódico o no
-            // Ajustar esta lógica según el significado real de 'periodicidad' en ges-config
-            if (data.periodicidad && data.periodicidad > 0) { // Ejemplo: si periodicidad > 0 es periódico
-                 examenesPeriodicos.push(examName);
-            }
+
+            // Los periódicos son los mismos que ingreso, con la periodicidad consolidada
+            const periodicidadTexto = `(cada ${controles.consolidado.periodicidadMinima} meses)`;
+            examenesPeriodicos.push(`${examName} ${periodicidadTexto}`);
         });
 
         // Determinar Examen de Egreso (priorizando específicos)
         let examenEgresoCode = "EMO";
-        if (examenesMap.has("EMOA")) examenEgresoCode = "EMOA";
-        else if (examenesMap.has("EMOMP")) examenEgresoCode = "EMOMP";
+        if (controles.consolidado.examenes.includes("EMOA")) examenEgresoCode = "EMOA";
+        else if (controles.consolidado.examenes.includes("EMOMP")) examenEgresoCode = "EMOMP";
         const examenEgreso = EXAM_DETAILS[examenEgresoCode]?.fullName || examenEgresoCode;
 
-
-        const maxRows = Math.max(examenesIngreso.length, examenesPeriodicos.length, 1); // Asegura al menos una fila para Egreso
+        const maxRows = Math.max(examenesIngreso.length, examenesPeriodicos.length, 1);
         const tableBody = [];
         for (let i = 0; i < maxRows; i++) {
             tableBody.push([
