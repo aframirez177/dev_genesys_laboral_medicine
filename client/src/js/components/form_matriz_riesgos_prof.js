@@ -1992,6 +1992,24 @@ export function initializeForm() {
   }
 
   function copiarRiesgosDesdeCargo(cargoOrigen, cargoDestino) {
+    // 0. IMPORTANTE: Cerrar todos los popups abiertos para guardar datos pendientes
+    console.log('🔄 Cerrando popups abiertos para guardar datos...');
+    const popupsAbiertos = document.querySelectorAll('.controles-popup');
+    popupsAbiertos.forEach(popup => {
+      const closeBtn = popup.querySelector('.close-popup');
+      if (closeBtn) {
+        console.log('  ✓ Cerrando popup abierto');
+        closeBtn.click();
+      }
+    });
+
+    // Esperar 150ms para que se guarden todos los datos en los inputs hidden
+    setTimeout(() => {
+      _ejecutarCopiaRiesgos(cargoOrigen, cargoDestino);
+    }, 150);
+  }
+
+  function _ejecutarCopiaRiesgos(cargoOrigen, cargoDestino) {
     // 1. Obtener todos los riesgos seleccionados del cargo origen
     const riesgosOrigen = cargoOrigen.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked');
 
@@ -2000,11 +2018,11 @@ export function initializeForm() {
       return;
     }
 
-    // 2. Deseleccionar todos los riesgos del cargo destino primero
+    // 2. Deseleccionar todos los riesgos del cargo destino primero (SIN disparar evento)
     const riesgosDestino = cargoDestino.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked');
     riesgosDestino.forEach(checkbox => {
       checkbox.checked = false;
-      checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+      // NO disparar evento change para evitar que se abran popups vacíos
     });
 
     // 3. Copiar cada riesgo seleccionado
@@ -2016,9 +2034,9 @@ export function initializeForm() {
       const checkboxDestino = cargoDestino.querySelector(`input[type="checkbox"][value="${riesgoValue}"]`);
 
       if (checkboxDestino) {
-        // Marcar el checkbox
+        // Marcar el checkbox (SIN disparar evento para evitar popup vacío)
         checkboxDestino.checked = true;
-        checkboxDestino.dispatchEvent(new Event('change', { bubbles: true }));
+        // NO disparar evento change aquí para evitar que se abra el popup vacío
 
         // === 1. COPIAR INPUT HIDDEN DE NIVELES ===
         const infoGeneralOrigen = cargoOrigen.querySelector('.info-general-section');
