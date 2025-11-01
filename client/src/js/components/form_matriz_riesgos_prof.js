@@ -1863,6 +1863,76 @@ export function initializeForm() {
     setTimeout(() => mostrarPaso(pasoActualIdx), 500);
   }
 
+  // 🆕 FUNCIÓN PARA VALIDAR DUPLICADOS DE PRESETS
+  function detectarCargosConPresetsDuplicados() {
+    const todosCargos = Array.from(cargoContainer.querySelectorAll('.cargo'));
+    const presetsMap = new Map(); // {fingerprint: [cargo1, cargo2, ...]}
+    const duplicados = [];
+
+    todosCargos.forEach(cargo => {
+      const cargoNombre = cargo.querySelector('.cargo-title')?.textContent || 'Sin nombre';
+      const infoGeneral = cargo.querySelector('.info-general-section');
+
+      if (!infoGeneral) return;
+
+      // Obtener todos los riesgos seleccionados
+      const riesgosSeleccionados = cargo.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked');
+
+      if (riesgosSeleccionados.length === 0) return; // Cargo sin riesgos, no tiene preset
+
+      // Crear fingerprint del preset (riesgos + niveles + controles)
+      const riesgosData = Array.from(riesgosSeleccionados).map(checkbox => {
+        const riesgoValue = checkbox.value;
+
+        // Obtener niveles
+        const nivelesInput = infoGeneral.querySelector(
+          `input[type="hidden"][data-riesgo="${riesgoValue}"][data-niveles]`
+        );
+        const niveles = nivelesInput?.value || '{}';
+
+        // Obtener controles
+        const controles = {};
+        ['fuente', 'medio', 'individuo'].forEach(tipo => {
+          const controlInput = infoGeneral.querySelector(
+            `input[type="hidden"][data-riesgo="${riesgoValue}"][data-tipo="${tipo}"]`
+          );
+          controles[tipo] = controlInput?.value || '';
+        });
+
+        return {
+          riesgo: riesgoValue,
+          niveles: niveles,
+          controles: controles
+        };
+      });
+
+      // Ordenar por nombre de riesgo para que el fingerprint sea consistente
+      riesgosData.sort((a, b) => a.riesgo.localeCompare(b.riesgo));
+
+      // Crear fingerprint (JSON stringify del array ordenado)
+      const fingerprint = JSON.stringify(riesgosData);
+
+      // Agregar al mapa
+      if (!presetsMap.has(fingerprint)) {
+        presetsMap.set(fingerprint, []);
+      }
+      presetsMap.get(fingerprint).push({ cargo, nombre: cargoNombre });
+    });
+
+    // Identificar grupos de duplicados (más de 1 cargo con el mismo fingerprint)
+    presetsMap.forEach((cargos, fingerprint) => {
+      if (cargos.length > 1) {
+        duplicados.push({
+          fingerprint,
+          cargos: cargos.map(c => c.nombre),
+          cantidad: cargos.length
+        });
+      }
+    });
+
+    return duplicados;
+  }
+
   // 🆕 FUNCIONES PARA COPIAR RIESGOS ENTRE CARGOS
   function mostrarDropdownCopiar(cargoDestino, dropdown) {
     const lista = dropdown.querySelector('.dropdown-list-copiar');
@@ -1985,28 +2055,40 @@ export function initializeForm() {
             `input[type="hidden"][data-riesgo="${riesgoValue}"][data-tipo]`
           );
 
-          controlesInputsOrigen.forEach(controlInputOrigen => {
-            const tipoControl = controlInputOrigen.dataset.tipo;
-            const valorControl = controlInputOrigen.value;
+          console.log(`📋 Copiando controles para "${riesgoValue}": ${controlesInputsOrigen.length} inputs encontrados`);
 
-            if (tipoControl) {
-              // Buscar o crear input hidden de control en destino
-              let controlInputDestino = infoGeneralDestino.querySelector(
-                `input[type="hidden"][data-riesgo="${riesgoValue}"][data-tipo="${tipoControl}"]`
-              );
+          if (controlesInputsOrigen.length === 0) {
+            console.warn(`⚠️ No se encontraron controles para "${riesgoValue}" en cargo origen`);
+          }
 
-              if (!controlInputDestino) {
-                controlInputDestino = document.createElement('input');
-                controlInputDestino.type = 'hidden';
-                controlInputDestino.dataset.riesgo = riesgoValue;
-                controlInputDestino.dataset.tipo = tipoControl;
-                controlInputDestino.setAttribute('name', `control_${tipoControl}_${riesgoValue.replace(/[^a-zA-Z0-9]/g, '_')}`);
-                infoGeneralDestino.appendChild(controlInputDestino);
-              }
+          // Asegurarse de copiar los 3 tipos de controles (fuente, medio, individuo)
+          ['fuente', 'medio', 'individuo'].forEach(tipoControl => {
+            const controlInputOrigen = Array.from(controlesInputsOrigen).find(
+              input => input.dataset.tipo === tipoControl
+            );
 
-              // Copiar el valor del control
-              controlInputDestino.value = valorControl;
-              console.log(`✓ Control ${tipoControl} copiado para ${riesgoValue}:`, valorControl);
+            // Buscar o crear input hidden de control en destino
+            let controlInputDestino = infoGeneralDestino.querySelector(
+              `input[type="hidden"][data-riesgo="${riesgoValue}"][data-tipo="${tipoControl}"]`
+            );
+
+            if (!controlInputDestino) {
+              controlInputDestino = document.createElement('input');
+              controlInputDestino.type = 'hidden';
+              controlInputDestino.dataset.riesgo = riesgoValue;
+              controlInputDestino.dataset.tipo = tipoControl;
+              controlInputDestino.setAttribute('name', `control_${tipoControl}_${riesgoValue.replace(/[^a-zA-Z0-9]/g, '_')}`);
+              infoGeneralDestino.appendChild(controlInputDestino);
+            }
+
+            // Copiar el valor del control (vacío si no existe en origen)
+            const valorControl = controlInputOrigen ? controlInputOrigen.value : '';
+            controlInputDestino.value = valorControl;
+
+            if (valorControl) {
+              console.log(`  ✓ Control ${tipoControl}: "${valorControl}"`);
+            } else {
+              console.log(`  ⚪ Control ${tipoControl}: (vacío)`);
             }
           });
         }
@@ -2041,30 +2123,8 @@ export function initializeForm() {
           });
         }
 
-        // === 4. ACTUALIZAR VISUALIZACIÓN DE CONTROLES (barras) ===
-        const botonesControlesOrigen = checkboxOrigen.closest('.swiper-slide')?.querySelectorAll('.controles-section .barra');
-        const botonesControlesDestino = checkboxDestino.closest('.swiper-slide')?.querySelectorAll('.controles-section .barra');
-
-        if (botonesControlesOrigen && botonesControlesDestino) {
-          botonesControlesOrigen.forEach((barraOrigen, index) => {
-            if (botonesControlesDestino[index]) {
-              const valorControl = barraOrigen.dataset.valor;
-
-              if (valorControl) {
-                const barraDestino = botonesControlesDestino[index];
-                barraDestino.dataset.valor = valorControl;
-                barraDestino.className = `barra barra-${valorControl}`;
-
-                const checkIcon = barraDestino.querySelector('.check-icon');
-                if (checkIcon) {
-                  checkIcon.style.display = valorControl === 'sin' ? 'none' : 'block';
-                }
-              }
-            }
-          });
-        }
-
         riesgosCopiados++;
+        console.log(`✅ Riesgo #${riesgosCopiados} copiado: "${riesgoValue}"`);
       }
     });
 
@@ -3241,6 +3301,24 @@ matrizRiesgosForm.addEventListener("submit", (e) => {
   if (!validateCargosData()) {
     console.log("❌ Validación fallida");
     return;
+  }
+
+  // 🆕 Validar duplicados de presets
+  const duplicados = detectarCargosConPresetsDuplicados();
+  if (duplicados.length > 0) {
+    console.warn("⚠️ Se detectaron cargos con presets duplicados:", duplicados);
+
+    let mensaje = "⚠️ ADVERTENCIA: Se detectaron cargos con los mismos riesgos, niveles y controles:\n\n";
+    duplicados.forEach((dup, index) => {
+      mensaje += `Grupo ${index + 1}: ${dup.cargos.join(' | ')}\n`;
+    });
+    mensaje += `\nEstos cargos generarán el mismo preset de exámenes. ¿Desea continuar?`;
+
+    const continuar = confirm(mensaje);
+    if (!continuar) {
+      console.log("❌ Usuario canceló por duplicados");
+      return;
+    }
   }
 
   // Mostrar modal
