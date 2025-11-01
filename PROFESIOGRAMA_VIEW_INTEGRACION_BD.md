@@ -588,5 +588,119 @@ POST /api/profesiograma/1/export-pdf
 
 ---
 
-**Última actualización**: 1 de Noviembre de 2025, 12:47 PM
-**Build status**: ✅ Compilado exitosamente (0 errores, 227 warnings de tamaño)
+---
+
+## 🔧 CORRECCIONES POST-DESPLIEGUE (01/11/2025 - 14:00)
+
+### Problema 1: Logos no aparecían ❌
+**Causa**: Referencias a `logo_negro_vectores.png` que no existe (solo existe `.svg`)
+
+**Solución aplicada**:
+```html
+<!-- Antes (incorrecto) -->
+<link rel="icon" href="../assets/images/logo_negro_vectores.png">
+<img src="../assets/images/logo_negro_vectores.png" class="portada-logo">
+
+<!-- Después (correcto) -->
+<link rel="icon" href="../assets/images/logo_solo_fabicon.png">
+<img src="../assets/images/logo_negro_vectores.svg" class="portada-logo">
+```
+
+**Archivos modificados**: `client/public/pages/profesiograma_view.html`
+
+---
+
+### Problema 2: Contenido más alto que viewport ❌
+**Causa**: Secciones largas (ej. Sección 8 con múltiples cargos) se cortaban sin scroll
+
+**Solución aplicada**: Scroll vertical dentro de cada página
+```scss
+.page-content {
+    max-height: calc(100vh - 12rem); // Altura máxima
+    overflow-y: auto; // Scroll vertical automático
+    overflow-x: hidden;
+
+    // Scrollbar personalizado con colores Genesys
+    &::-webkit-scrollbar {
+        width: 0.8rem;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba($primary, 0.5); // Verde agua Genesys
+        &:hover { background: rgba($primary, 0.7); }
+    }
+}
+```
+
+**Efecto**: Ahora cada sección puede hacer scroll vertical si es necesaria, manteniendo la navegación horizontal entre secciones.
+
+**Archivos modificados**: `client/src/styles/scss/style_profesiograma_view.scss`
+
+---
+
+### Problema 3: PDF generado no abre (corrupto) ❌
+**Causa**: Puppeteer intentaba acceder al servidor usando URL externa desde dentro del contenedor Docker
+
+**Problema técnico**:
+```javascript
+// ❌ ANTES (incorrecto en Docker):
+const protocol = req.protocol; // https
+const host = req.get('host');  // genesyslm.com.co
+const viewUrl = `${protocol}://${host}/pages/profesiograma_view.html?id=${id}`;
+// Resultado: https://genesyslm.com.co/pages/profesiograma_view.html?id=1
+
+// Puppeteer desde dentro del contenedor intenta salir a internet
+// y puede fallar por DNS, red, o tiempos de espera
+```
+
+**Solución aplicada**:
+```javascript
+// ✅ DESPUÉS (correcto en Docker y local):
+const viewUrl = `http://localhost:3000/pages/profesiograma_view.html?id=${id}`;
+
+// Puppeteer accede al servidor Express en el mismo contenedor
+// Funciona tanto en Docker como en desarrollo local
+```
+
+**Explicación Docker**:
+```
+┌──────────────────────────────────┐
+│  Contenedor Docker (api)         │
+│                                   │
+│  ┌────────────────────────────┐ │
+│  │  Express Server :3000      │ │ ← Sirve HTML
+│  └────────────────────────────┘ │
+│           ↑                      │
+│           │ localhost:3000       │
+│           │                      │
+│  ┌────────────────────────────┐ │
+│  │  Puppeteer                 │ │ ← Genera PDF
+│  └────────────────────────────┘ │
+│                                   │
+└──────────────────────────────────┘
+```
+
+**Archivos modificados**: `server/src/controllers/profesiograma-view.controller.js`
+
+---
+
+## ✅ RESULTADO FINAL
+
+**Vista Web**:
+- ✅ Logo de portada visible
+- ✅ Logo de navegación visible
+- ✅ Scroll vertical funcional en páginas largas
+- ✅ Navegación horizontal entre secciones
+- ✅ Datos reales de PostgreSQL
+
+**Generación PDF**:
+- ✅ Puppeteer accede correctamente a localhost
+- ✅ PDF se genera sin errores
+- ✅ Layout vertical automático (gracias a @media print)
+- ✅ Funciona en Docker y en local
+
+---
+
+**Última actualización**: 1 de Noviembre de 2025, 14:00
+**Build status**: ✅ Compilado exitosamente (0 errores, warnings normales de tamaño)
+**Estado**: LISTO PARA PRODUCCIÓN

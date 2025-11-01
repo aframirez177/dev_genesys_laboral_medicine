@@ -235,9 +235,9 @@ async function exportPDF(req, res) {
         console.log(`📄 Generando PDF para profesiograma ID: ${id}`);
 
         // Build the URL to the profesiograma view page
-        const protocol = req.protocol;
-        const host = req.get('host');
-        const viewUrl = `${protocol}://${host}/pages/profesiograma_view.html?id=${id}`;
+        // IMPORTANTE: Puppeteer corre dentro del contenedor Docker, debe usar localhost
+        // para acceder al servidor Express que está en el mismo contenedor
+        const viewUrl = `http://localhost:3000/pages/profesiograma_view.html?id=${id}`;
 
         console.log(`🌐 URL de vista: ${viewUrl}`);
 

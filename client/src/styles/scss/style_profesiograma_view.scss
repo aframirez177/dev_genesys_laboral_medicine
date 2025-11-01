@@ -242,7 +242,30 @@ body {
 .page-content {
     width: 100%;
     max-width: 120rem; // 1200px
+    max-height: calc(100vh - 12rem); // Altura del viewport menos nav (12rem aprox)
     margin: 0 auto;
+    overflow-y: auto; // Scroll vertical si el contenido es más alto
+    overflow-x: hidden;
+    padding-right: 1rem; // Espacio para el scrollbar
+
+    // Estilo del scrollbar
+    &::-webkit-scrollbar {
+        width: 0.8rem;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba($background, 0.3);
+        border-radius: 0.4rem;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba($primary, 0.5);
+        border-radius: 0.4rem;
+
+        &:hover {
+            background: rgba($primary, 0.7);
+        }
+    }
 }
 
 .page-title {
