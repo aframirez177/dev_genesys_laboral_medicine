@@ -514,9 +514,9 @@
                         }
                         
                         // Firefox
-                        &[type=number] {
+                        /* &[type=number] {
                             -moz-appearance: textfield;
-                        }
+                        } */
                         
                         // Quitar outline al hacer focus
                         &:focus {

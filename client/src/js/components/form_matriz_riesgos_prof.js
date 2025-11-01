@@ -1950,37 +1950,115 @@ export function initializeForm() {
         checkboxDestino.checked = true;
         checkboxDestino.dispatchEvent(new Event('change', { bubbles: true }));
 
-        // Copiar niveles (ND, NE, NC)
-        const nivelesOrigen = checkboxOrigen.closest('.swiper-slide')?.querySelectorAll('.nivel-select');
-        const nivelesDestino = checkboxDestino.closest('.swiper-slide')?.querySelectorAll('.nivel-select');
+        // === 1. COPIAR INPUT HIDDEN DE NIVELES ===
+        const infoGeneralOrigen = cargoOrigen.querySelector('.info-general-section');
+        const infoGeneralDestino = cargoDestino.querySelector('.info-general-section');
 
-        if (nivelesOrigen && nivelesDestino) {
-          nivelesOrigen.forEach((selectOrigen, index) => {
-            if (nivelesDestino[index]) {
-              nivelesDestino[index].value = selectOrigen.value;
-              nivelesDestino[index].dispatchEvent(new Event('change', { bubbles: true }));
+        if (infoGeneralOrigen && infoGeneralDestino) {
+          // Copiar input hidden de niveles
+          const nivelesInputOrigen = infoGeneralOrigen.querySelector(
+            `input[type="hidden"][data-riesgo="${riesgoValue}"][data-niveles]`
+          );
+
+          if (nivelesInputOrigen && nivelesInputOrigen.value) {
+            // Buscar o crear input hidden en destino
+            let nivelesInputDestino = infoGeneralDestino.querySelector(
+              `input[type="hidden"][data-riesgo="${riesgoValue}"][data-niveles]`
+            );
+
+            if (!nivelesInputDestino) {
+              nivelesInputDestino = document.createElement('input');
+              nivelesInputDestino.type = 'hidden';
+              nivelesInputDestino.dataset.riesgo = riesgoValue;
+              nivelesInputDestino.dataset.niveles = true;
+              nivelesInputDestino.setAttribute('name', `niveles_${riesgoValue.replace(/[^a-zA-Z0-9]/g, '_')}`);
+              infoGeneralDestino.appendChild(nivelesInputDestino);
+            }
+
+            // Copiar el valor JSON de niveles
+            nivelesInputDestino.value = nivelesInputOrigen.value;
+            console.log(`✓ Niveles copiados para ${riesgoValue}:`, nivelesInputOrigen.value);
+          }
+
+          // === 2. COPIAR INPUTS HIDDEN DE CONTROLES (fuente, medio, individuo) ===
+          const controlesInputsOrigen = infoGeneralOrigen.querySelectorAll(
+            `input[type="hidden"][data-riesgo="${riesgoValue}"][data-tipo]`
+          );
+
+          controlesInputsOrigen.forEach(controlInputOrigen => {
+            const tipoControl = controlInputOrigen.dataset.tipo;
+            const valorControl = controlInputOrigen.value;
+
+            if (tipoControl) {
+              // Buscar o crear input hidden de control en destino
+              let controlInputDestino = infoGeneralDestino.querySelector(
+                `input[type="hidden"][data-riesgo="${riesgoValue}"][data-tipo="${tipoControl}"]`
+              );
+
+              if (!controlInputDestino) {
+                controlInputDestino = document.createElement('input');
+                controlInputDestino.type = 'hidden';
+                controlInputDestino.dataset.riesgo = riesgoValue;
+                controlInputDestino.dataset.tipo = tipoControl;
+                controlInputDestino.setAttribute('name', `control_${tipoControl}_${riesgoValue.replace(/[^a-zA-Z0-9]/g, '_')}`);
+                infoGeneralDestino.appendChild(controlInputDestino);
+              }
+
+              // Copiar el valor del control
+              controlInputDestino.value = valorControl;
+              console.log(`✓ Control ${tipoControl} copiado para ${riesgoValue}:`, valorControl);
             }
           });
         }
 
-        // Copiar controles (fuente, medio, individuo)
-        const botonesControlesOrigen = checkboxOrigen.closest('.swiper-slide')?.querySelectorAll('.barra');
-        const botonesControlesDestino = checkboxDestino.closest('.swiper-slide')?.querySelectorAll('.barra');
+        // === 3. ACTUALIZAR VISUALIZACIÓN DE NIVELES (barras) ===
+        const nivelesBarrasOrigen = checkboxOrigen.closest('.swiper-slide')?.querySelectorAll('.nivel .barra.selected');
+        const nivelesDestinoContainer = checkboxDestino.closest('.swiper-slide')?.querySelectorAll('.nivel');
+
+        if (nivelesBarrasOrigen && nivelesDestinoContainer) {
+          nivelesBarrasOrigen.forEach((barraOrigenSeleccionada) => {
+            const nivelDiv = barraOrigenSeleccionada.closest('.nivel');
+            const nivelNombre = nivelDiv?.dataset.nivelNombre;
+            const nivelValor = barraOrigenSeleccionada.dataset.nivel;
+
+            if (nivelNombre && nivelValor) {
+              // Encontrar el nivel correspondiente en destino
+              const nivelDestinoDiv = Array.from(nivelesDestinoContainer).find(
+                div => div.dataset.nivelNombre === nivelNombre
+              );
+
+              if (nivelDestinoDiv) {
+                // Deseleccionar todas las barras en ese nivel
+                nivelDestinoDiv.querySelectorAll('.barra').forEach(b => b.classList.remove('selected'));
+
+                // Seleccionar la barra correcta
+                const barraDestino = nivelDestinoDiv.querySelector(`[data-nivel="${nivelValor}"]`);
+                if (barraDestino) {
+                  barraDestino.classList.add('selected');
+                }
+              }
+            }
+          });
+        }
+
+        // === 4. ACTUALIZAR VISUALIZACIÓN DE CONTROLES (barras) ===
+        const botonesControlesOrigen = checkboxOrigen.closest('.swiper-slide')?.querySelectorAll('.controles-section .barra');
+        const botonesControlesDestino = checkboxDestino.closest('.swiper-slide')?.querySelectorAll('.controles-section .barra');
 
         if (botonesControlesOrigen && botonesControlesDestino) {
           botonesControlesOrigen.forEach((barraOrigen, index) => {
             if (botonesControlesDestino[index]) {
-              const tipoControl = barraOrigen.dataset.tipo;
               const valorControl = barraOrigen.dataset.valor;
 
-              if (tipoControl && valorControl) {
-                updateControles(riesgoValue, cargoDestino, tipoControl, valorControl);
-
-                // Actualizar visualmente la barra en destino
+              if (valorControl) {
                 const barraDestino = botonesControlesDestino[index];
                 barraDestino.dataset.valor = valorControl;
                 barraDestino.className = `barra barra-${valorControl}`;
-                barraDestino.querySelector('.check-icon').style.display = valorControl === 'sin' ? 'none' : 'block';
+
+                const checkIcon = barraDestino.querySelector('.check-icon');
+                if (checkIcon) {
+                  checkIcon.style.display = valorControl === 'sin' ? 'none' : 'block';
+                }
               }
             }
           });
