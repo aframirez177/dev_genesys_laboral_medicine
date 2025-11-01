@@ -37,6 +37,7 @@ module.exports = {
     index: "./src/index.js",
     riesgos: "./src/main_matriz_riesgos_profesional.js",
     profesiograma: "./src/main_profesiograma.js",
+    profesiogramaView: "./src/main_profesiograma_view.js",
     examenes: "./src/main_examenes_medicos_ocupacionales.js",
     bateriaPsicosocial: "./src/main_bateria_de_riesgo_psicosocial.js",
     analisispuestodetrabajo: "./src/main_analisis_puesto_de_trabajo.js",
@@ -188,6 +189,12 @@ module.exports = {
       inject: true,
       template: "./public/pages/Profesiograma.html",
       filename: "./pages/Profesiograma.html",
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ["main", "profesiogramaView"],
+      inject: true,
+      template: "./public/pages/profesiograma_view.html",
+      filename: "./pages/profesiograma_view.html",
     }),
     new HtmlWebpackPlugin({
       chunks: ["main", "resultados"],

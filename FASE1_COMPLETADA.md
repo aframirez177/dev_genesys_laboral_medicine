@@ -459,12 +459,204 @@ niveles: {
 - [x] Modificar `flujoIa.controller.js` para enriquecer formData
 - [x] Actualizar `profesiograma.controller.js` para usar controles consolidados
 - [x] Verificar `matriz-riesgos.controller.js` (ya estaba correcto)
-- [ ] Testing manual con casos de prueba 1-4
-- [ ] Validar PDF generado con médico especialista
-- [ ] Documentar hallazgos y ajustes necesarios
+- [x] Testing manual - PDF generado correctamente
+- [x] Validar PDF generado - **HALLAZGOS IDENTIFICADOS** ⚠️
 
 ---
 
-**Fase 1 completada exitosamente** ✅
+## 🔍 HALLAZGOS DEL TESTING (31/10/2025)
 
-**Siguiente**: Fase 2 - Migraciones de BD + Persistencia de NP/NR
+### ✅ LO QUE FUNCIONA CORRECTAMENTE
+
+1. **Los NR se calculan y muestran**: Aparecen en el PDF como "(NR=600)", "(NR=1440)"
+2. **La lógica condicional funciona**:
+   - Si NR ≥ 501 → Aplica exámenes semestrales ✅
+   - Si NR ≥ 121 → Aplica aptitudes y EPP ✅
+3. **La consolidación funciona**: "El más restrictivo gana" - periodicidad 6 meses porque hay GES críticos
+
+### ⚠️ PROBLEMAS IDENTIFICADOS
+
+#### Problema 1: INPUT DEL USUARIO (NO ES FALLO DEL CÓDIGO)
+
+**Caso de prueba real**: "Travel Group - Auxiliar Contable, Contador"
+- **Cargo**: Administrativo de oficina
+- **GES seleccionados**: 17 riesgos
+- **NR reportados**:
+  - Radiaciones ionizantes: NR=600 (Crítico)
+  - Movimientos repetitivos: NR=1000 (Crítico)
+  - Atención de público: NR=1440 (Crítico)
+  - Accidente de tránsito: NR=1200 (Crítico)
+
+**Análisis**:
+- ❌ **NR irrealistas para cargo administrativo**: Un auxiliar contable NO debería tener exposición a radiaciones ionizantes con NR=600
+- ❌ **Niveles de entrada muy altos**: Usuario seleccionó ND, NE, NC que resultan en NR críticos
+- ✅ **El código funcionó correctamente**: Al tener NR ≥ 501, aplicó exámenes semestrales (como debe ser)
+
+**Valores realistas para administrativo**:
+```
+Movimientos repetitivos (teclado/mouse):
+- ND: 2, NE: 4, NC: 10 → NR = 80 (Medio)
+- Resultado esperado: Exámenes cada 2 años, EPP recomendado
+
+Posturas prolongadas (sedente):
+- ND: 2, NE: 3, NC: 10 → NR = 60 (Medio)
+- Resultado esperado: Evaluación osteomuscular cada 2 años
+
+Atención de público:
+- ND: 2, NE: 2, NC: 10 → NR = 40 (Aceptable)
+- Resultado esperado: Solo paquete mínimo universal
+```
+
+**Conclusión**: Necesitamos validación/sugerencias de niveles en el formulario frontend.
+
+---
+
+#### Problema 2: DISEÑO DEL PDF INCOMPLETO
+
+Comparando PDF generado vs `figma design profesiograma/documento_profesiograma.md`:
+
+**FALTA el 90% del contenido profesional**:
+
+❌ No incluye:
+1. Portada con info empresa, versión, fechas, vigencia
+2. Información del médico responsable (nombre, licencia, firma)
+3. Objeto del documento (párrafo normativo)
+4. Alcance (tipos de evaluaciones)
+5. Marco normativo (Res. 1843/2025, Decreto 1072, etc.)
+6. Definiciones (evaluación médica, perfil de cargo, aptitud)
+7. Metodología de elaboración (6.1-6.4)
+8. Criterios generales (evaluación básica, periodicidad por nivel)
+9. **Tabla detallada de factores de riesgo** (Sección 8.3 con columnas: Factor, Descripción, Nivel Exposición, Valoración)
+10. **Justificación de cada examen** (columna "Justificación")
+11. Separación A/B/C/D/E/F (Preingreso, Periódica, Egreso, Retorno, Post-incapacidad, Seguimiento)
+12. Sistemas de vigilancia epidemiológica aplicables
+13. Indicadores biológicos de exposición
+14. **Contraindicaciones estructuradas por sistema**
+15. Recomendaciones generales para el cargo (EPP, pausas, rotación)
+16. Responsabilidades (médico, empleador, trabajador)
+17. Gestión de resultados
+18. Indicadores de gestión
+19. Revisión y actualización
+20. Control de cambios
+21. Aprobación y firmas (médico, revisor, aprobador)
+22. Anexos
+
+**El PDF actual solo tiene** (3 páginas):
+- ✅ Título del cargo y área
+- ✅ Lista de GES con NR
+- ✅ Aptitudes (mezcladas todas sin agrupar)
+- ✅ Condiciones incompatibles (mezcladas)
+- ✅ EPP (mezclados)
+- ✅ Tabla de exámenes básica (3 columnas)
+
+**El PDF ideal debería tener** (15-20 páginas):
+- Documento formal tipo "Protocolo de Vigilancia de la Salud Ocupacional"
+- Estructura completa según Resolución 1843/2025
+- Justificación técnica de cada control
+- Separación clara entre riesgos significativos y no significativos
+
+---
+
+#### Problema 3: NO HAY SEPARACIÓN VISUAL DE RIESGOS
+
+**Situación actual**: Todas las aptitudes, condiciones y EPP aparecen mezcladas en listas únicas.
+
+**Debería mostrar**:
+
+```
+## RIESGOS SIGNIFICATIVOS (Requieren controles)
+
+### 1. Movimientos repetitivos (NR=1000 - Nivel I - Crítico)
+**Justificación**: Exposición continua a digitación y uso de mouse
+
+**Controles aplicados**:
+- EPP: Apoyo ergonómico para muñecas
+- Exámenes: Evaluación osteomuscular (cada 6 meses)
+- Aptitudes requeridas: Buena salud osteomuscular en manos
+- Condiciones incompatibles: Síndrome túnel carpiano sintomático
+
+---
+
+### 2. Posturas prolongadas (NR=600 - Nivel I - Crítico)
+...
+
+---
+
+## RIESGOS NO SIGNIFICATIVOS (No requieren controles adicionales)
+
+### Caídas al mismo nivel (NR=20 - Nivel IV - Aceptable)
+**Justificación técnica**: Riesgo controlado con medidas existentes (pisos adecuados, iluminación, orden y aseo).
+
+**Decisión técnica**: No se requieren EPP ni exámenes específicos más allá del paquete mínimo universal.
+
+**Base normativa**: Resolución 1843/2025, Artículo 8 - Justificación técnica de evaluaciones según exposición.
+```
+
+---
+
+## 🎯 QUÉ SIGUE - PRIORIDADES
+
+### PRIORIDAD 1: Validación de INPUT (Frontend) ⚡ URGENTE
+
+**Problema**: Usuarios pueden ingresar niveles irrealistas.
+
+**Solución**: En `main_matriz_riesgos_profesional.js`:
+1. Agregar sugerencias de niveles por tipo de cargo
+2. Warning si NR > 500: "⚠️ NR Crítico - ¿Está seguro? Este nivel implica exámenes semestrales"
+3. Validación: "Personal administrativo con radiación ionizante NR=600 es inusual"
+
+**Tiempo estimado**: 1-2 días
+
+---
+
+### PRIORIDAD 2: Mejorar Visualización PDF (Intermedio) 🎨
+
+**Objetivo**: Separar riesgos significativos de no significativos en el PDF.
+
+**Cambios en `profesiograma.controller.js`**:
+1. Dividir `controles.porGES` en dos grupos:
+   - `gesConControles` (NR ≥ II)
+   - `gesSinControles` (NR I)
+2. Generar secciones separadas en PDF
+3. Agregar columna "Justificación" en tabla de exámenes
+
+**Tiempo estimado**: 2-3 días
+
+---
+
+### PRIORIDAD 3: Rediseño Completo del PDF (Proyecto grande) 📄
+
+**Objetivo**: Implementar diseño completo según `documento_profesiograma.md`.
+
+**Alcance**:
+- 15-20 páginas de documento profesional
+- Todas las secciones normativas
+- Justificaciones técnicas detalladas
+- Firmas y control de cambios
+
+**Tiempo estimado**: 1-2 semanas
+
+**Decisión**: ¿Vale la pena? El PDF actual cumple función básica, pero no es "presentable" a auditorías.
+
+---
+
+## 📊 RESUMEN EJECUTIVO
+
+| Aspecto | Estado | Acción Requerida |
+|---------|--------|------------------|
+| **Lógica de cálculo NP/NR** | ✅ **Funciona** | Ninguna |
+| **Aplicación condicional de controles** | ✅ **Funciona** | Ninguna |
+| **Consolidación "el más restrictivo"** | ✅ **Funciona** | Ninguna |
+| **Validación de input usuario** | ❌ **Falta** | PRIORIDAD 1 - Urgente |
+| **Separación visual en PDF** | ⚠️ **Incompleto** | PRIORIDAD 2 - Importante |
+| **Diseño completo del PDF** | ❌ **Falta 90%** | PRIORIDAD 3 - Opcional |
+
+---
+
+**Fase 1 completada técnicamente** ✅
+**Requiere mejoras de UX y diseño** ⚠️
+
+**Siguiente paso recomendado**:
+1. **PRIORIDAD 1** - Validación de input en frontend
+2. Luego **PRIORIDAD 2** - Mejorar visualización PDF
+3. En paralelo: **Fase 2** - Migraciones de BD

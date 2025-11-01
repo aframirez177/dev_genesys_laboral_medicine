@@ -138,12 +138,13 @@ export function initResultadosPage() {
     // CLASE: TARJETA DE DOCUMENTO (REDISEÑADA)
     // ============================================
     class DocumentCard {
-        constructor(config, url, thumbnailUrl, pricing, metadata) {
+        constructor(config, url, thumbnailUrl, pricing, metadata, webViewUrl = null) {
             this.config = config;
             this.url = url;
             this.thumbnailUrl = thumbnailUrl; // 🆕 URL del thumbnail
             this.pricing = pricing;
             this.metadata = metadata;
+            this.webViewUrl = webViewUrl; // 🆕 URL de vista web (solo para profesiograma)
         }
 
         render() {
@@ -201,6 +202,14 @@ export function initResultadosPage() {
                                 </svg>
                             </button>
                         ` : ''}
+                        ${this.webViewUrl ? `
+                            <button class="btn-icon btn-web-view" data-action="web-view" title="Ver en navegador" aria-label="Ver vista web interactiva">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z" fill="currentColor"/>
+                                    <path d="M12 7C11.4477 7 11 7.44772 11 8V12C11 12.2652 11.1054 12.5196 11.2929 12.7071L13.2929 14.7071C13.6834 15.0976 14.3166 15.0976 14.7071 14.7071C15.0976 14.3166 15.0976 13.6834 14.7071 13.2929L13 11.5858V8C13 7.44772 12.5523 7 12 7Z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        ` : ''}
                         <button class="btn-icon btn-download" ${!isAvailable ? 'disabled' : ''} data-action="download" title="Descargar" aria-label="Descargar documento">
                             <svg width="20" height="20" viewBox="0 0 57 57" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M28.5 38L16.625 26.125L19.95 22.6813L26.125 28.8563V9.5H30.875V28.8563L37.05 22.6813L40.375 26.125L28.5 38ZM14.25 47.5C12.9437 47.5 11.8255 47.0349 10.8953 46.1047C9.9651 45.1745 9.5 44.0563 9.5 42.75V35.625H14.25V42.75H42.75V35.625H47.5V42.75C47.5 44.0563 47.0349 45.1745 46.1047 46.1047C45.1745 47.0349 44.0563 47.5 42.75 47.5H14.25Z" fill="currentColor"/>
@@ -241,6 +250,14 @@ export function initResultadosPage() {
                 });
             }
 
+            const webViewBtn = card.querySelector('[data-action="web-view"]');
+            if (webViewBtn && this.webViewUrl) {
+                webViewBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.openWebView();
+                });
+            }
+
             return card;
         }
 
@@ -260,6 +277,13 @@ export function initResultadosPage() {
             if (this.url) {
                 console.log(`👁️ Abriendo preview: ${this.config.name}`);
                 window.open(this.url, '_blank', 'noopener,noreferrer');
+            }
+        }
+
+        openWebView() {
+            if (this.webViewUrl) {
+                console.log(`🌐 Abriendo vista web: ${this.config.name}`);
+                window.open(this.webViewUrl, '_blank', 'noopener,noreferrer');
             }
         }
 
@@ -333,11 +357,16 @@ export function initResultadosPage() {
             DOCUMENTS_CONFIG.forEach(docConfig => {
                 const url = data.urls[docConfig.key];
                 const thumbnailUrl = data.thumbnails?.[docConfig.key] || null;
-                const card = new DocumentCard(docConfig, url, thumbnailUrl, metadata.pricing || {}, metadata);
+                // 🆕 Vista web solo para profesiograma
+                const webViewUrl = (docConfig.key === 'profesiograma' && data.urls.profesiogramaWebView)
+                    ? data.urls.profesiogramaWebView
+                    : null;
+
+                const card = new DocumentCard(docConfig, url, thumbnailUrl, metadata.pricing || {}, metadata, webViewUrl);
                 const cardElement = card.render();
                 documentsGrid.appendChild(cardElement);
 
-                console.log(`📄 Tarjeta creada: ${docConfig.name} - URL: ${url ? 'Disponible' : 'No disponible'}`);
+                console.log(`📄 Tarjeta creada: ${docConfig.name} - URL: ${url ? 'Disponible' : 'No disponible'}${webViewUrl ? ' (con vista web)' : ''}`);
             });
 
             isFirstRender = false;

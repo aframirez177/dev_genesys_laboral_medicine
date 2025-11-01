@@ -298,10 +298,12 @@ export const registrarYGenerar = async (req, res) => {
                 // Guardamos las URLs de los documentos
                 preview_urls: JSON.stringify({
                     ...finalUrls,
+                    // 🆕 Vista web del profesiograma (HTML interactivo con scroll horizontal)
+                    profesiogramaWebView: `/pages/profesiograma_view.html?id=${documento.id}`,
                     thumbnails: thumbnailUrls
                 }) // Incluye thumbnails en el mismo objeto
             });
-        console.log(`Documento ${documento.id} actualizado con URLs finales y thumbnails.`);
+        console.log(`Documento ${documento.id} actualizado con URLs finales, thumbnails y vista web.`);
 
         // --- FIN GENERACIÓN DOCUMENTOS FINALES ---
 

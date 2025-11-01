@@ -9,6 +9,7 @@ import documentosRoutes from './routes/documentos.routes.js';
 import whatsappRoutes from './routes/whatsapp.routes.js';
 import config from './config/whatsappConfig.js';
 import flujoIaRoutes from './routes/flujoIa.routes.js';
+import profesiogramaViewRoutes from './routes/profesiograma-view.routes.js';
 
 
 const env = getEnvVars();
@@ -64,6 +65,7 @@ app.use('/api/matriz-riesgos', matrizRiesgosRoutes);
 app.use('/api/documentos', documentosRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/flujo-ia', flujoIaRoutes);
+app.use('/api/profesiograma', profesiogramaViewRoutes);
 
 app.use('/', whatsappRoutes);
 

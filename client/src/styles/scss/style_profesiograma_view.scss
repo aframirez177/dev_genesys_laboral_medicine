@@ -1,0 +1,1522 @@
+// Style for Profesiograma Viewer Page
+// Based on Figma design with Genesys branding
+
+@import './base/variables';
+@import './base/typography';
+@import './base/mixins';
+
+// ==========================================
+// VARIABLES ESPECÍFICAS
+// ==========================================
+
+$primary: map-get($colors, 'primary');           // #5dc4af - Verde agua
+$secondary: map-get($colors, 'secondary');       // #383d47 - Gris oscuro
+$text: map-get($colors, 'text');                 // #2d3238
+$background: map-get($colors, 'background');     // #f3f0f0
+$success: map-get($colors, 'success');           // #4caf50
+$warning: map-get($colors, 'warning');           // #ffeb3b
+$danger: map-get($colors, 'danger');             // #f44336
+
+$font-title: map-get($fonts, 'title');
+$font-body: map-get($fonts, 'body');
+
+$spacing-xs: 0.4rem;
+$spacing-sm: 0.8rem;
+$spacing-md: 1.6rem;
+$spacing-lg: 2.4rem;
+$spacing-xl: 3.2rem;
+$spacing-xxl: 4.8rem;
+
+$border-radius-sm: 0.8rem;
+$border-radius-md: 1.2rem;
+$border-radius-lg: 1.6rem;
+
+$shadow-sm: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.08);
+$shadow-md: 0 0.4rem 1.6rem rgba(0, 0, 0, 0.12);
+$shadow-lg: 0 0.8rem 2.4rem rgba(0, 0, 0, 0.16);
+
+$transition: all 0.3s ease;
+
+// ==========================================
+// RESET & BASE
+// ==========================================
+
+html {
+    font-size: 62.5%; // 1rem = 10px
+}
+
+body {
+    font-family: $font-body;
+    font-size: 1.6rem;
+    line-height: 1.6;
+    color: $text;
+    background-color: $background;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+// ==========================================
+// NAVIGATION BAR
+// ==========================================
+
+.profesiograma-nav {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: white;
+    border-bottom: 0.1rem solid rgba($secondary, 0.1);
+    box-shadow: $shadow-sm;
+}
+
+.nav-container {
+    max-width: 144rem; // 1440px
+    margin: 0 auto;
+    padding: $spacing-md $spacing-lg;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+}
+
+.nav-logo {
+    height: 4rem;
+    width: auto;
+}
+
+.nav-title {
+    font-family: $font-title;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: $secondary;
+    margin: 0;
+}
+
+.nav-page-indicator {
+    font-size: 1.4rem;
+    color: rgba($text, 0.6);
+    font-weight: 500;
+
+    span {
+        font-weight: 600;
+        color: $text;
+    }
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+}
+
+// ==========================================
+// BUTTONS
+// ==========================================
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    border-radius: $border-radius-sm;
+    font-family: $font-title;
+    font-size: 1.4rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: $transition;
+    text-decoration: none;
+
+    &:focus {
+        outline: 0.2rem solid rgba($primary, 0.5);
+        outline-offset: 0.2rem;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.btn-icon {
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+}
+
+.btn-icon-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.btn-primary {
+    background-color: $primary;
+    color: white;
+
+    &:hover:not(:disabled) {
+        background-color: darken($primary, 8%);
+        transform: translateY(-0.2rem);
+        box-shadow: $shadow-md;
+    }
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: $secondary;
+    border: 0.2rem solid rgba($secondary, 0.2);
+
+    &:hover:not(:disabled) {
+        background-color: rgba($secondary, 0.05);
+        border-color: rgba($secondary, 0.3);
+    }
+}
+
+// ==========================================
+// PROFESIOGRAMA VIEWER (Horizontal Scroll)
+// ==========================================
+
+.profesiograma-viewer {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    height: calc(100vh - 18rem); // Nav bar + footer nav
+
+    // Hide scrollbar but keep functionality
+    &::-webkit-scrollbar {
+        height: 0.8rem;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba($secondary, 0.05);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba($primary, 0.3);
+        border-radius: 0.4rem;
+
+        &:hover {
+            background: rgba($primary, 0.5);
+        }
+    }
+}
+
+// ==========================================
+// PAGE SECTIONS
+// ==========================================
+
+.page {
+    min-width: 100vw;
+    width: 100vw;
+    height: 100%;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-xxl $spacing-xl;
+    background-color: white;
+}
+
+.page-content {
+    width: 100%;
+    max-width: 120rem; // 1200px
+    margin: 0 auto;
+}
+
+.page-title {
+    font-family: $font-title;
+    font-size: 3.0rem;
+    font-weight: 700;
+    color: $secondary;
+    margin: 0 0 $spacing-lg 0;
+    border-bottom: 0.4rem solid $primary;
+    padding-bottom: $spacing-sm;
+}
+
+.page-text {
+    font-size: 1.6rem;
+    line-height: 1.8;
+    color: $text;
+    margin-bottom: $spacing-md;
+}
+
+// ==========================================
+// PORTADA (Cover Page)
+// ==========================================
+
+.page-portada {
+    background: linear-gradient(135deg, rgba($primary, 0.03) 0%, rgba($secondary, 0.03) 100%);
+}
+
+.portada-content {
+    text-align: center;
+    max-width: 80rem;
+}
+
+.portada-header {
+    margin-bottom: $spacing-xxl;
+}
+
+.portada-logo {
+    height: 12rem;
+    width: auto;
+    margin: 0 auto;
+}
+
+.portada-title {
+    font-family: $font-title;
+    font-size: 4.8rem;
+    font-weight: 800;
+    color: $secondary;
+    margin: 0 0 $spacing-xxl 0;
+    line-height: 1.2;
+}
+
+.portada-info {
+    background-color: white;
+    border-radius: $border-radius-lg;
+    padding: $spacing-xl;
+    box-shadow: $shadow-md;
+    margin-bottom: $spacing-xxl;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-md 0;
+    border-bottom: 0.1rem solid rgba($secondary, 0.1);
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.info-label {
+    font-family: $font-title;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: $secondary;
+}
+
+.info-value {
+    font-size: 1.6rem;
+    color: $text;
+    text-align: right;
+}
+
+.portada-footer {
+    margin-top: $spacing-xl;
+}
+
+.portada-disclaimer {
+    font-size: 1.4rem;
+    color: rgba($text, 0.7);
+    line-height: 1.6;
+
+    strong {
+        color: $primary;
+        font-weight: 700;
+    }
+}
+
+// ==========================================
+// FORM FIELDS
+// ==========================================
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    gap: $spacing-lg;
+    margin-bottom: $spacing-xl;
+}
+
+.form-field {
+    label {
+        display: block;
+        font-family: $font-title;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: $secondary;
+        margin-bottom: $spacing-xs;
+    }
+
+    .field-value {
+        background-color: rgba($primary, 0.05);
+        border: 0.1rem solid rgba($primary, 0.2);
+        border-radius: $border-radius-sm;
+        padding: $spacing-md;
+        font-size: 1.6rem;
+        color: $text;
+    }
+}
+
+// ==========================================
+// SIGNATURE BLOCK
+// ==========================================
+
+.signature-block {
+    margin-top: $spacing-xxl;
+    padding-top: $spacing-xl;
+    border-top: 0.2rem solid rgba($secondary, 0.1);
+}
+
+.signature-line,
+.signature-date {
+    display: flex;
+    align-items: center;
+    gap: $spacing-lg;
+    margin-bottom: $spacing-lg;
+}
+
+.signature-label {
+    font-family: $font-title;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: $secondary;
+    min-width: 10rem;
+}
+
+.signature-space {
+    flex: 1;
+    font-size: 1.6rem;
+    color: $text;
+    border-bottom: 0.2rem dashed rgba($secondary, 0.3);
+    padding-bottom: $spacing-xs;
+}
+
+// ==========================================
+// LISTS
+// ==========================================
+
+.bullet-list {
+    list-style: none;
+    padding: 0;
+    margin: $spacing-md 0;
+
+    li {
+        position: relative;
+        padding-left: $spacing-lg;
+        margin-bottom: $spacing-sm;
+        font-size: 1.6rem;
+        line-height: 1.8;
+
+        &::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: $primary;
+            font-weight: bold;
+        }
+    }
+}
+
+.normativa-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+        margin-bottom: $spacing-md;
+    }
+}
+
+.normativa-item {
+    background-color: rgba($primary, 0.05);
+    border-left: 0.4rem solid $primary;
+    border-radius: $border-radius-sm;
+    padding: $spacing-md;
+
+    strong {
+        display: block;
+        font-family: $font-title;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: $secondary;
+        margin-bottom: $spacing-xs;
+    }
+
+    span {
+        font-size: 1.4rem;
+        color: rgba($text, 0.7);
+    }
+}
+
+// ==========================================
+// METODOLOGÍA SECTIONS
+// ==========================================
+
+.metodologia-section {
+    margin-bottom: $spacing-xl;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.section-subtitle {
+    font-family: $font-title;
+    font-size: 2.0rem;
+    font-weight: 600;
+    color: $primary;
+    margin: 0 0 $spacing-md 0;
+    padding-bottom: $spacing-xs;
+    border-bottom: 0.2rem solid rgba($primary, 0.2);
+}
+
+// ==========================================
+// CRITERIOS SECTIONS
+// ==========================================
+
+.criterios-section {
+    margin-bottom: $spacing-xxl;
+}
+
+.criterios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    gap: $spacing-lg;
+    margin-top: $spacing-md;
+}
+
+.criterio-card {
+    background-color: white;
+    border: 0.2rem solid rgba($secondary, 0.1);
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+}
+
+.criterio-titulo {
+    font-family: $font-title;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: $secondary;
+    margin: 0 0 $spacing-md 0;
+}
+
+.periodicidad-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: $spacing-md 0;
+    background-color: white;
+    border-radius: $border-radius-sm;
+    overflow: hidden;
+    box-shadow: $shadow-sm;
+
+    thead {
+        background-color: $secondary;
+        color: white;
+
+        th {
+            font-family: $font-title;
+            font-size: 1.4rem;
+            font-weight: 600;
+            padding: $spacing-md;
+            text-align: left;
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 0.1rem solid rgba($secondary, 0.1);
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            &.risk-critical {
+                background-color: rgba($danger, 0.05);
+                font-weight: 600;
+            }
+
+            td {
+                padding: $spacing-md;
+                font-size: 1.4rem;
+                color: $text;
+            }
+        }
+    }
+}
+
+.note {
+    margin-top: $spacing-lg;
+    padding: $spacing-md;
+    background-color: rgba($primary, 0.05);
+    border-left: 0.4rem solid $primary;
+    border-radius: $border-radius-sm;
+    font-size: 1.4rem;
+}
+
+// ==========================================
+// RESPONSABILIDADES GRID
+// ==========================================
+
+.responsabilidades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(35rem, 1fr));
+    gap: $spacing-lg;
+}
+
+.responsabilidad-card {
+    background-color: white;
+    border: 0.2rem solid rgba($primary, 0.15);
+    border-radius: $border-radius-md;
+    padding: $spacing-xl;
+
+    &:hover {
+        border-color: $primary;
+        box-shadow: $shadow-md;
+    }
+}
+
+.responsabilidad-titulo {
+    font-family: $font-title;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: $primary;
+    margin: 0 0 $spacing-md 0;
+    padding-bottom: $spacing-sm;
+    border-bottom: 0.2rem solid rgba($primary, 0.3);
+}
+
+// ==========================================
+// GESTIÓN SECTIONS
+// ==========================================
+
+.gestion-section {
+    margin-bottom: $spacing-xl;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.comunicacion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    gap: $spacing-lg;
+    margin-top: $spacing-md;
+}
+
+.comunicacion-card {
+    background: linear-gradient(135deg, rgba($primary, 0.03) 0%, rgba($secondary, 0.03) 100%);
+    border: 0.2rem solid rgba($primary, 0.2);
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+
+    h4 {
+        font-family: $font-title;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: $secondary;
+        margin: 0 0 $spacing-sm 0;
+    }
+
+    p {
+        font-size: 1.4rem;
+        line-height: 1.7;
+        color: $text;
+        margin: 0;
+    }
+}
+
+.numbered-list {
+    counter-reset: item;
+    list-style: none;
+    padding: 0;
+    margin: $spacing-md 0;
+
+    li {
+        counter-increment: item;
+        position: relative;
+        padding-left: $spacing-xl;
+        margin-bottom: $spacing-md;
+        font-size: 1.6rem;
+        line-height: 1.8;
+
+        &::before {
+            content: counter(item) ".";
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-family: $font-title;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: $primary;
+            width: $spacing-lg;
+        }
+    }
+}
+
+.ejemplos-restricciones {
+    margin-top: $spacing-lg;
+    padding: $spacing-lg;
+    background-color: rgba($warning, 0.1);
+    border-radius: $border-radius-sm;
+    border-left: 0.4rem solid $warning;
+
+    h4 {
+        font-family: $font-title;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: $secondary;
+        margin: 0 0 $spacing-sm 0;
+    }
+}
+
+// ==========================================
+// DIAGNÓSTICO GRID
+// ==========================================
+
+.diagnostico-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    gap: $spacing-lg;
+    margin: $spacing-lg 0;
+}
+
+.diagnostico-item {
+    background-color: white;
+    border: 0.2rem solid rgba($primary, 0.15);
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    text-align: center;
+    transition: $transition;
+
+    &:hover {
+        border-color: $primary;
+        box-shadow: $shadow-md;
+        transform: translateY(-0.4rem);
+    }
+
+    .diagnostico-icon {
+        font-size: 4.0rem;
+        margin-bottom: $spacing-md;
+    }
+
+    h4 {
+        font-family: $font-title;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: $secondary;
+        margin: 0 0 $spacing-xs 0;
+    }
+
+    p {
+        font-size: 1.3rem;
+        color: rgba($text, 0.7);
+        margin: 0;
+    }
+}
+
+.indicadores-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: $spacing-lg 0;
+    background-color: white;
+    border-radius: $border-radius-sm;
+    overflow: hidden;
+    box-shadow: $shadow-sm;
+    font-size: 1.3rem;
+
+    thead {
+        background-color: $secondary;
+        color: white;
+
+        th {
+            font-family: $font-title;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding: $spacing-md $spacing-sm;
+            text-align: left;
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 0.1rem solid rgba($secondary, 0.1);
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            &:nth-child(even) {
+                background-color: rgba($primary, 0.02);
+            }
+
+            td {
+                padding: $spacing-md $spacing-sm;
+                color: $text;
+                vertical-align: top;
+            }
+        }
+    }
+}
+
+// ==========================================
+// CONTROL DE CAMBIOS Y FIRMAS
+// ==========================================
+
+.control-cambios-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: $spacing-lg 0;
+    background-color: white;
+    border-radius: $border-radius-sm;
+    overflow: hidden;
+    box-shadow: $shadow-sm;
+
+    thead {
+        background-color: $secondary;
+        color: white;
+
+        th {
+            font-family: $font-title;
+            font-size: 1.4rem;
+            font-weight: 600;
+            padding: $spacing-md;
+            text-align: left;
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 0.1rem solid rgba($secondary, 0.1);
+
+            &.empty-row {
+                background-color: rgba($secondary, 0.02);
+
+                td {
+                    height: 4rem;
+                }
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            td {
+                padding: $spacing-md;
+                font-size: 1.4rem;
+                color: $text;
+            }
+        }
+    }
+}
+
+.firmas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    gap: $spacing-xl;
+    margin-top: $spacing-lg;
+}
+
+.firma-block {
+    background-color: white;
+    border: 0.2rem solid rgba($primary, 0.15);
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+
+    h4 {
+        font-family: $font-title;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: $primary;
+        margin: 0 0 $spacing-md 0;
+        padding-bottom: $spacing-sm;
+        border-bottom: 0.2rem solid rgba($primary, 0.3);
+    }
+}
+
+.firma-content {
+    p {
+        font-size: 1.4rem;
+        line-height: 1.8;
+        margin-bottom: $spacing-sm;
+
+        strong {
+            color: $secondary;
+            font-weight: 600;
+        }
+    }
+}
+
+.firma-line {
+    margin: $spacing-lg 0;
+    padding: $spacing-md 0;
+    border-bottom: 0.2rem dashed rgba($secondary, 0.3);
+
+    span {
+        font-size: 1.4rem;
+        color: rgba($text, 0.6);
+    }
+}
+
+// ==========================================
+// ANEXOS
+// ==========================================
+
+.anexos-list {
+    margin: $spacing-lg 0;
+}
+
+.anexo-item {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+    padding: $spacing-md;
+    margin-bottom: $spacing-sm;
+    background-color: white;
+    border: 0.2rem solid rgba($primary, 0.1);
+    border-radius: $border-radius-sm;
+    transition: $transition;
+
+    &:hover {
+        border-color: $primary;
+        box-shadow: $shadow-sm;
+    }
+}
+
+.anexo-numero {
+    flex-shrink: 0;
+    width: 8rem;
+    padding: $spacing-xs $spacing-sm;
+    background-color: $primary;
+    color: white;
+    font-family: $font-title;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    border-radius: $border-radius-sm;
+}
+
+.anexo-descripcion {
+    flex: 1;
+    font-size: 1.4rem;
+    line-height: 1.6;
+    color: $text;
+    padding-top: $spacing-xs;
+}
+
+.nota-final {
+    margin: $spacing-xxl 0 $spacing-lg 0;
+    padding: $spacing-lg;
+    background-color: rgba($primary, 0.05);
+    border-left: 0.4rem solid $primary;
+    border-radius: $border-radius-sm;
+}
+
+.disclaimer-final {
+    text-align: center;
+    margin-top: $spacing-xl;
+    padding-top: $spacing-lg;
+    border-top: 0.2rem solid rgba($secondary, 0.1);
+
+    p {
+        font-size: 1.4rem;
+        color: rgba($text, 0.6);
+        font-style: italic;
+    }
+}
+
+// ==========================================
+// DEFINICIONES GRID
+// ==========================================
+
+.definiciones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(35rem, 1fr));
+    gap: $spacing-lg;
+}
+
+.definicion-card {
+    background-color: white;
+    border: 0.2rem solid rgba($primary, 0.2);
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    transition: $transition;
+
+    &:hover {
+        border-color: $primary;
+        box-shadow: $shadow-md;
+        transform: translateY(-0.4rem);
+    }
+}
+
+.definicion-titulo {
+    font-family: $font-title;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: $primary;
+    margin: 0 0 $spacing-sm 0;
+}
+
+.definicion-texto {
+    font-size: 1.4rem;
+    line-height: 1.7;
+    color: $text;
+    margin: 0;
+}
+
+// ==========================================
+// PAGE NAVIGATION (Bottom)
+// ==========================================
+
+.page-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: white;
+    border-top: 0.1rem solid rgba($secondary, 0.1);
+    box-shadow: 0 -0.2rem 0.8rem rgba(0, 0, 0, 0.08);
+    padding: $spacing-md $spacing-lg;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    background-color: transparent;
+    border: 0.2rem solid rgba($secondary, 0.2);
+    border-radius: $border-radius-sm;
+    font-family: $font-title;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: $secondary;
+    cursor: pointer;
+    transition: $transition;
+
+    svg {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    &:hover:not(:disabled) {
+        background-color: rgba($secondary, 0.05);
+        border-color: $secondary;
+    }
+
+    &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+}
+
+.page-dots {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+}
+
+.page-dot {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background-color: rgba($secondary, 0.3);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+        background-color: rgba($primary, 0.5);
+    }
+
+    &.active {
+        width: 3.2rem;
+        border-radius: 0.4rem;
+        background-color: $primary;
+    }
+}
+
+// ==========================================
+// PRINT STYLES
+// ==========================================
+
+@media print {
+    // Reset layout for vertical printing
+    html, body {
+        font-size: 62.5%;
+        width: 100%;
+        height: auto;
+    }
+
+    .print-hidden {
+        display: none !important;
+    }
+
+    .profesiograma-viewer {
+        display: block !important;
+        overflow: visible !important;
+        height: auto !important;
+        scroll-snap-type: none !important;
+    }
+
+    .page {
+        min-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 100vh;
+        page-break-after: always;
+        page-break-inside: avoid;
+        scroll-snap-align: none;
+        padding: 2cm;
+    }
+
+    .page:last-child {
+        page-break-after: auto;
+    }
+
+    // Adjust font sizes for print
+    .portada-title {
+        font-size: 4.0rem;
+    }
+
+    .page-title {
+        font-size: 2.4rem;
+    }
+
+    // Remove shadows and transitions for print
+    * {
+        box-shadow: none !important;
+        transition: none !important;
+    }
+
+    // Ensure backgrounds print
+    .portada-info,
+    .definicion-card,
+    .normativa-item,
+    .field-value {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+// ==========================================
+// RESPONSIVE DESIGN
+// ==========================================
+
+@media (max-width: map-get($breakpoints, 'tablet')) {
+    .nav-container {
+        flex-direction: column;
+        gap: $spacing-md;
+        align-items: stretch;
+    }
+
+    .nav-left {
+        justify-content: center;
+    }
+
+    .nav-actions {
+        justify-content: center;
+    }
+
+    .portada-title {
+        font-size: 3.6rem;
+    }
+
+    .page-title {
+        font-size: 2.4rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .definiciones-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: map-get($breakpoints, 'mobile')) {
+    .nav-title {
+        font-size: 1.4rem;
+    }
+
+    .nav-page-indicator {
+        font-size: 1.2rem;
+    }
+
+    .portada-title {
+        font-size: 2.8rem;
+    }
+
+    .page-title {
+        font-size: 2.0rem;
+    }
+
+    .page {
+        padding: $spacing-lg;
+    }
+
+    .btn {
+        padding: $spacing-sm $spacing-md;
+        font-size: 1.2rem;
+    }
+}
+
+// ==========================================
+// ACCESSIBILITY
+// ==========================================
+
+// Focus styles
+*:focus-visible {
+    outline: 0.2rem solid $primary;
+    outline-offset: 0.2rem;
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+    .btn-outline {
+        border-width: 0.3rem;
+    }
+
+    .page-title {
+        border-bottom-width: 0.6rem;
+    }
+}
+
+// ==========================================
+// PROTOCOLO POR CARGO (SECTION 8) - MOST IMPORTANT
+// ==========================================
+
+.cargo-ficha {
+    background-color: white;
+    border: 0.3rem solid rgba($primary, 0.2);
+    border-radius: $border-radius-lg;
+    padding: $spacing-xxl;
+    margin-bottom: $spacing-xxl;
+    box-shadow: $shadow-md;
+    page-break-inside: avoid; // For PDF printing
+
+    &:hover {
+        border-color: $primary;
+        box-shadow: $shadow-lg;
+    }
+}
+
+.cargo-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-lg;
+    margin-bottom: $spacing-xl;
+    padding-bottom: $spacing-lg;
+    border-bottom: 0.3rem solid rgba($primary, 0.3);
+}
+
+.cargo-numero {
+    flex-shrink: 0;
+    padding: $spacing-md $spacing-lg;
+    background: linear-gradient(135deg, $primary 0%, darken($primary, 10%) 100%);
+    color: white;
+    font-family: $font-title;
+    font-size: 1.6rem;
+    font-weight: 700;
+    border-radius: $border-radius-sm;
+    box-shadow: $shadow-sm;
+}
+
+.cargo-nombre {
+    font-family: $font-title;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: $secondary;
+    margin: 0;
+    flex: 1;
+}
+
+.cargo-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    gap: $spacing-lg;
+    margin-bottom: $spacing-xl;
+    padding: $spacing-lg;
+    background-color: rgba($primary, 0.03);
+    border-radius: $border-radius-md;
+}
+
+.cargo-info-item {
+    display: flex;
+    align-items: baseline;
+    gap: $spacing-sm;
+
+    .info-label {
+        font-family: $font-title;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: $secondary;
+    }
+
+    .info-value {
+        font-size: 1.6rem;
+        color: $text;
+        font-weight: 500;
+
+        &.badge-risk {
+            padding: $spacing-xs $spacing-md;
+            background-color: $primary;
+            color: white;
+            border-radius: $border-radius-sm;
+            font-weight: 700;
+        }
+    }
+}
+
+.cargo-section {
+    margin-bottom: $spacing-xl;
+    page-break-inside: avoid; // For PDF printing
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.cargo-section-title {
+    font-family: $font-title;
+    font-size: 2.0rem;
+    font-weight: 700;
+    color: $primary;
+    margin: 0 0 $spacing-md 0;
+    padding-bottom: $spacing-sm;
+    border-bottom: 0.2rem solid rgba($primary, 0.3);
+}
+
+.cargo-descripcion {
+    font-size: 1.5rem;
+    line-height: 1.8;
+    color: $text;
+    margin: 0;
+    padding: $spacing-md;
+    background-color: rgba($secondary, 0.02);
+    border-left: 0.4rem solid rgba($secondary, 0.2);
+    border-radius: $border-radius-sm;
+}
+
+// Factores de Riesgo
+.factores-riesgo-list {
+    display: grid;
+    gap: $spacing-lg;
+}
+
+.factor-riesgo-item {
+    background-color: white;
+    border: 0.2rem solid rgba($secondary, 0.1);
+    border-radius: $border-radius-md;
+    padding: $spacing-lg;
+    transition: $transition;
+
+    &:hover {
+        border-color: rgba($primary, 0.5);
+        box-shadow: $shadow-sm;
+    }
+}
+
+.factor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-sm;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+}
+
+.factor-nombre {
+    font-family: $font-title;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: $secondary;
+    margin: 0;
+}
+
+.factor-badge {
+    padding: $spacing-xs $spacing-md;
+    color: white;
+    font-family: $font-title;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border-radius: $border-radius-sm;
+    box-shadow: $shadow-sm;
+}
+
+.factor-descripcion {
+    font-size: 1.4rem;
+    line-height: 1.7;
+    color: $text;
+    margin: $spacing-sm 0;
+}
+
+.factor-exposicion {
+    font-size: 1.3rem;
+    color: rgba($text, 0.7);
+    margin: $spacing-xs 0 0 0;
+
+    strong {
+        color: $secondary;
+        font-weight: 600;
+    }
+}
+
+// Examenes Table
+.examenes-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: $spacing-md;
+    background-color: white;
+    border-radius: $border-radius-sm;
+    overflow: hidden;
+    box-shadow: $shadow-sm;
+
+    thead {
+        background-color: $secondary;
+        color: white;
+
+        th {
+            font-family: $font-title;
+            font-size: 1.4rem;
+            font-weight: 600;
+            padding: $spacing-md;
+            text-align: left;
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 0.1rem solid rgba($secondary, 0.1);
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            &:nth-child(even) {
+                background-color: rgba($primary, 0.02);
+            }
+
+            td {
+                padding: $spacing-md;
+                font-size: 1.4rem;
+                color: $text;
+                vertical-align: top;
+
+                &.no-data {
+                    text-align: center;
+                    color: rgba($text, 0.5);
+                    font-style: italic;
+                }
+            }
+        }
+    }
+}
+
+// Lists (EPP, Aptitudes, Incompatibles)
+.epp-list,
+.aptitudes-list,
+.incompatibles-list {
+    list-style: none;
+    padding: 0;
+    margin: $spacing-md 0 0 0;
+
+    li {
+        position: relative;
+        padding: $spacing-md;
+        padding-left: $spacing-xl;
+        margin-bottom: $spacing-xs;
+        background-color: rgba($primary, 0.03);
+        border-left: 0.3rem solid $primary;
+        border-radius: $border-radius-sm;
+        font-size: 1.4rem;
+        line-height: 1.7;
+
+        &::before {
+            content: '●';
+            position: absolute;
+            left: $spacing-md;
+            color: $primary;
+            font-size: 1.6rem;
+        }
+
+        &.no-data {
+            background-color: rgba($secondary, 0.02);
+            border-left-color: rgba($secondary, 0.2);
+            color: rgba($text, 0.5);
+            font-style: italic;
+
+            &::before {
+                content: '○';
+                color: rgba($secondary, 0.4);
+            }
+        }
+    }
+}
+
+.incompatibles-list {
+    li {
+        background-color: rgba($danger, 0.05);
+        border-left-color: $danger;
+
+        &::before {
+            content: '⚠';
+            font-size: 1.8rem;
+        }
+    }
+}
+
+// No data message
+.no-data-message {
+    text-align: center;
+    padding: $spacing-xxl;
+    background-color: rgba($secondary, 0.02);
+    border: 0.2rem dashed rgba($secondary, 0.2);
+    border-radius: $border-radius-md;
+
+    p {
+        font-size: 1.6rem;
+        color: rgba($text, 0.5);
+        font-style: italic;
+        margin: 0;
+    }
+}
+
+.no-data {
+    color: rgba($text, 0.5);
+    font-style: italic;
+}
