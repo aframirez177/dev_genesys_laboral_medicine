@@ -1869,10 +1869,16 @@ export function initializeForm() {
     lista.innerHTML = '';
 
     const todosCargos = Array.from(cargoContainer.querySelectorAll('.cargo'));
-    const cargosDisponibles = todosCargos.filter(cargo => cargo !== cargoDestino);
+
+    // Filtrar solo cargos que NO son el destino Y que tienen riesgos seleccionados
+    const cargosDisponibles = todosCargos.filter(cargo => {
+      if (cargo === cargoDestino) return false;
+      const gesSeleccionados = cargo.querySelectorAll('.riesgo-checkbox:checked').length;
+      return gesSeleccionados > 0; // Solo cargos con riesgos
+    });
 
     if (cargosDisponibles.length === 0) {
-      lista.innerHTML = '<li class="dropdown-empty">No hay otros cargos disponibles para copiar</li>';
+      lista.innerHTML = '<li class="no-cargos">No hay cargos con riesgos configurados para copiar</li>';
       dropdown.classList.add('active');
       return;
     }
@@ -1883,13 +1889,9 @@ export function initializeForm() {
       const gesSeleccionados = cargoOrigen.querySelectorAll('.riesgo-checkbox:checked').length;
 
       const li = document.createElement('li');
-      li.className = 'dropdown-item-copiar';
       li.innerHTML = `
-        <div class="cargo-option-info">
-          <strong class="cargo-option-nombre">${cargoNombre}</strong>
-          <span class="cargo-option-area">${cargoArea}</span>
-        </div>
-        <span class="cargo-option-badge">${gesSeleccionados} ${gesSeleccionados === 1 ? 'riesgo' : 'riesgos'}</span>
+        <span class="cargo-nombre">${cargoNombre}</span>
+        <span class="cargo-area">${cargoArea} • ${gesSeleccionados} ${gesSeleccionados === 1 ? 'riesgo' : 'riesgos'}</span>
       `;
 
       li.onclick = () => {
@@ -1905,7 +1907,7 @@ export function initializeForm() {
     // Cerrar al hacer clic fuera
     setTimeout(() => {
       document.addEventListener('click', function cerrarDropdown(e) {
-        if (!dropdown.contains(e.target) && !e.target.closest('.copiar-riesgos-btn')) {
+        if (!dropdown.contains(e.target) && !e.target.closest('.copiar-riesgos-btn-flotante')) {
           dropdown.classList.remove('active');
           document.removeEventListener('click', cerrarDropdown);
         }
@@ -2129,20 +2131,7 @@ export function initializeForm() {
         alert("No puede eliminar el último cargo.");
       }
     };
-    // 🆕 Botón de copiar riesgos desde otro cargo
-    const copiarBtn = document.createElement("button");
-    copiarBtn.type = "button";
-    copiarBtn.className = "copiar-riesgos-btn";
-    copiarBtn.title = "Copiar riesgos desde otro cargo";
-    copiarBtn.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-      </svg>
-      <span>Copiar</span>
-    `;
-
-    headerRight.append(trabajadoresContainer, copiarBtn, minimizeBtn, deleteBtn);
+    headerRight.append(trabajadoresContainer, minimizeBtn, deleteBtn);
     cargoHeader.append(headerLeft, headerRight);
 
     const cargoBody = document.createElement("div");
@@ -2371,33 +2360,37 @@ export function initializeForm() {
       gesResumenDiv
     );
 
+    // 🆕 Botón flotante para copiar riesgos
+    const copiarBtn = document.createElement("button");
+    copiarBtn.type = "button";
+    copiarBtn.className = "copiar-riesgos-btn-flotante";
+    copiarBtn.title = "Copiar riesgos desde otro cargo";
+    copiarBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+    `;
+
     // 🆕 Dropdown para seleccionar cargo de origen (copiar riesgos)
     const dropdownCopiar = document.createElement("div");
     dropdownCopiar.className = "dropdown-copiar-riesgos";
     dropdownCopiar.innerHTML = `
       <div class="dropdown-header-copiar">
-        <span>¿De qué cargo copiar?</span>
-        <button type="button" class="btn-close-dropdown">×</button>
+        <h4>Copiar riesgos desde:</h4>
+        <p>Selecciona un cargo que ya tenga riesgos configurados</p>
       </div>
       <div class="dropdown-body-copiar">
-        <p class="dropdown-hint">Selecciona un cargo para copiar sus riesgos, controles y niveles:</p>
         <ul class="dropdown-list-copiar"></ul>
       </div>
     `;
 
-    cargoDiv.append(cargoHeader, dropdownCopiar, cargoBody);
+    cargoDiv.append(cargoHeader, copiarBtn, dropdownCopiar, cargoBody);
 
     // 🆕 Event listener para botón de copiar
     copiarBtn.onclick = (e) => {
       e.stopPropagation();
       mostrarDropdownCopiar(cargoDiv, dropdownCopiar);
-    };
-
-    // Cerrar dropdown al hacer clic en X
-    const btnCloseDropdown = dropdownCopiar.querySelector('.btn-close-dropdown');
-    btnCloseDropdown.onclick = (e) => {
-      e.stopPropagation();
-      dropdownCopiar.classList.remove('active');
     };
 
     if (cargoContainer) {
