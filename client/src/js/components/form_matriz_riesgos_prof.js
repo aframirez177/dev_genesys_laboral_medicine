@@ -1863,6 +1863,164 @@ export function initializeForm() {
     setTimeout(() => mostrarPaso(pasoActualIdx), 500);
   }
 
+  // 🆕 FUNCIONES PARA COPIAR RIESGOS ENTRE CARGOS
+  function mostrarDropdownCopiar(cargoDestino, dropdown) {
+    const lista = dropdown.querySelector('.dropdown-list-copiar');
+    lista.innerHTML = '';
+
+    const todosCargos = Array.from(cargoContainer.querySelectorAll('.cargo'));
+    const cargosDisponibles = todosCargos.filter(cargo => cargo !== cargoDestino);
+
+    if (cargosDisponibles.length === 0) {
+      lista.innerHTML = '<li class="dropdown-empty">No hay otros cargos disponibles para copiar</li>';
+      dropdown.classList.add('active');
+      return;
+    }
+
+    cargosDisponibles.forEach(cargoOrigen => {
+      const cargoNombre = cargoOrigen.querySelector('.cargo-title')?.textContent || 'Cargo sin nombre';
+      const cargoArea = cargoOrigen.querySelector('input[name="area"]')?.value || 'Sin área';
+      const gesSeleccionados = cargoOrigen.querySelectorAll('.riesgo-checkbox:checked').length;
+
+      const li = document.createElement('li');
+      li.className = 'dropdown-item-copiar';
+      li.innerHTML = `
+        <div class="cargo-option-info">
+          <strong class="cargo-option-nombre">${cargoNombre}</strong>
+          <span class="cargo-option-area">${cargoArea}</span>
+        </div>
+        <span class="cargo-option-badge">${gesSeleccionados} ${gesSeleccionados === 1 ? 'riesgo' : 'riesgos'}</span>
+      `;
+
+      li.onclick = () => {
+        copiarRiesgosDesdeCargo(cargoOrigen, cargoDestino);
+        dropdown.classList.remove('active');
+      };
+
+      lista.appendChild(li);
+    });
+
+    dropdown.classList.add('active');
+
+    // Cerrar al hacer clic fuera
+    setTimeout(() => {
+      document.addEventListener('click', function cerrarDropdown(e) {
+        if (!dropdown.contains(e.target) && !e.target.closest('.copiar-riesgos-btn')) {
+          dropdown.classList.remove('active');
+          document.removeEventListener('click', cerrarDropdown);
+        }
+      });
+    }, 100);
+  }
+
+  function copiarRiesgosDesdeCargo(cargoOrigen, cargoDestino) {
+    // 1. Obtener todos los riesgos seleccionados del cargo origen
+    const riesgosOrigen = cargoOrigen.querySelectorAll('.riesgo-checkbox:checked');
+
+    if (riesgosOrigen.length === 0) {
+      mostrarNotificacion('⚠️ El cargo de origen no tiene riesgos seleccionados', 'warning');
+      return;
+    }
+
+    // 2. Deseleccionar todos los riesgos del cargo destino primero
+    const riesgosDestino = cargoDestino.querySelectorAll('.riesgo-checkbox:checked');
+    riesgosDestino.forEach(checkbox => {
+      checkbox.checked = false;
+      checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    // 3. Copiar cada riesgo seleccionado
+    let riesgosCopiados = 0;
+    riesgosOrigen.forEach(checkboxOrigen => {
+      const riesgoValue = checkboxOrigen.value;
+
+      // Buscar el checkbox correspondiente en el cargo destino
+      const checkboxDestino = cargoDestino.querySelector(`.riesgo-checkbox[value="${riesgoValue}"]`);
+
+      if (checkboxDestino) {
+        // Marcar el checkbox
+        checkboxDestino.checked = true;
+        checkboxDestino.dispatchEvent(new Event('change', { bubbles: true }));
+
+        // Copiar niveles (ND, NE, NC)
+        const nivelesOrigen = checkboxOrigen.closest('.swiper-slide')?.querySelectorAll('.nivel-select');
+        const nivelesDestino = checkboxDestino.closest('.swiper-slide')?.querySelectorAll('.nivel-select');
+
+        if (nivelesOrigen && nivelesDestino) {
+          nivelesOrigen.forEach((selectOrigen, index) => {
+            if (nivelesDestino[index]) {
+              nivelesDestino[index].value = selectOrigen.value;
+              nivelesDestino[index].dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          });
+        }
+
+        // Copiar controles (fuente, medio, individuo)
+        const botonesControlesOrigen = checkboxOrigen.closest('.swiper-slide')?.querySelectorAll('.barra');
+        const botonesControlesDestino = checkboxDestino.closest('.swiper-slide')?.querySelectorAll('.barra');
+
+        if (botonesControlesOrigen && botonesControlesDestino) {
+          botonesControlesOrigen.forEach((barraOrigen, index) => {
+            if (botonesControlesDestino[index]) {
+              const tipoControl = barraOrigen.dataset.tipo;
+              const valorControl = barraOrigen.dataset.valor;
+
+              if (tipoControl && valorControl) {
+                updateControles(riesgoValue, cargoDestino, tipoControl, valorControl);
+
+                // Actualizar visualmente la barra en destino
+                const barraDestino = botonesControlesDestino[index];
+                barraDestino.dataset.valor = valorControl;
+                barraDestino.className = `barra barra-${valorControl}`;
+                barraDestino.querySelector('.check-icon').style.display = valorControl === 'sin' ? 'none' : 'block';
+              }
+            }
+          });
+        }
+
+        riesgosCopiados++;
+      }
+    });
+
+    // 4. Actualizar resumen de GES
+    updateGesResumen(cargoDestino);
+
+    // 5. Guardar datos
+    saveData();
+
+    // 6. Mostrar notificación de éxito
+    const cargoOrigenNombre = cargoOrigen.querySelector('.cargo-title')?.textContent || 'Cargo';
+    mostrarNotificacion(
+      `✅ ${riesgosCopiados} ${riesgosCopiados === 1 ? 'riesgo copiado' : 'riesgos copiados'} desde "${cargoOrigenNombre}"`,
+      'success'
+    );
+
+    console.log(`✅ Copiados ${riesgosCopiados} riesgos a ${cargoDestino.querySelector('.cargo-title')?.textContent}`);
+  }
+
+  function mostrarNotificacion(mensaje, tipo = 'info') {
+    // Verificar si ya existe una notificación
+    const existente = document.querySelector('.notificacion-copiar');
+    if (existente) {
+      existente.remove();
+    }
+
+    const notif = document.createElement('div');
+    notif.className = `notificacion-copiar notificacion-${tipo}`;
+    notif.textContent = mensaje;
+
+    document.body.appendChild(notif);
+
+    setTimeout(() => {
+      notif.classList.add('show');
+    }, 10);
+
+    setTimeout(() => {
+      notif.classList.remove('show');
+      setTimeout(() => notif.remove(), 300);
+    }, 3500);
+  }
+
   function addCargo(cargoData = {}, isDefault = false) {
     const currentCargoCount = cargoContainer
       ? cargoContainer.querySelectorAll(".cargo").length
@@ -1971,7 +2129,20 @@ export function initializeForm() {
         alert("No puede eliminar el último cargo.");
       }
     };
-    headerRight.append(trabajadoresContainer, minimizeBtn, deleteBtn);
+    // 🆕 Botón de copiar riesgos desde otro cargo
+    const copiarBtn = document.createElement("button");
+    copiarBtn.type = "button";
+    copiarBtn.className = "copiar-riesgos-btn";
+    copiarBtn.title = "Copiar riesgos desde otro cargo";
+    copiarBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      <span>Copiar</span>
+    `;
+
+    headerRight.append(trabajadoresContainer, copiarBtn, minimizeBtn, deleteBtn);
     cargoHeader.append(headerLeft, headerRight);
 
     const cargoBody = document.createElement("div");
@@ -2199,7 +2370,35 @@ export function initializeForm() {
       riesgosSection,
       gesResumenDiv
     );
-    cargoDiv.append(cargoHeader, cargoBody);
+
+    // 🆕 Dropdown para seleccionar cargo de origen (copiar riesgos)
+    const dropdownCopiar = document.createElement("div");
+    dropdownCopiar.className = "dropdown-copiar-riesgos";
+    dropdownCopiar.innerHTML = `
+      <div class="dropdown-header-copiar">
+        <span>¿De qué cargo copiar?</span>
+        <button type="button" class="btn-close-dropdown">×</button>
+      </div>
+      <div class="dropdown-body-copiar">
+        <p class="dropdown-hint">Selecciona un cargo para copiar sus riesgos, controles y niveles:</p>
+        <ul class="dropdown-list-copiar"></ul>
+      </div>
+    `;
+
+    cargoDiv.append(cargoHeader, dropdownCopiar, cargoBody);
+
+    // 🆕 Event listener para botón de copiar
+    copiarBtn.onclick = (e) => {
+      e.stopPropagation();
+      mostrarDropdownCopiar(cargoDiv, dropdownCopiar);
+    };
+
+    // Cerrar dropdown al hacer clic en X
+    const btnCloseDropdown = dropdownCopiar.querySelector('.btn-close-dropdown');
+    btnCloseDropdown.onclick = (e) => {
+      e.stopPropagation();
+      dropdownCopiar.classList.remove('active');
+    };
 
     if (cargoContainer) {
       // FIX: Insertar ANTES del hero-content, no al final

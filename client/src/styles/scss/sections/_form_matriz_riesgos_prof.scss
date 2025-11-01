@@ -415,6 +415,40 @@
                 align-items: center;
                 gap: 1.2rem;
 
+                .copiar-riesgos-btn {
+                    @include button-small();
+                    background-color: map-get($colors, 'alternative');
+                    color: map-get($colors, 'secondary');
+                    border: none;
+                    padding: 0.8rem 1.2rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    font-family: map-get($fonts, 'body');
+                    border-radius: 8px;
+                    transition: all 0.3s ease;
+                    cursor: pointer;
+                    position: relative;
+
+                    svg {
+                        width: 1.6rem;
+                        height: 1.6rem;
+                        fill: currentColor;
+                    }
+
+                    &:hover {
+                        background-color: darken(map-get($colors, 'alternative'), 8%);
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    }
+
+                    &:active {
+                        transform: translateY(0);
+                    }
+                }
+
                 .trabajadores-container {
                     display: flex;
                     align-items: center;
@@ -1297,13 +1331,193 @@
     .hero-content {
         order: 999;
         width: 420px;
-        
+
         @include respond-to('tablet') {
             width: 380px;
         }
-        
+
         @include respond-to('mobile') {
             width: 100%;
         }
+    }
+}
+
+//===================================================================
+// DROPDOWN COPIAR RIESGOS
+//===================================================================
+
+.dropdown-copiar-riesgos {
+    position: absolute;
+    top: calc(100% + 0.8rem);
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    border: 1px solid rgba(map-get($colors, 'border-color'), 0.2);
+    min-width: 280px;
+    max-width: 320px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+
+    &.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .dropdown-header-copiar {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(map-get($colors, 'border-color'), 0.2);
+        background: rgba(map-get($colors, 'background'), 0.6);
+        border-radius: 12px 12px 0 0;
+
+        h4 {
+            font-family: map-get($fonts, 'title');
+            font-size: 1.4rem;
+            color: map-get($colors, 'secondary');
+            font-weight: 700;
+            margin: 0;
+        }
+
+        p {
+            font-family: map-get($fonts, 'body');
+            font-size: 1.2rem;
+            color: lighten(map-get($colors, 'text'), 20%);
+            margin: 0.5rem 0 0 0;
+        }
+    }
+
+    .dropdown-body-copiar {
+        max-height: 320px;
+        overflow-y: auto;
+        padding: 0.5rem 0;
+
+        // Scrollbar personalizada
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: rgba(map-get($colors, 'border-color'), 0.1);
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: map-get($colors, 'primary');
+            border-radius: 3px;
+
+            &:hover {
+                background: darken(map-get($colors, 'primary'), 10%);
+            }
+        }
+
+        .dropdown-list-copiar {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+                padding: 1.2rem 1.5rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                border-bottom: 1px solid rgba(map-get($colors, 'border-color'), 0.1);
+                font-family: map-get($fonts, 'body');
+                font-size: 1.3rem;
+                color: map-get($colors, 'text');
+                font-weight: 500;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                &:hover {
+                    background: rgba(map-get($colors, 'primary'), 0.08);
+                    color: map-get($colors, 'secondary');
+                    padding-left: 2rem;
+                }
+
+                &:active {
+                    background: rgba(map-get($colors, 'primary'), 0.15);
+                }
+
+                .cargo-nombre {
+                    display: block;
+                    font-weight: 600;
+                    margin-bottom: 0.3rem;
+                }
+
+                .cargo-area {
+                    display: block;
+                    font-size: 1.1rem;
+                    color: lighten(map-get($colors, 'text'), 25%);
+                }
+            }
+
+            .no-cargos {
+                padding: 2rem 1.5rem;
+                text-align: center;
+                color: lighten(map-get($colors, 'text'), 30%);
+                font-style: italic;
+                font-size: 1.2rem;
+            }
+        }
+    }
+}
+
+//===================================================================
+// NOTIFICACIÓN COPIAR
+//===================================================================
+
+.notificacion-copiar {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    border-left: 5px solid map-get($colors, 'success');
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    min-width: 280px;
+    max-width: 400px;
+
+    &.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    &.error {
+        border-left-color: map-get($colors, 'danger');
+    }
+
+    .notificacion-content {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+
+        .notificacion-icon {
+            font-size: 2.4rem;
+            flex-shrink: 0;
+        }
+
+        .notificacion-text {
+            font-family: map-get($fonts, 'body');
+            font-size: 1.4rem;
+            color: map-get($colors, 'text');
+            font-weight: 500;
+            line-height: 1.4;
+        }
+    }
+
+    @include respond-to('mobile') {
+        top: 1rem;
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
     }
 }
