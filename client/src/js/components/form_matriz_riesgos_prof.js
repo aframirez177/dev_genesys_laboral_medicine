@@ -1873,20 +1873,25 @@ export function initializeForm() {
     // Filtrar solo cargos que NO son el destino Y que tienen riesgos seleccionados
     const cargosDisponibles = todosCargos.filter(cargo => {
       if (cargo === cargoDestino) return false;
-      const gesSeleccionados = cargo.querySelectorAll('.riesgo-checkbox:checked').length;
+      const gesSeleccionados = cargo.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked').length;
       return gesSeleccionados > 0; // Solo cargos con riesgos
     });
 
     if (cargosDisponibles.length === 0) {
       lista.innerHTML = '<li class="no-cargos">No hay cargos con riesgos configurados para copiar</li>';
       dropdown.classList.add('active');
+
+      // Cerrar dropdown automáticamente después de mostrar mensaje
+      setTimeout(() => {
+        dropdown.classList.remove('active');
+      }, 2500);
       return;
     }
 
     cargosDisponibles.forEach(cargoOrigen => {
       const cargoNombre = cargoOrigen.querySelector('.cargo-title')?.textContent || 'Cargo sin nombre';
       const cargoArea = cargoOrigen.querySelector('input[name="area"]')?.value || 'Sin área';
-      const gesSeleccionados = cargoOrigen.querySelectorAll('.riesgo-checkbox:checked').length;
+      const gesSeleccionados = cargoOrigen.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked').length;
 
       const li = document.createElement('li');
       li.innerHTML = `
@@ -1906,18 +1911,19 @@ export function initializeForm() {
 
     // Cerrar al hacer clic fuera
     setTimeout(() => {
-      document.addEventListener('click', function cerrarDropdown(e) {
+      const cerrarDropdown = (e) => {
         if (!dropdown.contains(e.target) && !e.target.closest('.copiar-riesgos-btn-flotante')) {
           dropdown.classList.remove('active');
           document.removeEventListener('click', cerrarDropdown);
         }
-      });
+      };
+      document.addEventListener('click', cerrarDropdown);
     }, 100);
   }
 
   function copiarRiesgosDesdeCargo(cargoOrigen, cargoDestino) {
     // 1. Obtener todos los riesgos seleccionados del cargo origen
-    const riesgosOrigen = cargoOrigen.querySelectorAll('.riesgo-checkbox:checked');
+    const riesgosOrigen = cargoOrigen.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked');
 
     if (riesgosOrigen.length === 0) {
       mostrarNotificacion('⚠️ El cargo de origen no tiene riesgos seleccionados', 'warning');
@@ -1925,7 +1931,7 @@ export function initializeForm() {
     }
 
     // 2. Deseleccionar todos los riesgos del cargo destino primero
-    const riesgosDestino = cargoDestino.querySelectorAll('.riesgo-checkbox:checked');
+    const riesgosDestino = cargoDestino.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked');
     riesgosDestino.forEach(checkbox => {
       checkbox.checked = false;
       checkbox.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1936,8 +1942,8 @@ export function initializeForm() {
     riesgosOrigen.forEach(checkboxOrigen => {
       const riesgoValue = checkboxOrigen.value;
 
-      // Buscar el checkbox correspondiente en el cargo destino
-      const checkboxDestino = cargoDestino.querySelector(`.riesgo-checkbox[value="${riesgoValue}"]`);
+      // Buscar el checkbox correspondiente en el cargo destino (mismo value)
+      const checkboxDestino = cargoDestino.querySelector(`input[type="checkbox"][value="${riesgoValue}"]`);
 
       if (checkboxDestino) {
         // Marcar el checkbox
@@ -2136,12 +2142,6 @@ export function initializeForm() {
 
     const cargoBody = document.createElement("div");
     cargoBody.className = "cargo-body";
-    minimizeBtn.onclick = () => {
-      cargoBody.classList.toggle("hidden");
-      minimizeBtn.innerHTML = cargoBody.classList.contains("hidden")
-        ? "+"
-        : "-";
-    };
 
     const infoGeneralSection = document.createElement("div");
     infoGeneralSection.className = "info-general-section";
@@ -2391,6 +2391,20 @@ export function initializeForm() {
     copiarBtn.onclick = (e) => {
       e.stopPropagation();
       mostrarDropdownCopiar(cargoDiv, dropdownCopiar);
+    };
+
+    // 🆕 Minimizar/Maximizar cargo (también oculta/muestra botón flotante)
+    minimizeBtn.onclick = () => {
+      const isMinimized = cargoBody.classList.toggle("hidden");
+      minimizeBtn.innerHTML = isMinimized ? "+" : "-";
+
+      // Ocultar/mostrar botón flotante y dropdown al minimizar/maximizar
+      if (isMinimized) {
+        copiarBtn.style.display = 'none';
+        dropdownCopiar.classList.remove('active');
+      } else {
+        copiarBtn.style.display = 'flex';
+      }
     };
 
     if (cargoContainer) {
