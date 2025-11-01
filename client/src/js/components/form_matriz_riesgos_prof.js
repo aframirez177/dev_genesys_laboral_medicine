@@ -1933,6 +1933,44 @@ export function initializeForm() {
     return duplicados;
   }
 
+  // 🆕 FUNCIÓN AUXILIAR: Calcular fingerprint de un cargo
+  function calcularFingerprintCargo(cargo) {
+    const infoGeneral = cargo.querySelector('.info-general-section');
+    if (!infoGeneral) return null;
+
+    const riesgosSeleccionados = cargo.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked');
+    if (riesgosSeleccionados.length === 0) return null;
+
+    const riesgosData = Array.from(riesgosSeleccionados).map(checkbox => {
+      const riesgoValue = checkbox.value;
+
+      // Obtener niveles
+      const nivelesInput = infoGeneral.querySelector(
+        `input[type="hidden"][data-riesgo="${riesgoValue}"][data-niveles]`
+      );
+      const niveles = nivelesInput?.value || '{}';
+
+      // Obtener controles
+      const controles = {};
+      ['fuente', 'medio', 'individuo'].forEach(tipo => {
+        const controlInput = infoGeneral.querySelector(
+          `input[type="hidden"][data-riesgo="${riesgoValue}"][data-tipo="${tipo}"]`
+        );
+        controles[tipo] = controlInput?.value || '';
+      });
+
+      return {
+        riesgo: riesgoValue,
+        niveles: niveles,
+        controles: controles
+      };
+    });
+
+    // Ordenar para consistencia
+    riesgosData.sort((a, b) => a.riesgo.localeCompare(b.riesgo));
+    return JSON.stringify(riesgosData);
+  }
+
   // 🆕 FUNCIONES PARA COPIAR RIESGOS ENTRE CARGOS
   function mostrarDropdownCopiar(cargoDestino, dropdown) {
     const lista = dropdown.querySelector('.dropdown-list-copiar');
@@ -1940,37 +1978,69 @@ export function initializeForm() {
 
     const todosCargos = Array.from(cargoContainer.querySelectorAll('.cargo'));
 
-    // Filtrar solo cargos que NO son el destino Y que tienen riesgos seleccionados
-    const cargosDisponibles = todosCargos.filter(cargo => {
-      if (cargo === cargoDestino) return false;
-      const gesSeleccionados = cargo.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked').length;
-      return gesSeleccionados > 0; // Solo cargos con riesgos
+    // Calcular fingerprint del cargo destino
+    const fingerprintDestino = calcularFingerprintCargo(cargoDestino);
+
+    // Agrupar cargos por fingerprint (preset único)
+    const presetsMap = new Map(); // {fingerprint: [{cargo, nombre, area, numRiesgos}, ...]}
+
+    todosCargos.forEach(cargo => {
+      if (cargo === cargoDestino) return; // Saltar cargo actual
+
+      const fingerprint = calcularFingerprintCargo(cargo);
+      if (!fingerprint) return; // Saltar cargos sin riesgos
+
+      // NO incluir el preset del cargo destino (no tiene sentido copiar lo mismo)
+      if (fingerprint === fingerprintDestino) return;
+
+      const cargoNombre = cargo.querySelector('.cargo-title')?.textContent || 'Cargo sin nombre';
+      const cargoArea = cargo.querySelector('input[name="area"]')?.value || 'Sin área';
+      const numRiesgos = cargo.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked').length;
+
+      if (!presetsMap.has(fingerprint)) {
+        presetsMap.set(fingerprint, []);
+      }
+
+      presetsMap.get(fingerprint).push({
+        cargo,
+        nombre: cargoNombre,
+        area: cargoArea,
+        numRiesgos
+      });
     });
 
-    if (cargosDisponibles.length === 0) {
-      lista.innerHTML = '<li class="no-cargos">No hay cargos con riesgos configurados para copiar</li>';
+    if (presetsMap.size === 0) {
+      lista.innerHTML = '<li class="no-cargos">No hay presets diferentes para copiar</li>';
       dropdown.classList.add('active');
 
-      // Cerrar dropdown automáticamente después de mostrar mensaje
       setTimeout(() => {
         dropdown.classList.remove('active');
       }, 2500);
       return;
     }
 
-    cargosDisponibles.forEach(cargoOrigen => {
-      const cargoNombre = cargoOrigen.querySelector('.cargo-title')?.textContent || 'Cargo sin nombre';
-      const cargoArea = cargoOrigen.querySelector('input[name="area"]')?.value || 'Sin área';
-      const gesSeleccionados = cargoOrigen.querySelectorAll('input[type="checkbox"][name^="ges_cargo_"]:checked').length;
+    // Mostrar un representante de cada preset único
+    presetsMap.forEach((cargos, fingerprint) => {
+      const representante = cargos[0]; // Tomar el primero como representante
+      const otrosCargos = cargos.slice(1);
 
       const li = document.createElement('li');
+
+      let htmlOtros = '';
+      if (otrosCargos.length > 0) {
+        const nombresOtros = otrosCargos.map(c => c.nombre).join(', ');
+        htmlOtros = `<small style="color: #888; display: block; margin-top: 0.3rem;">También en: ${nombresOtros}</small>`;
+      }
+
       li.innerHTML = `
-        <span class="cargo-nombre">${cargoNombre}</span>
-        <span class="cargo-area">${cargoArea} • ${gesSeleccionados} ${gesSeleccionados === 1 ? 'riesgo' : 'riesgos'}</span>
+        <span class="cargo-nombre">${representante.nombre}</span>
+        <span class="cargo-area">${representante.area} • ${representante.numRiesgos} ${representante.numRiesgos === 1 ? 'riesgo' : 'riesgos'}</span>
+        ${htmlOtros}
       `;
 
       li.onclick = () => {
-        copiarRiesgosDesdeCargo(cargoOrigen, cargoDestino);
+        // Copiar desde el representante
+        copiarRiesgosDesdeCargo(representante.cargo, cargoDestino);
         dropdown.classList.remove('active');
       };
 
@@ -3319,24 +3389,6 @@ matrizRiesgosForm.addEventListener("submit", (e) => {
   if (!validateCargosData()) {
     console.log("❌ Validación fallida");
     return;
-  }
-
-  // 🆕 Validar duplicados de presets
-  const duplicados = detectarCargosConPresetsDuplicados();
-  if (duplicados.length > 0) {
-    console.warn("⚠️ Se detectaron cargos con presets duplicados:", duplicados);
-
-    let mensaje = "⚠️ ADVERTENCIA: Se detectaron cargos con los mismos riesgos, niveles y controles:\n\n";
-    duplicados.forEach((dup, index) => {
-      mensaje += `Grupo ${index + 1}: ${dup.cargos.join(' | ')}\n`;
-    });
-    mensaje += `\nEstos cargos generarán el mismo preset de exámenes. ¿Desea continuar?`;
-
-    const continuar = confirm(mensaje);
-    if (!continuar) {
-      console.log("❌ Usuario canceló por duplicados");
-      return;
-    }
   }
 
   // Mostrar modal
