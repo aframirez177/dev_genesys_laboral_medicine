@@ -20,47 +20,237 @@
 }
 
 // ============================================
-// LOADER CONTAINER
+// LOADER CONTAINER - DISEÑO MODERNO Y ANIMADO
 // ============================================
 .loader-container {
   display: none;
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 6rem 2rem;
 
   &.active {
     display: block;
-    animation: fadeIn 0.4s ease;
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .loader {
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid map-get($colors, 'primary');
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 2rem;
+  // Animated icon wrapper with 3 rotating circles
+  .loader-icon-wrapper {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 4rem;
+
+    .loader-circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      opacity: 0.3;
+
+      &.circle-1 {
+        width: 160px;
+        height: 160px;
+        border: 3px solid map-get($colors, 'primary');
+        animation: pulse-circle 2s ease-in-out infinite;
+      }
+
+      &.circle-2 {
+        width: 120px;
+        height: 120px;
+        border: 3px solid map-get($colors, 'primary');
+        animation: pulse-circle 2s ease-in-out 0.5s infinite;
+      }
+
+      &.circle-3 {
+        width: 80px;
+        height: 80px;
+        border: 3px solid map-get($colors, 'primary');
+        animation: pulse-circle 2s ease-in-out 1s infinite;
+      }
+    }
+
+    .loader-center-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 64px;
+      height: 64px;
+      background: white;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      animation: float 3s ease-in-out infinite;
+
+      svg {
+        color: map-get($colors, 'primary');
+      }
+    }
   }
 
-  h1 {
-    font-size: 2.4rem; // 24px
+  .loader-title {
+    font-family: map-get($fonts, 'title');
+    font-size: 3.2rem;
     color: map-get($colors, 'secondary');
-    margin-bottom: 1rem;
-    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    animation: fadeInUp 0.6s ease 0.2s both;
+
+    @media (max-width: 768px) {
+      font-size: 2.4rem;
+    }
   }
 
-  p {
-    font-size: 1.6rem; // 16px
-    color: map-get($colors, 'text');
-    margin-bottom: 0.5rem;
+  .loader-description {
+    font-size: 1.8rem;
+    color: lighten(map-get($colors, 'text'), 10%);
+    margin-bottom: 4rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    animation: fadeInUp 0.6s ease 0.3s both;
+
+    @media (max-width: 768px) {
+      font-size: 1.6rem;
+      margin-bottom: 3rem;
+    }
+  }
+
+  // Animated progress steps
+  .loader-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    animation: fadeInUp 0.6s ease 0.4s both;
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 2rem 1.5rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      .step-icon {
+        width: 4.8rem;
+        height: 4.8rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(map-get($colors, 'primary'), 0.1);
+        position: relative;
+
+        svg {
+          color: map-get($colors, 'primary');
+          opacity: 0;
+        }
+
+        .step-spinner {
+          width: 32px;
+          height: 32px;
+          border: 3px solid rgba(map-get($colors, 'primary'), 0.2);
+          border-top-color: map-get($colors, 'primary');
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+      }
+
+      span {
+        font-size: 1.4rem;
+        color: map-get($colors, 'text');
+        font-weight: 600;
+        text-align: center;
+
+        @media (max-width: 768px) {
+          font-size: 1.2rem;
+        }
+      }
+
+      &.active {
+        background: map-get($colors, 'primary');
+        box-shadow: 0 8px 24px rgba(map-get($colors, 'primary'), 0.3);
+
+        .step-icon {
+          background: white;
+
+          svg {
+            opacity: 1;
+            color: map-get($colors, 'primary');
+            animation: checkmark 0.6s ease;
+          }
+
+          .step-spinner {
+            display: none;
+          }
+        }
+
+        span {
+          color: white;
+        }
+      }
+    }
+  }
+
+  // Progress bar
+  .loader-progress-bar {
+    width: 100%;
+    max-width: 600px;
+    height: 8px;
+    background: rgba(map-get($colors, 'primary'), 0.1);
+    border-radius: 8px;
+    margin: 0 auto 3rem;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease 0.5s both;
+
+    .progress-bar-fill {
+      height: 100%;
+      background: map-get($colors, 'primary');
+      border-radius: 8px;
+      animation: progressFill 3s ease-in-out infinite;
+      box-shadow: 0 0 12px rgba(map-get($colors, 'primary'), 0.5);
+    }
   }
 
   .subtle-text {
-    font-size: 1.4rem; // 14px
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    font-size: 1.4rem;
     color: #999;
+    animation: fadeInUp 0.6s ease 0.6s both;
+
+    svg {
+      color: map-get($colors, 'primary');
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 1.2rem;
+    }
   }
 }
 
+// Animations
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -69,6 +259,63 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-circle {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-10px);
+  }
+}
+
+@keyframes progressFill {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 70%;
+  }
+  100% {
+    width: 0%;
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 // ============================================

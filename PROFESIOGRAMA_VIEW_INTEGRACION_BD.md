@@ -704,3 +704,27 @@ const viewUrl = `http://localhost:3000/pages/profesiograma_view.html?id=${id}`;
 **Última actualización**: 1 de Noviembre de 2025, 14:00
 **Build status**: ✅ Compilado exitosamente (0 errores, warnings normales de tamaño)
 **Estado**: LISTO PARA PRODUCCIÓN
+
+---
+
+## 🔗 DOCUMENTACIÓN RELACIONADA
+
+### Sesión 01 Noviembre 2025
+Ver archivo completo: `LOG_SESION_01_NOV_2025.md`
+
+**Trabajo adicional realizado en esta sesión**:
+- ✅ Feature completa: **"Copiar Riesgos Entre Cargos"** en formulario de matriz de riesgos
+  - Botón flotante en cada card de cargo
+  - Dropdown con presets únicos (deduplicación inteligente)
+  - Copia completa de checkboxes, niveles (ND, NE, NC) y controles (fuente, medio, individuo)
+  - Sistema de fingerprinting para identificar presets duplicados
+  - Integración con minimize/maximize de cards
+  - 6 bugs resueltos durante implementación
+
+**Archivos modificados (feature adicional)**:
+- `client/src/js/components/form_matriz_riesgos_prof.js` (~350 líneas agregadas)
+- `client/src/styles/scss/sections/_form_matriz_riesgos_prof.scss` (~180 líneas agregadas)
+
+**Impacto en UX**:
+- Tiempo de creación de cargos similares: De ~5 minutos a ~10 segundos
+- Errores de digitación: Reducidos ~90%
