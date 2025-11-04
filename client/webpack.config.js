@@ -28,6 +28,7 @@ const paths = [
   "/pages/SST.html",
   "/pages/examen_medico_escolar.html",
   "/pages/resultados.html",
+  "/pages/wizard_example.html",
   // Añade CUALQUIER OTRA PÁGINA que quieras incluir
 ];
 
@@ -50,10 +51,49 @@ module.exports = {
     genesysbi: "./src/main_genesys_bi.js",
     diagnosticointeractivo: "./src/main_diagnostico_interactivo.js",
     resultados: "./src/main_resultados.js",
+    wizardExample: "./src/js/main_wizard_example.js",
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
     filename: "[name].bundle.js",
+    publicPath: '/', // Importante para rutas correctas en dev
+  },
+
+  devServer: {
+    static: [
+      {
+        directory: path.join(__dirname, 'public'),
+        publicPath: '/',
+      },
+      {
+        directory: path.join(__dirname, 'src/assets'),
+        publicPath: '/assets',
+      }
+    ],
+    compress: true,
+    port: 8080,
+    hot: true, // Hot Module Replacement
+    open: true, // Abre el navegador automáticamente
+    historyApiFallback: {
+      rewrites: [
+        { from: /^\/pages\//, to: (context) => context.parsedUrl.pathname }
+      ]
+    },
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://localhost:3000', // Tu servidor backend
+        changeOrigin: true,
+        secure: false,
+      }
+    ],
+    client: {
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+      progress: true,
+    },
   },
 
   resolve: {
@@ -213,6 +253,12 @@ module.exports = {
       inject: true,
       template: "./public/pages/diagnostico_interactivo.html",
       filename: "./pages/diagnostico_interactivo.html",
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ["wizardExample"],  // Solo wizardExample, NO incluir "main"
+      inject: true,
+      template: "./public/pages/wizard_example.html",
+      filename: "./pages/wizard_example.html",
     }),
     /* new PreloadWebpackPlugin({
       rel: "preload",

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf ../dist && webpack --mode production && node ../scripts/fix-inline-css-paths.js",
-    "dev": "webpack --mode development --watch",
+    "dev": "webpack serve --mode development",
+    "build:watch": "webpack --mode development --watch",
     "serve": "webpack serve --mode development",
     "deploy": "gh-pages -d ../dist",
     "clean": "sudo fuser -k 3000/tcp || true"
@@ -53,10 +54,12 @@
     "axios": "^1.7.7",
     "babel-loader": "^9.1.3",
     "jspdf": "^3.0.1",
+    "lit-html": "^3.3.1",
     "rimraf": "^5.0.1",
     "scss": "^0.2.4",
     "scss-loader": "^0.0.1",
     "swiper": "^11.1.15",
-    "webpack-dev-server": "^4.15.1"
+    "webpack-dev-server": "^4.15.1",
+    "zod": "^4.1.12"
   }
 }

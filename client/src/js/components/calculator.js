@@ -1,4 +1,4 @@
-// calculator.js
+1// calculator.js
 
 /**
  * Módulo de utilidades para el formateo de moneda
@@ -288,6 +288,7 @@ const formatUtils = {
             this.cargos = [];
             this.nextCargoId = 1;
             this.selectedExams = new Map();
+            this.currentCargoIndex = 0; // Para el carousel horizontal
         
             // Inicializar elementos del DOM
             this.initializeElements();
@@ -397,16 +398,121 @@ const formatUtils = {
                 <div class="calculator-header">
                     <h1>Genera una cotización personalizada de los exámenes médicos ocupacionales para tu equipo de trabajo</h1>
                 </div>
-                <div class="calculator-body">
-                    <div class="calculator-form">
-                        <div class="section-calculator">
-                            <div id="job-positions"></div>
-                            <div class="container-btn-add">
-                                <button class="btn-add">+ Agrega un nuevo cargo aquí</button>
+                <!-- Bocadillo Flotante con Botón + Badges -->
+                <div class="floating-bubble">
+                    <div class="bubble-content">
+                        <!-- Botón Flotante PRIMERO (Arriba) -->
+                        <button class="btn-add-floating">
+                            <svg class="plus-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Trabajador (icono de usuario) -->
+                                <circle cx="12" cy="7" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                                <path d="M6 21v-2a6 6 0 0 1 6-6 6 6 0 0 1 6 6v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <!-- Símbolo + -->
+                                <circle cx="18" cy="6" r="5" fill="currentColor"/>
+                                <path d="M18 4v4M16 6h4" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            <span>Agregar Cargo</span>
+                        </button>
+                        
+                        <!-- Badges Informativos DESPUÉS (Abajo) -->
+                        <div class="floating-stats">
+                            <div class="stat-badge-mini cargos-count">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span id="floatingCargos">0</span>
+                                <span class="badge-label">Cargos</span>
+                            </div>
+                            <div class="stat-badge-mini exams-count">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5H7C6.46957 5 5.96086 5.21071 5.58579 5.58579C5.21071 5.96086 5 6.46957 5 7V19C5 19.5304 5.21071 20.0391 5.58579 20.4142C5.96086 20.7893 6.46957 21 7 21H17C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19V7C19 6.46957 18.7893 5.96086 18.4142 5.58579C18.0391 5.21071 17.5304 5 17 5H15M9 5C9 5.53043 9.21071 6.03914 9.58579 6.41421C9.96086 6.78929 10.4696 7 11 7H13C13.5304 7 14.0391 6.78929 14.4142 6.41421C14.7893 6.03914 15 5.53043 15 5M9 5C9 4.46957 9.21071 3.96086 9.58579 3.58579C9.96086 3.21071 10.4696 3 11 3H13C13.5304 3 14.0391 3.21071 14.4142 3.58579C14.7893 3.96086 15 4.46957 15 5M9 12H15M9 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span id="floatingExams">0</span>
+                                <span class="badge-label">Exámenes</span>
+                            </div>
+                            <div class="stat-badge-mini workers-count">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.3503 17.623 3.8507 18.1676 4.55231C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span id="floatingWorkers">0</span>
+                                <span class="badge-label">Trabajadores</span>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Cola del bocadillo -->
+                    <div class="bubble-tail"></div>
+                </div>
+                
+                <div class="calculator-body">
+                    <div class="calculator-form">
+                        <div class="section-calculator">
+                            <!-- CAROUSEL CONTAINER -->
+                            <div class="carousel-container">
+                                <!-- Navegación Izquierda -->
+                                <button class="carousel-nav prev" aria-label="Cargo anterior" disabled>
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Track de Cargos -->
+                                <div class="carousel-track-container">
+                                    <div class="carousel-track" id="job-positions">
+                                        <!-- Los cargos se insertan aquí -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Navegación Derecha -->
+                                <button class="carousel-nav next" aria-label="Siguiente cargo" disabled>
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <!-- Indicadores de posición (dots) -->
+                            <div class="carousel-indicators" id="carouselIndicators"></div>
+                        </div>
+                    </div>
                     <div class="calculator-summary">
+                        <!-- Badges Informativos -->
+                        <div class="summary-stats">
+                            <div class="stat-badge cargos-count">
+                                <div class="stat-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Cargos:</span>
+                                    <span class="stat-value" id="totalCargos">0</span>
+                                </div>
+                            </div>
+                            <div class="stat-badge exams-count">
+                                <div class="stat-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 5H7C6.46957 5 5.96086 5.21071 5.58579 5.58579C5.21071 5.96086 5 6.46957 5 7V19C5 19.5304 5.21071 20.0391 5.58579 20.4142C5.96086 20.7893 6.46957 21 7 21H17C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19V7C19 6.46957 18.7893 5.96086 18.4142 5.58579C18.0391 5.21071 17.5304 5 17 5H15M9 5C9 5.53043 9.21071 6.03914 9.58579 6.41421C9.96086 6.78929 10.4696 7 11 7H13C13.5304 7 14.0391 6.78929 14.4142 6.41421C14.7893 6.03914 15 5.53043 15 5M9 5C9 4.46957 9.21071 3.96086 9.58579 3.58579C9.96086 3.21071 10.4696 3 11 3H13C13.5304 3 14.0391 3.21071 14.4142 3.58579C14.7893 3.96086 15 4.46957 15 5M9 12H15M9 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Exámenes:</span>
+                                    <span class="stat-value" id="totalExams">0</span>
+                                </div>
+                            </div>
+                            <div class="stat-badge workers-count">
+                                <div class="stat-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.3503 17.623 3.8507 18.1676 4.55231C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Trabajadores:</span>
+                                    <span class="stat-value" id="totalWorkers">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="exam-description">
                             <h3 id="examTitle">Seleccione un examen</h3>
                             <p id="examDescription">Pase el cursor sobre un examen para ver su descripción.</p>
@@ -453,11 +559,14 @@ const formatUtils = {
          * @private
          */
         bindEvents() {
-            // Evento para agregar nuevo cargo
-            this.addCargoButton.addEventListener('click', () => {
-                this.addCargo();
-                this.saveState(); // Guardar estado después de agregar cargo
-            });
+            // Evento para agregar nuevo cargo (botón flotante)
+            const floatingBtn = this.container.querySelector('.btn-add-floating');
+            if (floatingBtn) {
+                floatingBtn.addEventListener('click', () => {
+                    this.addCargo();
+                    this.saveState();
+                });
+            }
 
             // Eventos para los descuentos
             Object.values(this.discountCheckboxes).forEach(checkbox => {
@@ -470,11 +579,6 @@ const formatUtils = {
             // Delegación de eventos para los cargos
             this.cargoContainer.addEventListener('click', (e) => {
                 const target = e.target;
-                
-                if (target.classList.contains('toggle-cargo')) {
-                    const cargoElement = target.closest('.cargo');
-                    this.toggleCargo(cargoElement);
-                }
 
                 if (target.classList.contains('delete-cargo')) {
                     const cargoElement = target.closest('.cargo');
@@ -519,6 +623,35 @@ const formatUtils = {
             // Evento para descarga
             this.container.querySelector('.btn-download').addEventListener('click', 
                 () => this.downloadQuotation());
+
+            // NUEVOS: Navegación carousel
+            const prevBtn = this.container.querySelector('.carousel-nav.prev');
+            const nextBtn = this.container.querySelector('.carousel-nav.next');
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => this.prevSlide());
+            }
+            
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => this.nextSlide());
+            }
+            
+            // Indicadores (dots) con delegación
+            const indicatorsContainer = this.container.querySelector('#carouselIndicators');
+            if (indicatorsContainer) {
+                indicatorsContainer.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('dot')) {
+                        const index = parseInt(e.target.dataset.index);
+                        this.goToSlide(index);
+                    }
+                });
+            }
+            
+            // Navegación con teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') this.prevSlide();
+                if (e.key === 'ArrowRight') this.nextSlide();
+            });
         }
         /**
          * Crea el HTML para un nuevo cargo
@@ -533,13 +666,20 @@ const formatUtils = {
                 .map(exam => `
                     <div class="checkbox-item" 
                         data-exam-code="${exam.code}"
-                        title="${exam.fullName}">
+                        data-exam-name="${exam.fullName}"
+                        data-exam-price="${exam.basePrice}"
+                        data-exam-description="${exam.description}">
                         <label for="exam-${exam.code}-${id}">${exam.code}</label>
                         <input type="checkbox" 
                             id="exam-${exam.code}-${id}"
                             class="exam-checkbox"
                             data-exam-code="${exam.code}"
                             data-cargo-id="${id}">
+                        <div class="exam-tooltip" role="tooltip">
+                            <div class="tooltip-header">${exam.fullName}</div>
+                            <div class="tooltip-description">${exam.description}</div>
+                            <div class="tooltip-price">💰 ${formatUtils.formatCurrency(exam.basePrice)}</div>
+                        </div>
                     </div>
                 `).join('');
 
@@ -553,21 +693,17 @@ const formatUtils = {
                                 placeholder="Acá el nombre del cargo"
                                 value="">
                             <div class="cargo-controls">
-                            <div class="numero-trabajadores">
-                            <input type="number" 
-                                class="num-trabajadores" 
-                                min="1" 
-                                value="1">
-                            </div>
-                                <button class="toggle-cargo">
-                                    ${isExpanded ? '-' : '+'}
-                                
+                                <div class="numero-trabajadores">
+                                    <input type="number" 
+                                        class="num-trabajadores" 
+                                        min="1" 
+                                        value="1">
+                                </div>
+                                ${id !== 1 ? '<button class="delete-cargo">×</button>' : ''}
                             </div>
                         </div>
-                        </button>
-                                ${id !== 1 ? '<button class="delete-cargo">×</button>' : ''}
                     </div>
-                    <div class="cargo-body ${isExpanded ? '' : 'hidden'}">
+                    <div class="cargo-body">
                         <div class="exam-selector">
                             <h4>Selecciona los exámenes requeridos:</h4>
                             <div class="exam-grid">
@@ -600,6 +736,12 @@ const formatUtils = {
             }];
 
             this.nextCargoId++;
+            
+            // Inicializar UI del carousel
+            this.updateCarouselIndicators();
+            this.updateNavigationVisibility();
+            this.goToSlide(0);
+            
             this.updateTotals();
             this.saveState(); // Guardar estado inicial
         }
@@ -622,8 +764,102 @@ const formatUtils = {
             });
 
             this.nextCargoId++;
+            
+            // Actualizar UI del carousel
+            this.updateCarouselIndicators();
+            this.updateNavigationVisibility();
+            
+            // Ir automáticamente al nuevo cargo (último)
+            this.goToSlide(this.cargos.length - 1);
+            
             this.updateTotals();
             this.saveState();
+        }
+
+        /**
+         * Navega a un slide específico del carousel
+         * @param {number} index - Índice del slide (0-based)
+         * @private
+         */
+        goToSlide(index) {
+            const track = this.cargoContainer;
+            if (!track) return;
+            
+            // Asegurar que el índice esté en rango
+            this.currentCargoIndex = Math.max(0, Math.min(index, this.cargos.length - 1));
+            
+            // Obtener el primer cargo para calcular el ancho
+            const firstCargo = track.querySelector('.cargo');
+            if (!firstCargo) return;
+            
+            // Calcular desplazamiento (100% del contenedor por cargo)
+            const offset = -(this.currentCargoIndex * 100);
+            
+            // Aplicar transformación
+            track.style.transform = `translateX(${offset}%)`;
+            
+            // Actualizar UI
+            this.updateCarouselIndicators();
+            this.updateNavigationVisibility();
+            
+            // Guardar estado
+            this.saveState();
+        }
+
+        /**
+         * Navega al siguiente slide
+         * @private
+         */
+        nextSlide() {
+            if (this.currentCargoIndex < this.cargos.length - 1) {
+                this.goToSlide(this.currentCargoIndex + 1);
+            }
+        }
+
+        /**
+         * Navega al slide anterior
+         * @private
+         */
+        prevSlide() {
+            if (this.currentCargoIndex > 0) {
+                this.goToSlide(this.currentCargoIndex - 1);
+            }
+        }
+
+        /**
+         * Actualiza los indicadores (dots) del carousel
+         * @private
+         */
+        updateCarouselIndicators() {
+            const indicators = this.container.querySelector('#carouselIndicators');
+            if (!indicators) return;
+            
+            indicators.innerHTML = this.cargos.map((_, index) => 
+                `<span class="dot ${index === this.currentCargoIndex ? 'active' : ''}" data-index="${index}"></span>`
+            ).join('');
+        }
+
+        /**
+         * Actualiza la visibilidad de los botones de navegación
+         * @private
+         */
+        updateNavigationVisibility() {
+            const carouselContainer = this.container.querySelector('.carousel-container');
+            const prevBtn = this.container.querySelector('.carousel-nav.prev');
+            const nextBtn = this.container.querySelector('.carousel-nav.next');
+            
+            if (!carouselContainer || !prevBtn || !nextBtn) return;
+            
+            // Mostrar navegación si hay más de un cargo
+            if (this.cargos.length > 1) {
+                carouselContainer.classList.add('has-multiple');
+            } else {
+                carouselContainer.classList.remove('has-multiple');
+            }
+            
+            // Deshabilitar en extremos
+            prevBtn.disabled = this.currentCargoIndex === 0;
+            nextBtn.disabled = this.currentCargoIndex === this.cargos.length - 1;
         }
 
         /**
@@ -644,22 +880,20 @@ const formatUtils = {
             cargoElement.remove();
             this.cargos = this.cargos.filter(cargo => cargo.id !== cargoId);
             
+            // Ajustar índice del carousel si es necesario
+            if (this.currentCargoIndex >= this.cargos.length) {
+                this.currentCargoIndex = Math.max(0, this.cargos.length - 1);
+            }
+            
+            // Actualizar UI del carousel
+            this.updateCarouselIndicators();
+            this.updateNavigationVisibility();
+            this.goToSlide(this.currentCargoIndex);
+            
             this.updateTotals();
             this.saveState();
         }
 
-        /**
-         * Alterna la visibilidad del contenido de un cargo
-         * @param {HTMLElement} cargoElement - Elemento DOM del cargo
-         * @private
-         */
-        toggleCargo(cargoElement) {
-            const body = cargoElement.querySelector('.cargo-body');
-            const toggleButton = cargoElement.querySelector('.toggle-cargo');
-            
-            body.classList.toggle('hidden');
-            toggleButton.textContent = body.classList.contains('hidden') ? '+' : '-';
-        }
         /**
          * Actualiza el nombre de un cargo
          * @param {HTMLInputElement} input - Elemento input con el nuevo nombre
@@ -832,8 +1066,77 @@ const formatUtils = {
             const discountPercentageElement = this.container.querySelector('#discount-percentage');
             discountPercentageElement.textContent = `-${(volumeDiscount * 100).toFixed(0)}%`;
 
-            // Actualizar el precio final
-            this.totalPriceElement.textContent = formatUtils.formatCurrency(finalPrice);
+            // Actualizar el precio final con animación
+            this.updatePriceWithAnimation(finalPrice);
+            
+            // Actualizar badges informativos
+            this.updateSummaryBadges();
+        }
+        
+        /**
+         * Actualiza el precio con animación count-up
+         * @param {number} newPrice - Nuevo precio a mostrar
+         * @private
+         */
+        updatePriceWithAnimation(newPrice) {
+            const currentText = this.totalPriceElement.textContent;
+            const currentPrice = parseFloat(currentText.replace(/[^0-9]/g, '')) || 0;
+            
+            if (currentPrice === newPrice) return;
+            
+            // Añadir clase de actualización
+            this.totalPriceElement.classList.add('updating');
+            
+            // Animación count-up simple
+            const duration = 400; // ms
+            const steps = 20;
+            const increment = (newPrice - currentPrice) / steps;
+            let step = 0;
+            
+            const interval = setInterval(() => {
+                step++;
+                const value = currentPrice + (increment * step);
+                this.totalPriceElement.textContent = formatUtils.formatCurrency(Math.round(value));
+                
+                if (step >= steps) {
+                    clearInterval(interval);
+                    this.totalPriceElement.textContent = formatUtils.formatCurrency(newPrice);
+                    setTimeout(() => {
+                        this.totalPriceElement.classList.remove('updating');
+                    }, 600);
+                }
+            }, duration / steps);
+        }
+        
+        /**
+         * Actualiza los badges informativos del summary
+         * @private
+         */
+        updateSummaryBadges() {
+            // Contar cargos activos
+            const totalCargosEl = this.container.querySelector('#totalCargos');
+            const floatingCargosEl = this.container.querySelector('#floatingCargos');
+            const cargosCount = this.cargos.length;
+            if (totalCargosEl) totalCargosEl.textContent = cargosCount;
+            if (floatingCargosEl) floatingCargosEl.textContent = cargosCount;
+            
+            // Contar exámenes únicos seleccionados
+            const uniqueExams = new Set();
+            this.cargos.forEach(cargo => {
+                cargo.selectedExams.forEach(exam => uniqueExams.add(exam));
+            });
+            const totalExamsEl = this.container.querySelector('#totalExams');
+            const floatingExamsEl = this.container.querySelector('#floatingExams');
+            const examsCount = uniqueExams.size;
+            if (totalExamsEl) totalExamsEl.textContent = examsCount;
+            if (floatingExamsEl) floatingExamsEl.textContent = examsCount;
+            
+            // Contar trabajadores totales
+            const totalWorkers = this.cargos.reduce((sum, cargo) => sum + cargo.workers, 0);
+            const totalWorkersEl = this.container.querySelector('#totalWorkers');
+            const floatingWorkersEl = this.container.querySelector('#floatingWorkers');
+            if (totalWorkersEl) totalWorkersEl.textContent = totalWorkers;
+            if (floatingWorkersEl) floatingWorkersEl.textContent = totalWorkers;
         }
 
         /**
@@ -982,6 +1285,11 @@ const formatUtils = {
                 
                 // Actualizar totales
                 this.updateTotals();
+                
+                // Inicializar UI del carousel después de restaurar
+                this.updateCarouselIndicators();
+                this.updateNavigationVisibility();
+                this.goToSlide(0); // Ir al primer cargo
                 
                 // Log para debug
                 console.log('Estado restaurado:', {

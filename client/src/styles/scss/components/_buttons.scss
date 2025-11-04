@@ -92,5 +92,6 @@ a {
     color: map-get($colors, "text");
     border: solid 1px map-get($colors, "text");
     backdrop-filter: blur(3px);
+    margin: 0; // Sin margin adicional
     @include smooth-weight-transition();
 }

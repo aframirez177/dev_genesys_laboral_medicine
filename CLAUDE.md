@@ -27,12 +27,23 @@ npm run server:install
 ```
 
 ### Development
+
+**RECOMMENDED: Development with Hot Reload**
 ```bash
-# Run both client and server in watch mode
+# Run both client (with dev server + hot reload) and server concurrently
 npm run dev
 
-# Run only client in watch mode
-npm run client:dev
+# This will:
+# - Start webpack-dev-server on http://localhost:8080 (auto-opens browser)
+# - Start Express backend on http://localhost:3000
+# - Enable hot module replacement (HMR) - changes auto-reload in browser
+# - Proxy API requests from frontend to backend automatically
+```
+
+**Alternative: Build Watch Mode (without dev server)**
+```bash
+# Run only client in build watch mode (outputs to dist/)
+npm run client:build:watch
 
 # Run only server in watch mode
 npm run server:dev
@@ -40,6 +51,12 @@ npm run server:dev
 # Clean ports (if port 3000 is in use)
 npm run clean
 ```
+
+**How it works:**
+- `npm run dev` → Client uses `webpack serve` with HMR on port 8080
+- Frontend at `http://localhost:8080` proxies API calls to `http://localhost:3000`
+- Changes in JS/CSS/HTML trigger automatic browser reload
+- No need to manually refresh the browser!
 
 ### Build
 ```bash
@@ -85,6 +102,45 @@ docker-compose up --build
 # Run tests (server)
 cd server && npm test
 ```
+
+## Deployment & Environments
+
+The project supports three environments:
+
+### 1. **Local Development** (http://localhost:8080)
+```bash
+npm run dev  # Webpack dev server + backend
+```
+- Hot reload enabled
+- API proxied from port 8080 to 3000
+- Uses `.env.development` configuration
+
+### 2. **Staging/Beta** (https://beta.genesyslm.com.co)
+```bash
+# See STAGING_SETUP.md for complete guide
+git checkout staging
+git push origin staging  # Triggers deployment
+```
+- Test new features before production
+- Uses separate database and Spaces bucket (recommended)
+- Uses `.env.staging` configuration
+- Can use authentication barrier for privacy
+
+### 3. **Production** (https://www.genesyslm.com.co)
+```bash
+npm run build  # Creates production build in dist/
+```
+- Uses `.env.production` configuration
+- Optimized bundles with minification
+- CSS critical extraction with Beasties plugin
+- Automated path fixes via `postclientbuild` script
+
+**Environment Files:**
+- `.env.development` - Local development settings
+- `.env.staging.example` - Staging/beta template (copy to `server/.env`)
+- `.env.production.example` - Production template (copy to `server/.env`)
+
+**For detailed staging setup instructions, see [STAGING_SETUP.md](./STAGING_SETUP.md)**
 
 ## Architecture
 

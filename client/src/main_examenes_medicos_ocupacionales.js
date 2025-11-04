@@ -1,5 +1,6 @@
 import { initCalculator } from './js/components/calculator.js';
 import { initExamsTabs } from './js/components/exams-carousel.js';
+import './js/pages/examenes_medicos_handler.js';
 
 import './styles/scss/style_examenes_medicos_ocupacionales.scss';
 

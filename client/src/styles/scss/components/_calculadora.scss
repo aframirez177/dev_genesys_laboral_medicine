@@ -79,10 +79,13 @@
         align-items: center;
         
         .section-calculator {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0.2rem;
+            position: relative;
+            margin: 2rem 0;
+            padding: 0 3rem; // Espacio para las flechas laterales
+            
+            @media (max-width: 768px) {
+                padding: 0 1rem;
+            }
         }
     }
 
@@ -90,8 +93,184 @@
         margin-bottom: 2rem;
         padding: 2rem;
     }
+    // ===================================================================
+    // CAROUSEL HORIZONTAL - Sistema de navegación entre cargos
+    // ===================================================================
+    .carousel-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        isolation: isolate; // Crea un nuevo contexto de apilamiento
+        
+        // Sombra interna (efecto "plano más bajo")
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.08);
+            pointer-events: none;
+            z-index: 0; // Detrás de todo
+        }
+    }
+
+    // Track container (overflow hidden)
+    .carousel-track-container {
+        flex: 1;
+        overflow: hidden;
+        border-radius: 16px;
+        background: rgba(map-get($colors, "background"), 0.5);
+        padding: 1.5rem;
+        min-height: 500px;
+        position: relative;
+        z-index: 1; // Por encima de la sombra
+    }
+
+    // Track que se mueve
+    .carousel-track {
+        display: flex;
+        transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+        gap: 0; // Sin gap porque cada cargo ocupa 100%
+        position: relative;
+        z-index: 1;
+    }
+
+    // Botones de navegación - Z-INDEX MUY ALTO Y MÁS VISIBLES
+    .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 100; // MUY ALTO para estar por encima de todo
+        
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        border: 3px solid map-get($colors, "primary");
+        background: white;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        
+        transition: all 0.3s ease;
+        opacity: 0;
+        visibility: hidden;
+        
+        svg {
+            width: 28px;
+            height: 28px;
+            color: map-get($colors, "primary");
+        }
+        
+        &.prev {
+            left: -28px;
+        }
+        
+        &.next {
+            right: -28px;
+        }
+        
+        &:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.15);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            background: map-get($colors, "primary");
+            
+            svg {
+                color: white;
+            }
+        }
+        
+        &:active:not(:disabled) {
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        // Deshabilitar en extremos
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            
+            &:hover {
+                transform: translateY(-50%);
+                background: white;
+                
+                svg {
+                    color: map-get($colors, "primary");
+                }
+            }
+        }
+    }
+    
+    // SELECTOR SEPARADO para mostrar las flechas cuando hay múltiples cargos
+    .carousel-container.has-multiple {
+        .carousel-nav {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+    }
+
+    // Indicadores (dots)
+    .carousel-indicators {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 1.5rem;
+        position: relative;
+        z-index: 10;
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(map-get($colors, "text"), 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            
+            &.active {
+                width: 28px;
+                border-radius: 5px;
+                background: map-get($colors, "primary");
+                border-color: map-get($colors, "primary");
+            }
+            
+            &:hover:not(.active) {
+                background: rgba(map-get($colors, "text"), 0.6);
+                transform: scale(1.2);
+            }
+        }
+    }
+
+    // Responsive
+    @include respond-to("tablet") {
+        .carousel-nav {
+            width: 40px;
+            height: 40px;
+            
+            &.prev { left: -20px; }
+            &.next { right: -20px; }
+        }
+    }
+
+    @media (max-width: 768px) {
+        .carousel-nav {
+            &.prev { left: 8px; }
+            &.next { right: 8px; }
+        }
+        
+        .carousel-track-container {
+            padding: 1rem;
+        }
+    }
+
+    // Cada cargo ocupa el 100% del track (CAROUSEL MODE)
     .cargo {
-        margin-bottom: 2rem;
+        min-width: 100%;
+        flex-shrink: 0;
+        margin-bottom: 0; // Sin margen en modo carousel
+        animation: none; // Sin animación slideInUp en carousel
     .cargo-encabezado{
         display: flex;
         flex-direction: row;
@@ -151,66 +330,38 @@
             .cargo-controls {
                 display: flex;
                 align-items: center;
+                gap: 0.5rem;
                 
-    
-                button {
-                    position: relative;
-                    
-                    width: 3.8rem;
+                .delete-cargo {
+                    width: 3.3rem;
                     height: 3rem;
                     border-radius: 50%;
                     border: none;
-                    background-color: map-get($colors, "background");
-                    color: map-get($colors, "secondary");
-                    font-size: 2.5rem;
+                    background-color: #ff4444;
+                    color: white;
+                    font-size: 2rem;
                     font-weight: 800;
                     cursor: pointer;
                     transition: all 0.3s ease;
-                    padding-bottom: 3.8rem;
-    
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    
                     &:hover {
-                        background-color: map-get($colors, "primary");
-                        color: white;
+                        background-color: darken(#ff4444, 10%);
+                        transform: scale(1.1);
                     }
-                }
-            }
-        }
-        button {
-            position: relative;
-            right: -0.7rem;
-            width: 3.8rem;
-            height: 3rem;
-            border-radius: 50%;
-            border: none;
-            background-color: map-get($colors, "background");
-            color: map-get($colors, "secondary");
-            font-size: 2.5rem;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding-bottom: 3.8rem;
-            &.delete-cargo {
-                top: .8rem;
-                width: 3.3rem;
-                height: 2rem;
-                font-size: 2rem;
-                padding-bottom: 3rem;
-                right: -3px;
-                background-color: #ff4444;
-                color: white;
-
-                &:hover {
-                    background-color: darken(#ff4444, 10%);
+                    
+                    &:active {
+                        transform: scale(0.95);
+                    }
                 }
             }
         }
     }
         .cargo-body {
             padding-top: 2rem;
-            transition: all 0.3s ease-in-out;
-            max-height: 1000px;
-            opacity: 1;
-            overflow: hidden;
     
             h4 {
                 font-size: 1.8rem;
@@ -252,15 +403,6 @@
                     }
                 }
             }
-    
-            &.hidden {
-                max-height: 0;
-                opacity: 0;
-                padding-top: 0;
-                padding-bottom: 0;
-                margin: 0;
-            }
-
         }
     }
 
@@ -697,4 +839,647 @@
         border-left: 4px solid map-get($colors, "primary");
         border-radius: 4px;
     }
+}
+
+// ===================================================================
+// MEJORAS UI/UX AVANZADAS - Calculadora Nivel Experto
+// Añadidas: 3 de Noviembre de 2025
+// ===================================================================
+
+// Progress Indicator Visual
+.calculator-progress {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    padding: 1.5rem 2rem;
+    border-bottom: 2px solid map-get($colors, "border-color");
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .progress-steps {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: map-get($fonts, "body");
+            font-size: 1.3rem;
+            color: map-get($colors, "text");
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+            
+            &.active {
+                opacity: 1;
+                font-weight: 600;
+                color: map-get($colors, "primary");
+            }
+            
+            &.completed {
+                opacity: 1;
+                
+                .step-icon {
+                    background: map-get($colors, "success");
+                    border-color: map-get($colors, "success");
+                    
+                    &::after {
+                        content: "✓";
+                        color: #ffffff;
+                    }
+                }
+            }
+            
+            .step-icon {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                border: 2px solid currentColor;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+                transition: all 0.3s ease;
+            }
+        }
+    }
+    
+    .progress-bar {
+        flex: 1;
+        height: 4px;
+        background: map-get($colors, "border-color");
+        border-radius: 2px;
+        margin: 0 1rem;
+        position: relative;
+        overflow: hidden;
+        
+        @media (max-width: 768px) {
+            width: 100%;
+            margin: 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: map-get($colors, "primary");
+            border-radius: 2px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            
+            &::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 20px;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.3);
+                animation: shimmer 2s infinite;
+            }
+        }
+    }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-20px); }
+    100% { transform: translateX(100px); }
+}
+
+// ===================================================================
+// BADGES INFORMATIVOS EN SUMMARY - Estadísticas Premium
+// ===================================================================
+.calculator-summary {
+    .summary-stats {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        padding: 1.5rem;
+        background: rgba(map-get($colors, "primary"), 0.03);
+        border-radius: 12px;
+        border: 1px solid rgba(map-get($colors, "primary"), 0.1);
+        
+        @media (max-width: 768px) {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .stat-badge {
+            background: #ffffff;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: map-get($fonts, "body");
+            font-size: 1.3rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            flex: 1;
+            min-width: 140px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            
+            &:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                border-color: map-get($colors, "primary");
+            }
+            
+            .stat-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                
+                svg {
+                    width: 24px;
+                    height: 24px;
+                    color: map-get($colors, "secondary");
+                }
+            }
+            
+            .stat-content {
+                display: flex;
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+            
+            &.cargos-count .stat-icon {
+                background: map-get($aux-colors, 1);
+            }
+            
+            &.exams-count .stat-icon {
+                background: map-get($aux-colors, 5);
+            }
+            
+            &.workers-count .stat-icon {
+                background: map-get($aux-colors, 3);
+            }
+            
+            .stat-label {
+                color: map-get($colors, "text");
+                font-size: 1.1rem;
+                font-weight: 500;
+                opacity: 0.8;
+            }
+            
+            .stat-value {
+                font-weight: 700;
+                color: map-get($colors, "primary");
+                font-size: 2rem;
+                font-family: map-get($fonts, "title");
+                transition: all 0.3s ease;
+            }
+        }
+    }
+}
+
+// ===================================================================
+// VALIDACIÓN VISUAL EN TIEMPO REAL - Estados de Inputs
+// ===================================================================
+.cargo-name {
+    position: relative;
+    transition: all 0.3s ease;
+    
+    &.valid {
+        border-color: map-get($colors, "success");
+        border-width: 2px;
+        background-color: rgba(map-get($colors, "success"), 0.05);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234caf50' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        padding-right: 3.5rem;
+        box-shadow: 0 0 0 3px rgba(map-get($colors, "success"), 0.1);
+    }
+    
+    &.invalid {
+        border-color: map-get($colors, "danger");
+        border-width: 2px;
+        background-color: rgba(map-get($colors, "danger"), 0.05);
+        animation: shake 0.4s ease;
+        box-shadow: 0 0 0 3px rgba(map-get($colors, "danger"), 0.1);
+    }
+}
+
+// Validación para inputs numéricos
+.num-trabajadores,
+input[type="number"].numero-trabajadores {
+    transition: all 0.3s ease;
+    
+    &.valid {
+        border-color: map-get($colors, "success");
+        border-width: 2px;
+        background-color: rgba(map-get($colors, "success"), 0.05);
+        box-shadow: 0 0 0 3px rgba(map-get($colors, "success"), 0.1);
+    }
+    
+    &.invalid {
+        border-color: map-get($colors, "danger");
+        border-width: 2px;
+        background-color: rgba(map-get($colors, "danger"), 0.05);
+        animation: shake 0.4s ease;
+        box-shadow: 0 0 0 3px rgba(map-get($colors, "danger"), 0.1);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+// ===================================================================
+// TOOLTIPS PREMIUM - Nivel Experto UX
+// ===================================================================
+.checkbox-item {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    // Mostrar tooltip al hover
+    &:hover .exam-tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, 0);
+        transition-delay: 0.1s;
+    }
+    
+    // Estados mejorados del checkbox item
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(map-get($colors, "primary"), 0.15);
+    }
+    
+    // Cuando el checkbox está marcado
+    &.checked {
+        background: rgba(map-get($colors, "primary"), 0.08);
+        border-color: map-get($colors, "primary");
+        border-width: 3px;
+        box-shadow: 0 0 0 4px rgba(map-get($colors, "primary"), 0.1);
+        
+        label {
+            color: map-get($colors, "primary");
+            font-weight: 700;
+        }
+    }
+    
+    // Tooltip personalizado premium
+    .exam-tooltip {
+        position: fixed;
+        top: 0;
+        left: 0;
+        transform: translate(-50%, -8px);
+        background: map-get($colors, "secondary");
+        color: #ffffff;
+        padding: 1.2rem 1.6rem;
+        border-radius: 10px;
+        min-width: 280px;
+        max-width: 320px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+        z-index: 9999;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        pointer-events: none;
+        will-change: top, left;
+        
+        // Flecha del tooltip
+        &::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: map-get($colors, "secondary");
+        }
+        
+        // Header del tooltip (nombre del examen)
+        .tooltip-header {
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+            display: block;
+            font-family: map-get($fonts, "title");
+            line-height: 1.3;
+            color: #ffffff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 0.8rem;
+        }
+        
+        // Descripción del examen
+        .tooltip-description {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.9);
+            font-family: map-get($fonts, "body");
+            margin-bottom: 0.8rem;
+            white-space: normal;
+        }
+        
+        // Precio destacado
+        .tooltip-price {
+            color: map-get($colors, "primary");
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: map-get($fonts, "title");
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    }
+    
+    // Estado tooltip-open para móviles (activado por tap)
+    &.tooltip-open .exam-tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, 0);
+    }
+    
+    // Responsive: ajustar tooltips en móvil
+    @media (max-width: 768px) {
+        .exam-tooltip {
+            min-width: 240px;
+            max-width: 280px;
+            font-size: 1.1rem;
+            
+            .tooltip-header {
+                font-size: 1.3rem;
+            }
+            
+            .tooltip-description {
+                font-size: 1.1rem;
+            }
+            
+            .tooltip-price {
+                font-size: 1.4rem;
+            }
+        }
+    }
+}
+
+// Asegurar que tooltips no se corten solo en el grid de exámenes
+.cargo-body:not(.hidden) {
+    .exam-grid {
+        overflow: visible !important;
+    }
+}
+
+// Animación cuando cambia el precio total
+.total-price,
+.valor-monto {
+    position: relative;
+    display: inline-block;
+    
+    &.updating {
+        animation: priceUpdate 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+@keyframes priceUpdate {
+    0% { 
+        transform: scale(1);
+        color: map-get($colors, "primary");
+    }
+    50% { 
+        transform: scale(1.15);
+        color: lighten(map-get($colors, "primary"), 15%);
+    }
+    100% { 
+        transform: scale(1);
+        color: map-get($colors, "primary");
+    }
+}
+
+// Animaciones ya aplicadas en .cargo principal
+
+// Estado cuando no hay cargos agregados
+.calculator-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    min-height: 400px;
+    background: rgba(map-get($colors, "background"), 0.5);
+    border-radius: 12px;
+    border: 2px dashed map-get($colors, "border-color");
+    
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 2rem;
+        opacity: 0.3;
+        animation: float 3s ease-in-out infinite;
+        
+        svg {
+            width: 100%;
+            height: 100%;
+            color: map-get($colors, "primary");
+        }
+    }
+    
+    h3 {
+        font-family: map-get($fonts, "title");
+        font-size: 2.2rem;
+        color: map-get($colors, "secondary");
+        margin-bottom: 1rem;
+    }
+    
+    p {
+        font-family: map-get($fonts, "body");
+        font-size: 1.4rem;
+        color: map-get($colors, "text");
+        max-width: 400px;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    
+    .empty-cta {
+        padding: 1.2rem 2.5rem;
+        background: map-get($colors, "primary");
+        color: map-get($colors, "secondary");
+        border: none;
+        border-radius: 8px;
+        font-size: 1.6rem;
+        font-weight: 600;
+        font-family: map-get($fonts, "title");
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(map-get($colors, "primary"), 0.3);
+        }
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+// Mejor toggle visual para cargo-body
+.cargo-header {
+    .toggle-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(map-get($colors, "primary"), 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        
+        svg {
+            width: 18px;
+            height: 18px;
+            color: map-get($colors, "primary");
+            transition: transform 0.3s ease;
+        }
+        
+        &:hover {
+            background: map-get($colors, "primary");
+            transform: scale(1.1);
+            
+            svg {
+                color: #ffffff;
+            }
+        }
+        
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+    
+    &.collapsed .toggle-icon svg {
+        transform: rotate(180deg);
+    }
+}
+
+// Mejor efecto de sticky en desktop
+@include respond-to("tablet") {
+    .calculator-summary {
+        position: sticky;
+        top: 2rem;
+        transition: all 0.3s ease;
+        
+        &.is-sticky {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            
+            &::before {
+                content: '';
+                position: absolute;
+                top: -2rem;
+                left: 0;
+                right: 0;
+                height: 2rem;
+                background: linear-gradient(to bottom, 
+                    rgba(238, 247, 253, 0) 0%, 
+                    rgba(238, 247, 253, 1) 100%);
+                pointer-events: none;
+            }
+        }
+    }
+}
+
+// Estado de carga en botón de descarga
+.btn-download {
+    position: relative;
+    overflow: hidden;
+    
+    &.loading {
+        pointer-events: none;
+        opacity: 0.7;
+        
+        .btn-text {
+            opacity: 0;
+        }
+        
+        .btn-spinner {
+            opacity: 1;
+        }
+    }
+    
+    .btn-text {
+        transition: opacity 0.3s ease;
+    }
+    
+    .btn-spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        
+        &::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+// Pulso al seleccionar checkbox
+input[type="checkbox"] {
+    &:checked {
+        animation: checkPulse 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+@keyframes checkPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(map-get($colors, "primary"), 0.7);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 8px rgba(map-get($colors, "primary"), 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(map-get($colors, "primary"), 0);
+    }
+}
+
+// Highlight al deseleccionar
+.checkbox-item {
+    transition: all 0.3s ease;
+    
+    &.recently-unchecked {
+        animation: flashWarning 0.5s ease;
+    }
+}
+
+@keyframes flashWarning {
+    0%, 100% { background: transparent; }
+    50% { background: rgba(map-get($colors, "atention"), 0.1); }
 }

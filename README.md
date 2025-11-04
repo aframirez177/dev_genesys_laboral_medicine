@@ -187,18 +187,27 @@ docker-compose exec api npx knex migrate:latest --knexfile knexfile.js
 ### Desarrollo Local
 
 ```bash
-# Ejecutar cliente y servidor simultáneamente (recomendado)
+# Ejecutar cliente y servidor simultáneamente (RECOMENDADO)
 npm run dev
+# ✅ Frontend: http://localhost:8080 (con hot reload automático)
+# ✅ Backend: http://localhost:3000
+# ✅ Los cambios se reflejan automáticamente en el navegador
 
-# Ejecutar solo el cliente (Webpack Dev Server en puerto 8080)
+# Ejecutar solo el cliente (Webpack Dev Server)
 npm run client:dev
+# Webpack dev server en puerto 8080 con hot module replacement
 
 # Ejecutar solo el servidor (Nodemon en puerto 3000)
 npm run server:dev
 
+# Modo watch sin dev server (outputs a dist/)
+npm run client:build:watch
+
 # Iniciar solo el servidor en modo normal
 npm start
 ```
+
+**Nota:** Con `npm run dev`, el navegador se abrirá automáticamente en `http://localhost:8080` y los cambios en JS, CSS, o HTML se reflejarán automáticamente sin necesidad de recargar manualmente.
 
 ### Build y Producción
 
@@ -437,9 +446,17 @@ FRONTEND_URL=https://genesyslm.com.co
 ## Documentación Adicional
 
 - **[CLAUDE.md](CLAUDE.md)**: Instrucciones para Claude Code
+- **[STAGING_SETUP.md](STAGING_SETUP.md)**: Guía completa para configurar ambiente staging/beta
 - **[DIAGNOSTICO_DOCUMENTOS_ARQUITECTURA.md](DIAGNOSTICO_DOCUMENTOS_ARQUITECTURA.md)**: Análisis detallado de arquitectura
 - **Knexfile**: Ver `knexfile.js` para configuración de base de datos
 - **Webpack Config**: Ver `client/webpack.config.js` para configuración de bundling
+
+### Ambientes
+
+El proyecto soporta tres ambientes:
+- **Development** (`http://localhost:8080`) - Hot reload, debugging, sin optimizaciones
+- **Staging** (`https://beta.genesyslm.com.co`) - Testing en internet, datos de prueba (ver [STAGING_SETUP.md](STAGING_SETUP.md))
+- **Production** (`https://www.genesyslm.com.co`) - Optimizado, datos reales
 
 ## Soporte y Contribuciones
 

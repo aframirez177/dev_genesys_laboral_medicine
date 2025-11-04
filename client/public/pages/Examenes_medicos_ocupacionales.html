@@ -831,7 +831,7 @@
             </p>
             <button
               class="cta-button"
-              onclick="document.getElementById('service-info').scrollIntoView({behavior: 'smooth'})"
+              data-scroll-to="service-info"
             >
               Empieza aquí
             </button>
@@ -840,29 +840,78 @@
       </main>
     </div>
     <!-- Close data-beasties-container -->
-    <section id="servicie.info" class="service-info">
-      <section class="program-description">
-        <h2>
-          Realizamos tus
-          <span class="green">exámenes médicos ocupacionales</span> entregamos
-          tus resultados en menos de <span class="green">24 horas</span> usando
-          tecnología avanzada
+    <!-- Sección de Beneficios Rediseñada -->
+    <section id="service-info" class="service-info">
+      <div class="benefits-container">
+        <h2 class="benefits-title">
+          ¿Por qué elegir <span class="green">Genesys</span> para tus exámenes ocupacionales?
         </h2>
-        <p class="descripcion">
-          Obten una cotizacion personalizada en minutos! usa nustra calculadora
-          de Ofrecemos todos los exámenes médicos ocupacionales que tu empresa
-          necesita: ingreso, periódicos, egreso, trabajo en alturas y más.
-          Combina la eficiencia de la tecnología con la experiencia de
-          profesionales certificados para garantizar la salud de tus
-          trabajadores y el cumplimiento normativo.
-        </p>
-      </section>
-      <button
-        class="cta-button cta-button-faqs"
-        onclick="window.open('https://wa.me/573205803048?text=Hola!%20me%20interesa%20contratar%20el%20servicio%20de%20Examenes%20medicos%20ocupacionales,%20me%20puedes%20brindar%20mas%20informacion', '_blank')"
-      >
-        Conoce más
-      </button>
+        
+        <div class="benefits-grid">
+          <!-- Beneficio 1: Resultados Rápidos -->
+          <article class="benefit-card">
+            <div class="benefit-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Resultados en 24 Horas</h3>
+            <p>Recibe tus certificados médicos ocupacionales en menos de un día hábil, garantizando la continuidad de tus procesos de selección.</p>
+          </article>
+
+          <!-- Beneficio 2: Cumplimiento Normativo -->
+          <article class="benefit-card">
+            <div class="benefit-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 11L12 14L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M21 12V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Cumplimiento Normativo</h3>
+            <p>Todos nuestros exámenes cumplen con la Resolución 1843 y normatividad colombiana vigente, evitando sanciones para tu empresa.</p>
+          </article>
+
+          <!-- Beneficio 3: Red Médica -->
+          <article class="benefit-card">
+            <div class="benefit-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 21V19C17 16.79 15.21 15 13 15H5C2.79 15 1 16.79 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                <path d="M23 21V19C23 17.13 21.72 15.55 20 15.13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 3.13C17.72 3.55 19 5.13 19 7C19 8.87 17.72 10.45 16 10.87" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Red Médica Certificada</h3>
+            <p>Contamos con profesionales de la salud certificados en todo Colombia, listos para realizar las evaluaciones cuando las necesites.</p>
+          </article>
+
+          <!-- Beneficio 4: Cotización Instantánea -->
+          <article class="benefit-card">
+            <div class="benefit-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M9 9H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M9 15H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M9 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Cotización Instantánea</h3>
+            <p>Obtén una cotización personalizada en menos de 2 minutos usando nuestra calculadora inteligente. Precios transparentes desde el inicio.</p>
+          </article>
+        </div>
+
+        <!-- CTAs -->
+        <div class="cta-buttons-container">
+          <button class="cta-button cta-primary" data-scroll-to="calculator-section">
+            Cotiza Ahora en 2 Minutos
+          </button>
+          <button class="cta-button cta-secondary" data-whatsapp-contact
+            data-whatsapp-url="https://wa.me/573205803048?text=Hola!%20me%20interesa%20contratar%20el%20servicio%20de%20Examenes%20medicos%20ocupacionales,%20me%20puedes%20brindar%20mas%20informacion">
+            Hablar con un Asesor
+          </button>
+        </div>
+      </div>
     </section>
 
     <section class="section-servicios" id="servicios">
@@ -874,60 +923,89 @@
           </h2>
         </section>
       </section>
-      <section class="exams-cards">
-        <article class="exam">
-          <h3>Exámenes paraclinicos 🩺</h3>
-          <ul>
+      <!-- Tarjetas de Exámenes Rediseñadas -->
+      <div class="exams-grid-modern">
+        <!-- Exámenes Paraclínicos -->
+        <article class="exam-card-modern paraclinicos">
+          <div class="exam-card-header">
+            <div class="exam-icon-wrapper">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 6H16V4C16 2.89 15.11 2 14 2H10C8.89 2 8 2.89 8 4V6H4C2.89 6 2 6.89 2 8V19C2 20.11 2.89 21 4 21H20C21.11 21 22 20.11 22 19V8C22 6.89 21.11 6 20 6ZM10 4H14V6H10V4ZM16 15H13V18H11V15H8V13H11V10H13V13H16V15Z" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3>Exámenes Paraclínicos</h3>
+          </div>
+          <ul class="exam-list">
             <li>Examen médico con énfasis osteomuscular</li>
             <li>Examen médico osteomuscular con énfasis en alturas</li>
             <li>Examen médico osteomuscular con énfasis dermatológico</li>
-            <li>
-              Examen médico osteomuscular con énfasis en manipulación de
-              alimentos
-            </li>
+            <li>Examen médico osteomuscular con énfasis en manipulación de alimentos</li>
           </ul>
         </article>
-        <article class="exam">
-          <h3>Pruebas funcionales 👩‍⚕️</h3>
-          <ul>
+
+        <!-- Pruebas Funcionales -->
+        <article class="exam-card-modern funcionales">
+          <div class="exam-card-header">
+            <div class="exam-icon-wrapper">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12C2.73 16.39 7 19.5 12 19.5C17 19.5 21.27 16.39 23 12C21.27 7.61 17 4.5 12 4.5ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17ZM12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9Z" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3>Pruebas Funcionales</h3>
+          </div>
+          <ul class="exam-list">
             <li>Audiometría</li>
             <li>Espirometría</li>
             <li>Optometría</li>
             <li>Visiometría</li>
           </ul>
         </article>
-        <article class="exam">
-          <h3>Pruebas complementarias 👩‍🔬</h3>
-          <ul>
+
+        <!-- Pruebas Complementarias -->
+        <article class="exam-card-modern complementarias">
+          <div class="exam-card-header">
+            <div class="exam-icon-wrapper">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM9 17H7V10H9V17ZM13 17H11V7H13V17ZM17 17H15V13H17V17Z" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3>Pruebas Complementarias</h3>
+          </div>
+          <ul class="exam-list">
             <li>Electrocardiograma</li>
             <li>Rayos X de columna</li>
             <li>Prueba psicosensométrica</li>
             <li>Prueba psicotécnica</li>
           </ul>
         </article>
-        <article class="exam">
-          <h3>Pruebas de Laboratorio 🧪</h3>
-          <ul>
+
+        <!-- Pruebas de Laboratorio -->
+        <article class="exam-card-modern laboratorio">
+          <div class="exam-card-header">
+            <div class="exam-icon-wrapper">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 2V4H8V18C8 19.1 8.9 20 10 20C9.72 20.62 9.46 21.34 9.26 22H14.74C14.54 21.34 14.28 20.62 14 20H9.5C8.67 20 8 19.33 8 18.5C8 17.67 8.67 17 9.5 17H14.5C15.33 17 16 17.67 16 18.5C16 18.7 15.95 18.9 15.87 19.08C16.54 18.38 17 17.45 17 16.42V4H18V2H7ZM11 16C10.45 16 10 15.55 10 15C10 14.45 10.45 14 11 14C11.55 14 12 14.45 12 15C12 15.55 11.55 16 11 16ZM13.5 12C12.67 12 12 11.33 12 10.5C12 9.67 12.67 9 13.5 9C14.33 9 15 9.67 15 10.5C15 11.33 14.33 12 13.5 12Z" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3>Pruebas de Laboratorio</h3>
+          </div>
+          <ul class="exam-list">
             <li>Frotis faríngeo</li>
             <li>Glicemia</li>
-            <li>KOH</li>
+            <li>KOH y coprológico</li>
             <li>Nitrógeno ureico (BUN)</li>
-            <li>Perfil lipídico</li>
-            <li>Pruebas de alcohol en saliva</li>
-            <li>Prueba de embarazo</li>
-            <li>Pruebas de sustancias psicoactivas</li>
+            <li>Perfil lipídico completo</li>
+            <li>Pruebas de alcohol y sustancias psicoactivas</li>
             <li>Transaminasas (TGO y TGP)</li>
-            <li>Triglicéridos</li>
-            <li>Colesterol</li>
-            <li>Coprológico</li>
+            <li>Y más análisis especializados</li>
           </ul>
         </article>
-      </section>
+      </div>
       <button
         class="cta-button cta-button-faqs"
-        onclick="document.getElementById('calculator-section').scrollIntoView({behavior: 'smooth'})"
+        data-scroll-to="calculator-section"
       >
-        cotizacion rapida
+        Cotización Rápida
       </button>
       <!-- <p class="nuestros-examenes">
         <span class="green">Ofrecemos</span> una amplia gama de exámenes,
@@ -939,74 +1017,102 @@
                 <a href="calculadora" class="cta-button-calculadora">Calcula el valor de tus expamenes aca!</a>
             </section> -->
     </section>
-    <!-- Sección de la calculadora de cotizaciones -->
-    <section class="calculator-instructions-container">
-      <div class="container">
-        <h2>
-          Obten una cotizacion personalizada en minutos <br /><br />
-          ¿Cómo Usar Nuestra Calculadora de Cotizaciones?
-        </h2>
-        <p>
-          Sigue estos sencillos pasos para obtener una estimación precisa de los
-          exámenes médicos ocupacionales para tu equipo:
-        </p>
-        <ol>
-          <li>
-            <strong>Nombra el Cargo:</strong> En el primer campo, escribe el
-            nombre del cargo para el cual necesitas la cotización (ej: "Auxiliar
-            Administrativo", "Operario de Maquinaria").
-          </li>
-          <li>
-            <strong>Define el Número de Trabajadores:</strong> Indica cuántos
-            trabajadores desempeñan ese cargo.
-          </li>
-          <li>
-            <strong>Selecciona los Exámenes:</strong> Marca los exámenes
-            requeridos para ese cargo específico. Puedes pasar el cursor sobre
-            cada código de examen (ej: EMO, AUD) para ver su nombre completo y
-            descripción.
-          </li>
-          <li>
-            <strong>Añade Más Cargos (Opcional):</strong> Si necesitas cotizar
-            para múltiples cargos, haz clic en el botón "<strong
-              >+ Agrega un nuevo cargo aquí</strong
-            >". Repite los pasos 1 a 3 para cada nuevo cargo.
-          </li>
-          <li>
-            <strong>Visualiza tu Resumen:</strong> A la derecha, verás un
-            resumen detallado de tu cotización, incluyendo el desglose por cargo
-            y los descuentos aplicados.
-            <ul>
-              <li>
-                El descuento por <em>tamaño de empresa</em> se aplica
-                automáticamente.
-              </li>
-              <li>
-                Puedes obtener un descuento adicional si marcas la opción "<em
-                  >quiero hacer todos los examenes medicos de mi equipo en el
-                  menor tiempo posible</em
-                >".
-              </li>
-            </ul>
-          </li>
-          <li>
-            <strong>Descarga tu Cotización:</strong> Cuando estés listo, haz
-            clic en "<strong>Descarga Acá tu cotización</strong>". Se te pedirá
-            completar un breve formulario de contacto antes de generar el PDF.
-          </li>
-        </ol>
-        <p class="instructions-note">
-          <em
-            >Nota: Tus selecciones se guardan automáticamente. Si sales y
-            regresas más tarde, podrás continuar donde lo dejaste.</em
-          >
-        </p>
-      </div>
-    </section>
+    <!-- Sección Calculadora con Instrucciones Integradas -->
+    <section id="calculator-section" class="calculator-main-section">
+      <div class="calculator-wrapper">
+        <!-- Header de Calculadora -->
+        <div class="calculator-header-intro">
+          <h2>Obtén tu <span class="green">Cotización Personalizada</span> en 2 Minutos</h2>
+          <p class="calculator-intro-text">
+            Completa la información de los cargos y exámenes requeridos. El sistema calculará automáticamente los descuentos por volumen.
+          </p>
 
-    <section id="calculator-section" class="calculator-container">
-      <div class="calculator">
-        <!-- El contenido de la calculadora se generará aquí por JavaScript -->
+          <!-- Instrucciones Colapsables (Acordeón) -->
+          <div class="calculator-instructions-toggle">
+            <button class="instructions-toggle-btn" data-toggle-instructions>
+              <svg class="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>¿Cómo usar la calculadora?</span>
+              <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+
+            <div class="instructions-content" data-instructions-content>
+              <div class="instruction-steps">
+                <div class="instruction-step">
+                  <div class="step-number">1</div>
+                  <div class="step-content">
+                    <h4>Nombra el Cargo</h4>
+                    <p>Escribe el nombre del cargo (ej: "Auxiliar Administrativo", "Operario de Producción").</p>
+                  </div>
+                </div>
+
+                <div class="instruction-step">
+                  <div class="step-number">2</div>
+                  <div class="step-content">
+                    <h4>Define el Número de Trabajadores</h4>
+                    <p>Indica cuántos empleados desempeñan ese cargo.</p>
+                  </div>
+                </div>
+
+                <div class="instruction-step">
+                  <div class="step-number">3</div>
+                  <div class="step-content">
+                    <h4>Selecciona los Exámenes</h4>
+                    <p>Marca los exámenes requeridos. Pasa el cursor sobre cada código para ver su descripción completa.</p>
+                  </div>
+                </div>
+
+                <div class="instruction-step">
+                  <div class="step-number">4</div>
+                  <div class="step-content">
+                    <h4>Añade Más Cargos (Opcional)</h4>
+                    <p>Si necesitas cotizar para múltiples cargos, usa el botón "+ Agregar Cargo".</p>
+                  </div>
+                </div>
+
+                <div class="instruction-step">
+                  <div class="step-number">5</div>
+                  <div class="step-content">
+                    <h4>Revisa y Descarga</h4>
+                    <p>Visualiza tu resumen en tiempo real y descarga tu cotización en PDF cuando estés listo.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="instructions-benefits">
+                <div class="instruction-benefit">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Descuentos automáticos por volumen</span>
+                </div>
+                <div class="instruction-benefit">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Tu cotización se guarda automáticamente</span>
+                </div>
+                <div class="instruction-benefit">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Descarga en PDF con un clic</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contenedor de la Calculadora -->
+        <div class="calculator-container">
+          <div class="calculator">
+            <!-- El contenido de la calculadora se generará aquí por JavaScript -->
+          </div>
+        </div>
       </div>
     </section>
 

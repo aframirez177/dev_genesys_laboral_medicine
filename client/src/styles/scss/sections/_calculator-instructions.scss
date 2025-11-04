@@ -1,0 +1,217 @@
+// ===================================================================
+// INSTRUCCIONES DE CALCULADORA - Acordeón Colapsable
+// Sistema moderno de instrucciones con progressive disclosure
+// ===================================================================
+
+.calculator-main-section {
+    padding: 4rem 2rem;
+    background: map-get($colors, "background-alternative");
+}
+
+.calculator-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+// Header de la calculadora
+.calculator-header-intro {
+    max-width: 900px;
+    margin: 0 auto 3rem;
+    text-align: center;
+    
+    h2 {
+        font-family: map-get($fonts, "title");
+        font-size: clamp(2.4rem, 4vw, 3.2rem);
+        color: map-get($colors, "secondary");
+        margin-bottom: 1rem;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+    
+    .calculator-intro-text {
+        font-family: map-get($fonts, "body");
+        font-size: 1.6rem;
+        color: map-get($colors, "text");
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+}
+
+// Contenedor del acordeón
+.calculator-instructions-toggle {
+    background: #ffffff;
+    border: 2px solid map-get($colors, "border-color");
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 2rem auto;
+    max-width: 800px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        border-color: rgba(map-get($colors, "primary"), 0.5);
+    }
+    
+    &.expanded {
+        border-color: map-get($colors, "primary");
+    }
+}
+
+// Botón toggle
+.instructions-toggle-btn {
+    width: 100%;
+    padding: 1.5rem 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: map-get($fonts, "title");
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: map-get($colors, "secondary");
+    transition: all 0.3s ease;
+    
+    &:hover {
+        background: rgba(map-get($colors, "primary"), 0.03);
+    }
+    
+    .info-icon {
+        color: map-get($colors, "primary");
+        flex-shrink: 0;
+    }
+    
+    span {
+        flex: 1;
+        text-align: left;
+    }
+    
+    .chevron-icon {
+        color: map-get($colors, "primary");
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+    
+    &.active .chevron-icon {
+        transform: rotate(180deg);
+    }
+}
+
+// Contenido de instrucciones
+.instructions-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &.visible {
+        max-height: 1000px;
+        padding: 2rem;
+        border-top: 1px solid map-get($colors, "border-color");
+        background: rgba(map-get($colors, "background-alternative"), 0.3);
+    }
+}
+
+// Pasos de instrucciones
+.instruction-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.instruction-step {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: map-get($colors, "primary");
+        color: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: map-get($fonts, "title");
+        font-weight: 700;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(map-get($colors, "primary"), 0.3);
+    }
+    
+    .step-content {
+        flex: 1;
+        
+        h4 {
+            font-family: map-get($fonts, "title");
+            font-size: 1.6rem;
+            color: map-get($colors, "secondary");
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+        
+        p {
+            font-family: map-get($fonts, "body");
+            font-size: 1.4rem;
+            color: map-get($colors, "text");
+            line-height: 1.6;
+            margin: 0;
+        }
+    }
+}
+
+// Beneficios de la calculadora
+.instructions-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 8px;
+    border-left: 3px solid map-get($colors, "primary");
+}
+
+.instruction-benefit {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: map-get($fonts, "body");
+    font-size: 1.4rem;
+    color: map-get($colors, "text");
+    
+    svg {
+        color: map-get($colors, "primary");
+        flex-shrink: 0;
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .calculator-main-section {
+        padding: 3rem 1rem;
+    }
+    
+    .instruction-step {
+        gap: 1rem;
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            font-size: 1.6rem;
+        }
+        
+        .step-content h4 {
+            font-size: 1.4rem;
+        }
+        
+        .step-content p {
+            font-size: 1.3rem;
+        }
+    }
+    
+    .instructions-content.visible {
+        padding: 1.5rem 1rem;
+    }
+}
+

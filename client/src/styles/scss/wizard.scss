@@ -1,0 +1,18 @@
+/**
+ * wizard.scss - Bundle completo de estilos para el wizard
+ *
+ * Este archivo importa todos los estilos necesarios en el orden correcto
+ * para que las variables y mixins estén disponibles para todos los componentes
+ */
+
+// 1. Variables (deben ir primero)
+@import './base/variables';
+
+// 2. Mixins (usan variables)
+@import './base/mixins';
+
+// 3. Reset/Base (usan variables y mixins)
+@import './base/reset';
+
+// 4. Componentes del wizard (usan todo lo anterior)
+@import './components/wizard';

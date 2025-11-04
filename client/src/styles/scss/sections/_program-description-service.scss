@@ -1,16 +1,199 @@
-.service-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: map-get($colors, "background");
+// ===================================================================
+// SECCIÓN DE BENEFICIOS - Exámenes Médicos Ocupacionales
+// Diseño moderno con grid responsivo y tarjetas con hover effects
+// ===================================================================
 
+.service-info {
+    padding: 4rem 2rem;
+    background-color: map-get($colors, "background");
+    position: relative;
+    
+    // Contenedor principal
+    .benefits-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    // Título principal
+    .benefits-title {
+        font-size: clamp(2.4rem, 4vw, 3.2rem);
+        text-align: center;
+        margin-bottom: 1rem;
+        color: map-get($colors, "secondary");
+        font-family: map-get($fonts, "title");
+        font-weight: 700;
+        line-height: 1.3;
+    }
+    
+    // Grid de beneficios (4 tarjetas)
+    .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+        
+        @include respond-to("tablet") {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        @include respond-to("desktop") {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2.5rem;
+        }
+    }
+    
+    // Tarjeta individual de beneficio
+    .benefit-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+        
+        // Hover effect profesional
+        &:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(map-get($colors, "primary"), 0.15);
+            border-color: rgba(map-get($colors, "primary"), 0.3);
+            
+            .benefit-icon {
+                transform: scale(1.1);
+                background: map-get($colors, "primary");
+                
+                svg {
+                    color: #ffffff;
+                }
+            }
+        }
+        
+        // Animación de entrada
+        opacity: 0;
+        animation: fadeInUp 0.6s ease forwards;
+        
+        @for $i from 1 through 4 {
+            &:nth-child(#{$i}) {
+                animation-delay: #{$i * 0.1}s;
+            }
+        }
+        
+        h3 {
+            font-size: 1.8rem;
+            color: map-get($colors, "secondary");
+            margin-bottom: 1rem;
+            font-family: map-get($fonts, "title");
+            font-weight: 600;
+        }
+        
+        p {
+            color: map-get($colors, "text");
+            line-height: 1.6;
+            font-size: 1.4rem;
+            font-family: map-get($fonts, "body");
+            margin: 0;
+        }
+    }
+    
+    // Icono de beneficio
+    .benefit-icon {
+        width: 64px;
+        height: 64px;
+        background: rgba(map-get($colors, "primary"), 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        
+        svg {
+            color: map-get($colors, "primary");
+            transition: color 0.3s ease;
+        }
+    }
+    
+    // Contenedor de CTAs
+    .cta-buttons-container {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 3rem;
+    }
+    
+    // Botones CTA
+    .cta-button {
+        padding: 1.2rem 2.5rem;
+        border-radius: 8px;
+        font-size: 1.6rem;
+        font-weight: 600;
+        font-family: map-get($fonts, "title");
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        &.cta-primary {
+            background: map-get($colors, "primary");
+            color: map-get($colors, "secondary");
+            box-shadow: 0 4px 12px rgba(map-get($colors, "primary"), 0.3);
+            
+            &:hover {
+                background: darken(map-get($colors, "primary"), 8%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(map-get($colors, "primary"), 0.4);
+            }
+            
+            &:active {
+                transform: translateY(0);
+            }
+        }
+        
+        &.cta-secondary {
+            background: #ffffff;
+            color: map-get($colors, "primary");
+            border: 2px solid map-get($colors, "primary");
+            
+            &:hover {
+                background: map-get($colors, "primary");
+                color: #ffffff;
+                transform: translateY(-2px);
+            }
+        }
+        
+        // Responsive
+        @media (max-width: 768px) {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+}
+
+// Animación fadeInUp
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Legacy support (mantener compatibilidad)
 .program-description {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
     flex-wrap: wrap;
     padding: 2rem;
-
 
     h2 {
         max-width: 450px;
@@ -26,15 +209,13 @@
         max-width: 400px;
         margin: 0;
         font-family: map-get($fonts, "body");
-        font-size: 18px;
+        font-size: 1.8rem;
         text-align: left;
         padding: 2rem;
     }
 }
-    .cta-button-1 {
-        max-width: 600px;
-        margin: 2.5rem;
-    }
 
+.cta-button-1 {
+    max-width: 600px;
+    
 }
-

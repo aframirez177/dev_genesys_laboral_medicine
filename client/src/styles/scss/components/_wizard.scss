@@ -1,0 +1,548 @@
+// =================================================================
+// WIZARD CONVERSACIONAL - Estilos
+// Inspirado en Typeform/Cal.com
+// =================================================================
+
+@import '../base/variables';
+@import '../base/mixins';
+
+// Container principal
+.wizard-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg,
+    map-get($colors, 'background') 0%,
+    lighten(map-get($colors, 'background'), 2%) 100%);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+// Barra de progreso
+.wizard-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  .wizard-progress-bar {
+    height: 4px;
+    background: linear-gradient(90deg,
+      map-get($colors, 'primary'),
+      map-get($colors, 'alternative'));
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .wizard-progress-steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem 2rem;
+
+    @include respond-to('mobile') {
+      gap: 1rem;
+      padding: 1rem;
+    }
+  }
+
+  .wizard-progress-step {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    background: map-get($colors, 'background');
+    color: map-get($colors, 'text');
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+    cursor: default;
+
+    @include respond-to('mobile') {
+      width: 30px;
+      height: 30px;
+      font-size: 1.2rem;
+    }
+
+    &.active {
+      background: map-get($colors, 'primary');
+      color: white;
+      border-color: map-get($colors, 'primary');
+      box-shadow: 0 0 0 4px rgba(map-get($colors, 'primary'), 0.2);
+      transform: scale(1.1);
+    }
+
+    &.completed {
+      background: lighten(map-get($colors, 'primary'), 10%);
+      color: white;
+      border-color: lighten(map-get($colors, 'primary'), 10%);
+      cursor: pointer;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}
+
+// Contenido principal
+.wizard-content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12rem 2rem 18rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 20rem);
+
+  @include respond-to('tablet') {
+    padding: 10rem 3rem 16rem;
+    max-height: calc(100vh - 18rem);
+  }
+
+  @include respond-to('mobile') {
+    padding: 8rem 1.5rem 14rem;
+    max-height: calc(100vh - 16rem);
+  }
+}
+
+// Paso individual
+.wizard-step {
+  width: 100%;
+  max-width: 700px;
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+
+  h2, h3 {
+    font-family: map-get($fonts, 'title');
+    font-size: clamp(2.4rem, 4vw, 4.2rem);
+    line-height: 1.2;
+    margin-bottom: 2rem;
+    color: map-get($colors, 'secondary');
+    font-weight: 700;
+
+    @include respond-to('mobile') {
+      font-size: 2.4rem;
+    }
+  }
+
+  p {
+    font-size: clamp(1.4rem, 2vw, 1.8rem);
+    line-height: 1.6;
+    color: lighten(map-get($colors, 'text'), 10%);
+    margin-bottom: 3rem;
+  }
+
+  // Inputs del wizard
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    width: 100%;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    padding: 1.5rem 2rem;
+    border: none;
+    border-bottom: 3px solid #e0e0e0;
+    background: transparent;
+    font-family: map-get($fonts, 'body');
+    color: map-get($colors, 'secondary');
+    transition: all 0.3s ease;
+    outline: none;
+
+    &::placeholder {
+      color: #b0b0b0;
+    }
+
+    &:focus {
+      border-bottom-color: map-get($colors, 'primary');
+      background: rgba(map-get($colors, 'primary'), 0.02);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+
+    &:focus {
+      border-color: map-get($colors, 'primary');
+    }
+  }
+
+  // Hints y ayudas
+  .wizard-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(map-get($colors, 'primary'), 0.05);
+    border-left: 3px solid map-get($colors, 'primary');
+    border-radius: 4px;
+    font-size: 1.4rem;
+    color: darken(map-get($colors, 'primary'), 10%);
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  .wizard-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+
+    @include respond-to('mobile') {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .wizard-option {
+    padding: 2rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+
+    &:hover {
+      border-color: map-get($colors, 'primary');
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    &.selected {
+      border-color: map-get($colors, 'primary');
+      background: rgba(map-get($colors, 'primary'), 0.05);
+      box-shadow: 0 0 0 3px rgba(map-get($colors, 'primary'), 0.1);
+    }
+
+    .option-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .option-label {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: map-get($colors, 'secondary');
+    }
+
+    .option-description {
+      font-size: 1.3rem;
+      color: lighten(map-get($colors, 'text'), 20%);
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+// Acciones (botones)
+.wizard-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  background: white;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  z-index: 999;
+
+  @include respond-to('mobile') {
+    padding: 1.5rem;
+  }
+}
+
+.wizard-btn {
+  padding: 1.5rem 3rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: map-get($fonts, 'body');
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  @include respond-to('mobile') {
+    padding: 1.2rem 2rem;
+    font-size: 1.4rem;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.wizard-btn-back {
+    background: transparent;
+    color: map-get($colors, 'text');
+
+    &:hover:not(:disabled) {
+      background: map-get($colors, 'background');
+    }
+  }
+
+  &.wizard-btn-next {
+    background: map-get($colors, 'primary');
+    color: white;
+    margin-left: auto;
+    box-shadow: 0 4px 12px rgba(map-get($colors, 'primary'), 0.3);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(map-get($colors, 'primary'), 0.4);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Error messages
+.wizard-error {
+  position: fixed;
+  bottom: 10rem;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 600px;
+  width: 90%;
+  padding: 2rem;
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  animation: slideInUp 0.4s ease;
+
+  .error-content {
+    font-size: 1.4rem;
+    color: #856404;
+    line-height: 1.6;
+
+    strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+    }
+  }
+}
+
+// Loading state
+.wizard-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 2rem;
+
+  .wizard-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid map-get($colors, 'background');
+    border-top-color: map-get($colors, 'primary');
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  p {
+    font-size: 1.8rem;
+    color: map-get($colors, 'text');
+    font-weight: 500;
+  }
+}
+
+// =================================================================
+// ANIMACIONES
+// =================================================================
+
+// Fade in up
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Slide animations
+.slide-out-left {
+  animation: slideOutLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.slide-out-right {
+  animation: slideOutRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideOutLeft {
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes slideOutRight {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// =================================================================
+// UTILIDADES
+// =================================================================
+
+.green {
+  color: map-get($colors, 'primary') !important;
+  font-weight: 800 !important;
+}
+
+// =================================================================
+// SUGERENCIAS DE IA
+// =================================================================
+
+.ai-suggestions {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg,
+    rgba(map-get($colors, 'primary'), 0.05),
+    rgba(map-get($colors, 'alternative'), 0.05));
+  border-radius: 12px;
+  border: 1px solid rgba(map-get($colors, 'primary'), 0.2);
+
+  p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: map-get($colors, 'secondary');
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .suggestion-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 24px;
+    margin: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.4rem;
+
+    &:hover {
+      border-color: map-get($colors, 'primary');
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    &.selected {
+      background: map-get($colors, 'primary');
+      color: white;
+      border-color: map-get($colors, 'primary');
+    }
+
+    .confidence {
+      font-size: 1.2rem;
+      opacity: 0.7;
+    }
+  }
+}
+
+// =================================================================
+// RESPONSIVE
+// =================================================================
+
+@include respond-to('mobile') {
+  .wizard-progress .wizard-progress-steps {
+    gap: 0.5rem;
+  }
+
+  .wizard-content {
+    padding-top: 10rem;
+  }
+
+  .wizard-step h2 {
+    font-size: 2.4rem;
+  }
+
+  .wizard-step input,
+  .wizard-step textarea {
+    font-size: 1.6rem;
+  }
+}

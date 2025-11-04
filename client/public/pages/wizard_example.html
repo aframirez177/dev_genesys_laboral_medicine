@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wizard de Diagnóstico de Riesgos Laborales - Genesys Laboral Medicine">
+    <title>Wizard SST - Genesys Laboral Medicine</title>
+
+    <!-- Preconnect para optimización -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts: Poppins + Raleway -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Fabicon-->
+    <link
+    rel="icon"
+    type="image/svg+xml"
+    href="../assets/images/logo_icono_color_vectores_fabicon.svg"
+    sizes="16x10 32x20"
+  />
+
+    <!-- Los estilos se inyectan automáticamente por webpack -->
+</head>
+<body>
+    <!--
+      El wizard se renderizará aquí mediante lit-html
+      No necesitamos HTML estático, el Wizard class lo genera todo
+    -->
+    <div id="wizard-root"></div>
+
+    <!--
+      Scripts del wizard se inyectan automáticamente por webpack (HtmlWebpackPlugin)
+      El bundle incluirá: Wizard.js, diagnosticoSteps.js, CargoState, lit-html, etc.
+    -->
+</body>
+</html>

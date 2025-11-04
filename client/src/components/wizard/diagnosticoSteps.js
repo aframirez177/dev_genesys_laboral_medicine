@@ -1,0 +1,1865 @@
+/**
+ * diagnosticoSteps.js - Definición de pasos del wizard SST
+ *
+ * Define los pasos del wizard para el diagnóstico de riesgos laborales
+ * Integra con los endpoints de IA creados en Fase 1
+ */
+
+import { html } from 'lit-html';
+import { cargoState } from '../../state/CargoState.js';
+import { GES_CATEGORIES, getCategoryColor } from '../../config/ges-categories.js';
+import { SECTORES_ECONOMICOS, getCiudadesSimple } from '../../config/colombia-data.js';
+
+/**
+ * Helper: Fetch con manejo de errores
+ */
+async function fetchIA(endpoint, data = null) {
+  try {
+    const options = data ? {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    } : { method: 'GET' };
+
+    const response = await fetch(`/api/ia${endpoint}`, options);
+
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error en endpoint ${endpoint}:`, error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Helper: Debounce para autocomplete
+ */
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// GES_CATEGORIES ahora se importa desde config/ges-categories.js
+
+/**
+ * Estado global para almacenar sugerencias de IA durante el wizard
+ */
+let aiSuggestionsCache = {
+  ges: {},
+  controls: {}
+};
+
+// =================================================================
+// PASO 1: BIENVENIDA
+// =================================================================
+
+export const welcomeStep = {
+  id: 'welcome',
+  title: 'Bienvenido al Diagnóstico de Riesgos Laborales',
+
+  render: () => html`
+    <h2>👋 ¡Bienvenido al Diagnóstico de Riesgos Laborales!</h2>
+    <p>
+      Este asistente te guiará paso a paso para crear la matriz de riesgos profesionales
+      de tu empresa según la metodología GTC 45.
+    </p>
+
+    <div class="wizard-hint">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+      </svg>
+      <span>
+        Este proceso tomará aproximadamente <strong>5-10 minutos</strong> dependiendo
+        del número de cargos a evaluar.
+      </span>
+    </div>
+
+    <div class="wizard-options">
+      <div class="wizard-option" style="text-align: left;">
+        <div class="option-icon">✨</div>
+        <div class="option-label">Sugerencias Inteligentes</div>
+        <div class="option-description">
+          Recibirás recomendaciones automáticas basadas en tu sector y cargos
+        </div>
+      </div>
+
+      <div class="wizard-option" style="text-align: left;">
+        <div class="option-icon">💾</div>
+        <div class="option-label">Auto-guardado</div>
+        <div class="option-description">
+          Tu progreso se guarda automáticamente cada 5 segundos
+        </div>
+      </div>
+
+      <div class="wizard-option" style="text-align: left;">
+        <div class="option-icon">📊</div>
+        <div class="option-label">Documentos Profesionales</div>
+        <div class="option-description">
+          Al finalizar obtendrás matriz, profesiograma y perfiles de cargo
+        </div>
+      </div>
+    </div>
+  `,
+
+  validate: () => ({ isValid: true, errors: [] })
+};
+
+// =================================================================
+// PASO 2: INFORMACIÓN DE LA EMPRESA
+// =================================================================
+
+export const empresaStep = {
+  id: 'empresa',
+  title: 'Información de la Empresa',
+
+  render: (data = {}) => html`
+    <h2>📋 Información de la Empresa</h2>
+    <p>Cuéntanos sobre tu empresa para personalizar el diagnóstico.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 2rem; margin-top: 3rem;">
+      <div>
+        <label for="empresa-nombre" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+          Nombre de la empresa *
+        </label>
+        <input
+          type="text"
+          id="empresa-nombre"
+          name="nombre"
+          placeholder="Ej: ACME Corporation S.A.S"
+          value="${data.nombre || ''}"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="empresa-nit" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+          NIT *
+        </label>
+        <input
+          type="text"
+          id="empresa-nit"
+          name="nit"
+          placeholder="Ej: 900123456-7"
+          value="${data.nit || ''}"
+          required
+        />
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+          <label for="empresa-sector" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+            Sector Económico *
+          </label>
+          <select id="empresa-sector" name="sector" required>
+            <option value="">Seleccione el sector...</option>
+            ${SECTORES_ECONOMICOS.map(sector => html`
+              <option value="${sector.value}" ?selected=${data.sector === sector.value}>
+                ${sector.label}
+              </option>
+            `)}
+          </select>
+        </div>
+
+        <div>
+          <label for="empresa-ciudad" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+            Ciudad *
+          </label>
+          <input
+            type="text"
+            id="empresa-ciudad"
+            name="ciudad"
+            placeholder="Ej: Bogotá"
+            value="${data.ciudad || ''}"
+            required
+            list="ciudades-list"
+          />
+          <datalist id="ciudades-list">
+            ${getCiudadesSimple().map(ciudad => `<option value="${ciudad}">`).join('')}
+          </datalist>
+        </div>
+      </div>
+    </div>
+
+    <div class="wizard-hint" style="margin-top: 3rem;">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+      </svg>
+      <span>
+        Esta información aparecerá en todos los documentos generados.
+      </span>
+    </div>
+  `,
+
+  validate: (data) => {
+    const errors = [];
+
+    if (!data.nombre || data.nombre.trim().length < 3) {
+      errors.push({ field: 'nombre', message: 'El nombre de la empresa debe tener al menos 3 caracteres' });
+    }
+
+    if (!data.nit || data.nit.trim().length < 5) {
+      errors.push({ field: 'nit', message: 'El NIT debe tener al menos 5 caracteres' });
+    }
+
+    if (!data.sector) {
+      errors.push({ field: 'sector', message: 'Debe seleccionar un sector' });
+    }
+
+    if (!data.ciudad || data.ciudad.trim().length < 2) {
+      errors.push({ field: 'ciudad', message: 'Debe ingresar una ciudad' });
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  },
+
+  onEnter: function(wizardData) {
+    // Si ya hay datos en cargoState, pre-llenar
+    const stateData = cargoState.getState();
+    if (stateData.empresa && stateData.empresa.nombre) {
+      // Ya hay datos, no hacer nada (el render usará estos datos)
+    }
+  }
+};
+
+// =================================================================
+// PASO 3: NÚMERO DE CARGOS
+// =================================================================
+
+export const numCargosStep = {
+  id: 'numCargos',
+  title: '¿Cuántos cargos evaluarás?',
+
+  render: (data = {}) => html`
+    <h2>👥 ¿Cuántos cargos diferentes evaluarás?</h2>
+    <p>Indica el número de posiciones o cargos distintos que tiene tu empresa.</p>
+
+    <div style="margin-top: 4rem;">
+      <input
+        type="number"
+        id="num-cargos"
+        name="numCargos"
+        placeholder="Ej: 5"
+        min="1"
+        max="50"
+        value="${data.numCargos || ''}"
+        required
+        style="text-align: center; font-size: 3.6rem; font-weight: 700;"
+      />
+    </div>
+
+    <div class="wizard-hint" style="margin-top: 3rem;">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+      </svg>
+      <span>
+        Por ejemplo: Operario, Supervisor, Gerente, Contador, etc.
+        Si tienes 10 operarios, cuenta solo 1 cargo (Operario).
+      </span>
+    </div>
+
+    <div class="wizard-options" style="margin-top: 3rem;">
+      <div class="wizard-option" data-num="2">
+        <div class="option-icon">🏢</div>
+        <div class="option-label" style="line-height: 1.6;">
+          <span class="green">Pequeñas empresas</span><br>
+          <span style="font-size: 1.3rem; font-weight: 400;">tienen entre 1 y 3 cargos</span>
+        </div>
+      </div>
+
+      <div class="wizard-option" data-num="7">
+        <div class="option-icon">🏭</div>
+        <div class="option-label" style="line-height: 1.6;">
+          <span class="green">Medianas empresas</span><br>
+          <span style="font-size: 1.3rem; font-weight: 400;">tienen entre 4 y 10 cargos</span>
+        </div>
+      </div>
+
+      <div class="wizard-option" data-num="15">
+        <div class="option-icon">🏙️</div>
+        <div class="option-label" style="line-height: 1.6;">
+          <span class="green">Grandes empresas</span><br>
+          <span style="font-size: 1.3rem; font-weight: 400;">tienen 11 o más cargos</span>
+        </div>
+      </div>
+    </div>
+  `,
+
+  validate: (data) => {
+    const errors = [];
+    const num = parseInt(data.numCargos, 10);
+
+    if (!num || num < 1) {
+      errors.push({ field: 'numCargos', message: 'Debe indicar al menos 1 cargo' });
+    }
+
+    if (num > 50) {
+      errors.push({ field: 'numCargos', message: 'El máximo de cargos soportado es 50. Contacta con soporte para empresas grandes.' });
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  },
+
+  onEnter: function() {
+    // Agregar event listeners para los quick-select buttons
+    setTimeout(() => {
+      const options = document.querySelectorAll('.wizard-option[data-num]');
+      const input = document.getElementById('num-cargos');
+
+      options.forEach(option => {
+        option.addEventListener('click', () => {
+          const num = option.dataset.num;
+          input.value = num;
+
+          // Remover clase selected de todas
+          options.forEach(opt => opt.classList.remove('selected'));
+          // Agregar a la clickeada
+          option.classList.add('selected');
+        });
+      });
+    }, 100);
+  }
+};
+
+// =================================================================
+// PASO 4: INFORMACIÓN DE CARGO (se repite para cada cargo)
+// =================================================================
+
+export function createCargoInfoStep(cargoIndex, totalCargos) {
+  return {
+    id: `cargo-info-${cargoIndex}`,
+    title: `Cargo ${cargoIndex + 1} de ${totalCargos}`,
+
+    render: (data = {}) => html`
+      <h2>🏢 Cargo ${cargoIndex + 1} de ${totalCargos}</h2>
+      <p>Ingresa los detalles del cargo que deseas evaluar.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 2rem; margin-top: 3rem;">
+        <div>
+          <label for="cargo-name" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+            Nombre del cargo *
+          </label>
+          <input
+            type="text"
+            id="cargo-name"
+            name="cargoName"
+            placeholder="Ej: Operario de producción"
+            value="${data.cargoName || ''}"
+            required
+            autocomplete="off"
+          />
+          <div id="autocomplete-suggestions" class="ai-suggestions" style="display: none; margin-top: 1rem;">
+            <!-- Sugerencias de autocompletado aparecerán aquí -->
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+          <div>
+            <label for="cargo-area" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+              Área *
+            </label>
+            <input
+              type="text"
+              id="cargo-area"
+              name="area"
+              placeholder="Ej: Producción"
+              value="${data.area || ''}"
+              required
+            />
+          </div>
+
+          <div>
+            <label for="cargo-zona" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+              Zona *
+            </label>
+            <input
+              type="text"
+              id="cargo-zona"
+              name="zona"
+              placeholder="Ej: Planta 1, Oficina Principal"
+              value="${data.zona || ''}"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="cargo-num-trabajadores" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+            N° de trabajadores *
+          </label>
+          <input
+            type="number"
+            id="cargo-num-trabajadores"
+            name="numTrabajadores"
+            placeholder="Ej: 15"
+            min="1"
+            value="${data.numTrabajadores || ''}"
+            required
+            style="max-width: 200px;"
+          />
+        </div>
+
+        <div>
+          <label for="cargo-descripcion-tareas" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+            Descripción de tareas *
+          </label>
+          <textarea
+            id="cargo-descripcion-tareas"
+            name="descripcionTareas"
+            placeholder="Describe las principales tareas y responsabilidades del cargo (mínimo 20 caracteres)"
+            rows="4"
+            required
+          >${data.descripcionTareas || ''}</textarea>
+          <p style="font-size: 1.3rem; color: #666; margin-top: 0.5rem;">
+            Ejemplo: "Opera máquinas de corte, realiza inspección de calidad, mantiene el área de trabajo limpia y ordenada"
+          </p>
+        </div>
+      </div>
+
+      <div class="wizard-hint" style="margin-top: 3rem;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+        </svg>
+        <span>
+          Comienza a escribir el nombre del cargo y recibirás sugerencias automáticas.
+        </span>
+      </div>
+    `,
+
+    validate: (data) => {
+      const errors = [];
+
+      if (!data.cargoName || data.cargoName.trim().length < 3) {
+        errors.push({ field: 'cargoName', message: 'El nombre del cargo debe tener al menos 3 caracteres' });
+      }
+
+      if (!data.area || data.area.trim().length < 2) {
+        errors.push({ field: 'area', message: 'El área debe tener al menos 2 caracteres' });
+      }
+
+      if (!data.zona || data.zona.trim().length < 2) {
+        errors.push({ field: 'zona', message: 'La zona debe tener al menos 2 caracteres' });
+      }
+
+      const numTrabajadores = parseInt(data.numTrabajadores, 10);
+      if (!numTrabajadores || numTrabajadores < 1) {
+        errors.push({ field: 'numTrabajadores', message: 'Debe haber al menos 1 trabajador' });
+      }
+
+      if (!data.descripcionTareas || data.descripcionTareas.trim().length < 20) {
+        errors.push({ field: 'descripcionTareas', message: 'La descripción de tareas debe tener al menos 20 caracteres' });
+      }
+
+      return {
+        isValid: errors.length === 0,
+        errors
+      };
+    },
+
+    onEnter: function() {
+      // Setup autocomplete
+      setTimeout(() => {
+        const input = document.getElementById('cargo-name');
+        const suggestionsContainer = document.getElementById('autocomplete-suggestions');
+
+        if (!input || !suggestionsContainer) return;
+
+        const debouncedAutocomplete = debounce(async (query) => {
+          if (query.length < 3) {
+            suggestionsContainer.style.display = 'none';
+            return;
+          }
+
+          const result = await fetchIA(`/autocomplete-cargo?q=${encodeURIComponent(query)}`);
+
+          if (result.success && result.suggestions && result.suggestions.length > 0) {
+            suggestionsContainer.innerHTML = `
+              <p style="font-size: 1.4rem; font-weight: 600; margin-bottom: 1rem;">
+                💡 Sugerencias:
+              </p>
+              ${result.suggestions.map(s => `
+                <button
+                  type="button"
+                  class="suggestion-chip"
+                  data-cargo="${s.cargo}"
+                  style="margin: 0.5rem; cursor: pointer;"
+                >
+                  ${s.cargo}
+                  <span class="confidence">${s.frequency}%</span>
+                </button>
+              `).join('')}
+            `;
+            suggestionsContainer.style.display = 'block';
+
+            // Event listeners para chips
+            suggestionsContainer.querySelectorAll('.suggestion-chip').forEach(chip => {
+              chip.addEventListener('click', () => {
+                input.value = chip.dataset.cargo;
+                suggestionsContainer.style.display = 'none';
+              });
+            });
+          } else {
+            suggestionsContainer.style.display = 'none';
+          }
+        }, 500);
+
+        input.addEventListener('input', (e) => {
+          debouncedAutocomplete(e.target.value);
+        });
+      }, 100);
+    }
+  };
+}
+
+// =================================================================
+// PASO 5: TOGGLES ESPECIALES (características críticas del cargo)
+// =================================================================
+
+export function createTogglesEspecialesStep(cargoIndex, totalCargos, cargoName) {
+  return {
+    id: `toggles-especiales-${cargoIndex}`,
+    title: `Características especiales: ${cargoName}`,
+
+    render: (data = {}) => html`
+      <h2>⚠️ Características Especiales del Cargo</h2>
+      <p>
+        Indica si este cargo tiene alguna de las siguientes características especiales
+        que requieren evaluación y controles adicionales según la normatividad colombiana.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 2.5rem; margin-top: 3rem;">
+        <!-- Tareas Rutinarias -->
+        <label
+          class="wizard-option toggle-option ${data.tareasRutinarias ? 'selected' : ''}"
+          style="padding: 2rem; cursor: pointer; text-align: left; display: flex; align-items: start; gap: 1.5rem; border: 2px solid #e0e0e0;"
+        >
+          <input
+            type="checkbox"
+            name="tareasRutinarias"
+            ?checked=${data.tareasRutinarias || false}
+            style="width: 24px; height: 24px; cursor: pointer; margin-top: 0.3rem; flex-shrink: 0;"
+          />
+          <div style="flex: 1;">
+            <div style="font-size: 1.6rem; font-weight: 600; color: #383d47; margin-bottom: 0.8rem;">
+              🔄 Tareas Rutinarias
+            </div>
+            <div style="font-size: 1.4rem; color: #666; line-height: 1.6;">
+              El cargo realiza actividades repetitivas o programadas de manera regular.
+              Esto puede implicar mayor riesgo biomecánico y psicosocial por monotonía.
+            </div>
+          </div>
+        </label>
+
+        <!-- Manipula Alimentos -->
+        <label
+          class="wizard-option toggle-option ${data.manipulaAlimentos ? 'selected' : ''}"
+          style="padding: 2rem; cursor: pointer; text-align: left; display: flex; align-items: start; gap: 1.5rem; border: 2px solid #e0e0e0;"
+        >
+          <input
+            type="checkbox"
+            name="manipulaAlimentos"
+            ?checked=${data.manipulaAlimentos || false}
+            style="width: 24px; height: 24px; cursor: pointer; margin-top: 0.3rem; flex-shrink: 0;"
+          />
+          <div style="flex: 1;">
+            <div style="font-size: 1.6rem; font-weight: 600; color: #383d47; margin-bottom: 0.8rem;">
+              🍽️ Manipulación de Alimentos
+            </div>
+            <div style="font-size: 1.4rem; color: #666; line-height: 1.6;">
+              <strong>Res. 2674/2013:</strong> Requiere certificación sanitaria, exámenes médicos específicos
+              y cumplimiento de BPM (Buenas Prácticas de Manufactura).
+            </div>
+          </div>
+        </label>
+
+        <!-- Trabajo en Alturas -->
+        <label
+          class="wizard-option toggle-option ${data.trabajaAlturas ? 'selected' : ''}"
+          style="padding: 2rem; cursor: pointer; text-align: left; display: flex; align-items: start; gap: 1.5rem; border: 2px solid #ff9800;"
+        >
+          <input
+            type="checkbox"
+            name="trabajaAlturas"
+            ?checked=${data.trabajaAlturas || false}
+            style="width: 24px; height: 24px; cursor: pointer; margin-top: 0.3rem; flex-shrink: 0;"
+          />
+          <div style="flex: 1;">
+            <div style="font-size: 1.6rem; font-weight: 600; color: #ff9800; margin-bottom: 0.8rem;">
+              ⛰️ Trabajo en Alturas (CRÍTICO)
+            </div>
+            <div style="font-size: 1.4rem; color: #666; line-height: 1.6;">
+              <strong>Res. 1409/2012:</strong> Trabajo a partir de 1.5 metros de altura.
+              Requiere certificación obligatoria, exámenes médicos anuales, sistemas de protección contra caídas
+              y programa de protección contra caídas (SG-SST).
+            </div>
+          </div>
+        </label>
+
+        <!-- Espacios Confinados -->
+        <label
+          class="wizard-option toggle-option ${data.trabajaEspaciosConfinados ? 'selected' : ''}"
+          style="padding: 2rem; cursor: pointer; text-align: left; display: flex; align-items: start; gap: 1.5rem; border: 2px solid #f44336;"
+        >
+          <input
+            type="checkbox"
+            name="trabajaEspaciosConfinados"
+            ?checked=${data.trabajaEspaciosConfinados || false}
+            style="width: 24px; height: 24px; cursor: pointer; margin-top: 0.3rem; flex-shrink: 0;"
+          />
+          <div style="flex: 1;">
+            <div style="font-size: 1.6rem; font-weight: 600; color: #f44336; margin-bottom: 0.8rem;">
+              🚪 Espacios Confinados (CRÍTICO)
+            </div>
+            <div style="font-size: 1.4rem; color: #666; line-height: 1.6;">
+              <strong>Res. 1409/2012:</strong> Espacios con entradas/salidas limitadas y ventilación desfavorable.
+              Requiere permiso de trabajo, monitoreo atmosférico, entrenamiento especializado y plan de rescate.
+            </div>
+          </div>
+        </label>
+
+        <!-- Conduce Vehículo -->
+        <label
+          class="wizard-option toggle-option ${data.conduceVehiculo ? 'selected' : ''}"
+          style="padding: 2rem; cursor: pointer; text-align: left; display: flex; align-items: start; gap: 1.5rem; border: 2px solid #e0e0e0;"
+        >
+          <input
+            type="checkbox"
+            name="conduceVehiculo"
+            ?checked=${data.conduceVehiculo || false}
+            style="width: 24px; height: 24px; cursor: pointer; margin-top: 0.3rem; flex-shrink: 0;"
+          />
+          <div style="flex: 1;">
+            <div style="font-size: 1.6rem; font-weight: 600; color: #383d47; margin-bottom: 0.8rem;">
+              🚗 Conduce Vehículos
+            </div>
+            <div style="font-size: 1.4rem; color: #666; line-height: 1.6;">
+              <strong>Res. 1565/2014 (PESV):</strong> Requiere licencia de conducción vigente,
+              exámenes médicos específicos (visiometría, audiometría), capacitación en conducción defensiva
+              y seguridad vial.
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <div class="wizard-hint" style="margin-top: 3rem;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+        </svg>
+        <span>
+          Estas características determinan requisitos legales específicos y controles adicionales
+          en el profesiograma y perfil del cargo.
+        </span>
+      </div>
+    `,
+
+    getData: () => {
+      return {
+        tareasRutinarias: document.querySelector('input[name="tareasRutinarias"]')?.checked || false,
+        manipulaAlimentos: document.querySelector('input[name="manipulaAlimentos"]')?.checked || false,
+        trabajaAlturas: document.querySelector('input[name="trabajaAlturas"]')?.checked || false,
+        trabajaEspaciosConfinados: document.querySelector('input[name="trabajaEspaciosConfinados"]')?.checked || false,
+        conduceVehiculo: document.querySelector('input[name="conduceVehiculo"]')?.checked || false
+      };
+    },
+
+    validate: () => {
+      // No validation required - all toggles are optional
+      return { isValid: true, errors: [] };
+    },
+
+    onEnter: function() {
+      // Add event listeners to toggle visual state
+      setTimeout(() => {
+        const checkboxes = document.querySelectorAll('.toggle-option input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+          cb.addEventListener('change', () => {
+            const label = cb.closest('.toggle-option');
+            if (label) {
+              label.classList.toggle('selected', cb.checked);
+            }
+          });
+        });
+      }, 100);
+    }
+  };
+}
+
+// =================================================================
+// PASO 6: SELECCIÓN DE GES (se repite para cada cargo)
+// =================================================================
+
+export function createGESSelectionStep(cargoIndex, totalCargos, cargoName) {
+  return {
+    id: `ges-selection-${cargoIndex}`,
+    title: `Riesgos del cargo: ${cargoName}`,
+
+    render: (data = {}) => {
+      const selectedGES = data.gesSeleccionados || [];
+
+      return html`
+        <h2>⚠️ Selecciona los riesgos para "${cargoName}"</h2>
+        <p>Indica qué riesgos están presentes en este cargo según la GTC 45.</p>
+
+        <!-- Sugerencias de IA -->
+        <div id="ai-ges-suggestions" style="display: none;" class="ai-suggestions">
+          <p style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">
+            ✨ Sugerencias basadas en el cargo:
+          </p>
+          <div id="ai-ges-chips"></div>
+        </div>
+
+        <!-- Selección manual por categorías -->
+        <div style="margin-top: 3rem;">
+          ${Object.entries(GES_CATEGORIES).map(([category, categoryData]) => {
+            const categoryColor = categoryData.color;
+            const items = categoryData.items;
+
+            return html`
+              <div style="margin-bottom: 3rem;">
+                <h3 style="font-size: 1.8rem; font-weight: 600; color: ${categoryColor}; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                  <span style="display: inline-block; width: 4px; height: 2.4rem; background: ${categoryColor}; border-radius: 2px;"></span>
+                  ${category}
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+                  ${items.map(item => {
+                    const isSelected = selectedGES.some(g => g.riesgo === category && g.ges === item);
+                    return html`
+                      <label
+                        class="wizard-option ${isSelected ? 'selected' : ''}"
+                        style="padding: 1.5rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 1rem; border-left: 3px solid ${categoryColor};"
+                      >
+                        <input
+                          type="checkbox"
+                          name="ges-${category}"
+                          value="${item}"
+                          data-category="${category}"
+                          ?checked=${isSelected}
+                          style="width: 18px; height: 18px; cursor: pointer;"
+                        />
+                        <span style="font-size: 1.4rem;">${item}</span>
+                      </label>
+                    `;
+                  })}
+                </div>
+              </div>
+            `;
+          })}
+        </div>
+
+        <div class="wizard-hint" style="margin-top: 3rem;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+          </svg>
+          <span>
+            Selecciona al menos un riesgo. Puedes seleccionar varios si aplican al cargo.
+          </span>
+        </div>
+      `;
+    },
+
+    getData: async () => {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"][name^="ges-"]:checked');
+      const gesSeleccionados = [];
+
+      checkboxes.forEach(cb => {
+        gesSeleccionados.push({
+          riesgo: cb.dataset.category,
+          ges: cb.value,
+          controles: {
+            fuente: '',
+            medio: '',
+            individuo: ''
+          }
+        });
+      });
+
+      return { gesSeleccionados };
+    },
+
+    validate: (data) => {
+      const errors = [];
+
+      if (!data.gesSeleccionados || data.gesSeleccionados.length === 0) {
+        errors.push({
+          field: 'gesSeleccionados',
+          message: 'Debe seleccionar al menos un riesgo para este cargo'
+        });
+      }
+
+      return {
+        isValid: errors.length === 0,
+        errors
+      };
+    },
+
+    onEnter: async function(wizardData) {
+      // Obtener sugerencias de IA
+      const empresaData = wizardData.empresa || {};
+      const cargoData = wizardData[`cargo-info-${cargoIndex}`] || {};
+
+      if (cargoData.cargoName) {
+        const result = await fetchIA('/suggest-ges', {
+          cargoName: cargoData.cargoName,
+          sector: empresaData.sector
+        });
+
+        if (result.success && result.suggestions && result.suggestions.length > 0) {
+          // Guardar en cache
+          aiSuggestionsCache.ges[cargoIndex] = result.suggestions;
+
+          // Mostrar sugerencias
+          setTimeout(() => {
+            const container = document.getElementById('ai-ges-suggestions');
+            const chipsContainer = document.getElementById('ai-ges-chips');
+
+            if (container && chipsContainer) {
+              chipsContainer.innerHTML = result.suggestions.map(s => `
+                <button
+                  type="button"
+                  class="suggestion-chip"
+                  data-riesgo="${s.riesgo}"
+                  data-category="${s.riesgo.split(' - ')[0]}"
+                >
+                  ${s.riesgo}
+                  <span class="confidence">${s.confidence}% match</span>
+                </button>
+              `).join('');
+
+              container.style.display = 'block';
+
+              // Event listeners
+              chipsContainer.querySelectorAll('.suggestion-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                  const riesgo = chip.dataset.riesgo;
+                  const category = chip.dataset.category;
+
+                  // Buscar y seleccionar el checkbox correspondiente
+                  const checkbox = document.querySelector(
+                    `input[type="checkbox"][data-category="${category}"][value*="${riesgo.split(' - ')[1] || riesgo}"]`
+                  );
+
+                  if (checkbox) {
+                    checkbox.checked = !checkbox.checked;
+
+                    // Toggle visual de la opción
+                    const label = checkbox.closest('.wizard-option');
+                    if (label) {
+                      label.classList.toggle('selected', checkbox.checked);
+                    }
+                  }
+
+                  // Toggle visual del chip
+                  chip.classList.toggle('selected');
+                });
+              });
+            }
+          }, 100);
+        }
+      }
+
+      // Event listeners para checkboxes (toggle visual)
+      setTimeout(() => {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][name^="ges-"]');
+        checkboxes.forEach(cb => {
+          cb.addEventListener('change', () => {
+            const label = cb.closest('.wizard-option');
+            if (label) {
+              label.classList.toggle('selected', cb.checked);
+            }
+          });
+        });
+      }, 100);
+    }
+  };
+}
+
+// =================================================================
+// PASO 6: CONTROLES Y NIVELES PARA CADA GES (TODO EN UNO)
+// =================================================================
+
+export function createControlesStep(cargoIndex, gesIndex, cargoName, riesgo, ges) {
+  const categoryColor = getCategoryColor(riesgo);
+
+  return {
+    id: `controles-${cargoIndex}-${gesIndex}`,
+    title: `${ges}`,
+
+    render: (data = {}) => {
+      console.log(`🎨 Rendering controles step cargo=${cargoIndex}, ges=${gesIndex}`);
+      console.log(`📦 Data received:`, data);
+      console.log(`📌 data.nd=${data.nd}, data.ne=${data.ne}, data.nc=${data.nc}`);
+
+      return html`
+      <div style="border-left: 4px solid ${categoryColor}; padding-left: 2rem; margin-bottom: 2rem;">
+        <h2 style="color: ${categoryColor}; margin-bottom: 0.5rem;">🛡️ ${ges}</h2>
+        <p style="color: #666; font-size: 1.4rem;">
+          <strong>Cargo:</strong> ${cargoName} | <strong>Categoría:</strong> ${riesgo}
+        </p>
+      </div>
+
+      <!-- SECCIÓN 1: NIVELES DE RIESGO (OBLIGATORIO) -->
+      <div style="background: #f8f9fa; border-radius: 12px; padding: 2.5rem; margin-bottom: 3rem;">
+        <h3 style="font-size: 2rem; font-weight: 700; color: #383d47; margin-bottom: 2rem;">
+          📊 Niveles de Riesgo GTC 45 <span style="color: #f44336;">*</span>
+        </h3>
+
+        <!-- Calculadora en tiempo real -->
+        <div id="risk-calculator-${cargoIndex}-${gesIndex}" style="background: white; border-radius: 8px; padding: 2rem; margin-bottom: 2.5rem; display: none; border: 2px solid #e0e0e0;">
+          <h4 style="font-size: 1.6rem; margin-bottom: 1.5rem; color: #383d47;">✅ Resultado del Cálculo</h4>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
+            <div style="padding: 1.5rem; border-radius: 8px; background: #f8f9fa;">
+              <div style="font-size: 1.2rem; color: #666; margin-bottom: 0.5rem;">Nivel de Probabilidad (NP)</div>
+              <div id="np-value-${cargoIndex}-${gesIndex}" style="font-size: 2.4rem; font-weight: 700; color: #383d47;">-</div>
+              <div id="np-interpretation-${cargoIndex}-${gesIndex}" style="font-size: 1.2rem; color: #666; margin-top: 0.5rem;"></div>
+            </div>
+            <div id="nr-card-${cargoIndex}-${gesIndex}" style="padding: 1.5rem; border-radius: 8px; background: #f8f9fa;">
+              <div style="font-size: 1.2rem; color: #666; margin-bottom: 0.5rem;">Nivel de Riesgo (NR)</div>
+              <div id="nr-value-${cargoIndex}-${gesIndex}" style="font-size: 2.4rem; font-weight: 700;">-</div>
+              <div id="nr-level-${cargoIndex}-${gesIndex}" style="font-size: 1.6rem; font-weight: 600; margin-top: 0.5rem;"></div>
+              <div id="nr-interpretation-${cargoIndex}-${gesIndex}" style="font-size: 1.2rem; margin-top: 0.5rem;"></div>
+              <div id="nr-acceptability-${cargoIndex}-${gesIndex}" style="font-size: 1.2rem; font-weight: 600; margin-top: 0.5rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ND - Nivel de Deficiencia -->
+        <div style="margin-bottom: 2.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <label style="font-size: 1.6rem; font-weight: 600; color: #383d47;">
+              Nivel de Deficiencia (ND) <span style="color: #f44336;">*</span>
+            </label>
+            <button type="button" class="tooltip-btn" data-tooltip="nd" style="background: #5dc4af; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: help; font-weight: 700; font-size: 1.2rem;">?</button>
+          </div>
+          <p style="font-size: 1.3rem; color: #666; margin-bottom: 1.5rem;">
+            Magnitud de la relación entre las condiciones de trabajo y la posibilidad de daño
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+            <!-- BAJO (0) -->
+            <label class="nivel-bar ${data.nd === '0' ? 'selected' : ''}" data-nivel-container="nd-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Riesgo bajo o aceptable, mantener controles">
+              <input type="radio" name="nd-${cargoIndex}-${gesIndex}" value="0" ?checked=${data.nd === '0'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#4caf50" style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.nd === '0' ? '0 4px 12px rgba(76, 175, 80, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.nd === '0' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.nd === '0' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">0</div>
+                <div style="font-size: 1.2rem; font-weight: 600;">Bajo</div>
+              </div>
+            </label>
+
+            <!-- MEDIO (2) -->
+            <label class="nivel-bar ${data.nd === '2' ? 'selected' : ''}" data-nivel-container="nd-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Riesgo medio, mejorar controles existentes">
+              <input type="radio" name="nd-${cargoIndex}-${gesIndex}" value="2" ?checked=${data.nd === '2'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#ffc107" style="background: linear-gradient(135deg, #ffc107 0%, #ffa000 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.nd === '2' ? '0 4px 12px rgba(255, 193, 7, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.nd === '2' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.nd === '2' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">2</div>
+                <div style="font-size: 1.2rem; font-weight: 600;">Medio</div>
+              </div>
+            </label>
+
+            <!-- ALTO (6) -->
+            <label class="nivel-bar ${data.nd === '6' ? 'selected' : ''}" data-nivel-container="nd-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Riesgo alto, requiere correcciones urgentes">
+              <input type="radio" name="nd-${cargoIndex}-${gesIndex}" value="6" ?checked=${data.nd === '6'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#ff9800" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.nd === '6' ? '0 4px 12px rgba(255, 152, 0, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.nd === '6' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.nd === '6' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">6</div>
+                <div style="font-size: 1.2rem; font-weight: 600;">Alto</div>
+              </div>
+            </label>
+
+            <!-- MUY ALTO (10) -->
+            <label class="nivel-bar ${data.nd === '10' ? 'selected' : ''}" data-nivel-container="nd-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Riesgo extremadamente alto, requiere acción inmediata">
+              <input type="radio" name="nd-${cargoIndex}-${gesIndex}" value="10" ?checked=${data.nd === '10'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#f44336" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.nd === '10' ? '0 4px 12px rgba(244, 67, 54, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.nd === '10' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.nd === '10' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">10</div>
+                <div style="font-size: 1.2rem; font-weight: 600;">Muy Alto</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- NE - Nivel de Exposición -->
+        <div style="margin-bottom: 2.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <label style="font-size: 1.6rem; font-weight: 600; color: #383d47;">
+              Nivel de Exposición (NE) <span style="color: #f44336;">*</span>
+            </label>
+            <button type="button" class="tooltip-btn" data-tooltip="ne" style="background: #5dc4af; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: help; font-weight: 700; font-size: 1.2rem;">?</button>
+          </div>
+          <p style="font-size: 1.3rem; color: #666; margin-bottom: 1.5rem;">
+            Frecuencia con que el trabajador se expone al factor de riesgo
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+            <!-- ESPORÁDICA (1) -->
+            <label class="nivel-bar ${data.ne === '1' ? 'selected' : ''}" data-nivel-container="ne-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Muy rara vez, menos del 5% de la jornada">
+              <input type="radio" name="ne-${cargoIndex}-${gesIndex}" value="1" ?checked=${data.ne === '1'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#4caf50" style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.ne === '1' ? '0 4px 12px rgba(76, 175, 80, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.ne === '1' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.ne === '1' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">1</div>
+                <div style="font-size: 1.1rem; font-weight: 600;">Esporádica</div>
+              </div>
+            </label>
+
+            <!-- OCASIONAL (2) -->
+            <label class="nivel-bar ${data.ne === '2' ? 'selected' : ''}" data-nivel-container="ne-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Alguna vez durante la jornada, menos del 50%">
+              <input type="radio" name="ne-${cargoIndex}-${gesIndex}" value="2" ?checked=${data.ne === '2'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#ffc107" style="background: linear-gradient(135deg, #ffc107 0%, #ffa000 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.ne === '2' ? '0 4px 12px rgba(255, 193, 7, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.ne === '2' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.ne === '2' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">2</div>
+                <div style="font-size: 1.1rem; font-weight: 600;">Ocasional</div>
+              </div>
+            </label>
+
+            <!-- FRECUENTE (3) -->
+            <label class="nivel-bar ${data.ne === '3' ? 'selected' : ''}" data-nivel-container="ne-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Varias veces al día, más del 50% de la jornada">
+              <input type="radio" name="ne-${cargoIndex}-${gesIndex}" value="3" ?checked=${data.ne === '3'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#ff9800" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.ne === '3' ? '0 4px 12px rgba(255, 152, 0, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.ne === '3' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.ne === '3' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">3</div>
+                <div style="font-size: 1.1rem; font-weight: 600;">Frecuente</div>
+              </div>
+            </label>
+
+            <!-- CONTINUA (4) -->
+            <label class="nivel-bar ${data.ne === '4' ? 'selected' : ''}" data-nivel-container="ne-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Exposición continua durante toda la jornada">
+              <input type="radio" name="ne-${cargoIndex}-${gesIndex}" value="4" ?checked=${data.ne === '4'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#f44336" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.ne === '4' ? '0 4px 12px rgba(244, 67, 54, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.ne === '4' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.ne === '4' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">4</div>
+                <div style="font-size: 1.1rem; font-weight: 600;">Continua</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- NC - Nivel de Consecuencia -->
+        <div style="margin-bottom: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <label style="font-size: 1.6rem; font-weight: 600; color: #383d47;">
+              Nivel de Consecuencia (NC) <span style="color: #f44336;">*</span>
+            </label>
+            <button type="button" class="tooltip-btn" data-tooltip="nc" style="background: #5dc4af; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: help; font-weight: 700; font-size: 1.2rem;">?</button>
+          </div>
+          <p style="font-size: 1.3rem; color: #666; margin-bottom: 1.5rem;">
+            Resultado más probable del accidente o enfermedad profesional
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+            <!-- LEVE (10) -->
+            <label class="nivel-bar ${data.nc === '10' ? 'selected' : ''}" data-nivel-container="nc-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Lesiones leves, primeros auxilios, molestias">
+              <input type="radio" name="nc-${cargoIndex}-${gesIndex}" value="10" ?checked=${data.nc === '10'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#4caf50" style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.nc === '10' ? '0 4px 12px rgba(76, 175, 80, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.nc === '10' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.nc === '10' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">10</div>
+                <div style="font-size: 1.1rem; font-weight: 600;">Leve</div>
+              </div>
+            </label>
+
+            <!-- GRAVE (25) -->
+            <label class="nivel-bar ${data.nc === '25' ? 'selected' : ''}" data-nivel-container="nc-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Lesiones con incapacidad laboral temporal">
+              <input type="radio" name="nc-${cargoIndex}-${gesIndex}" value="25" ?checked=${data.nc === '25'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#ff9800" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.nc === '25' ? '0 4px 12px rgba(255, 152, 0, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.nc === '25' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.nc === '25' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">25</div>
+                <div style="font-size: 1.1rem; font-weight: 600;">Grave</div>
+              </div>
+            </label>
+
+            <!-- MUY GRAVE (60) -->
+            <label class="nivel-bar ${data.nc === '60' ? 'selected' : ''}" data-nivel-container="nc-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Lesiones graves irreversibles (amputaciones, fracturas mayores)">
+              <input type="radio" name="nc-${cargoIndex}-${gesIndex}" value="60" ?checked=${data.nc === '60'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#ff5722" style="background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.nc === '60' ? '0 4px 12px rgba(255, 87, 34, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.nc === '60' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.nc === '60' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">60</div>
+                <div style="font-size: 1.1rem; font-weight: 600;">Muy Grave</div>
+              </div>
+            </label>
+
+            <!-- MORTAL (100) -->
+            <label class="nivel-bar ${data.nc === '100' ? 'selected' : ''}" data-nivel-container="nc-${cargoIndex}-${gesIndex}" style="cursor: pointer; position: relative;" title="Muerte o daño irreversible">
+              <input type="radio" name="nc-${cargoIndex}-${gesIndex}" value="100" ?checked=${data.nc === '100'} style="position: absolute; opacity: 0;" />
+              <div class="nivel-bar-inner" data-color="#f44336" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); color: white; padding: 1.2rem; border-radius: 8px; text-align: center; transition: all 0.3s; box-shadow: ${data.nc === '100' ? '0 4px 12px rgba(244, 67, 54, 0.4)' : '0 2px 4px rgba(0,0,0,0.1)'}; transform: ${data.nc === '100' ? 'scale(1.05)' : 'scale(1)'}; border: ${data.nc === '100' ? '3px solid #fff' : '3px solid transparent'};">
+                <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem;">100</div>
+                <div style="font-size: 1.1rem; font-weight: 600;">Mortal</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 2: CONTROLES (OPCIONAL) -->
+      <div style="margin-bottom: 3rem;">
+        <h3 style="font-size: 2rem; font-weight: 700; color: #383d47; margin-bottom: 1.5rem;">
+          🛡️ Controles Existentes <span style="font-size: 1.3rem; color: #666; font-weight: 400;">(Opcional)</span>
+        </h3>
+
+        <!-- Sugerencias de IA -->
+      <div id="ai-controls-suggestions-${cargoIndex}-${gesIndex}" style="display: none;" class="ai-suggestions">
+        <p style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">
+          ✨ Controles sugeridos por IA:
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <button
+            type="button"
+            id="btn-apply-fuente-${cargoIndex}-${gesIndex}"
+            class="suggestion-chip"
+            style="width: 100%; justify-content: space-between; padding: 1.5rem;"
+          >
+            <span><strong>Fuente:</strong> <span id="sugg-fuente-${cargoIndex}-${gesIndex}"></span></span>
+            <span style="font-size: 1.2rem;">Aplicar →</span>
+          </button>
+          <button
+            type="button"
+            id="btn-apply-medio-${cargoIndex}-${gesIndex}"
+            class="suggestion-chip"
+            style="width: 100%; justify-content: space-between; padding: 1.5rem;"
+          >
+            <span><strong>Medio:</strong> <span id="sugg-medio-${cargoIndex}-${gesIndex}"></span></span>
+            <span style="font-size: 1.2rem;">Aplicar →</span>
+          </button>
+          <button
+            type="button"
+            id="btn-apply-individuo-${cargoIndex}-${gesIndex}"
+            class="suggestion-chip"
+            style="width: 100%; justify-content: space-between; padding: 1.5rem;"
+          >
+            <span><strong>Individuo:</strong> <span id="sugg-individuo-${cargoIndex}-${gesIndex}"></span></span>
+            <span style="font-size: 1.2rem;">Aplicar →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Formulario de controles -->
+      <div style="display: flex; flex-direction: column; gap: 2.5rem; margin-top: 3rem;">
+        <div>
+          <label for="control-fuente-${cargoIndex}-${gesIndex}" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+            Control en la Fuente
+          </label>
+          <textarea
+            id="control-fuente-${cargoIndex}-${gesIndex}"
+            name="fuente"
+            placeholder="Ej: Mantenimiento preventivo, guardas de seguridad. Si no hay controles escriba 'Ninguno'"
+            rows="3"
+          >${data.fuente || ''}</textarea>
+          <p style="font-size: 1.3rem; color: #666; margin-top: 0.5rem;">
+            Acciones para eliminar o reducir el riesgo en su origen. Si no hay controles, escriba "Ninguno"
+          </p>
+        </div>
+
+        <div>
+          <label for="control-medio-${cargoIndex}-${gesIndex}" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+            Control en el Medio
+          </label>
+          <textarea
+            id="control-medio-${cargoIndex}-${gesIndex}"
+            name="medio"
+            placeholder="Ej: Señalización, ventilación, barreras físicas. Si no hay controles escriba 'Ninguno'"
+            rows="3"
+          >${data.medio || ''}</textarea>
+          <p style="font-size: 1.3rem; color: #666; margin-top: 0.5rem;">
+            Medidas para reducir la exposición durante la trayectoria del riesgo. Si no hay, escriba "Ninguno"
+          </p>
+        </div>
+
+        <div>
+          <label for="control-individuo-${cargoIndex}-${gesIndex}" style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: #383d47;">
+            Control en el Individuo
+          </label>
+          <textarea
+            id="control-individuo-${cargoIndex}-${gesIndex}"
+            name="individuo"
+            placeholder="Ej: EPP (guantes, gafas, protección auditiva), capacitación. Si no hay escriba 'Ninguno'"
+            rows="3"
+          >${data.individuo || ''}</textarea>
+          <p style="font-size: 1.3rem; color: #666; margin-top: 0.5rem;">
+            Equipos de protección personal y entrenamiento. Si no hay controles, escriba "Ninguno"
+          </p>
+        </div>
+      </div>
+
+      <div class="wizard-hint" style="margin-top: 3rem;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+        </svg>
+        <span>
+          Los controles deben estar ordenados por jerarquía: primero eliminar el riesgo,
+          luego proteger al trabajador.
+        </span>
+      </div>
+    `;
+    },
+
+    getData: () => {
+      return {
+        // Controles (opcionales) - con IDs únicos
+        fuente: document.getElementById(`control-fuente-${cargoIndex}-${gesIndex}`)?.value || '',
+        medio: document.getElementById(`control-medio-${cargoIndex}-${gesIndex}`)?.value || '',
+        individuo: document.getElementById(`control-individuo-${cargoIndex}-${gesIndex}`)?.value || '',
+        // Niveles (obligatorios)
+        nd: document.querySelector(`input[name="nd-${cargoIndex}-${gesIndex}"]:checked`)?.value,
+        ne: document.querySelector(`input[name="ne-${cargoIndex}-${gesIndex}"]:checked`)?.value,
+        nc: document.querySelector(`input[name="nc-${cargoIndex}-${gesIndex}"]:checked`)?.value
+      };
+    },
+
+    validate: (data) => {
+      const errors = [];
+
+      // Validar NIVELES (OBLIGATORIOS)
+      if (!data.nd) {
+        errors.push({ field: 'nd', message: 'Debe seleccionar el Nivel de Deficiencia (ND)' });
+      }
+
+      if (!data.ne) {
+        errors.push({ field: 'ne', message: 'Debe seleccionar el Nivel de Exposición (NE)' });
+      }
+
+      if (!data.nc) {
+        errors.push({ field: 'nc', message: 'Debe seleccionar el Nivel de Consecuencia (NC)' });
+      }
+
+      // Los controles NO son obligatorios
+
+      return {
+        isValid: errors.length === 0,
+        errors
+      };
+    },
+
+    onEnter: async function(wizardData) {
+      console.log(`🎯 Entering controles step for cargo ${cargoIndex}, GES ${gesIndex}`);
+
+      // 1. Función para mostrar sugerencias (reutilizable)
+      const showSuggestions = (controls) => {
+        setTimeout(() => {
+          const container = document.getElementById(`ai-controls-suggestions-${cargoIndex}-${gesIndex}`);
+          const suggFuente = document.getElementById(`sugg-fuente-${cargoIndex}-${gesIndex}`);
+          const suggMedio = document.getElementById(`sugg-medio-${cargoIndex}-${gesIndex}`);
+          const suggIndividuo = document.getElementById(`sugg-individuo-${cargoIndex}-${gesIndex}`);
+
+          if (container && suggFuente && suggMedio && suggIndividuo) {
+            suggFuente.textContent = controls.fuente.substring(0, 80) + '...';
+            suggMedio.textContent = controls.medio.substring(0, 80) + '...';
+            suggIndividuo.textContent = controls.individuo.substring(0, 80) + '...';
+
+            container.style.display = 'block';
+
+            // Event listeners para aplicar sugerencias (solo si no tienen listener ya)
+            const btnFuente = document.getElementById(`btn-apply-fuente-${cargoIndex}-${gesIndex}`);
+            const btnMedio = document.getElementById(`btn-apply-medio-${cargoIndex}-${gesIndex}`);
+            const btnIndividuo = document.getElementById(`btn-apply-individuo-${cargoIndex}-${gesIndex}`);
+
+            if (btnFuente && btnFuente.dataset.listenerAdded !== 'true') {
+              btnFuente.addEventListener('click', () => {
+                document.getElementById(`control-fuente-${cargoIndex}-${gesIndex}`).value = controls.fuente;
+              });
+              btnFuente.dataset.listenerAdded = 'true';
+            }
+
+            if (btnMedio && btnMedio.dataset.listenerAdded !== 'true') {
+              btnMedio.addEventListener('click', () => {
+                document.getElementById(`control-medio-${cargoIndex}-${gesIndex}`).value = controls.medio;
+              });
+              btnMedio.dataset.listenerAdded = 'true';
+            }
+
+            if (btnIndividuo && btnIndividuo.dataset.listenerAdded !== 'true') {
+              btnIndividuo.addEventListener('click', () => {
+                document.getElementById(`control-individuo-${cargoIndex}-${gesIndex}`).value = controls.individuo;
+              });
+              btnIndividuo.dataset.listenerAdded = 'true';
+            }
+          }
+        }, 100);
+      };
+
+      // 2. Verificar cache primero
+      const cachedControls = aiSuggestionsCache.controls[cargoIndex]?.[gesIndex];
+      if (cachedControls) {
+        console.log('✨ Using cached AI controls');
+        showSuggestions(cachedControls);
+      } else {
+        // 3. Obtener sugerencias de IA para controles DE FORMA NO BLOQUEANTE
+        const empresaData = wizardData.empresa || {};
+        const cargoData = wizardData[`cargo-info-${cargoIndex}`] || {};
+
+        console.log('📊 Fetching AI controls for:', { riesgo, ges, cargoName: cargoData.cargoName, sector: empresaData.sector });
+
+        fetchIA('/suggest-controls', {
+          riesgo,
+          ges,
+          cargoName: cargoData.cargoName,
+          sector: empresaData.sector
+        }).then(result => {
+          console.log('✅ AI controls result:', result);
+
+          if (result.success && result.controls) {
+            // Guardar en cache
+            if (!aiSuggestionsCache.controls[cargoIndex]) {
+              aiSuggestionsCache.controls[cargoIndex] = {};
+            }
+            aiSuggestionsCache.controls[cargoIndex][gesIndex] = result.controls;
+
+            // Mostrar sugerencias
+            showSuggestions(result.controls);
+          }
+        }).catch(error => {
+          console.error('❌ Error fetching AI controls:', error);
+          // No mostrar error al usuario, simplemente no cargar sugerencias
+        });
+      }
+
+      // 2. Setup calculadora de niveles en tiempo real
+      setTimeout(() => {
+        // IMPORTANTE: Selectores específicos para este GES solamente
+        const radioButtonsND = document.querySelectorAll(`input[name="nd-${cargoIndex}-${gesIndex}"]`);
+        const radioButtonsNE = document.querySelectorAll(`input[name="ne-${cargoIndex}-${gesIndex}"]`);
+        const radioButtonsNC = document.querySelectorAll(`input[name="nc-${cargoIndex}-${gesIndex}"]`);
+        const allRadioButtons = [...radioButtonsND, ...radioButtonsNE, ...radioButtonsNC];
+
+        const calculatorId = `risk-calculator-${cargoIndex}-${gesIndex}`;
+
+        console.log(`🎯 Setting up nivel listeners for cargo ${cargoIndex}, GES ${gesIndex}`);
+        console.log(`Found ${allRadioButtons.length} radio buttons`);
+
+        // CRÍTICO: Verificar que los elementos existen antes de continuar
+        if (allRadioButtons.length === 0) {
+          console.error('❌ No se encontraron radio buttons. Reintentando...');
+          // Reintentar después de más tiempo
+          setTimeout(() => arguments.callee(), 300);
+          return;
+        }
+
+        const calculateRisk = () => {
+          const nd = document.querySelector(`input[name="nd-${cargoIndex}-${gesIndex}"]:checked`)?.value;
+          const ne = document.querySelector(`input[name="ne-${cargoIndex}-${gesIndex}"]:checked`)?.value;
+          const nc = document.querySelector(`input[name="nc-${cargoIndex}-${gesIndex}"]:checked`)?.value;
+
+          if (nd && ne && nc) {
+            const ndVal = parseInt(nd, 10);
+            const neVal = parseInt(ne, 10);
+            const ncVal = parseInt(nc, 10);
+
+            // Calcular NP
+            const np = ndVal * neVal;
+            let npLevel = '';
+            if (np >= 24) npLevel = 'Muy Alto';
+            else if (np >= 10) npLevel = 'Alto';
+            else if (np >= 6) npLevel = 'Medio';
+            else npLevel = 'Bajo';
+
+            // Calcular NR
+            const nr = np * ncVal;
+            let nrData = {};
+            if (nr >= 600) {
+              nrData = { nivel: 'I', interpretacion: 'Situación crítica. Corrección urgente', aceptabilidad: 'No Aceptable', color: '#FF0000' };
+            } else if (nr >= 150) {
+              nrData = { nivel: 'II', interpretacion: 'Corregir o adoptar medidas de control', aceptabilidad: 'No Aceptable o Aceptable con control específico', color: '#FFA500' };
+            } else if (nr >= 40) {
+              nrData = { nivel: 'III', interpretacion: 'Mejorar el control existente', aceptabilidad: 'Mejorable', color: '#FFFF00' };
+            } else {
+              nrData = { nivel: 'IV', interpretacion: 'No intervenir, salvo que análisis lo justifique', aceptabilidad: 'Aceptable', color: '#008000' };
+            }
+
+            // Actualizar UI
+            const calculator = document.getElementById(calculatorId);
+            if (calculator) {
+              calculator.style.display = 'block';
+
+              const npValueEl = document.getElementById(`np-value-${cargoIndex}-${gesIndex}`);
+              const npInterpEl = document.getElementById(`np-interpretation-${cargoIndex}-${gesIndex}`);
+              if (npValueEl) npValueEl.textContent = np;
+              if (npInterpEl) npInterpEl.textContent = npLevel;
+
+              const nrCard = document.getElementById(`nr-card-${cargoIndex}-${gesIndex}`);
+              if (nrCard) {
+                nrCard.style.borderColor = nrData.color;
+                nrCard.style.borderWidth = '3px';
+              }
+
+              const nrValueEl = document.getElementById(`nr-value-${cargoIndex}-${gesIndex}`);
+              const nrLevelEl = document.getElementById(`nr-level-${cargoIndex}-${gesIndex}`);
+              const nrInterpEl = document.getElementById(`nr-interpretation-${cargoIndex}-${gesIndex}`);
+              const nrAcceptEl = document.getElementById(`nr-acceptability-${cargoIndex}-${gesIndex}`);
+
+              if (nrValueEl) {
+                nrValueEl.textContent = nr;
+                nrValueEl.style.color = nrData.color;
+              }
+              if (nrLevelEl) {
+                nrLevelEl.textContent = `Nivel ${nrData.nivel}`;
+                nrLevelEl.style.color = nrData.color;
+              }
+              if (nrInterpEl) nrInterpEl.textContent = nrData.interpretacion;
+              if (nrAcceptEl) nrAcceptEl.textContent = `Aceptabilidad: ${nrData.aceptabilidad}`;
+            }
+          }
+        };
+
+        // Event listeners para cálculo en tiempo real
+        allRadioButtons.forEach(radio => {
+          radio.addEventListener('change', () => {
+            console.log(`✅ Radio changed: ${radio.name} = ${radio.value}`);
+
+            // Toggle visual - scale effect + checkmarks
+            const label = radio.closest('.nivel-bar');
+            if (label) {
+              // IMPORTANTE: Solo buscar dentro de este grupo específico usando el data-nivel-container
+              const nivelContainer = label.getAttribute('data-nivel-container');
+              const allLabelsInGroup = document.querySelectorAll(`.nivel-bar[data-nivel-container="${nivelContainer}"]`);
+
+              // Remover clase selected y checkmarks de TODOS los labels del grupo
+              allLabelsInGroup.forEach(lbl => {
+                lbl.classList.remove('selected');
+                const existingCheck = lbl.querySelector('.checkmark-indicator');
+                if (existingCheck) existingCheck.remove();
+              });
+
+              // Agregar selected al label actual
+              label.classList.add('selected');
+
+              // Agregar checkmark al label seleccionado
+              const levelDiv = label.querySelector('.nivel-bar-inner');
+              if (levelDiv) {
+                // Obtener color del data-attribute
+                const checkColor = levelDiv.getAttribute('data-color') || '#f44336';
+
+                const checkmark = document.createElement('div');
+                checkmark.className = 'checkmark-indicator';
+                checkmark.style.cssText = `
+                  position: absolute;
+                  top: -8px;
+                  right: -8px;
+                  background: white;
+                  color: ${checkColor};
+                  border-radius: 50%;
+                  width: 28px;
+                  height: 28px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 1.6rem;
+                  font-weight: 800;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                  z-index: 10;
+                `;
+                checkmark.textContent = '✓';
+                label.appendChild(checkmark);
+              }
+            }
+
+            // Calcular
+            calculateRisk();
+          });
+        });
+
+        // Calcular y restaurar checkmarks si ya hay valores (al regresar al paso)
+        setTimeout(() => {
+          console.log('🔄 Restaurando checkmarks y calculando...');
+          // Restaurar checkmarks basados en valores seleccionados
+          allRadioButtons.forEach(radio => {
+            if (radio.checked) {
+              const label = radio.closest('.nivel-bar');
+              if (label) {
+                label.classList.add('selected');
+
+                // Agregar checkmark si no existe
+                if (!label.querySelector('.checkmark-indicator')) {
+                  const levelDiv = label.querySelector('.nivel-bar-inner');
+                  if (levelDiv) {
+                    // Obtener color del data-attribute
+                    const checkColor = levelDiv.getAttribute('data-color') || '#f44336';
+
+                    const checkmark = document.createElement('div');
+                    checkmark.className = 'checkmark-indicator';
+                    checkmark.style.cssText = `
+                      position: absolute;
+                      top: -8px;
+                      right: -8px;
+                      background: white;
+                      color: ${checkColor};
+                      border-radius: 50%;
+                      width: 28px;
+                      height: 28px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 1.6rem;
+                      font-weight: 800;
+                      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                      z-index: 10;
+                    `;
+                    checkmark.textContent = '✓';
+                    label.appendChild(checkmark);
+                  }
+                }
+              }
+            }
+          });
+
+          // Calcular con valores existentes
+          calculateRisk();
+        }, 100);
+
+        // 3. Setup tooltips
+        const tooltipButtons = document.querySelectorAll('.tooltip-btn');
+        console.log(`💡 Found ${tooltipButtons.length} tooltip buttons`);
+
+        const tooltipTexts = {
+          nd: 'Nivel de Deficiencia (ND): Magnitud de la relación esperada entre el conjunto de peligros detectados y su relación causal directa con posibles incidentes y con la eficacia de medidas preventivas existentes en un lugar de trabajo.\n\n• Muy Alto (10): Se han detectado peligros que determinan como posible la generación de incidentes o consecuencias muy significativas, o la eficacia del conjunto de medidas preventivas es nula o no existe, o ambos.\n• Alto (6): Se han detectado algunos peligros que pueden dar lugar a consecuencias significativas, o el conjunto de medidas preventivas existentes respecto al riesgo es insuficiente, o ambos.\n• Medio (2): Se han detectado peligros que pueden dar lugar a consecuencias poco significativas o de menor importancia, o el conjunto de medidas preventivas existentes es parcialmente eficaz.\n• Bajo (0): No se ha detectado consecuencia alguna, o el conjunto de medidas preventivas existentes es eficaz.',
+
+          ne: 'Nivel de Exposición (NE): Frecuencia con la que se está expuesto al riesgo.\n\n• Continua (4): La situación de exposición se presenta sin interrupción o varias veces con tiempo prolongado durante la jornada laboral.\n• Frecuente (3): La situación de exposición se presenta varias veces durante la jornada laboral por tiempos cortos.\n• Ocasional (2): La situación de exposición se presenta alguna vez durante la jornada laboral y por un periodo de tiempo corto.\n• Esporádica (1): La situación de exposición se presenta de manera eventual.',
+
+          nc: 'Nivel de Consecuencia (NC): Resultado más probable de un accidente debido al riesgo considerado, incluyendo daños personales y materiales.\n\n• Mortal o Catastrófico (100): Muerte(s) o pérdidas materiales muy graves.\n• Muy Grave (60): Lesiones graves irreversibles (incapacidad permanente parcial o invalidez).\n• Grave (25): Lesiones con incapacidad laboral temporal (ILT).\n• Leve (10): Lesiones que no requieren hospitalización (primeros auxilios).'
+        };
+
+        tooltipButtons.forEach(btn => {
+          // Solo agregar listener si no tiene uno ya (evita duplicados)
+          if (btn.dataset.listenerAdded !== 'true') {
+            const tooltipType = btn.dataset.tooltip;
+
+            btn.addEventListener('click', (e) => {
+              e.preventDefault();
+              const text = tooltipTexts[tooltipType];
+              if (text) {
+                alert(text); // Temporal - luego podemos hacer un modal bonito
+              }
+            });
+
+            // Marcar que ya tiene listener
+            btn.dataset.listenerAdded = 'true';
+          }
+        });
+      }, 300);
+    }
+  };
+}
+
+// =================================================================
+// NOTA: La función createNivelesRiesgoStep ha sido ELIMINADA (Sprint 1 - Consolidación).
+//
+// Los niveles (ND, NE, NC) ahora están INTEGRADOS en createControlesStep (ver arriba).
+// Esto reduce el número de pasos del wizard y mejora la UX al tener todo en una vista.
+//
+// Cambio realizado: 2025-02-11
+// Razón: Consolidar controles + niveles en un solo slide con barritas semaforizadas
+// =================================================================
+
+// =================================================================
+// PASO 8: REVISIÓN Y CONFIRMACIÓN
+// =================================================================
+
+export const reviewStep = {
+  id: 'review',
+  title: 'Revisión Final',
+
+  onEnter: function(wizardData) {
+    // Procesar y guardar datos para el render
+    const empresa = wizardData.empresa || {};
+    const cargos = [];
+
+    // Extraer todos los cargos del wizardData
+    Object.keys(wizardData).forEach(key => {
+      if (key.startsWith('cargo-info-')) {
+        const cargoIndex = parseInt(key.split('-')[2], 10);
+        const cargoInfo = wizardData[key];
+        const gesData = wizardData[`ges-selection-${cargoIndex}`] || {};
+
+        cargos.push({
+          ...cargoInfo,
+          gesSeleccionados: gesData.gesSeleccionados || []
+        });
+      }
+    });
+
+    // Guardar datos procesados para el render
+    this.data['review'] = {
+      empresa,
+      cargos,
+      totalTrabajadores: cargos.reduce((sum, c) => sum + parseInt(c.numTrabajadores || 0, 10), 0),
+      totalRiesgos: cargos.reduce((sum, c) => sum + (c.gesSeleccionados?.length || 0), 0)
+    };
+
+    console.log('📊 Review data prepared:', this.data['review']);
+
+    // Re-render para mostrar datos
+    this.render();
+  },
+
+  render: (data = {}) => {
+    const { empresa = {}, cargos = [], totalTrabajadores = 0, totalRiesgos = 0 } = data;
+
+    console.log('📋 Rendering review with:', { empresa, cargos, totalTrabajadores, totalRiesgos });
+
+    return html`
+      <h2>✅ Revisión Final</h2>
+      <p>Revisa toda la información antes de generar los documentos.</p>
+
+      <!-- Resumen de empresa -->
+      <div style="background: white; border-radius: 12px; padding: 2rem; margin-top: 3rem; border: 2px solid #e0e0e0;">
+        <h3 style="font-size: 1.8rem; font-weight: 600; margin-bottom: 1.5rem; color: #383d47;">
+          📋 Empresa
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+          <div>
+            <p style="font-size: 1.3rem; color: #666; margin-bottom: 0.5rem;">Nombre</p>
+            <p style="font-size: 1.5rem; font-weight: 600;">${empresa.nombre || 'Sin datos'}</p>
+          </div>
+          <div>
+            <p style="font-size: 1.3rem; color: #666; margin-bottom: 0.5rem;">NIT</p>
+            <p style="font-size: 1.5rem; font-weight: 600;">${empresa.nit || 'Sin datos'}</p>
+          </div>
+          <div>
+            <p style="font-size: 1.3rem; color: #666; margin-bottom: 0.5rem;">Sector</p>
+            <p style="font-size: 1.5rem; font-weight: 600;">${empresa.sector || 'Sin datos'}</p>
+          </div>
+          <div>
+            <p style="font-size: 1.3rem; color: #666; margin-bottom: 0.5rem;">Ciudad</p>
+            <p style="font-size: 1.5rem; font-weight: 600;">${empresa.ciudad || 'Sin datos'}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estadísticas -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 2rem;">
+        <div style="background: linear-gradient(135deg, rgba(93, 196, 175, 0.1), rgba(93, 196, 175, 0.05)); border-radius: 12px; padding: 2rem; text-align: center; border: 2px solid #5dc4af;">
+          <div style="font-size: 3.6rem; font-weight: 700; color: #5dc4af;">${cargos.length}</div>
+          <div style="font-size: 1.4rem; color: #666; margin-top: 0.5rem;">Cargos</div>
+        </div>
+        <div style="background: linear-gradient(135deg, rgba(56, 61, 71, 0.1), rgba(56, 61, 71, 0.05)); border-radius: 12px; padding: 2rem; text-align: center; border: 2px solid #383d47;">
+          <div style="font-size: 3.6rem; font-weight: 700; color: #383d47;">${totalTrabajadores}</div>
+          <div style="font-size: 1.4rem; color: #666; margin-top: 0.5rem;">Trabajadores</div>
+        </div>
+        <div style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.05)); border-radius: 12px; padding: 2rem; text-align: center; border: 2px solid #ff9800;">
+          <div style="font-size: 3.6rem; font-weight: 700; color: #ff9800;">${totalRiesgos}</div>
+          <div style="font-size: 1.4rem; color: #666; margin-top: 0.5rem;">Riesgos Identificados</div>
+        </div>
+      </div>
+
+      <!-- Lista de cargos -->
+      ${cargos.length > 0 ? html`
+        <div style="margin-top: 3rem;">
+          <h3 style="font-size: 1.8rem; font-weight: 600; margin-bottom: 1.5rem; color: #383d47;">
+            👥 Cargos Evaluados
+          </h3>
+          ${cargos.map((cargo, idx) => html`
+            <div style="background: white; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; border: 2px solid #e0e0e0;">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                <div>
+                  <h4 style="font-size: 1.6rem; font-weight: 600; color: #383d47;">${cargo.cargoName || 'Sin nombre'}</h4>
+                  <p style="font-size: 1.3rem; color: #666; margin-top: 0.5rem;">
+                    ${cargo.area || 'Sin área'} • ${cargo.numTrabajadores || 0} trabajador${cargo.numTrabajadores > 1 ? 'es' : ''}
+                  </p>
+                </div>
+                <div style="background: #5dc4af; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 1.3rem; font-weight: 600;">
+                  ${cargo.gesSeleccionados?.length || 0} riesgo${cargo.gesSeleccionados?.length !== 1 ? 's' : ''}
+                </div>
+              </div>
+              ${cargo.gesSeleccionados && cargo.gesSeleccionados.length > 0 ? html`
+                <div style="margin-top: 1rem;">
+                  <p style="font-size: 1.3rem; color: #666; margin-bottom: 0.8rem;">Riesgos identificados:</p>
+                  <div style="display: flex; flex-wrap: wrap; gap: 0.8rem;">
+                    ${cargo.gesSeleccionados.map(g => html`
+                      <span style="background: rgba(93, 196, 175, 0.1); color: #383d47; padding: 0.5rem 1rem; border-radius: 8px; font-size: 1.2rem; border: 1px solid #5dc4af;">
+                        ${g.ges}
+                      </span>
+                    `)}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `)}
+        </div>
+      ` : html`
+        <div style="background: rgba(255, 152, 0, 0.1); border: 2px solid #ff9800; border-radius: 12px; padding: 2rem; margin-top: 3rem; text-align: center;">
+          <p style="font-size: 1.5rem; color: #ff9800;">⚠️ No se encontraron cargos evaluados</p>
+        </div>
+      `}
+
+      <div class="wizard-hint" style="margin-top: 3rem;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+        </svg>
+        <span>
+          Al finalizar se generarán automáticamente: Matriz de Riesgos, Profesiograma y Perfiles de Cargo.
+        </span>
+      </div>
+    `;
+  },
+
+  getData: () => {
+    // No necesitamos recolectar datos adicionales en este paso
+    return {};
+  },
+
+  validate: () => {
+    // Siempre válido, es solo revisión
+    return { isValid: true, errors: [] };
+  }
+};
+
+// Versión antigua comentada por si la necesitas de referencia
+/*
+export const reviewStepOLD = {
+  render: (wizardData) => {
+    const empresa = wizardData.empresa || {};
+    const cargos = [];
+
+    Object.keys(wizardData).forEach(key => {
+      if (key.startsWith('cargo-info-')) {
+        const cargoIndex = parseInt(key.split('-')[2], 10);
+        const cargoInfo = wizardData[key];
+        const gesData = wizardData[`ges-selection-${cargoIndex}`] || {};
+
+        cargos.push({
+          ...cargoInfo,
+          gesSeleccionados: gesData.gesSeleccionados || []
+        });
+      }
+    });
+
+    const totalTrabajadores = cargos.reduce((sum, c) => sum + (c.numTrabajadores || 0), 0);
+    const totalRiesgos = cargos.reduce((sum, c) => sum + (c.gesSeleccionados?.length || 0), 0);
+
+    return html`
+      <h2>✅ Revisión Final</h2>
+      <p>Revisa toda la información antes de generar los documentos.</p>
+
+      <!-- Resumen de empresa -->
+      <div style="background: white; border-radius: 12px; padding: 2rem; margin-top: 3rem; border: 2px solid #e0e0e0;">
+        <h3 style="font-size: 1.8rem; font-weight: 600; margin-bottom: 1.5rem; color: #383d47;">
+          📋 Empresa
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+          <div>
+            <p style="font-size: 1.3rem; color: #666; margin-bottom: 0.5rem;">Nombre</p>
+            <p style="font-size: 1.5rem; font-weight: 600;">${empresa.nombre}</p>
+          </div>
+          <div>
+            <p style="font-size: 1.3rem; color: #666; margin-bottom: 0.5rem;">NIT</p>
+            <p style="font-size: 1.5rem; font-weight: 600;">${empresa.nit}</p>
+          </div>
+          <div>
+            <p style="font-size: 1.3rem; color: #666; margin-bottom: 0.5rem;">Sector</p>
+            <p style="font-size: 1.5rem; font-weight: 600;">${empresa.sector}</p>
+          </div>
+          <div>
+            <p style="font-size: 1.3rem; color: #666; margin-bottom: 0.5rem;">Ciudad</p>
+            <p style="font-size: 1.5rem; font-weight: 600;">${empresa.ciudad}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estadísticas -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 2rem;">
+        <div style="background: linear-gradient(135deg, rgba(93, 196, 175, 0.1), rgba(93, 196, 175, 0.05)); border-radius: 12px; padding: 2rem; text-align: center; border: 2px solid #5dc4af;">
+          <div style="font-size: 3.6rem; font-weight: 700; color: #5dc4af;">${cargos.length}</div>
+          <div style="font-size: 1.4rem; color: #666; margin-top: 0.5rem;">Cargos</div>
+        </div>
+        <div style="background: linear-gradient(135deg, rgba(56, 61, 71, 0.1), rgba(56, 61, 71, 0.05)); border-radius: 12px; padding: 2rem; text-align: center; border: 2px solid #383d47;">
+          <div style="font-size: 3.6rem; font-weight: 700; color: #383d47;">${totalTrabajadores}</div>
+          <div style="font-size: 1.4rem; color: #666; margin-top: 0.5rem;">Trabajadores</div>
+        </div>
+        <div style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.05)); border-radius: 12px; padding: 2rem; text-align: center; border: 2px solid #ff9800;">
+          <div style="font-size: 3.6rem; font-weight: 700; color: #ff9800;">${totalRiesgos}</div>
+          <div style="font-size: 1.4rem; color: #666; margin-top: 0.5rem;">Riesgos Identificados</div>
+        </div>
+      </div>
+
+      <!-- Lista de cargos -->
+      <div style="margin-top: 3rem;">
+        <h3 style="font-size: 1.8rem; font-weight: 600; margin-bottom: 1.5rem; color: #383d47;">
+          👥 Cargos Evaluados
+        </h3>
+        ${cargos.map((cargo, idx) => html`
+          <div style="background: white; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; border: 2px solid #e0e0e0;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+              <div>
+                <h4 style="font-size: 1.6rem; font-weight: 600; color: #383d47;">${cargo.cargoName}</h4>
+                <p style="font-size: 1.3rem; color: #666; margin-top: 0.5rem;">
+                  ${cargo.area} • ${cargo.numTrabajadores} trabajador${cargo.numTrabajadores > 1 ? 'es' : ''}
+                </p>
+              </div>
+              <div style="background: #5dc4af; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 1.3rem; font-weight: 600;">
+                ${cargo.gesSeleccionados?.length || 0} riesgo${cargo.gesSeleccionados?.length !== 1 ? 's' : ''}
+              </div>
+            </div>
+            ${cargo.gesSeleccionados && cargo.gesSeleccionados.length > 0 ? html`
+              <div style="margin-top: 1rem;">
+                <p style="font-size: 1.3rem; color: #666; margin-bottom: 0.8rem;">Riesgos identificados:</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem;">
+                  ${cargo.gesSeleccionados.map(g => html`
+                    <span style="background: rgba(93, 196, 175, 0.1); color: #383d47; padding: 0.5rem 1rem; border-radius: 8px; font-size: 1.2rem; border: 1px solid #5dc4af;">
+                      ${g.ges}
+                    </span>
+                  `)}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `)}
+      </div>
+
+      <div class="wizard-hint" style="margin-top: 3rem;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+        </svg>
+        <span>
+          Al finalizar se generarán automáticamente: Matriz de Riesgos, Profesiograma y Perfiles de Cargo.
+        </span>
+      </div>
+    `;
+  },
+
+  validate: () => ({ isValid: true, errors: [] })
+};
+
+// =================================================================
+// FUNCIÓN HELPER: GENERAR PASOS DINÁMICAMENTE
+// =================================================================
+
+/**
+ * Genera todos los pasos del wizard basado en el número de cargos
+ * @param {number} numCargos - Número de cargos a evaluar
+ * @returns {Array} Array de pasos del wizard
+ */
+export function generateWizardSteps(numCargos) {
+  const steps = [
+    welcomeStep,
+    empresaStep,
+    numCargosStep
+  ];
+
+  for (let i = 0; i < numCargos; i++) {
+    // Info del cargo
+    steps.push(createCargoInfoStep(i, numCargos));
+
+    // Nota: Los pasos de GES y controles se agregarán dinámicamente
+    // después de que el usuario complete cada cargo, ya que dependen
+    // de cuántos GES seleccione
+  }
+
+  steps.push(reviewStep);
+
+  return steps;
+}
+
+/**
+ * Genera pasos adicionales para GES y controles después de seleccionar GES
+ * @param {number} cargoIndex - Índice del cargo
+ * @param {Array} gesSeleccionados - Array de GES seleccionados
+ * @param {string} cargoName - Nombre del cargo
+ * @returns {Array} Array de pasos adicionales
+ */
+export function generateGESControlSteps(cargoIndex, gesSeleccionados, cargoName) {
+  const steps = [];
+
+  gesSeleccionados.forEach((ges, gesIndex) => {
+    steps.push(
+      createControlesStep(cargoIndex, gesIndex, cargoName, ges.riesgo, ges.ges)
+    );
+  });
+
+  return steps;
+}
