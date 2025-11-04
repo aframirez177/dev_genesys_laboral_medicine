@@ -1,10 +1,15 @@
+@use "sass:color";
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 // ===================================================================
 // SECCIÓN DE EXÁMENES - Rediseñada sin emojis
 // Tarjetas modernas con iconos SVG y sistema de colores por categoría
 // ===================================================================
 
 .section-servicios {
-    background-color: map-get($colors, "background");
+    background-color: map.get(variables.$colors, "background");
     padding: 4rem 2rem;
     
     .service-description {
@@ -17,8 +22,8 @@
             
             h2 {
                 font-size: clamp(2.4rem, 4vw, 3rem);
-                font-family: map-get($fonts, "title");
-                color: map-get($colors, "secondary");
+                font-family: map.get(variables.$fonts, "title");
+                color: map.get(variables.$colors, "secondary");
                 line-height: 1.3;
                 margin-bottom: 2rem;
             }
@@ -47,19 +52,19 @@
         left: 0;
         width: 100%;
         height: 2px;
-        background-color: map-get($colors ,"border-color");
+        background-color: map.get(variables.$colors ,"border-color");
     }
     
     &-button {
         padding: 1rem 1.5rem;
         margin: 0 0.5rem 0.5rem;
-        background-color: map-get($colors ,"border-color");
+        background-color: map.get(variables.$colors ,"border-color");
         border: none;
         border-radius: 30px;
         font-size: 1.7rem;
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-weight: 600;
-        color: map-get($colors ,"secondary");
+        color: map.get(variables.$colors ,"secondary");
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
@@ -160,21 +165,21 @@
 // Tarjetas de exámenes
 .exam-card {
     
-    color: map-get($colors ,"secondary");;
+    color: map.get(variables.$colors ,"secondary");;
     padding: 1.2rem 1.5rem;
     border-radius: 12px;
     
     min-width: 200px;
     text-align: center;
     transition: all 0.3s ease;
-    font-family: map-get($fonts, "title");
+    font-family: map.get(variables.$fonts, "title");
     font-size: 1.4rem;
-    background-color: darken(#5ecaa5, 0%);
+    background-color: color.adjust(#5ecaa5, $lightness: -0%);
     
     &:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-        background-color: darken(#5ecaa5, 5%);
+        background-color: color.adjust(#5ecaa5, $lightness: -5%);
     }
     
     // Efecto de aparición escalonada
@@ -205,11 +210,11 @@
     margin: 0 auto 3rem;
     padding: 0 2rem;
     
-    @include respond-to("tablet") {
+    @include mixins.respond-to("tablet") {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    @include respond-to("desktop") {
+    @include mixins.respond-to("desktop") {
         grid-template-columns: repeat(4, 1fr);
         gap: 2.5rem;
     }
@@ -227,38 +232,38 @@
     
     // Colores por categoría
     &.paraclinicos {
-        border-left-color: map-get($aux-colors, 1);
+        border-left-color: map.get(variables.$aux-colors, 1);
         
         .exam-icon-wrapper {
-            background: rgba(map-get($aux-colors, 1), 0.15);
-            color: darken(map-get($aux-colors, 1), 30%);
+            background: rgba(map.get(variables.$aux-colors, 1), 0.15);
+            color: color.adjust(map.get(variables.$aux-colors, 1), $lightness: -30%);
         }
     }
     
     &.funcionales {
-        border-left-color: map-get($aux-colors, 5);
+        border-left-color: map.get(variables.$aux-colors, 5);
         
         .exam-icon-wrapper {
-            background: rgba(map-get($aux-colors, 5), 0.15);
-            color: darken(map-get($aux-colors, 5), 35%);
+            background: rgba(map.get(variables.$aux-colors, 5), 0.15);
+            color: color.adjust(map.get(variables.$aux-colors, 5), $lightness: -35%);
         }
     }
     
     &.complementarias {
-        border-left-color: map-get($aux-colors, 3);
+        border-left-color: map.get(variables.$aux-colors, 3);
         
         .exam-icon-wrapper {
-            background: rgba(map-get($aux-colors, 3), 0.15);
-            color: darken(map-get($aux-colors, 3), 40%);
+            background: rgba(map.get(variables.$aux-colors, 3), 0.15);
+            color: color.adjust(map.get(variables.$aux-colors, 3), $lightness: -40%);
         }
     }
     
     &.laboratorio {
-        border-left-color: map-get($aux-colors, 2);
+        border-left-color: map.get(variables.$aux-colors, 2);
         
         .exam-icon-wrapper {
-            background: rgba(map-get($aux-colors, 2), 0.15);
-            color: darken(map-get($aux-colors, 2), 35%);
+            background: rgba(map.get(variables.$aux-colors, 2), 0.15);
+            color: color.adjust(map.get(variables.$aux-colors, 2), $lightness: -35%);
         }
     }
     
@@ -292,12 +297,12 @@
     text-align: center;
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid map-get($colors, "border-color");
+    border-bottom: 1px solid map.get(variables.$colors, "border-color");
     
     h3 {
         font-size: 1.8rem;
-        color: map-get($colors, "secondary");
-        font-family: map-get($fonts, "title");
+        color: map.get(variables.$colors, "secondary");
+        font-family: map.get(variables.$fonts, "title");
         font-weight: 600;
         margin: 0;
     }
@@ -327,16 +332,16 @@
     
     li {
         padding: 0.75rem 0;
-        font-family: map-get($fonts, "body");
+        font-family: map.get(variables.$fonts, "body");
         font-size: 1.4rem;
-        color: map-get($colors, "text");
+        color: map.get(variables.$colors, "text");
         display: flex;
         align-items: flex-start;
         line-height: 1.5;
         
         &::before {
             content: "✓";
-            color: map-get($colors, "primary");
+            color: map.get(variables.$colors, "primary");
             font-weight: bold;
             font-size: 1.4rem;
             margin-right: 0.75rem;

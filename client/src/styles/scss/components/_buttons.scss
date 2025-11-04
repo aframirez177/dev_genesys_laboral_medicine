@@ -1,3 +1,7 @@
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 // Base para todos los botones
 %button-base {
     padding: 0.5rem 1.61rem;
@@ -5,8 +9,8 @@
     cursor: pointer;
     font-size: 1.4rem;
     font-weight: 500;
-    font-family: map-get($fonts, "body");
-    @include smooth-weight-transition();
+    font-family: map.get(variables.$fonts, "body");
+    @include mixins.smooth-weight-transition();
     text-decoration: none;
     display: inline-block;
     min-width: 1rem;
@@ -15,7 +19,7 @@
     justify-content: center;
 
 &:hover {
-        @include smooth-weight-transition();
+        @include mixins.smooth-weight-transition();
         font-weight: 800;
         transform: translateY(-3px), scale(110%);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -25,12 +29,12 @@
 /* Los botones */
 
 a {
-    font-family:map-get($fonts, "body" );
+    font-family:map.get(variables.$fonts, "body" );
     font-size: 1.4rem;
     font-weight: 500;
     text-decoration: none;
-    color: map-get($colors, "secondary" );
-    @include smooth-weight-transition();
+    color: map.get(variables.$colors, "secondary" );
+    @include mixins.smooth-weight-transition();
     position: relative;
     min-width: 1rem;
     align-items: center;
@@ -40,7 +44,7 @@ a {
     a:hover {
     font-weight: 800;
     transform: scale(105%);
-    @include smooth-weight-transition();
+    @include mixins.smooth-weight-transition();
     }
     // Botón desplegable (dropdown)
     .dropdown-toggle {
@@ -48,13 +52,13 @@ a {
         margin-top: .5rem;
         background: none;
         border: none;
-        font-family: map-get($fonts, "body" );
+        font-family: map.get(variables.$fonts, "body" );
         font-size: 1.5rem;
-        color: map-get($colors,"secondary" );
+        color: map.get(variables.$colors,"secondary" );
         cursor: pointer;
         display: flex;
         align-items: center;
-        @include smooth-weight-transition();
+        @include mixins.smooth-weight-transition();
         
 
         &::after {
@@ -66,7 +70,7 @@ a {
         background-repeat: no-repeat;
         background-position: center;
         background-size: contain;
-        @include smooth-weight-transition();
+        @include mixins.smooth-weight-transition();
         }
 
         &[aria-expanded="true"]::after {
@@ -80,18 +84,18 @@ a {
 // Botón de llamado a la acción (CTA)
 .cta-button {
     @extend %button-base;
-    background-color: map-get($colors, "primary");
-    color: map-get($colors, "secondary");
+    background-color: map.get(variables.$colors, "primary");
+    color: map.get(variables.$colors, "secondary");
     border: none;
-    @include smooth-weight-transition();
+    @include mixins.smooth-weight-transition();
 }
 // Botón de CTA alternativo
 .cta-button-1 {
     @extend %button-base;
     background-color: rgba(255, 255, 255, 0.1);
-    color: map-get($colors, "text");
-    border: solid 1px map-get($colors, "text");
+    color: map.get(variables.$colors, "text");
+    border: solid 1px map.get(variables.$colors, "text");
     backdrop-filter: blur(3px);
     margin: 0; // Sin margin adicional
-    @include smooth-weight-transition();
+    @include mixins.smooth-weight-transition();
 }

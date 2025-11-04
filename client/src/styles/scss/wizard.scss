@@ -6,13 +6,13 @@
  */
 
 // 1. Variables (deben ir primero)
-@import './base/variables';
+@use 'base/variables';
 
 // 2. Mixins (usan variables)
-@import './base/mixins';
+@use 'base/mixins';
 
 // 3. Reset/Base (usan variables y mixins)
-@import './base/reset';
+@use 'base/reset';
 
 // 4. Componentes del wizard (usan todo lo anterior)
-@import './components/wizard';
+@use 'components/wizard';

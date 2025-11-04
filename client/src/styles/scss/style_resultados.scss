@@ -1,22 +1,22 @@
 // Arquitectura de Estilos para la Página de Resultados
 
 // 1. Base (Variables, Mixins, Resets, Tipografía)
-@import 'base/variables';
-@import 'base/mixins';
-@import 'base/reset';
-@import 'base/typography';
+@use 'base/variables';
+@use 'base/mixins';
+@use 'base/reset';
+@use 'base/typography';
 
 // 2. Componentes Reutilizables
-@import 'components/buttons';
-@import 'components/whatsapp';
+@use 'components/buttons';
+@use 'components/whatsapp';
 
 // 3. Layout Principal (Header, Footer)
-@import 'layout/header';
-@import 'layout/footer';
+@use 'layout/header';
+@use 'layout/footer';
 
 // 4. Secciones Específicas de esta Página
-@import 'sections/resultados';
+@use 'sections/resultados';
 
 // 5. Utilidades (Helpers, Animaciones)
-@import 'utilities/helpers';
-@import 'utilities/animations'; 
+@use 'utilities/helpers';
+@use 'utilities/animations'; 

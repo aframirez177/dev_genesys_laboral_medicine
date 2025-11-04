@@ -1,3 +1,8 @@
+@use "sass:color";
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 // src/styles/scss/sections/_form_bateria_riesgo_psicosocial.scss
 .bateria-psicosocial-section {
     max-width: 1024px;
@@ -9,18 +14,18 @@
     padding: 2rem;
   
     h2 {
-      font-family: map-get($fonts, 'title');
+      font-family: map.get(variables.$fonts, 'title');
       font-size: 3rem;
-      color: map-get($colors, 'secondary');
+      color: map.get(variables.$colors, 'secondary');
       text-align: center;
       max-width: 600px;
       margin-bottom: 3rem;
   
-      @include respond-to('tablet') {
+      @include mixins.respond-to('tablet') {
         font-size: 2.5rem;
       }
   
-      @include respond-to('desktop') {
+      @include mixins.respond-to('desktop') {
         font-size: 3rem;
       }
     }
@@ -48,10 +53,10 @@
   
       label {
         display: block;
-        font-family: map-get($fonts, 'body');
+        font-family: map.get(variables.$fonts, 'body');
         font-size: 1.6rem;
         font-weight: 500;
-        color: map-get($colors, 'text');
+        color: map.get(variables.$colors, 'text');
         margin-bottom: 1rem;
       }
   
@@ -75,7 +80,7 @@
             height: 0;
   
             &:checked + .slider {
-              background-color: map-get($colors, 'primary');
+              background-color: map.get(variables.$colors, 'primary');
   
               &:before {
                 transform: translateX(26px);
@@ -119,7 +124,7 @@
               bottom: 8px;
               color: white;
               font-size: 12px;
-              font-family: map-get($fonts, 'body');
+              font-family: map.get(variables.$fonts, 'body');
             }
           }
         }
@@ -129,28 +134,28 @@
       select {
         width: 100%;
         padding: 1rem;
-        border: 1px solid map-get($colors, 'input-border');
+        border: 1px solid map.get(variables.$colors, 'input-border');
         border-radius: 5px;
-        background-color: map-get($colors, 'input-bg');
-        color: map-get($colors, 'text');
-        font-family: map-get($fonts, 'body');
+        background-color: map.get(variables.$colors, 'input-bg');
+        color: map.get(variables.$colors, 'text');
+        font-family: map.get(variables.$fonts, 'body');
         font-size: 1.4rem;
         transition: border-color 0.3s ease;
   
         &:focus {
           outline: none;
-          border-color: map-get($colors, 'primary');
+          border-color: map.get(variables.$colors, 'primary');
         }
       }
     }
   
     .submit-button {
-      background-color: map-get($colors, 'primary');
+      background-color: map.get(variables.$colors, 'primary');
       color: white;
       border: none;
       border-radius: 5px;
       padding: 1rem 2rem;
-      font-family: map-get($fonts, 'body');
+      font-family: map.get(variables.$fonts, 'body');
       font-size: 1.6rem;
       font-weight: 600;
       cursor: pointer;
@@ -158,7 +163,7 @@
       margin-top: 1rem;
   
       &:hover {
-        background-color: darken(map-get($colors, 'primary'), 10%);
+        background-color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%);
         transform: translateY(-3px);
       }
   
@@ -172,27 +177,27 @@
     max-width: 600px;
     margin: 2rem auto;
     padding: 2rem;
-    background-color: lighten(map-get($colors, 'primary'), 40%);
+    background-color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 40%);
     border-radius: 10px;
-    border-left: 4px solid map-get($colors, 'primary');
+    border-left: 4px solid map.get(variables.$colors, 'primary');
   
     p {
-      font-family: map-get($fonts, 'body');
+      font-family: map.get(variables.$fonts, 'body');
       font-size: 1.8rem;
-      color: map-get($colors, 'secondary');
+      color: map.get(variables.$colors, 'secondary');
       font-weight: 600;
       margin: 0;
     }
   }
   
   // Estilos responsivos
-  @include respond-to('tablet') {
+  @include mixins.respond-to('tablet') {
     .bateria-psicosocial-section {
       padding: 3rem;
     }
   }
   
-  @include respond-to('desktop') {
+  @include mixins.respond-to('desktop') {
     .bateria-psicosocial-section {
       padding: 4rem;
     }

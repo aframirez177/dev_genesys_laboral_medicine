@@ -1,3 +1,7 @@
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 .background-container {
 /*     background-image: url("../../assets/images/foto_inicio_hero_background.webp"); */
 position: relative;
@@ -29,16 +33,16 @@ overflow: hidden;
         animation: fadeIn 1s ease-out;
 
         h1 {
-            font-family: map-get($fonts, "title");
+            font-family: map.get(variables.$fonts, "title");
             margin: 1rem 0;
             line-height: 1.1;
 
-            @include respond-to("tablet") {
+            @include mixins.respond-to("tablet") {
             font-size: 5rem;
             }
         }
 
-        @include respond-to("tablet") {
+        @include mixins.respond-to("tablet") {
             margin-left: 5rem;
         }
 

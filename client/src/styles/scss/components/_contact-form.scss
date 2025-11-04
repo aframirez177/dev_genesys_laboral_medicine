@@ -1,3 +1,8 @@
+@use "sass:color";
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 // ===================================================================
 // FORMULARIO DE CONTACTO MEJORADO - UX/UI MODERNO SIMPLE
 // ===================================================================
@@ -24,32 +29,32 @@
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         animation: modalSlideIn 0.3s ease-out;
 
-        @include respond-to("mobile") {
+        @include mixins.respond-to("mobile") {
             margin: 1rem auto;
             border-radius: 16px;
         }
     }
 
     .modal-header {
-        background: linear-gradient(135deg, map-get($colors, "primary") 0%, lighten(map-get($colors, "primary"), 10%) 100%);
+        background: linear-gradient(135deg, map.get(variables.$colors, "primary") 0%, color.adjust(map.get(variables.$colors, "primary"), $lightness: 10%) 100%);
         color: white;
         padding: 2.5rem 2rem 2rem;
         border-radius: 20px 20px 0 0;
         position: relative;
 
-        @include respond-to("mobile") {
+        @include mixins.respond-to("mobile") {
             padding: 2rem 1.5rem 1.5rem;
             border-radius: 16px 16px 0 0;
         }
 
         h2 {
-            font-family: map-get($fonts, "title");
+            font-family: map.get(variables.$fonts, "title");
             font-size: 2.4rem;
             font-weight: 700;
             margin: 0;
             line-height: 1.2;
 
-            @include respond-to("mobile") {
+            @include mixins.respond-to("mobile") {
                 font-size: 2rem;
             }
         }
@@ -81,7 +86,7 @@
     .contact-form {
         padding: 2.5rem 2rem;
 
-        @include respond-to("mobile") {
+        @include mixins.respond-to("mobile") {
             padding: 2rem 1.5rem;
         }
 
@@ -90,14 +95,14 @@
 
             label {
                 display: block;
-                font-family: map-get($fonts, "title");
+                font-family: map.get(variables.$fonts, "title");
                 font-size: 1.4rem;
                 font-weight: 600;
-                color: map-get($colors, "text");
+                color: map.get(variables.$colors, "text");
                 margin-bottom: 0.8rem;
 
                 .required {
-                    color: map-get($colors, "danger");
+                    color: map.get(variables.$colors, "danger");
                     font-weight: 700;
                 }
             }
@@ -105,28 +110,28 @@
             input, select {
                 width: 100%;
                 padding: 1.2rem 1.5rem;
-                border: 2px solid map-get($colors, "input-border");
+                border: 2px solid map.get(variables.$colors, "input-border");
                 border-radius: 12px;
-                font-family: map-get($fonts, "body");
+                font-family: map.get(variables.$fonts, "body");
                 font-size: 1.4rem;
-                color: map-get($colors, "text");
-                background-color: map-get($colors, "input-bg");
+                color: map.get(variables.$colors, "text");
+                background-color: map.get(variables.$colors, "input-bg");
                 transition: all 0.3s ease;
                 box-sizing: border-box;
 
                 &:focus {
                     outline: none;
-                    border-color: map-get($colors, "primary");
-                    box-shadow: 0 0 0 3px rgba(map-get($colors, "primary"), 0.1);
+                    border-color: map.get(variables.$colors, "primary");
+                    box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, "primary"), 0.1);
                     transform: translateY(-1px);
                 }
 
                 &::placeholder {
-                    color: map-get($colors, "placeholder");
+                    color: map.get(variables.$colors, "placeholder");
                 }
 
                 &:hover:not(:focus) {
-                    border-color: lighten(map-get($colors, "input-border"), 10%);
+                    border-color: color.adjust(map.get(variables.$colors, "input-border"), $lightness: 10%);
                 }
             }
 
@@ -147,7 +152,7 @@
             gap: 1.5rem;
             margin-bottom: 2rem;
 
-            @include respond-to("mobile") {
+            @include mixins.respond-to("mobile") {
                 grid-template-columns: 1fr;
                 gap: 0;
             }
@@ -155,7 +160,7 @@
             .form-group {
                 margin-bottom: 0;
 
-                @include respond-to("mobile") {
+                @include mixins.respond-to("mobile") {
                     margin-bottom: 2rem;
                 }
             }
@@ -167,7 +172,7 @@
             justify-content: flex-end;
             gap: 1.5rem;
 
-            @include respond-to("mobile") {
+            @include mixins.respond-to("mobile") {
                 flex-direction: column;
                 gap: 1rem;
             }
@@ -175,7 +180,7 @@
             button {
                 padding: 1.2rem 2.5rem;
                 border-radius: 12px;
-                font-family: map-get($fonts, "title");
+                font-family: map.get(variables.$fonts, "title");
                 font-size: 1.4rem;
                 font-weight: 600;
                 border: none;
@@ -183,7 +188,7 @@
                 transition: all 0.3s ease;
                 min-width: 140px;
 
-                @include respond-to("mobile") {
+                @include mixins.respond-to("mobile") {
                     width: 100%;
                 }
 
@@ -199,23 +204,23 @@
                 }
 
                 &.submit-btn {
-                    background: linear-gradient(135deg, map-get($colors, "primary") 0%, lighten(map-get($colors, "primary"), 10%) 100%);
+                    background: linear-gradient(135deg, map.get(variables.$colors, "primary") 0%, color.adjust(map.get(variables.$colors, "primary"), $lightness: 10%) 100%);
                     color: white;
 
                     &:hover {
-                        box-shadow: 0 6px 20px rgba(map-get($colors, "primary"), 0.4);
+                        box-shadow: 0 6px 20px rgba(map.get(variables.$colors, "primary"), 0.4);
                     }
                 }
 
                 &.cancel-btn {
                     background: white;
-                    color: map-get($colors, "text");
-                    border: 2px solid map-get($colors, "border-color");
+                    color: map.get(variables.$colors, "text");
+                    border: 2px solid map.get(variables.$colors, "border-color");
 
                     &:hover {
-                        background: map-get($colors, "background");
-                        border-color: map-get($colors, "primary");
-                        color: map-get($colors, "primary");
+                        background: map.get(variables.$colors, "background");
+                        border-color: map.get(variables.$colors, "primary");
+                        color: map.get(variables.$colors, "primary");
                     }
                 }
             }

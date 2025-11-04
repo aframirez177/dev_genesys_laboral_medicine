@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "../base/variables";
+
 // ===================================================================
 // BOCADILLO FLOTANTE - Botón Agregar Cargo + Badges
 // OPTIMIZADO - Noviembre 2025
@@ -36,7 +39,7 @@
         border-radius: 20px;
         padding: 12px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-        border: 3px solid map-get($colors, "primary");
+        border: 3px solid map.get(variables.$colors, "primary");
         display: flex;
         flex-direction: column; // Vertical: botón arriba, badges abajo
         align-items: center;
@@ -60,7 +63,7 @@
         height: 0;
         border-left: 15px solid transparent;
         border-right: 15px solid transparent;
-        border-top: 20px solid map-get($colors, "primary");
+        border-top: 20px solid map.get(variables.$colors, "primary");
         
         &::after {
             content: '';
@@ -103,9 +106,9 @@
             justify-content: center;
             gap: 2px;
             
-            background: rgba(map-get($colors, "primary"), 0.08);
+            background: rgba(map.get(variables.$colors, "primary"), 0.08);
             border-radius: 12px;
-            border: 2px solid rgba(map-get($colors, "primary"), 0.2);
+            border: 2px solid rgba(map.get(variables.$colors, "primary"), 0.2);
             transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -113,17 +116,17 @@
             svg {
                 width: 18px;
                 height: 18px;
-                color: map-get($colors, "primary");
+                color: map.get(variables.$colors, "primary");
                 flex-shrink: 0;
                 transition: all 0.3s ease;
             }
             
             // Número visible siempre
             > span:not(.badge-label) {
-                font-family: map-get($fonts, "title");
+                font-family: map.get(variables.$fonts, "title");
                 font-size: 1.3rem;
                 font-weight: 700;
-                color: map-get($colors, "primary");
+                color: map.get(variables.$colors, "primary");
                 line-height: 1;
             }
             
@@ -134,8 +137,8 @@
                 opacity: 0;
                 font-size: 0.7rem;
                 font-weight: 600;
-                font-family: map-get($fonts, "body");
-                color: map-get($colors, "primary");
+                font-family: map.get(variables.$fonts, "body");
+                color: map.get(variables.$colors, "primary");
                 white-space: nowrap;
                 transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
                 pointer-events: none;
@@ -146,8 +149,8 @@
                 min-width: 80px;
                 height: 65px;
                 transform: translateY(-2px);
-                box-shadow: 0 6px 16px rgba(map-get($colors, "primary"), 0.25);
-                border-color: map-get($colors, "primary");
+                box-shadow: 0 6px 16px rgba(map.get(variables.$colors, "primary"), 0.25);
+                border-color: map.get(variables.$colors, "primary");
                 
                 svg {
                     width: 20px;
@@ -162,18 +165,18 @@
             }
             
             &.cargos-count {
-                background: rgba(map-get($aux-colors, 1), 0.4);
-                border-color: rgba(map-get($aux-colors, 1), 0.6);
+                background: rgba(map.get(variables.$aux-colors, 1), 0.4);
+                border-color: rgba(map.get(variables.$aux-colors, 1), 0.6);
             }
             
             &.exams-count {
-                background: rgba(map-get($aux-colors, 5), 0.4);
-                border-color: rgba(map-get($aux-colors, 5), 0.6);
+                background: rgba(map.get(variables.$aux-colors, 5), 0.4);
+                border-color: rgba(map.get(variables.$aux-colors, 5), 0.6);
             }
             
             &.workers-count {
-                background: rgba(map-get($aux-colors, 3), 0.4);
-                border-color: rgba(map-get($aux-colors, 3), 0.6);
+                background: rgba(map.get(variables.$aux-colors, 3), 0.4);
+                border-color: rgba(map.get(variables.$aux-colors, 3), 0.6);
             }
         }
     }
@@ -186,7 +189,7 @@
         height: 48px;
         padding: 1rem 1.5rem;
         
-        background: map-get($colors, "primary");
+        background: map.get(variables.$colors, "primary");
         color: white;
         border: none;
         border-radius: 40px;
@@ -201,7 +204,7 @@
         position: relative;
         overflow: hidden;
         transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-        box-shadow: 0 4px 15px rgba(map-get($colors, "primary"), 0.35);
+        box-shadow: 0 4px 15px rgba(map.get(variables.$colors, "primary"), 0.35);
         
         @media (max-width: 768px) {
             padding: 1.2rem 2rem;
@@ -220,7 +223,7 @@
         span {
             font-size: 1.4rem;
             font-weight: 700;
-            font-family: map-get($fonts, "title");
+            font-family: map.get(variables.$fonts, "title");
             color: white;
             white-space: nowrap;
         }
@@ -228,7 +231,7 @@
         // Estado hover
         &:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(map-get($colors, "primary"), 0.45);
+            box-shadow: 0 8px 25px rgba(map.get(variables.$colors, "primary"), 0.45);
             
             .plus-icon {
                 transform: rotate(90deg);

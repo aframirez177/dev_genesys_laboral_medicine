@@ -1,16 +1,16 @@
 // Base
-@import 'base/variables';
-@import 'base/mixins';
-@import 'base/reset';
-@import 'base/typography';
+@use 'base/variables';
+@use 'base/mixins';
+@use 'base/reset';
+@use 'base/typography';
 
 
 // Sections
-@import 'sections/steps';
-@import 'sections/women-leaders';
-@import 'sections/sst-services';
+@use 'sections/steps';
+@use 'sections/women-leaders';
+@use 'sections/sst-services';
 
 
 // Utilities
-@import 'utilities/helpers';
-@import 'utilities/animations';
+@use 'utilities/helpers';
+@use 'utilities/animations';

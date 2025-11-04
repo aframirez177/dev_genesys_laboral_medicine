@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "../base/variables";
+
 // Estilos base para la sección de descripción
 .program-description {
     display: flex;
@@ -5,14 +8,14 @@
     align-items: center;
     flex-wrap: wrap;
     padding: 2rem;
-    background-color: map-get($colors, "background");
+    background-color: map.get(variables.$colors, "background");
 
 // Título de la sección
     h2 {
         max-width: 420px;
         margin-left: 1rem;
         font-size: 4rem;
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         text-align: left;
         padding: 0;
         line-height: 100%;
@@ -22,7 +25,7 @@
     .descripcion {
         max-width: 650px;
         margin: 0;
-        font-family: map-get($fonts, "body");
+        font-family: map.get(variables.$fonts, "body");
         font-size: 18px;
         text-align: left;
         padding: 2rem;

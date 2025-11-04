@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "../base/variables";
+
 .steps {
     padding-top: 5rem;
     display: flex;
@@ -6,7 +9,7 @@
     flex-wrap: wrap;
     padding-left: 1rem;
     padding-right: 1rem;
-    background-color: map-get($colors, "background");
+    background-color: map.get(variables.$colors, "background");
     .step-card {
         background-color: #fff2fe;
         border-radius: 12px;
@@ -28,24 +31,24 @@
         transition: opacity 0.5s ease, transform 0.5s ease;
 
         h3 {
-        color: map-get($colors, "primary");
+        color: map.get(variables.$colors, "primary");
         position: absolute;
         top: -80px;
         transform: translateY(-25%);
         transform-origin: left center;
         white-space: nowrap;
         font-size: 2rem;
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-weight: 800;
         text-align: center;
         transition: 0.2s;
         }
 
         h4 {
-        font-family: map-get($fonts, "body");
+        font-family: map.get(variables.$fonts, "body");
         font-size: 11px;
-        color: map-get($colors, "alternative");
-        background-color: map-get($colors, "primary");
+        color: map.get(variables.$colors, "alternative");
+        background-color: map.get(variables.$colors, "primary");
         border-radius: 23px;
         padding: 10px 10px;
         position: absolute;
@@ -57,7 +60,7 @@
 
         p {
         position: relative;
-        font-family: map-get($fonts, "body");
+        font-family: map.get(variables.$fonts, "body");
         font-weight: 500;
         padding: 0;
         height: max-content;
@@ -72,21 +75,21 @@
         .cta-button {
         position: absolute;
         margin-top: 60%;
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-size: 12px;
         padding: 7px;
         height: 53px;
         width: 150px;
         border-radius: 12px;
-        background-color: map-get($colors, "alternative");
-        color: map-get($colors, "text");
+        background-color: map.get(variables.$colors, "alternative");
+        color: map.get(variables.$colors, "text");
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: 0.2s;
         }
 
         &:hover {
-            box-shadow: 0 10px 20px map-get($colors, "text");
-            background-color: map-get($colors, "primary");
+            box-shadow: 0 10px 20px map.get(variables.$colors, "text");
+            background-color: map.get(variables.$colors, "primary");
             
             h3 {
             font-size: 3rem;
@@ -94,12 +97,12 @@
         }
 
         h4 {
-            background-color: map-get($colors, "alternative");
-            color: map-get($colors, "text");
+            background-color: map.get(variables.$colors, "alternative");
+            color: map.get(variables.$colors, "text");
         }
 
         p {
-            color: map-get($colors, "alternative");
+            color: map.get(variables.$colors, "alternative");
             font-weight: 800;
         }
         }

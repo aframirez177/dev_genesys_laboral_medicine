@@ -1,3 +1,5 @@
+@use "../base/mixins";
+
 .whatsapp {
     &-button {
         position: fixed;
@@ -7,7 +9,7 @@
         height: 90px;
         background-color: #25d366;
         border-radius: 50%;
-        @include flex-center;
+        @include mixins.flex-center;
         cursor: pointer;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         z-index: 1000;
@@ -80,7 +82,7 @@
 }
 
 .start-chat-button {
-    @include flex-center;
+    @include mixins.flex-center;
     width: 100%;
     padding: 10px;
     background-color: #25d366;
@@ -97,7 +99,7 @@
     }
 }
 
-@include respond-to("mobile") {
+@include mixins.respond-to("mobile") {
     .whatsapp {
         &-button {
         width: 5.1rem;

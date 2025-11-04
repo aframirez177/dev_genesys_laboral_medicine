@@ -1,291 +1,294 @@
 # 🎯 Estado Actual del Wizard SST - Genesys Laboral Medicine
 
-**Fecha:** 3 de Noviembre de 2025
-**Status:** ✅ **IMPLEMENTADO Y FUNCIONAL**
+**Fecha última actualización:** 3 de Noviembre de 2025 - Sesión Nocturna
+**Status:** 🟡 **90% FUNCIONAL - BUGS CRÍTICOS DETECTADOS**
 **URL:** http://localhost:8080/pages/wizard_example.html
 
 ---
 
-## ✅ COMPLETADO (95%)
+## 🐛 BUGS CRÍTICOS PENDIENTES
 
-### 1. **Arquitectura Core** ✅
-- ✅ `Wizard.js` - Motor del wizard con navegación y validación
-- ✅ `diagnosticoSteps.js` - Todos los pasos del wizard
-- ✅ `main_wizard_example.js` - Entry point con lógica dinámica
-- ✅ `CargoState.js` - Gestión de estado
-- ✅ `PersistenceManager.js` - Auto-guardado cada 5 segundos
+### 1. **❌ CRÍTICO: Radio Buttons se Comparten Entre Riesgos**
 
-### 2. **Pasos Implementados** ✅
-1. ✅ **Bienvenida** - Con información del proceso
-2. ✅ **Empresa** - Nombre, NIT, Sector, Ciudad
-3. ✅ **Número de Cargos** - Con quick-select buttons
-4. ✅ **Info de Cargo** - Nombre, Área, Zona, Trabajadores, Descripción de tareas
-5. ✅ **Toggles Especiales** - Tareas rutinarias, Alturas, Espacios confinados, Conduce, Alimentos
-6. ✅ **Selección GES** - Por categorías con sugerencias de IA
-7. ✅ **Controles + Niveles** - **UNIFICADO EN UN SOLO PASO**
-   - Controles: Fuente, Medio, Individuo
-   - Niveles: ND, NE, NC con **calculadora en tiempo real**
-   - **Barras semaforizadas** visuales (verde/amarillo/naranja/rojo)
-   - Cálculo automático de NP y NR según GTC 45
-8. ✅ **Revisión Final** - Con estadísticas y resumen completo
+**Problema:**
+- Al marcar niveles (ND/NE/NC) en el primer riesgo, esos mismos valores aparecen marcados en el segundo riesgo
+- Al cambiar valores en un riesgo, los checkmarks se mueven en TODOS los riesgos
+- Los controles (textareas) también se pre-llenan con datos del riesgo anterior
 
-### 3. **UX/UI Premium** ✅
-- ✅ **Estilos completos** (_wizard.scss - 549 líneas)
-- ✅ **Animaciones suaves** (fade, slide in/out)
-- ✅ **Barra de progreso** fija en top
-- ✅ **Navegación con teclado** (Enter para Next, Escape para Back)
-- ✅ **Responsive** (Mobile, Tablet, Desktop)
-- ✅ **Auto-focus** en inputs
-- ✅ **Loading states** y spinners
+**Ejemplo:**
+1. Riesgo 1 (Caídas de altura): ND=0, NE=1, NC=10
+2. Avanzar a Riesgo 2 (Alta tensión)
+3. **BUG:** Aparece con ND=0, NE=1, NC=10 (valores del riesgo 1)
+4. Cambiar a ND=6
+5. Regresar a Riesgo 1
+6. **BUG:** Ahora aparece con ND=6 (el valor cambió!)
 
-### 4. **Integraciones de IA** ✅
-**Endpoints Implementados:**
-- ✅ `/api/ia/autocomplete-cargo` - Autocompletado de nombres de cargo
-- ✅ `/api/ia/suggest-ges` - Sugerencias de riesgos por cargo
-- ✅ `/api/ia/suggest-controls` - Controles recomendados por riesgo
+**Causa raíz identificada:**
+```javascript
+// En Wizard.js línea 479
+Rendering step: controles-0-0 with data: undefined
 
-**Funcionalidades:**
-- ✅ Chips de sugerencias clickeables
-- ✅ Botones "Aplicar" para insertar controles sugeridos
-- ✅ Detección de cargos comunes
+// En diagnosticoSteps.js línea 578-579
+📦 Data received: {}
+📌 data.nd=undefined, data.ne=undefined, data.nc=undefined
+```
 
-### 5. **Data Management** ✅
-- ✅ **Estructura completa** de datos compatible con backend actual
-- ✅ **Validaciones** en cada paso
-- ✅ **Auto-guardado** en localStorage cada 5 segundos
-- ✅ **Expiración** de datos a 72 horas
-- ✅ **Historial** de navegación para botón "Back"
+**El wizard NO está pasando los datos guardados al renderizar el paso.**
 
-### 6. **Niveles de Riesgo GTC 45** ✅ **INNOVACIÓN**
-**Implementación Única:**
-- ✅ **Barras semaforizadas** en lugar de dropdowns
-- ✅ **4 niveles de ND**: Bajo (0), Medio (2), Alto (6), Muy Alto (10)
-- ✅ **4 niveles de NE**: Esporádica (1), Ocasional (2), Frecuente (3), Continua (4)
-- ✅ **4 niveles de NC**: Leve (10), Grave (25), Muy Grave (60), Mortal (100)
-- ✅ **Calculadora en tiempo real**:
-  - NP = ND × NE
-  - NR = NP × NC
-  - Clasificación automática (I, II, III, IV)
-  - Aceptabilidad (Aceptable, Mejorable, No Aceptable)
-- ✅ **Colores por severidad**: Verde → Amarillo → Naranja → Rojo
-- ✅ **Checkmarks animados** al seleccionar
-- ✅ **Tooltips** con explicaciones
+**Solución propuesta:**
+Cambiar de `?checked` (attribute binding) a `.checked` (property binding) en lit-html para FORZAR el estado de los radio buttons.
+
+**Archivos a modificar:**
+- `client/src/components/wizard/diagnosticoSteps.js` - Líneas 954, 963, 972, 981 (ND)
+- `client/src/components/wizard/diagnosticoSteps.js` - Líneas 1004, 1013, 1022, 1031 (NE)
+- `client/src/components/wizard/diagnosticoSteps.js` - Líneas 1054, 1063, 1072, 1081 (NC)
+
+**Cambio necesario:**
+```javascript
+// ANTES (incorrecto)
+<input type="radio" name="nd-${cargoIndex}-${gesIndex}" value="0" ?checked=${data.nd === '0'} />
+
+// DESPUÉS (correcto)
+<input type="radio" name="nd-${cargoIndex}-${gesIndex}" value="0" .checked=${data.nd === '0'} />
+```
+
+**Total de líneas a cambiar:** 12 líneas (4 para ND + 4 para NE + 4 para NC)
 
 ---
 
-## ⚠️ PENDIENTE (5%)
+### 2. **⚠️ MEDIO: Chips de IA No Persisten al Navegar Atrás (A Veces)**
 
-### 1. **Endpoints de IA Avanzados** (Opcional)
-- ⏳ `/api/ia/detect-similar-cargo` - Copiar configuración de cargos similares
-- ⏳ `/api/ia/detect-duplicate-ges` - Detectar GES duplicados entre cargos
-- ⏳ `/api/ia/validate-consistency` - Validación inteligente de coherencia
+**Problema:**
+- Los chips de controles (sugerencias de IA) no siempre aparecen al navegar hacia atrás
+- Parecen depender del timing del cache
 
-**Nota:** Estos endpoints son **mejoras opcionales**, no son críticos para el funcionamiento.
-
-### 2. **Testing End-to-End**
-- ⏳ Probar flujo completo con datos reales
-- ⏳ Verificar integración con `/api/flujo-ia/registrar-y-generar`
-- ⏳ Validar estructura de salida vs formulario actual
-
-### 3. **Polish**
-- ⏳ Mejorar mensajes de error
-- ⏳ Añadir más animaciones de transición
-- ⏳ Documentación de usuario
+**Solución ya implementada pero necesita verificación:**
+- Se agregó verificación de cache antes de fetch (líneas 1278-1311)
+- Necesita testing después de arreglar bug crítico #1
 
 ---
 
-## 🎨 INNOVACIONES DESTACADAS
+## ✅ BUGS ARREGLADOS (Sesión Actual)
 
-### 1. **Controles + Niveles Unificados**
-**Antes (Diseño Original):**
-- Paso 7: Controles (Fuente, Medio, Individuo)
-- Paso 8: Niveles (ND, NE, NC)
+### 1. ✅ Checkmarks Duplicados Entre Riesgos
+- **Problema:** Los checkmarks del riesgo 2 aparecían también en el riesgo 1
+- **Solución:** Eliminados checkmarks del HTML estático, agregados data-attributes únicos
+- **Estado:** ARREGLADO
 
-**Ahora (Implementado):**
-- **Un solo paso** con ambas secciones
-- Reduce de ~9-12 pasos a ~6-8 pasos por cargo
-- UX mucho más fluida
+### 2. ✅ Múltiples Checkmarks en el Mismo Nivel
+- **Problema:** Aparecían 2-3 checkmarks en un mismo nivel
+- **Solución:** Limpieza exhaustiva antes de agregar nuevo checkmark
+- **Estado:** ARREGLADO
 
-### 2. **Barras Semaforizadas Visuales**
-**Reemplaza:** Dropdowns tradicionales o radio buttons básicos
+### 3. ✅ Tooltips que Había que Cerrar 3 Veces
+- **Problema:** Al hacer clic en "?" salían 3 alerts
+- **Solución:** Agregado `data-listenerAdded` para evitar event listeners duplicados
+- **Estado:** ARREGLADO (líneas 1495-1510)
 
-**Implementa:**
-- Gradientes de color según severidad
-- Checkmarks animados al seleccionar
-- Tooltips descriptivos
-- Escala animada (scale 1.05) en hover y selección
-- Shadow con el color del nivel
-
-### 3. **Calculadora GTC 45 en Tiempo Real**
-**Características:**
-- Cálculo instantáneo al cambiar ND/NE/NC
-- Tarjeta de resultados con:
-  - **NP** (Nivel de Probabilidad): Bajo/Medio/Alto/Muy Alto
-  - **NR** (Nivel de Riesgo): I/II/III/IV con número calculado
-  - **Interpretación** según normativa
-  - **Aceptabilidad** del riesgo
-- Colores dinámicos en resultados
-- Borde de tarjeta cambia según nivel de riesgo
-
-### 4. **Generación Dinámica de Pasos**
-**Características:**
-- Los pasos de controles se generan **después** de seleccionar GES
-- Permite flujo adaptativo según elecciones del usuario
-- Reduce carga cognitiva (solo ve lo relevante)
+### 4. ✅ Chips de Controles No Aparecen en Segundo Cargo
+- **Problema:** Los chips solo aparecían en el primer cargo
+- **Solución:** Verificación de cache antes de fetch, función `showSuggestions()` reutilizable
+- **Estado:** ARREGLADO (líneas 1234-1311)
 
 ---
 
-## 📊 ESTADÍSTICAS
+## 📊 ARQUITECTURA DEL WIZARD
 
-### Código
-- **diagnosticoSteps.js**: 1,806 líneas
-- **Wizard.js**: 531 líneas
-- **main_wizard_example.js**: 407 líneas
-- **_wizard.scss**: 549 líneas
-- **Total**: ~3,300 líneas de código
+### Archivos Principales
 
-### Pasos
-- **Pasos fijos**: 3 (Bienvenida, Empresa, Num Cargos)
-- **Por cargo**: 3 pasos base + N pasos de controles (según GES seleccionados)
-- **Revisión**: 1 paso final
-- **Total estimado** para 2 cargos con 3 GES cada uno: ~13 pasos
+**1. Backend - Endpoints de IA:**
+- `server/src/routes/ia/aiSuggestions.routes.js` - Rutas de IA
+- `server/src/controllers/ia/aiSuggestions.controller.js` - Controladores
+- `server/src/services/ia/aiSuggestions.service.js` - Lógica de sugerencias
 
-### Tiempo Estimado de Completado
-- **1 cargo, 2 GES**: ~5-7 minutos
-- **2 cargos, 4 GES**: ~10-12 minutos
-- **3 cargos, 6 GES**: ~15-18 minutos
+**2. Frontend - Componentes del Wizard:**
+- `client/src/components/wizard/Wizard.js` - Motor principal del wizard (531 líneas)
+- `client/src/components/wizard/diagnosticoSteps.js` - Pasos del diagnóstico (1806 líneas) **← AQUÍ ESTÁ EL BUG**
+- `client/src/js/main_wizard_example.js` - Entry point y lógica dinámica (407 líneas)
+- `client/src/state/CargoState.js` - Gestión de estado
+- `client/src/state/PersistenceManager.js` - Auto-guardado
+
+**3. Estilos:**
+- `client/src/styles/scss/components/_wizard.scss` - Estilos del wizard (549 líneas)
+
+### Flujo de Datos Crítico
+
+```
+1. Usuario marca ND=0 en Riesgo 1
+   ↓
+2. Click "Siguiente" → Wizard.next()
+   ↓
+3. step.getData() obtiene valores de los radio buttons
+   → { nd: '0', ne: '1', nc: '10', fuente: '...', medio: '...', individuo: '...' }
+   ↓
+4. Datos se guardan en this.data['controles-0-0']
+   ↓
+5. Usuario avanza a Riesgo 2 (controles-0-1)
+   ↓
+6. ❌ BUG: Wizard.render() pasa this.data['controles-0-1'] || {} = {}
+   ↓
+7. step.render({}) renderiza con data vacía
+   ↓
+8. Radio buttons con ?checked=${undefined === '0'} NO se desmarcabn
+   ↓
+9. Los radio buttons conservan estado anterior del DOM
+```
 
 ---
 
-## 🚀 CÓMO PROBAR
+## 🔧 SOLUCIÓN DETALLADA PARA BUG CRÍTICO
 
-### 1. **Iniciar Servidor**
+### Cambio en diagnosticoSteps.js
+
+**Buscar y reemplazar:**
+```javascript
+// BUSCAR (12 ocurrencias):
+?checked=${data.nd ===
+?checked=${data.ne ===
+?checked=${data.nc ===
+
+// REEMPLAZAR CON:
+.checked=${data.nd ===
+.checked=${data.ne ===
+.checked=${data.nc ===
+```
+
+**Diferencia clave:**
+- `?checked` (attribute): Solo AGREGA el atributo si es true, nunca lo REMUEVE
+- `.checked` (property): ESTABLECE la propiedad JavaScript, forzando true/false
+
+**Ubicación exacta de los cambios:**
+
+**ND (Nivel de Deficiencia):**
+- Línea 954: `<input type="radio" name="nd-${cargoIndex}-${gesIndex}" value="0" .checked=${data.nd === '0'}`
+- Línea 963: value="2"
+- Línea 972: value="6"
+- Línea 981: value="10"
+
+**NE (Nivel de Exposición):**
+- Línea 1004: `<input type="radio" name="ne-${cargoIndex}-${gesIndex}" value="1" .checked=${data.ne === '1'}`
+- Línea 1013: value="2"
+- Línea 1022: value="3"
+- Línea 1031: value="4"
+
+**NC (Nivel de Consecuencia):**
+- Línea 1054: `<input type="radio" name="nc-${cargoIndex}-${gesIndex}" value="10" .checked=${data.nc === '10'}`
+- Línea 1063: value="25"
+- Línea 1072: value="60"
+- Línea 1081: value="100"
+
+---
+
+## 🧪 PLAN DE TESTING POST-FIX
+
+### Test 1: Valores Independientes por Riesgo
+```
+1. Llenar wizard hasta Controles del Riesgo 1
+2. Marcar: ND=0, NE=1, NC=10
+3. Escribir controles: "Control fuente 1", "Control medio 1", "Control individuo 1"
+4. Avanzar a Riesgo 2
+5. ✅ Verificar: NO hay ningún valor marcado
+6. ✅ Verificar: Los textareas están vacíos
+7. Marcar: ND=6, NE=3, NC=25
+8. Escribir controles: "Control fuente 2", etc.
+9. Regresar a Riesgo 1
+10. ✅ Verificar: Aparece ND=0, NE=1, NC=10 (valores originales)
+11. ✅ Verificar: Textareas tienen "Control fuente 1", etc.
+```
+
+### Test 2: Navegación Adelante/Atrás
+```
+1. Llenar Riesgo 1 completo
+2. Llenar Riesgo 2 completo
+3. Navegar: Atrás → Adelante → Atrás → Adelante
+4. ✅ Verificar: Los valores se mantienen correctos en cada riesgo
+5. ✅ Verificar: Los checkmarks se restauran correctamente
+6. ✅ Verificar: La calculadora muestra los valores correctos
+```
+
+### Test 3: Múltiples Cargos y Riesgos
+```
+1. Configurar 2 cargos, 3 riesgos cada uno = 6 pasos de controles
+2. Llenar todos con valores diferentes
+3. Navegar entre todos los pasos
+4. ✅ Verificar: Cada paso mantiene sus propios valores
+```
+
+---
+
+## 📝 PROMPT PARA CONTINUAR EN PRÓXIMA SESIÓN
+
+**Contexto:**
+Estamos trabajando en el wizard de diagnóstico SST. Se detectó un bug CRÍTICO donde los valores de niveles (ND/NE/NC) y controles se comparten entre diferentes riesgos en lugar de ser independientes.
+
+**Bug crítico identificado:**
+Los radio buttons en `client/src/components/wizard/diagnosticoSteps.js` usan `?checked` (attribute binding) en lugar de `.checked` (property binding), lo que hace que NO se desmarcen correctamente cuando `data` es vacío o undefined.
+
+**Tarea inmediata:**
+1. Abrir archivo: `client/src/components/wizard/diagnosticoSteps.js`
+2. Buscar TODAS las ocurrencias de `?checked=${data.nd` (líneas ~954, 963, 972, 981)
+3. Buscar TODAS las ocurrencias de `?checked=${data.ne` (líneas ~1004, 1013, 1022, 1031)
+4. Buscar TODAS las ocurrencias de `?checked=${data.nc` (líneas ~1054, 1063, 1072, 1081)
+5. Reemplazar `?checked=` con `.checked=` en TODAS esas líneas (total: 12 cambios)
+6. Guardar archivo
+7. Recargar wizard en navegador: http://localhost:8080/pages/wizard_example.html
+8. Ejecutar Test 1 del plan de testing (ver arriba)
+9. Reportar si el bug está arreglado
+
+**Archivos de referencia:**
+- Bug está en: `/home/aframirez1772/dev_genesys_laboral_medicine/client/src/components/wizard/diagnosticoSteps.js`
+- Documentación: `/home/aframirez1772/dev_genesys_laboral_medicine/BUGS_ARREGLADOS_WIZARD.md`
+- Este archivo: `/home/aframirez1772/dev_genesys_laboral_medicine/WIZARD_STATUS.md`
+
+**Comando para verificar el servidor:**
 ```bash
-npm run dev
+# Verificar que el dev server esté corriendo
+lsof -ti:8080 && echo "✅ OK" || npm run dev
 ```
 
-### 2. **Abrir Wizard**
-Navegar a: `http://localhost:8080/pages/wizard_example.html`
-
-### 3. **Flujo de Prueba**
-1. Click "Siguiente" en bienvenida
-2. Llenar datos de empresa (cualquier dato)
-3. Seleccionar número de cargos (ej: 2)
-4. **Cargo 1:**
-   - Nombre: "Operario de producción"
-   - Área: "Producción"
-   - Zona: "Planta 1"
-   - Trabajadores: 10
-   - Descripción: "Opera máquinas de corte y realiza inspección de calidad"
-   - Toggles: Marcar "Tareas Rutinarias"
-   - GES: Seleccionar "Riesgo Mecánico - Posibilidad de corte"
-   - Controles + Niveles:
-     - Controles: Usar sugerencias de IA o escribir manualmente
-     - ND: Seleccionar nivel (ej: Alto = 6)
-     - NE: Seleccionar nivel (ej: Frecuente = 3)
-     - NC: Seleccionar nivel (ej: Grave = 25)
-     - **Ver calculadora actualizarse en tiempo real**
-5. **Cargo 2:** Repetir proceso
-6. **Revisión:** Ver resumen completo
-
-### 4. **Verificar**
-- ✅ Animaciones suaves
-- ✅ Barra de progreso actualizada
-- ✅ Calculadora muestra NP y NR correctamente
-- ✅ Datos se guardan en localStorage
-- ✅ Botón "Atrás" funciona
-- ✅ Validaciones muestran errores
-
----
-
-## 🔗 INTEGRACIÓN CON BACKEND
-
-### Endpoint de Destino
+**Logs importantes a verificar en consola:**
 ```javascript
-POST /api/flujo-ia/registrar-y-generar
+// Debe mostrar los valores guardados, NO undefined:
+📦 Data received: {nd: '0', ne: '1', nc: '10', fuente: '...', ...}
+
+// NO debe mostrar esto:
+📦 Data received: {}  ← ESTO INDICA QUE HAY UN PROBLEMA
 ```
 
-### Estructura de Salida
-El wizard genera un objeto con la siguiente estructura:
+**Después del fix, verificar:**
+- ✅ Cada riesgo mantiene sus propios valores de ND/NE/NC
+- ✅ Los controles (textareas) no se pre-llenan con datos de otros riesgos
+- ✅ Al regresar a un riesgo anterior, aparecen los valores originales
+- ✅ Los checkmarks se restauran correctamente
 
-```javascript
-{
-  empresa: {
-    nombre: string,
-    nit: string,
-    sector: string,
-    ciudad: string
-  },
-  cargos: [
-    {
-      cargoName: string,
-      area: string,
-      zona: string,
-      numTrabajadores: number,
-      descripcionTareas: string,
-      tareasRutinarias: boolean,
-      manipulaAlimentos: boolean,
-      trabajaAlturas: boolean,
-      trabajaEspaciosConfinados: boolean,
-      conduceVehiculo: boolean,
-      gesSeleccionados: [
-        {
-          riesgo: string,      // Ej: "Mecánico"
-          ges: string,         // Ej: "Posibilidad de corte"
-          controles: {
-            fuente: string,
-            medio: string,
-            individuo: string
-          },
-          niveles: {
-            deficiencia: { value: number },    // ND: 0, 2, 6, 10
-            exposicion: { value: number },     // NE: 1, 2, 3, 4
-            consecuencia: { value: number }    // NC: 10, 25, 60, 100
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-
-**Compatibilidad:** ✅ **100% compatible** con el formulario actual de matriz de riesgos.
+**Si el bug persiste después del cambio:**
+Es posible que `this.data['controles-X-Y']` no se esté guardando correctamente. Verificar en `Wizard.js` línea ~70 que `this.data[stepId] = stepData` se ejecuta correctamente.
 
 ---
 
-## 📝 PRÓXIMOS PASOS
+## 📊 RESUMEN ESTADO ACTUAL
 
-### Prioridad Alta
-1. **Probar wizard completo** con datos reales
-2. **Verificar** que genera documentos correctamente
-3. **Corregir** cualquier bug encontrado
+**Funcionalidades Completadas (95%):**
+- ✅ Arquitectura completa del wizard
+- ✅ Navegación entre pasos con validación
+- ✅ Calculadora GTC 45 en tiempo real
+- ✅ Barras semaforizadas de niveles
+- ✅ Sugerencias de IA para controles
+- ✅ Auto-guardado en localStorage
+- ✅ Barra de progreso
+- ✅ Persistencia al refrescar página
+- ✅ Checkmarks visuales (arreglados en esta sesión)
+- ✅ Tooltips funcionales (arreglados en esta sesión)
 
-### Prioridad Media
-4. Implementar endpoints IA opcionales (detect-similar-cargo, etc.)
-5. Mejorar mensajes de error
-6. Añadir más animaciones
+**Bugs Críticos Pendientes:**
+- ❌ Radio buttons se comparten entre riesgos (SOLUCIÓN IDENTIFICADA)
+- ⚠️ Chips de IA no siempre persisten al navegar atrás (necesita re-testing post-fix)
 
-### Prioridad Baja
-7. Documentación de usuario
-8. Tutorial integrado (opcional)
-9. Analytics/tracking de uso
-
----
-
-## 🎉 CONCLUSIÓN
-
-El wizard está **95% completado y funcionaly. Las características principales están implementadas:
-
-✅ **Funcional**: Recoge todos los datos necesarios
-✅ **Intuitivo**: UX conversacional tipo Typeform
-✅ **Inteligente**: Sugerencias de IA integradas
-✅ **Visual**: Barras semaforizadas y calculadora en tiempo real
-✅ **Compatible**: Estructura de datos idéntica al formulario actual
-
-**El wizard está listo para testing y ajustes finales.**
+**Próximo milestone:**
+Una vez arreglado el bug de radio buttons, el wizard estará **100% funcional** y listo para integración con el endpoint `/api/flujo-ia/registrar-y-generar`.
 
 ---
 
-**Implementado por:** Sistema Experto UI/UX
-**Versión:** 1.0 - Beta
-**Última actualización:** 3 de Noviembre de 2025
+**Última actualización:** 3 de Noviembre de 2025, 23:45
+**Implementado por:** Claude Code (Sesiones múltiples)
+**Versión:** 1.1 - Con bugs críticos identificados y solución propuesta

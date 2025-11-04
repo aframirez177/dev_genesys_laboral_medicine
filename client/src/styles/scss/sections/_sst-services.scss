@@ -1,3 +1,7 @@
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 .sst-services {
     padding: 0 5vw;
     background-color: #e6f0e1;
@@ -28,10 +32,10 @@
 
         h3 {
         font-size: 2.4rem;
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-weight: 800;
         margin-bottom: 1rem;
-        color: map-get($colors, "text");
+        color: map.get(variables.$colors, "text");
         line-height: 1.2;
         width: 60vw;
         max-width: 450px;
@@ -47,7 +51,7 @@
         }
 
         .cta-button {
-        background-color: map-get($colors, "primary");
+        background-color: map.get(variables.$colors, "primary");
         color: white;
         border: none;
         padding: 0.5rem 1rem;
@@ -58,13 +62,13 @@
         margin: 0 1rem;
 
         &:hover {
-            background-color: map-get($colors, "secondary");
+            background-color: map.get(variables.$colors, "secondary");
         }
         }
 
         @for $i from 1 through 6 {
             &:nth-child(#{$i}) {
-            background-color: map-get($aux-colors, $i);
+            background-color: map.get(variables.$aux-colors, $i);
             @if $i % 2 == 0 {
             text-align: right;
             justify-content: right;
@@ -85,7 +89,7 @@
         }
     }
 
-    @include respond-to("tablet") {
+    @include mixins.respond-to("tablet") {
         .service-grid {
         flex-wrap: wrap;
         }

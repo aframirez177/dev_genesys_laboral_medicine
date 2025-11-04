@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "../base/variables";
+
 
 .visually-hidden {
     position: absolute !important;
@@ -49,8 +52,8 @@
     text-align: center;
 
     .spinner {
-        border: 8px solid map-get($colors, "background"); // Acceso directo a $colors
-        border-top: 8px solid map-get($colors, "primary"); // Acceso directo a $colors
+        border: 8px solid map.get(variables.$colors, "background"); // Acceso directo a $colors
+        border-top: 8px solid map.get(variables.$colors, "primary"); // Acceso directo a $colors
         border-radius: 50%;
         width: 60px;
         height: 60px;
@@ -60,7 +63,7 @@
 
     p {
         font-size: 1.6rem;
-        color: map-get($colors, "secondary"); // Acceso directo a $colors
+        color: map.get(variables.$colors, "secondary"); // Acceso directo a $colors
     }
 }
 

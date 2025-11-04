@@ -1,8 +1,11 @@
+@use "sass:map";
+@use "../base/variables";
+
 .site-footer {
     background-color: #5c8578;
-    color: map-get($colors, "background");
+    color: map.get(variables.$colors, "background");
     padding: 3rem 1rem;
-    font-family: map-get($fonts, "body");
+    font-family: map.get(variables.$fonts, "body");
 
     .footer-content {
         display: grid;
@@ -23,8 +26,8 @@
         margin: 0;
 
         h3 {
-        color: map-get($colors, "primary");
-        font-family: map-get($fonts, "title");
+        color: map.get(variables.$colors, "primary");
+        font-family: map.get(variables.$fonts, "title");
         font-size: 1.2rem;
         margin-bottom: 1rem;
         }
@@ -37,12 +40,12 @@
             margin-bottom: 0.5rem;
 
             a {
-            color: map-get($colors, "background");
+            color: map.get(variables.$colors, "background");
             text-decoration: none;
             transition: color 0.3s ease;
 
             &:hover {
-                color: map-get($colors, "primary");
+                color: map.get(variables.$colors, "primary");
             }
             }
         }
@@ -71,12 +74,12 @@
 
         h3,
         h4 {
-        color: map-get($colors, "primary");
+        color: map.get(variables.$colors, "primary");
         margin: 0rem 0;
         }
 
         a {
-        color: map-get($colors, "background");
+        color: map.get(variables.$colors, "background");
         }
     }
 
@@ -90,7 +93,7 @@
 
         a {
         font-weight: 800;
-        color: map-get($colors, "alternative");
+        color: map.get(variables.$colors, "alternative");
         }
     }
 

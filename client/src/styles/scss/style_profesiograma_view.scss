@@ -1,24 +1,26 @@
 // Style for Profesiograma Viewer Page
 // Based on Figma design with Genesys branding
 
-@import './base/variables';
-@import './base/typography';
-@import './base/mixins';
+@use "sass:color";
+@use "sass:map";
+@use 'base/variables';
+@use 'base/typography';
+@use 'base/mixins';
 
 // ==========================================
 // VARIABLES ESPECÍFICAS
 // ==========================================
 
-$primary: map-get($colors, 'primary');           // #5dc4af - Verde agua
-$secondary: map-get($colors, 'secondary');       // #383d47 - Gris oscuro
-$text: map-get($colors, 'text');                 // #2d3238
-$background: map-get($colors, 'background');     // #f3f0f0
-$success: map-get($colors, 'success');           // #4caf50
-$warning: map-get($colors, 'warning');           // #ffeb3b
-$danger: map-get($colors, 'danger');             // #f44336
+$primary: map.get(variables.$colors, 'primary');           // #5dc4af - Verde agua
+$secondary: map.get(variables.$colors, 'secondary');       // #383d47 - Gris oscuro
+$text: map.get(variables.$colors, 'text');                 // #2d3238
+$background: map.get(variables.$colors, 'background');     // #f3f0f0
+$success: map.get(variables.$colors, 'success');           // #4caf50
+$warning: map.get(variables.$colors, 'warning');           // #ffeb3b
+$danger: map.get(variables.$colors, 'danger');             // #f44336
 
-$font-title: map-get($fonts, 'title');
-$font-body: map-get($fonts, 'body');
+$font-title: map.get(variables.$fonts, 'title');
+$font-body: map.get(variables.$fonts, 'body');
 
 $spacing-xs: 0.4rem;
 $spacing-sm: 0.8rem;
@@ -173,7 +175,7 @@ body {
     color: white;
 
     &:hover:not(:disabled) {
-        background-color: darken($primary, 8%);
+        background-color: color.adjust($primary, $lightness: -8%);
         transform: translateY(-0.2rem);
         box-shadow: $shadow-md;
     }
@@ -1147,7 +1149,7 @@ body {
 // RESPONSIVE DESIGN
 // ==========================================
 
-@media (max-width: map-get($breakpoints, 'tablet')) {
+@media (max-width: map.get(variables.$breakpoints, 'tablet')) {
     .nav-container {
         flex-direction: column;
         gap: $spacing-md;
@@ -1179,7 +1181,7 @@ body {
     }
 }
 
-@media (max-width: map-get($breakpoints, 'mobile')) {
+@media (max-width: map.get(variables.$breakpoints, 'mobile')) {
     .nav-title {
         font-size: 1.4rem;
     }
@@ -1270,7 +1272,7 @@ body {
 .cargo-numero {
     flex-shrink: 0;
     padding: $spacing-md $spacing-lg;
-    background: linear-gradient(135deg, $primary 0%, darken($primary, 10%) 100%);
+    background: linear-gradient(135deg, $primary 0%, color.adjust($primary, $lightness: -10%) 100%);
     color: white;
     font-family: $font-title;
     font-size: 1.6rem;

@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "../base/variables";
+
 // ===================================================================
 // INSTRUCCIONES DE CALCULADORA - Acordeón Colapsable
 // Sistema moderno de instrucciones con progressive disclosure
@@ -5,7 +8,7 @@
 
 .calculator-main-section {
     padding: 4rem 2rem;
-    background: map-get($colors, "background-alternative");
+    background: map.get(variables.$colors, "background-alternative");
 }
 
 .calculator-wrapper {
@@ -20,18 +23,18 @@
     text-align: center;
     
     h2 {
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-size: clamp(2.4rem, 4vw, 3.2rem);
-        color: map-get($colors, "secondary");
+        color: map.get(variables.$colors, "secondary");
         margin-bottom: 1rem;
         font-weight: 700;
         line-height: 1.3;
     }
     
     .calculator-intro-text {
-        font-family: map-get($fonts, "body");
+        font-family: map.get(variables.$fonts, "body");
         font-size: 1.6rem;
-        color: map-get($colors, "text");
+        color: map.get(variables.$colors, "text");
         line-height: 1.6;
         margin-bottom: 2rem;
     }
@@ -40,7 +43,7 @@
 // Contenedor del acordeón
 .calculator-instructions-toggle {
     background: #ffffff;
-    border: 2px solid map-get($colors, "border-color");
+    border: 2px solid map.get(variables.$colors, "border-color");
     border-radius: 12px;
     overflow: hidden;
     margin: 2rem auto;
@@ -48,11 +51,11 @@
     transition: all 0.3s ease;
     
     &:hover {
-        border-color: rgba(map-get($colors, "primary"), 0.5);
+        border-color: rgba(map.get(variables.$colors, "primary"), 0.5);
     }
     
     &.expanded {
-        border-color: map-get($colors, "primary");
+        border-color: map.get(variables.$colors, "primary");
     }
 }
 
@@ -66,18 +69,18 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    font-family: map-get($fonts, "title");
+    font-family: map.get(variables.$fonts, "title");
     font-size: 1.6rem;
     font-weight: 600;
-    color: map-get($colors, "secondary");
+    color: map.get(variables.$colors, "secondary");
     transition: all 0.3s ease;
     
     &:hover {
-        background: rgba(map-get($colors, "primary"), 0.03);
+        background: rgba(map.get(variables.$colors, "primary"), 0.03);
     }
     
     .info-icon {
-        color: map-get($colors, "primary");
+        color: map.get(variables.$colors, "primary");
         flex-shrink: 0;
     }
     
@@ -87,7 +90,7 @@
     }
     
     .chevron-icon {
-        color: map-get($colors, "primary");
+        color: map.get(variables.$colors, "primary");
         transition: transform 0.3s ease;
         flex-shrink: 0;
     }
@@ -106,8 +109,8 @@
     &.visible {
         max-height: 1000px;
         padding: 2rem;
-        border-top: 1px solid map-get($colors, "border-color");
-        background: rgba(map-get($colors, "background-alternative"), 0.3);
+        border-top: 1px solid map.get(variables.$colors, "border-color");
+        background: rgba(map.get(variables.$colors, "background-alternative"), 0.3);
     }
 }
 
@@ -127,34 +130,34 @@
     .step-number {
         width: 40px;
         height: 40px;
-        background: map-get($colors, "primary");
+        background: map.get(variables.$colors, "primary");
         color: #ffffff;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-weight: 700;
         font-size: 1.8rem;
         flex-shrink: 0;
-        box-shadow: 0 2px 8px rgba(map-get($colors, "primary"), 0.3);
+        box-shadow: 0 2px 8px rgba(map.get(variables.$colors, "primary"), 0.3);
     }
     
     .step-content {
         flex: 1;
         
         h4 {
-            font-family: map-get($fonts, "title");
+            font-family: map.get(variables.$fonts, "title");
             font-size: 1.6rem;
-            color: map-get($colors, "secondary");
+            color: map.get(variables.$colors, "secondary");
             margin: 0 0 0.5rem 0;
             font-weight: 600;
         }
         
         p {
-            font-family: map-get($fonts, "body");
+            font-family: map.get(variables.$fonts, "body");
             font-size: 1.4rem;
-            color: map-get($colors, "text");
+            color: map.get(variables.$colors, "text");
             line-height: 1.6;
             margin: 0;
         }
@@ -169,19 +172,19 @@
     padding: 1.5rem;
     background: #ffffff;
     border-radius: 8px;
-    border-left: 3px solid map-get($colors, "primary");
+    border-left: 3px solid map.get(variables.$colors, "primary");
 }
 
 .instruction-benefit {
     display: flex;
     align-items: center;
     gap: 1rem;
-    font-family: map-get($fonts, "body");
+    font-family: map.get(variables.$fonts, "body");
     font-size: 1.4rem;
-    color: map-get($colors, "text");
+    color: map.get(variables.$colors, "text");
     
     svg {
-        color: map-get($colors, "primary");
+        color: map.get(variables.$colors, "primary");
         flex-shrink: 0;
     }
 }

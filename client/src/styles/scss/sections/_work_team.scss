@@ -1,3 +1,7 @@
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 .descripcion-equipo-de-trabajo {
   display: flex;
   flex-wrap: wrap;
@@ -29,7 +33,7 @@
       object-fit: cover;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-    @include respond-to("tablet") {
+    @include mixins.respond-to("tablet") {
       .image-content {
           width: 200px;
           height: 200px;
@@ -43,9 +47,9 @@
 
     .text-container {
       h2 {
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-size: 3.2rem;
-        color: map-get($colors, "secondary");
+        color: map.get(variables.$colors, "secondary");
         font-weight: 800;
         margin: 0 0 1rem 0;
       }

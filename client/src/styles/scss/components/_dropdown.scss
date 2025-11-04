@@ -1,3 +1,7 @@
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 .dropdown {
     position: relative;
     display: inline-block;
@@ -6,9 +10,9 @@
     .dropdown-toggle {
         background: none;
         border: none;
-        font-family: map-get($fonts, "body");
+        font-family: map.get(variables.$fonts, "body");
         font-size: 1.4rem;
-        color: map-get($colors, "secondary");
+        color: map.get(variables.$colors, "secondary");
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -42,7 +46,7 @@
     left: 0;
     right: 0;
     top: 12rem;
-    background-color: map-get($colors, "background");
+    background-color: map.get(variables.$colors, "background");
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     padding: 2rem 0;
@@ -85,22 +89,22 @@
     }
     
     a {
-        color: map-get($colors, "secondary");
+        color: map.get(variables.$colors, "secondary");
         text-decoration: none;
         display: block;
         transition: 0.2s;
         border-radius: 4px;
 
         &:hover {
-            color: map-get($colors, "primary");
+            color: map.get(variables.$colors, "primary");
             font-weight: 800;
-            background-color: rgba(map-get($colors, "primary"), 0.1);
+            background-color: rgba(map.get(variables.$colors, "primary"), 0.1);
         }
         }
     }
 }
 
-@include respond-to("mobile") {
+@include mixins.respond-to("mobile") {
     .dropdown-menu {
         position: static;
         box-shadow: none;

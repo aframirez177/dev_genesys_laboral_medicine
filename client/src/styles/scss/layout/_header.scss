@@ -1,3 +1,7 @@
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 /* Encabezado */
 header {
     background-color: transparent;
@@ -9,14 +13,14 @@ header {
     align-items: center;
     z-index: 10;
     padding: 2rem;
-    @include respond-to("tablet") {
+    @include mixins.respond-to("tablet") {
         padding: 3rem 8rem;
     }
     .logo {
         width: 150px;
         height: auto;
         margin: 1.16%;
-        @include respond-to("mobile") {
+        @include mixins.respond-to("mobile") {
             margin-left: 2rem;
             }
     }
@@ -30,7 +34,7 @@ header {
     
     .screen-menu {
         display: none;
-        @include respond-to("tablet") {
+        @include mixins.respond-to("tablet") {
         display: flex;
         gap: 2rem;
         }
@@ -53,7 +57,7 @@ header {
         top: 4rem;
         right: 70px;
         z-index: 11;
-        @include respond-to("tablet") {
+        @include mixins.respond-to("tablet") {
         display: none;
         }
     }
@@ -107,9 +111,9 @@ header {
     .dropdown-toggle {
         background: none;
         border: none;
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-size: 1.7rem;
-        color: map-get($colors,"secondary" );
+        color: map.get(variables.$colors,"secondary" );
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -181,7 +185,7 @@ header {
         height: 2rem;
 
         a {
-        color: map-get($colors,"secondary" );
+        color: map.get(variables.$colors,"secondary" );
         text-decoration: none;
         display: block;
         padding: 0.5rem 1rem;
@@ -189,15 +193,15 @@ header {
         border-radius: 4px;
 
         &:hover {
-            color: map-get($colors,"primary");
+            color: map.get(variables.$colors,"primary");
             font-weight: 800;
-            background-color: map-get($colors,"primary", 0.1);
+            background-color: map.get(variables.$colors,"primary", 0.1);
         }
         }
     }
     }
 
-    @include respond-to ("mobile") {
+    @include mixins.respond-to ("mobile") {
     .dropdown-menu {
         box-shadow: none;
         padding: 1rem 0;
@@ -246,10 +250,10 @@ header {
             .mobile-services-toggle {
                 width: 100%;
                 padding: 1rem;
-                font-family: map-get($fonts, "body");
+                font-family: map.get(variables.$fonts, "body");
                 font-size: 1.4rem;
                 font-weight: 500;
-                color: map-get($colors, "secondary");
+                color: map.get(variables.$colors, "secondary");
                 background: none;
                 border: none;
                 text-align: center;
@@ -257,7 +261,7 @@ header {
                 transition: 0.2s;
 
                 &:hover {
-                    color: map-get($colors, "primary");
+                    color: map.get(variables.$colors, "primary");
                     font-weight: 800;
                 }
             }
@@ -288,7 +292,7 @@ header {
 
                     a {
                         top: 10px;
-                        color: map-get($colors, "secondary");
+                        color: map.get(variables.$colors, "secondary");
                         text-decoration: none;
                         font-size: 1.2rem;
                         transition: 0.2s;
@@ -297,7 +301,7 @@ header {
                         padding-bottom: 1.6rem;                        
                         
                         &:hover {
-                            color: map-get($colors, "primary");
+                            color: map.get(variables.$colors, "primary");
                         }
                     }
                 }

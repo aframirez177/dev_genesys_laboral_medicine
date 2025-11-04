@@ -1,7 +1,9 @@
+@use "sass:color";
+@use "sass:map";
 @use "variables" as vars;
 
 @mixin respond-to($breakpoint) {
-    $value: map-get(vars.$breakpoints, $breakpoint);
+    $value: map.get(vars.$breakpoints, $breakpoint);
 
     @if $value != null {
         @media screen and (min-width: $value) {
@@ -47,7 +49,7 @@
             font-size: 1.8rem;
             transition: background-color 0.3s ease;
             &:hover {
-            background-color: darken(map-get($colors, 'primary'), 10%);
+            background-color: color.adjust(map.get(vars.$colors, 'primary'), $lightness: -10%);
             }
         }
 
@@ -60,13 +62,13 @@
             font-size: 1.6rem; // Tamaño de fuente más pequeño
             font-weight: 800;
             transition: background-color 0.3s ease;
-            color: map-get($colors, 'secondary' );
+            color: map.get(vars.$colors, 'secondary' );
             box-shadow:  0 2px 5px rgba(0, 0, 0, 0.3);
             width: 3rem;
             height: 3rem;
         
             &:hover {
-                background-color: darken(map-get($colors, 'primary'), 10%);
+                background-color: color.adjust(map.get(vars.$colors, 'primary'), $lightness: -10%);
             }
         }
         

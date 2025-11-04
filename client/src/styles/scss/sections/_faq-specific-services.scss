@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "../base/variables";
+
 // Clase para primera pregunta con imagen 
 
 .faq-pregunta-mas-imagen {
@@ -30,9 +33,9 @@
       max-width: 500px;
       .text-container {
           h2 {
-              font-family: map-get($fonts, "title");
+              font-family: map.get(variables.$fonts, "title");
               font-size: 3.1rem;
-              color: map-get($colors, "secondary");
+              color: map.get(variables.$colors, "secondary");
               font-weight: 800;
               margin: 1rem; // Margen inferior para separar del párrafo
           }

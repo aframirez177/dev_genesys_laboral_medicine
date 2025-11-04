@@ -1,3 +1,7 @@
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 // Estilos específicos para la página "Nosotros"
 .nosotros-cards {
   padding: 0;
@@ -35,13 +39,13 @@
 
     // Asignación de colores y alineación:
     &:nth-child(1) {
-      background-color: map-get($aux-colors, 2);
+      background-color: map.get(variables.$aux-colors, 2);
       width: 100%;
 
       h3 {
         text-align: left; // Título a la izquierda
         margin-right: auto; // Refuerza alineación
-        color: map-get($colors, "text");
+        color: map.get(variables.$colors, "text");
       }
 
       p {
@@ -51,29 +55,29 @@
       }
     }
     &:nth-child(2) {
-      background-color: map-get($aux-colors, 7);
+      background-color: map.get(variables.$aux-colors, 7);
       width: 100%;
 
       h3 {
         text-align: right; // Título a la derecha
         margin-left: auto; // Refuerza alineación
-        color: map-get($colors, "text");
+        color: map.get(variables.$colors, "text");
       }
 
       p {
         text-align: right; // Texto alineado a la derecha
         margin-left: auto; // Empuja a la derecha
         margin-right: 0; // Elimina margen automático
-        color: map-get($colors, "text");
+        color: map.get(variables.$colors, "text");
       }
     }
     &:nth-child(3) {
-      background-color: map-get($aux-colors, 8);
+      background-color: map.get(variables.$aux-colors, 8);
       min-width: 100%;
       max-width: 100%;
 
       h3 {
-        color: map-get($colors, "text-light");
+        color: map.get(variables.$colors, "text-light");
         margin-bottom: 1.6rem;
       }
       p {
@@ -87,7 +91,7 @@
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
   }
-  @include respond-to("tablet") {
+  @include mixins.respond-to("tablet") {
     .service-grid {
       flex-wrap: wrap;
     }

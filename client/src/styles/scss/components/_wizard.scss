@@ -3,8 +3,10 @@
 // Inspirado en Typeform/Cal.com
 // =================================================================
 
-@import '../base/variables';
-@import '../base/mixins';
+@use "sass:color";
+@use "sass:map";
+@use '../base/variables';
+@use '../base/mixins';
 
 // Container principal
 .wizard-container {
@@ -12,8 +14,8 @@
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg,
-    map-get($colors, 'background') 0%,
-    lighten(map-get($colors, 'background'), 2%) 100%);
+    map.get(variables.$colors, 'background') 0%,
+    color.adjust(map.get(variables.$colors, 'background'), $lightness: 2%) 100%);
   padding: 0;
   position: relative;
   overflow: hidden;
@@ -32,8 +34,8 @@
   .wizard-progress-bar {
     height: 4px;
     background: linear-gradient(90deg,
-      map-get($colors, 'primary'),
-      map-get($colors, 'alternative'));
+      map.get(variables.$colors, 'primary'),
+      map.get(variables.$colors, 'alternative'));
     transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -44,7 +46,7 @@
     gap: 2rem;
     padding: 1.5rem 2rem;
 
-    @include respond-to('mobile') {
+    @include mixins.respond-to('mobile') {
       gap: 1rem;
       padding: 1rem;
     }
@@ -59,30 +61,30 @@
     justify-content: center;
     font-size: 1.4rem;
     font-weight: 600;
-    background: map-get($colors, 'background');
-    color: map-get($colors, 'text');
+    background: map.get(variables.$colors, 'background');
+    color: map.get(variables.$colors, 'text');
     border: 2px solid #e0e0e0;
     transition: all 0.3s ease;
     cursor: default;
 
-    @include respond-to('mobile') {
+    @include mixins.respond-to('mobile') {
       width: 30px;
       height: 30px;
       font-size: 1.2rem;
     }
 
     &.active {
-      background: map-get($colors, 'primary');
+      background: map.get(variables.$colors, 'primary');
       color: white;
-      border-color: map-get($colors, 'primary');
-      box-shadow: 0 0 0 4px rgba(map-get($colors, 'primary'), 0.2);
+      border-color: map.get(variables.$colors, 'primary');
+      box-shadow: 0 0 0 4px rgba(map.get(variables.$colors, 'primary'), 0.2);
       transform: scale(1.1);
     }
 
     &.completed {
-      background: lighten(map-get($colors, 'primary'), 10%);
+      background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 10%);
       color: white;
-      border-color: lighten(map-get($colors, 'primary'), 10%);
+      border-color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 10%);
       cursor: pointer;
 
       &:hover {
@@ -103,12 +105,12 @@
   overflow-y: auto;
   max-height: calc(100vh - 20rem);
 
-  @include respond-to('tablet') {
+  @include mixins.respond-to('tablet') {
     padding: 10rem 3rem 16rem;
     max-height: calc(100vh - 18rem);
   }
 
-  @include respond-to('mobile') {
+  @include mixins.respond-to('mobile') {
     padding: 8rem 1.5rem 14rem;
     max-height: calc(100vh - 16rem);
   }
@@ -121,14 +123,14 @@
   animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 
   h2, h3 {
-    font-family: map-get($fonts, 'title');
+    font-family: map.get(variables.$fonts, 'title');
     font-size: clamp(2.4rem, 4vw, 4.2rem);
     line-height: 1.2;
     margin-bottom: 2rem;
-    color: map-get($colors, 'secondary');
+    color: map.get(variables.$colors, 'secondary');
     font-weight: 700;
 
-    @include respond-to('mobile') {
+    @include mixins.respond-to('mobile') {
       font-size: 2.4rem;
     }
   }
@@ -136,7 +138,7 @@
   p {
     font-size: clamp(1.4rem, 2vw, 1.8rem);
     line-height: 1.6;
-    color: lighten(map-get($colors, 'text'), 10%);
+    color: color.adjust(map.get(variables.$colors, 'text'), $lightness: 10%);
     margin-bottom: 3rem;
   }
 
@@ -150,8 +152,8 @@
     border: none;
     border-bottom: 3px solid #e0e0e0;
     background: transparent;
-    font-family: map-get($fonts, 'body');
-    color: map-get($colors, 'secondary');
+    font-family: map.get(variables.$fonts, 'body');
+    color: map.get(variables.$colors, 'secondary');
     transition: all 0.3s ease;
     outline: none;
 
@@ -160,8 +162,8 @@
     }
 
     &:focus {
-      border-bottom-color: map-get($colors, 'primary');
-      background: rgba(map-get($colors, 'primary'), 0.02);
+      border-bottom-color: map.get(variables.$colors, 'primary');
+      background: rgba(map.get(variables.$colors, 'primary'), 0.02);
     }
 
     &:disabled {
@@ -178,7 +180,7 @@
     padding: 1.5rem;
 
     &:focus {
-      border-color: map-get($colors, 'primary');
+      border-color: map.get(variables.$colors, 'primary');
     }
   }
 
@@ -189,11 +191,11 @@
     gap: 0.8rem;
     margin-top: 1rem;
     padding: 1rem 1.5rem;
-    background: rgba(map-get($colors, 'primary'), 0.05);
-    border-left: 3px solid map-get($colors, 'primary');
+    background: rgba(map.get(variables.$colors, 'primary'), 0.05);
+    border-left: 3px solid map.get(variables.$colors, 'primary');
     border-radius: 4px;
     font-size: 1.4rem;
-    color: darken(map-get($colors, 'primary'), 10%);
+    color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%);
 
     svg {
       flex-shrink: 0;
@@ -206,7 +208,7 @@
     gap: 1.5rem;
     margin-top: 2rem;
 
-    @include respond-to('mobile') {
+    @include mixins.respond-to('mobile') {
       grid-template-columns: 1fr;
     }
   }
@@ -221,15 +223,15 @@
     text-align: center;
 
     &:hover {
-      border-color: map-get($colors, 'primary');
+      border-color: map.get(variables.$colors, 'primary');
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     &.selected {
-      border-color: map-get($colors, 'primary');
-      background: rgba(map-get($colors, 'primary'), 0.05);
-      box-shadow: 0 0 0 3px rgba(map-get($colors, 'primary'), 0.1);
+      border-color: map.get(variables.$colors, 'primary');
+      background: rgba(map.get(variables.$colors, 'primary'), 0.05);
+      box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'primary'), 0.1);
     }
 
     .option-icon {
@@ -240,12 +242,12 @@
     .option-label {
       font-size: 1.6rem;
       font-weight: 600;
-      color: map-get($colors, 'secondary');
+      color: map.get(variables.$colors, 'secondary');
     }
 
     .option-description {
       font-size: 1.3rem;
-      color: lighten(map-get($colors, 'text'), 20%);
+      color: color.adjust(map.get(variables.$colors, 'text'), $lightness: 20%);
       margin-top: 0.5rem;
     }
   }
@@ -266,7 +268,7 @@
   gap: 1.5rem;
   z-index: 999;
 
-  @include respond-to('mobile') {
+  @include mixins.respond-to('mobile') {
     padding: 1.5rem;
   }
 }
@@ -279,12 +281,12 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: map-get($fonts, 'body');
+  font-family: map.get(variables.$fonts, 'body');
   display: flex;
   align-items: center;
   gap: 0.8rem;
 
-  @include respond-to('mobile') {
+  @include mixins.respond-to('mobile') {
     padding: 1.2rem 2rem;
     font-size: 1.4rem;
   }
@@ -296,22 +298,22 @@
 
   &.wizard-btn-back {
     background: transparent;
-    color: map-get($colors, 'text');
+    color: map.get(variables.$colors, 'text');
 
     &:hover:not(:disabled) {
-      background: map-get($colors, 'background');
+      background: map.get(variables.$colors, 'background');
     }
   }
 
   &.wizard-btn-next {
-    background: map-get($colors, 'primary');
+    background: map.get(variables.$colors, 'primary');
     color: white;
     margin-left: auto;
-    box-shadow: 0 4px 12px rgba(map-get($colors, 'primary'), 0.3);
+    box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.3);
 
     &:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(map-get($colors, 'primary'), 0.4);
+      box-shadow: 0 6px 20px rgba(map.get(variables.$colors, 'primary'), 0.4);
     }
 
     &:active:not(:disabled) {
@@ -361,15 +363,15 @@
   .wizard-spinner {
     width: 60px;
     height: 60px;
-    border: 4px solid map-get($colors, 'background');
-    border-top-color: map-get($colors, 'primary');
+    border: 4px solid map.get(variables.$colors, 'background');
+    border-top-color: map.get(variables.$colors, 'primary');
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
 
   p {
     font-size: 1.8rem;
-    color: map-get($colors, 'text');
+    color: map.get(variables.$colors, 'text');
     font-weight: 500;
   }
 }
@@ -465,7 +467,7 @@
 // =================================================================
 
 .green {
-  color: map-get($colors, 'primary') !important;
+  color: map.get(variables.$colors, 'primary') !important;
   font-weight: 800 !important;
 }
 
@@ -477,15 +479,15 @@
   margin-top: 2rem;
   padding: 2rem;
   background: linear-gradient(135deg,
-    rgba(map-get($colors, 'primary'), 0.05),
-    rgba(map-get($colors, 'alternative'), 0.05));
+    rgba(map.get(variables.$colors, 'primary'), 0.05),
+    rgba(map.get(variables.$colors, 'alternative'), 0.05));
   border-radius: 12px;
-  border: 1px solid rgba(map-get($colors, 'primary'), 0.2);
+  border: 1px solid rgba(map.get(variables.$colors, 'primary'), 0.2);
 
   p {
     font-size: 1.5rem;
     font-weight: 600;
-    color: map-get($colors, 'secondary');
+    color: map.get(variables.$colors, 'secondary');
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
@@ -506,15 +508,15 @@
     font-size: 1.4rem;
 
     &:hover {
-      border-color: map-get($colors, 'primary');
+      border-color: map.get(variables.$colors, 'primary');
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     &.selected {
-      background: map-get($colors, 'primary');
+      background: map.get(variables.$colors, 'primary');
       color: white;
-      border-color: map-get($colors, 'primary');
+      border-color: map.get(variables.$colors, 'primary');
     }
 
     .confidence {
@@ -528,7 +530,7 @@
 // RESPONSIVE
 // =================================================================
 
-@include respond-to('mobile') {
+@include mixins.respond-to('mobile') {
   .wizard-progress .wizard-progress-steps {
     gap: 0.5rem;
   }

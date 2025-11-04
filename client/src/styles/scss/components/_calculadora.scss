@@ -1,3 +1,8 @@
+@use "sass:color";
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 // _calculator.scss
 .container {
     background-color: #eef7fd;
@@ -8,13 +13,13 @@
     height: 2rem;
     cursor: pointer;
     appearance: none;
-    border: 2px solid map-get($colors, "primary");
+    border: 2px solid map.get(variables.$colors, "primary");
     border-radius: 0.4rem;
     position: relative;
     transition: all 0.2s ease;
 
     &:checked {
-        background-color: map-get($colors, "primary");
+        background-color: map.get(variables.$colors, "primary");
 
         &::after {
             content: "✓";
@@ -33,7 +38,7 @@
     
     margin: 0 auto;
     padding-top: 2rem;
-    background-color: map-get($colors, "background-alternative");
+    background-color: map.get(variables.$colors, "background-alternative");
     
 
     &-header {
@@ -46,14 +51,14 @@
 
 
         h1 {
-            font-family: map-get($fonts, "title");
+            font-family: map.get(variables.$fonts, "title");
             font-size: 2.8rem;
-            color: map-get($colors, "secondary");
+            color: map.get(variables.$colors, "secondary");
             line-height: 1.3;
             text-align: left;
             margin: 5rem;
             
-            @include respond-to("tablet") {
+            @include mixins.respond-to("tablet") {
                 font-size: 2.8rem;
             }
         }
@@ -67,7 +72,7 @@
         gap: 3rem;
 
 
-        @include respond-to("tablet") {
+        @include mixins.respond-to("tablet") {
             flex-direction: row;
             align-items: self-start;
         }
@@ -120,7 +125,7 @@
         flex: 1;
         overflow: hidden;
         border-radius: 16px;
-        background: rgba(map-get($colors, "background"), 0.5);
+        background: rgba(map.get(variables.$colors, "background"), 0.5);
         padding: 1.5rem;
         min-height: 500px;
         position: relative;
@@ -146,7 +151,7 @@
         width: 56px;
         height: 56px;
         border-radius: 50%;
-        border: 3px solid map-get($colors, "primary");
+        border: 3px solid map.get(variables.$colors, "primary");
         background: white;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         
@@ -162,7 +167,7 @@
         svg {
             width: 28px;
             height: 28px;
-            color: map-get($colors, "primary");
+            color: map.get(variables.$colors, "primary");
         }
         
         &.prev {
@@ -176,7 +181,7 @@
         &:hover:not(:disabled) {
             transform: translateY(-50%) scale(1.15);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            background: map-get($colors, "primary");
+            background: map.get(variables.$colors, "primary");
             
             svg {
                 color: white;
@@ -197,7 +202,7 @@
                 background: white;
                 
                 svg {
-                    color: map-get($colors, "primary");
+                    color: map.get(variables.$colors, "primary");
                 }
             }
         }
@@ -224,7 +229,7 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: rgba(map-get($colors, "text"), 0.3);
+            background: rgba(map.get(variables.$colors, "text"), 0.3);
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
@@ -232,19 +237,19 @@
             &.active {
                 width: 28px;
                 border-radius: 5px;
-                background: map-get($colors, "primary");
-                border-color: map-get($colors, "primary");
+                background: map.get(variables.$colors, "primary");
+                border-color: map.get(variables.$colors, "primary");
             }
             
             &:hover:not(.active) {
-                background: rgba(map-get($colors, "text"), 0.6);
+                background: rgba(map.get(variables.$colors, "text"), 0.6);
                 transform: scale(1.2);
             }
         }
     }
 
     // Responsive
-    @include respond-to("tablet") {
+    @include mixins.respond-to("tablet") {
         .carousel-nav {
             width: 40px;
             height: 40px;
@@ -283,10 +288,10 @@
             height: 4.6rem;
             width: 100%;
             max-width: 320px;
-            color: map-get($colors, "secondary");
-            background-color: map-get($colors,"background");
+            color: map.get(variables.$colors, "secondary");
+            background-color: map.get(variables.$colors,"background");
             border-radius: 5rem;
-            border: solid 3px map-get($colors, "primary");
+            border: solid 3px map.get(variables.$colors, "primary");
     
             .cargo-name {
                 max-width: 17.2rem;
@@ -297,8 +302,8 @@
                 border: none;
                 border-radius: 1.5rem;
                 font-size: 1.2rem;
-                font-family: map-get($fonts, "title");
-                background-color: map-get($colors,"background");
+                font-family: map.get(variables.$fonts, "title");
+                background-color: map.get(variables.$colors,"background");
 
     
                 &:focus {
@@ -322,7 +327,7 @@
                     height: 3rem;
                     width: 5.7rem;
                     padding: 0.8rem;
-                    border: 1px solid map-get($colors, "input-border");
+                    border: 1px solid map.get(variables.$colors, "input-border");
                     border-radius: 1.2rem;
                     text-align: center;
                     font-size: 1.4rem;
@@ -349,7 +354,7 @@
                     padding: 0;
                     
                     &:hover {
-                        background-color: darken(#ff4444, 10%);
+                        background-color: color.adjust(#ff4444, $lightness: -10%);
                         transform: scale(1.1);
                     }
                     
@@ -365,9 +370,9 @@
     
             h4 {
                 font-size: 1.8rem;
-                color: map-get($colors, "secondary");
+                color: map.get(variables.$colors, "secondary");
                 margin-bottom: 0.5rem;
-                font-family: map-get($fonts, "title");
+                font-family: map.get(variables.$fonts, "title");
             }
     
             .exam-grid {
@@ -392,10 +397,10 @@
                     }
     
                     label {
-                        font-family: map-get($fonts, "body");
+                        font-family: map.get(variables.$fonts, "body");
                         font-size: 1.4rem;
                         font-weight: 600;
-                        color: map-get($colors, "secondary");
+                        color: map.get(variables.$colors, "secondary");
                     }
     
                     input[type="checkbox"] {
@@ -429,10 +434,10 @@
             }
 
             label {
-                font-family: map-get($fonts, "body");
+                font-family: map.get(variables.$fonts, "body");
                 font-size: 1.4rem;
                 font-weight: 600;
-                color: map-get($colors, "secondary");
+                color: map.get(variables.$colors, "secondary");
             }
 
             input[type="checkbox"] {
@@ -449,11 +454,11 @@
         padding: 2rem;
 
 
-        @include respond-to("tablet") {
+        @include mixins.respond-to("tablet") {
             position: sticky;
             top: 2rem;
             overflow-y: auto;
-            @include hide-scrollbar;
+            @include mixins.hide-scrollbar;
         }
 
         .exam-description {
@@ -461,14 +466,14 @@
 
             h3 {
                 font-size: 3.5rem;
-                color: map-get($colors, "secondary");
-                font-family: map-get($fonts, "title");
+                color: map.get(variables.$colors, "secondary");
+                font-family: map.get(variables.$fonts, "title");
                 margin-bottom: 1rem;
             }
 
             p {
                 font-size: 1.4rem;
-                color: map-get($colors, "text");
+                color: map.get(variables.$colors, "text");
                 line-height: 1.5;
             }
         }
@@ -483,14 +488,14 @@
             #examPrice{
                 text-align: right;
                 font-size: 1.6rem;
-                font-family: map-get($fonts, "title");
-                color: map-get($colors, "secondary");
+                font-family: map.get(variables.$fonts, "title");
+                color: map.get(variables.$colors, "secondary");
                 font-weight: 800;
             }
             .min-price{
                 font-size: 2.4rem;
-                font-family: map-get($fonts, "title");
-                color: map-get($colors, "primary");
+                font-family: map.get(variables.$fonts, "title");
+                color: map.get(variables.$colors, "primary");
                 font-weight: 800;
             }
         }
@@ -498,7 +503,7 @@
         .package-summary {
             .package-item {
                 text-align: right;
-                background-color: map-get($colors, "background");
+                background-color: map.get(variables.$colors, "background");
                 padding: 1.5rem;
                 margin-bottom: 1.5rem;
                 border-radius: 0.8rem;
@@ -511,7 +516,7 @@
                     max-width: 250px;
                     h4 {
                         font-size: 1.8rem;
-                        color: map-get($colors, "secondary");
+                        color: map.get(variables.$colors, "secondary");
                         margin-bottom: 1rem;
                         max-width: 25rem;
                         text-align: left;
@@ -520,7 +525,7 @@
 
                 p {
                     font-size: 1.4rem;
-                    color: map-get($colors, "text");
+                    color: map.get(variables.$colors, "text");
                     margin-bottom: 0.5rem;
                 }
                 .valor-item{
@@ -530,15 +535,15 @@
 
                     .valor-label{
                         font-size: 1.2rem;
-                        font-family: map-get($fonts, "title");
-                        color: map-get($colors, "secondary");
+                        font-family: map.get(variables.$fonts, "title");
+                        color: map.get(variables.$colors, "secondary");
                         font-weight: 500;
                     }
                     .valor-monto{
                         text-align: right;
                         font-size: 3rem;
-                        font-family: map-get($fonts, "title");
-                        color: map-get($colors, "primary");
+                        font-family: map.get(variables.$fonts, "title");
+                        color: map.get(variables.$colors, "primary");
                         font-weight: 800;
                     }
                 }
@@ -547,28 +552,28 @@
 
         .discount-options {
             padding: 2rem;
-            background-color: lighten(map-get($colors, "primary"), 42%);
+            background-color: color.adjust(map.get(variables.$colors, "primary"), $lightness: 42%);
             border-radius: 1rem;
 
             .discount-header{
                 max-width: 300px;
                 font-size: 3rem;
-                font-family: map-get($fonts, "title");
-                color: map-get($colors, "primary");
+                font-family: map.get(variables.$fonts, "title");
+                color: map.get(variables.$colors, "primary");
                 font-weight: 800;
             }
             .discount-description{
                 max-width: 250px;
                 font-size: 1.3rem;
-                font-family: map-get($fonts, "body");
-                color: map-get($colors, "secondary");
+                font-family: map.get(variables.$fonts, "body");
+                color: map.get(variables.$colors, "secondary");
                 font-weight: 500;
             }
             .discount-value{
                 max-width: 300px;
                 font-size: 3rem;
-                font-family: map-get($fonts, "title");
-                color: map-get($colors, "primary");
+                font-family: map.get(variables.$fonts, "title");
+                color: map.get(variables.$colors, "primary");
                 font-weight: 800;
             }
             
@@ -576,7 +581,7 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                border-bottom: 1px solid rgba(map-get($colors, "secondary"), 0.1);
+                border-bottom: 1px solid rgba(map.get(variables.$colors, "secondary"), 0.1);
                 .discount-info{
 
                     max-width: 230px;
@@ -585,16 +590,16 @@
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    background-color: lighten(map-get($colors, "primary"), 45%);
+                    background-color: color.adjust(map.get(variables.$colors, "primary"), $lightness: 45%);
                     border-radius: 0.6rem;
                     
                     .discount-text {
                         font-size: 1.4rem;
-                        color: map-get($colors, "secondary");
+                        color: map.get(variables.$colors, "secondary");
                         
                         span {
                             font-weight: 700;
-                            color: map-get($colors, "primary");
+                            color: map.get(variables.$colors, "primary");
                         }
                     }
                 }
@@ -604,7 +609,7 @@
                     height: 3rem;
                     cursor: pointer;
                     appearance: none;
-                    border: 2px solid map-get($colors, "primary");
+                    border: 2px solid map.get(variables.$colors, "primary");
                     border-radius: 0.4rem;
                     position: relative;
                     transition: all 0.2s ease;
@@ -616,7 +621,7 @@
 
                 label {
                     font-size: 1.4rem;
-                    color: map-get($colors, "secondary");
+                    color: map.get(variables.$colors, "secondary");
                 }
 
                 input[type="checkbox"] {
@@ -640,8 +645,8 @@
                 &:first-child {
                     max-width: 150px;
                     font-size: 2rem;
-                    color: map-get($colors, "secondary");
-                    font-family: map-get($fonts, "title");
+                    color: map.get(variables.$colors, "secondary");
+                    font-family: map.get(variables.$fonts, "title");
                     font-weight: 800;
                     margin-bottom: 1rem;
                 }
@@ -649,7 +654,7 @@
                 &.total-price {
                     font-size: 3rem;
                     font-weight: 700;
-                    color: map-get($colors, "primary");
+                    color: map.get(variables.$colors, "primary");
                     text-align: center;
                 }
             }
@@ -659,7 +664,7 @@
             width: 100%;
             margin-top: 2rem;
             padding: 1.5rem;
-            background-color: map-get($colors, "primary");
+            background-color: map.get(variables.$colors, "primary");
             color: white;
             font-size: 1.6rem;
             border: none;
@@ -668,7 +673,7 @@
             transition: all 0.3s ease;
 
             &:hover {
-                background-color: darken(map-get($colors, "primary"), 10%);
+                background-color: color.adjust(map.get(variables.$colors, "primary"), $lightness: -10%);
                 transform: translateY(-2px);
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             }
@@ -684,10 +689,10 @@
     width: 100%;
     margin-top: 1.8rem;
     padding: 2rem;
-    font-family: map-get($fonts, "Poppins");
+    font-family: map.get(variables.$fonts, "Poppins");
     font-weight: 800;
-    background-color: map-get($colors, "primary");
-    color:map-get($colors, "secondary");
+    background-color: map.get(variables.$colors, "primary");
+    color:map.get(variables.$colors, "secondary");
     font-size: 1.6rem;
     border: none;
     border-radius: 5rem;
@@ -695,7 +700,7 @@
     transition: all 0.3s ease;
 
     &:hover {
-        background-color: darken(map-get($colors, "primary"), 10%);
+        background-color: color.adjust(map.get(variables.$colors, "primary"), $lightness: -10%);
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
@@ -720,7 +725,7 @@
         .banner-message {
             max-width: 300px;
             font-size: 1.6rem;
-            color: map-get($colors, "secondary");
+            color: map.get(variables.$colors, "secondary");
         }
 
         .banner-actions {
@@ -738,7 +743,7 @@
 // Estilos para la nueva sección de instrucciones
 .calculator-instructions-container {
     padding: 30px 0;
-    background-color: map-get($colors, "background-alternative");
+    background-color: map.get(variables.$colors, "background-alternative");
     text-align: left;
 
     .container {
@@ -748,18 +753,18 @@
     }
 
     h2 {
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-size: 2.2rem;
-        color: map-get($colors, "primary");
+        color: map.get(variables.$colors, "primary");
         margin-bottom: 20px;
         text-align: center;
         font-weight: 700;
     }
 
     p {
-        font-family: map-get($fonts, "body");
+        font-family: map.get(variables.$fonts, "body");
         font-size: 2rem;
-        color: map-get($colors, "text");
+        color: map.get(variables.$colors, "text");
         line-height: 1.6;
         margin-bottom: 10px;
         &:last-of-type {
@@ -774,9 +779,9 @@
         counter-reset: list-item;
 
         li {
-            font-family: map-get($fonts, "body");
+            font-family: map.get(variables.$fonts, "body");
             font-size: 1.6rem;
-            color: map-get($colors, "text");
+            color: map.get(variables.$colors, "text");
             line-height: 1.7;
             margin-bottom: 20px;
             padding-left: 40px;
@@ -788,8 +793,8 @@
                 position: absolute;
                 left: 0;
                 top: 0;
-                background-color: map-get($colors, "primary");
-                color: map-get($colors, "text-light");
+                background-color: map.get(variables.$colors, "primary");
+                color: map.get(variables.$colors, "text-light");
                 border-radius: 50%;
                 width: 28px;
                 height: 28px;
@@ -798,16 +803,16 @@
                 align-items: center;
                 justify-content: center;
                 font-size: 0.9rem;
-                font-family: map-get($fonts, "title");
+                font-family: map.get(variables.$fonts, "title");
             }
 
             strong {
-                color: map-get($colors, "secondary");
+                color: map.get(variables.$colors, "secondary");
                 font-weight: 600;
             }
 
             em {
-                color: darken(map-get($colors, "text"), 20%);
+                color: color.adjust(map.get(variables.$colors, "text"), $lightness: -20%);
                 font-style: italic;
                 font-size: 1.6rem;
             }
@@ -829,14 +834,14 @@
     }
 
     .instructions-note {
-        font-family: map-get($fonts, "body");
+        font-family: map.get(variables.$fonts, "body");
         font-size: 1.2rem;
         text-align: center;
-        color: map-get($colors, "secondary");
+        color: map.get(variables.$colors, "secondary");
         margin-top: 20px;
         padding: 10px;
-        background-color: lighten(map-get($colors, "background"), 2%);
-        border-left: 4px solid map-get($colors, "primary");
+        background-color: color.adjust(map.get(variables.$colors, "background"), $lightness: 2%);
+        border-left: 4px solid map.get(variables.$colors, "primary");
         border-radius: 4px;
     }
 }
@@ -852,7 +857,7 @@
     top: 0;
     background: #ffffff;
     padding: 1.5rem 2rem;
-    border-bottom: 2px solid map-get($colors, "border-color");
+    border-bottom: 2px solid map.get(variables.$colors, "border-color");
     z-index: 100;
     display: flex;
     justify-content: space-between;
@@ -874,24 +879,24 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-family: map-get($fonts, "body");
+            font-family: map.get(variables.$fonts, "body");
             font-size: 1.3rem;
-            color: map-get($colors, "text");
+            color: map.get(variables.$colors, "text");
             opacity: 0.5;
             transition: opacity 0.3s ease;
             
             &.active {
                 opacity: 1;
                 font-weight: 600;
-                color: map-get($colors, "primary");
+                color: map.get(variables.$colors, "primary");
             }
             
             &.completed {
                 opacity: 1;
                 
                 .step-icon {
-                    background: map-get($colors, "success");
-                    border-color: map-get($colors, "success");
+                    background: map.get(variables.$colors, "success");
+                    border-color: map.get(variables.$colors, "success");
                     
                     &::after {
                         content: "✓";
@@ -917,7 +922,7 @@
     .progress-bar {
         flex: 1;
         height: 4px;
-        background: map-get($colors, "border-color");
+        background: map.get(variables.$colors, "border-color");
         border-radius: 2px;
         margin: 0 1rem;
         position: relative;
@@ -930,7 +935,7 @@
         
         .progress-fill {
             height: 100%;
-            background: map-get($colors, "primary");
+            background: map.get(variables.$colors, "primary");
             border-radius: 2px;
             transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
@@ -964,9 +969,9 @@
         margin-bottom: 2rem;
         flex-wrap: wrap;
         padding: 1.5rem;
-        background: rgba(map-get($colors, "primary"), 0.03);
+        background: rgba(map.get(variables.$colors, "primary"), 0.03);
         border-radius: 12px;
-        border: 1px solid rgba(map-get($colors, "primary"), 0.1);
+        border: 1px solid rgba(map.get(variables.$colors, "primary"), 0.1);
         
         @media (max-width: 768px) {
             flex-direction: column;
@@ -980,7 +985,7 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            font-family: map-get($fonts, "body");
+            font-family: map.get(variables.$fonts, "body");
             font-size: 1.3rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 2px solid transparent;
@@ -991,7 +996,7 @@
             &:hover {
                 transform: translateY(-3px);
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                border-color: map-get($colors, "primary");
+                border-color: map.get(variables.$colors, "primary");
             }
             
             .stat-icon {
@@ -1006,7 +1011,7 @@
                 svg {
                     width: 24px;
                     height: 24px;
-                    color: map-get($colors, "secondary");
+                    color: map.get(variables.$colors, "secondary");
                 }
             }
             
@@ -1017,19 +1022,19 @@
             }
             
             &.cargos-count .stat-icon {
-                background: map-get($aux-colors, 1);
+                background: map.get(variables.$aux-colors, 1);
             }
             
             &.exams-count .stat-icon {
-                background: map-get($aux-colors, 5);
+                background: map.get(variables.$aux-colors, 5);
             }
             
             &.workers-count .stat-icon {
-                background: map-get($aux-colors, 3);
+                background: map.get(variables.$aux-colors, 3);
             }
             
             .stat-label {
-                color: map-get($colors, "text");
+                color: map.get(variables.$colors, "text");
                 font-size: 1.1rem;
                 font-weight: 500;
                 opacity: 0.8;
@@ -1037,9 +1042,9 @@
             
             .stat-value {
                 font-weight: 700;
-                color: map-get($colors, "primary");
+                color: map.get(variables.$colors, "primary");
                 font-size: 2rem;
-                font-family: map-get($fonts, "title");
+                font-family: map.get(variables.$fonts, "title");
                 transition: all 0.3s ease;
             }
         }
@@ -1054,23 +1059,23 @@
     transition: all 0.3s ease;
     
     &.valid {
-        border-color: map-get($colors, "success");
+        border-color: map.get(variables.$colors, "success");
         border-width: 2px;
-        background-color: rgba(map-get($colors, "success"), 0.05);
+        background-color: rgba(map.get(variables.$colors, "success"), 0.05);
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234caf50' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 1rem center;
         background-size: 16px;
         padding-right: 3.5rem;
-        box-shadow: 0 0 0 3px rgba(map-get($colors, "success"), 0.1);
+        box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, "success"), 0.1);
     }
     
     &.invalid {
-        border-color: map-get($colors, "danger");
+        border-color: map.get(variables.$colors, "danger");
         border-width: 2px;
-        background-color: rgba(map-get($colors, "danger"), 0.05);
+        background-color: rgba(map.get(variables.$colors, "danger"), 0.05);
         animation: shake 0.4s ease;
-        box-shadow: 0 0 0 3px rgba(map-get($colors, "danger"), 0.1);
+        box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, "danger"), 0.1);
     }
 }
 
@@ -1080,18 +1085,18 @@ input[type="number"].numero-trabajadores {
     transition: all 0.3s ease;
     
     &.valid {
-        border-color: map-get($colors, "success");
+        border-color: map.get(variables.$colors, "success");
         border-width: 2px;
-        background-color: rgba(map-get($colors, "success"), 0.05);
-        box-shadow: 0 0 0 3px rgba(map-get($colors, "success"), 0.1);
+        background-color: rgba(map.get(variables.$colors, "success"), 0.05);
+        box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, "success"), 0.1);
     }
     
     &.invalid {
-        border-color: map-get($colors, "danger");
+        border-color: map.get(variables.$colors, "danger");
         border-width: 2px;
-        background-color: rgba(map-get($colors, "danger"), 0.05);
+        background-color: rgba(map.get(variables.$colors, "danger"), 0.05);
         animation: shake 0.4s ease;
-        box-shadow: 0 0 0 3px rgba(map-get($colors, "danger"), 0.1);
+        box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, "danger"), 0.1);
     }
 }
 
@@ -1120,18 +1125,18 @@ input[type="number"].numero-trabajadores {
     // Estados mejorados del checkbox item
     &:hover {
         transform: translateY(-4px);
-        box-shadow: 0 4px 12px rgba(map-get($colors, "primary"), 0.15);
+        box-shadow: 0 4px 12px rgba(map.get(variables.$colors, "primary"), 0.15);
     }
     
     // Cuando el checkbox está marcado
     &.checked {
-        background: rgba(map-get($colors, "primary"), 0.08);
-        border-color: map-get($colors, "primary");
+        background: rgba(map.get(variables.$colors, "primary"), 0.08);
+        border-color: map.get(variables.$colors, "primary");
         border-width: 3px;
-        box-shadow: 0 0 0 4px rgba(map-get($colors, "primary"), 0.1);
+        box-shadow: 0 0 0 4px rgba(map.get(variables.$colors, "primary"), 0.1);
         
         label {
-            color: map-get($colors, "primary");
+            color: map.get(variables.$colors, "primary");
             font-weight: 700;
         }
     }
@@ -1142,7 +1147,7 @@ input[type="number"].numero-trabajadores {
         top: 0;
         left: 0;
         transform: translate(-50%, -8px);
-        background: map-get($colors, "secondary");
+        background: map.get(variables.$colors, "secondary");
         color: #ffffff;
         padding: 1.2rem 1.6rem;
         border-radius: 10px;
@@ -1164,7 +1169,7 @@ input[type="number"].numero-trabajadores {
             left: 50%;
             transform: translateX(-50%);
             border: 8px solid transparent;
-            border-top-color: map-get($colors, "secondary");
+            border-top-color: map.get(variables.$colors, "secondary");
         }
         
         // Header del tooltip (nombre del examen)
@@ -1173,7 +1178,7 @@ input[type="number"].numero-trabajadores {
             font-size: 1.4rem;
             margin-bottom: 0.8rem;
             display: block;
-            font-family: map-get($fonts, "title");
+            font-family: map.get(variables.$fonts, "title");
             line-height: 1.3;
             color: #ffffff;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -1185,20 +1190,20 @@ input[type="number"].numero-trabajadores {
             font-size: 1.2rem;
             line-height: 1.5;
             color: rgba(255, 255, 255, 0.9);
-            font-family: map-get($fonts, "body");
+            font-family: map.get(variables.$fonts, "body");
             margin-bottom: 0.8rem;
             white-space: normal;
         }
         
         // Precio destacado
         .tooltip-price {
-            color: map-get($colors, "primary");
+            color: map.get(variables.$colors, "primary");
             font-weight: 700;
             font-size: 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-family: map-get($fonts, "title");
+            font-family: map.get(variables.$fonts, "title");
             margin-top: 0.8rem;
             padding-top: 0.8rem;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
@@ -1255,15 +1260,15 @@ input[type="number"].numero-trabajadores {
 @keyframes priceUpdate {
     0% { 
         transform: scale(1);
-        color: map-get($colors, "primary");
+        color: map.get(variables.$colors, "primary");
     }
     50% { 
         transform: scale(1.15);
-        color: lighten(map-get($colors, "primary"), 15%);
+        color: color.adjust(map.get(variables.$colors, "primary"), $lightness: 15%);
     }
     100% { 
         transform: scale(1);
-        color: map-get($colors, "primary");
+        color: map.get(variables.$colors, "primary");
     }
 }
 
@@ -1278,9 +1283,9 @@ input[type="number"].numero-trabajadores {
     padding: 4rem 2rem;
     text-align: center;
     min-height: 400px;
-    background: rgba(map-get($colors, "background"), 0.5);
+    background: rgba(map.get(variables.$colors, "background"), 0.5);
     border-radius: 12px;
-    border: 2px dashed map-get($colors, "border-color");
+    border: 2px dashed map.get(variables.$colors, "border-color");
     
     .empty-icon {
         width: 120px;
@@ -1292,21 +1297,21 @@ input[type="number"].numero-trabajadores {
         svg {
             width: 100%;
             height: 100%;
-            color: map-get($colors, "primary");
+            color: map.get(variables.$colors, "primary");
         }
     }
     
     h3 {
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-size: 2.2rem;
-        color: map-get($colors, "secondary");
+        color: map.get(variables.$colors, "secondary");
         margin-bottom: 1rem;
     }
     
     p {
-        font-family: map-get($fonts, "body");
+        font-family: map.get(variables.$fonts, "body");
         font-size: 1.4rem;
-        color: map-get($colors, "text");
+        color: map.get(variables.$colors, "text");
         max-width: 400px;
         margin-bottom: 2rem;
         line-height: 1.6;
@@ -1314,19 +1319,19 @@ input[type="number"].numero-trabajadores {
     
     .empty-cta {
         padding: 1.2rem 2.5rem;
-        background: map-get($colors, "primary");
-        color: map-get($colors, "secondary");
+        background: map.get(variables.$colors, "primary");
+        color: map.get(variables.$colors, "secondary");
         border: none;
         border-radius: 8px;
         font-size: 1.6rem;
         font-weight: 600;
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         cursor: pointer;
         transition: all 0.3s ease;
         
         &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(map-get($colors, "primary"), 0.3);
+            box-shadow: 0 4px 12px rgba(map.get(variables.$colors, "primary"), 0.3);
         }
     }
 }
@@ -1345,7 +1350,7 @@ input[type="number"].numero-trabajadores {
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        background: rgba(map-get($colors, "primary"), 0.1);
+        background: rgba(map.get(variables.$colors, "primary"), 0.1);
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
@@ -1353,12 +1358,12 @@ input[type="number"].numero-trabajadores {
         svg {
             width: 18px;
             height: 18px;
-            color: map-get($colors, "primary");
+            color: map.get(variables.$colors, "primary");
             transition: transform 0.3s ease;
         }
         
         &:hover {
-            background: map-get($colors, "primary");
+            background: map.get(variables.$colors, "primary");
             transform: scale(1.1);
             
             svg {
@@ -1377,7 +1382,7 @@ input[type="number"].numero-trabajadores {
 }
 
 // Mejor efecto de sticky en desktop
-@include respond-to("tablet") {
+@include mixins.respond-to("tablet") {
     .calculator-summary {
         position: sticky;
         top: 2rem;
@@ -1458,15 +1463,15 @@ input[type="checkbox"] {
 @keyframes checkPulse {
     0% {
         transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(map-get($colors, "primary"), 0.7);
+        box-shadow: 0 0 0 0 rgba(map.get(variables.$colors, "primary"), 0.7);
     }
     50% {
         transform: scale(1.1);
-        box-shadow: 0 0 0 8px rgba(map-get($colors, "primary"), 0);
+        box-shadow: 0 0 0 8px rgba(map.get(variables.$colors, "primary"), 0);
     }
     100% {
         transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(map-get($colors, "primary"), 0);
+        box-shadow: 0 0 0 0 rgba(map.get(variables.$colors, "primary"), 0);
     }
 }
 
@@ -1481,5 +1486,5 @@ input[type="checkbox"] {
 
 @keyframes flashWarning {
     0%, 100% { background: transparent; }
-    50% { background: rgba(map-get($colors, "atention"), 0.1); }
+    50% { background: rgba(map.get(variables.$colors, "atention"), 0.1); }
 }

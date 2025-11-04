@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "variables";
+
 @font-face {
     font-family: 'Poppins';
     src: url('../../assets/fonts/poppins-v21-latin-regular.woff2') format('woff2');
@@ -78,7 +81,7 @@
 
 
 h1{
-    font-family: map-get($fonts, "title");
+    font-family: map.get(variables.$fonts, "title");
     font-size: 3.5rem;
 }
 h1,
@@ -87,14 +90,14 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: map-get($fonts, "title");
+    font-family: map.get(variables.$fonts, "title");
     line-height: 1.2;
     font-weight: 800;
-    color: map-get($colors, "secondary");
+    color: map.get(variables.$colors, "secondary");
 }
 
 p {
-    font-family: map-get($fonts, "title");
+    font-family: map.get(variables.$fonts, "title");
     font-size: 1.6rem;
     margin: 2.5rem 0;
     font-weight: 400;
@@ -102,5 +105,5 @@ p {
 }
 
 .green {
-    color: map-get($colors, "primary");
+    color: map.get(variables.$colors, "primary");
 }

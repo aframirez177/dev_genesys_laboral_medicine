@@ -1,3 +1,7 @@
+@use "sass:map";
+@use "../base/mixins";
+@use "../base/variables";
+
 .mujeres-lideres {
     display: flex;
     flex-direction: column;
@@ -27,7 +31,7 @@
     }
 
     h2 {
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         text-align: left;
         align-content: center;
         align-items: center;
@@ -35,7 +39,7 @@
         margin-top: 0;
         line-height: 100%;
         font-size: 2.6rem;
-        color: map-get($colors, "secondary");
+        color: map.get(variables.$colors, "secondary");
         font-weight: 800;
         max-width: 600px;
     }
@@ -67,10 +71,10 @@
         }
 
         h3 {
-        font-family: map-get($fonts, "title");
+        font-family: map.get(variables.$fonts, "title");
         font-size: 1.5rem;
         margin-bottom: 1rem;
-        color: map-get($colors, "primary");
+        color: map.get(variables.$colors, "primary");
         }
 
         p {
@@ -88,8 +92,8 @@
         svg {
             width: 100%;
             height: 100%;
-            stroke: map-get($colors, "primary");
-            fill: map-get($colors, "primary");
+            stroke: map.get(variables.$colors, "primary");
+            fill: map.get(variables.$colors, "primary");
             transition: transform 0.3s ease;
         }
         }
@@ -103,7 +107,7 @@
     }
 }
 
-@include respond-to("tablet") {
+@include mixins.respond-to("tablet") {
     .section-women-leaders {
         .women-leaders-content {
         display: flex;

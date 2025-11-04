@@ -5,34 +5,32 @@
 //===================================================================
 
 // Base
-@use "sass:color";
-@use "sass:map";
-@use "sass:meta";
-@use 'base/variables';
-@use 'base/mixins';
-@use 'base/reset';
-@use 'base/typography';
+@import 'base/variables';
+@import 'base/mixins';
+@import 'base/reset';
+@import 'base/typography';
 
 // Components
-@use 'components/buttons';
-@use 'components/dropdown';
-@use 'components/whatsapp';
-@use 'components/tutorial-guiado';
+@import 'components/buttons';
+@import 'components/dropdown';
+@import 'components/whatsapp';
+@import 'components/tutorial-guiado';
 
 // Layout
-@use 'layout/header';
-@use 'layout/footer';
+@import 'layout/header';
+@import 'layout/footer';
 
 // Sections
-@use 'sections/program-description-service';
-@use 'sections/clients';
-@use 'sections/faqs';
-@use 'sections/location';
-@use 'sections/form_matriz_riesgos_prof';
+@import 'sections/program-description-service';
+@import 'sections/clients';
+@import 'sections/faqs';
+@import 'sections/location';
+@import 'sections/form_matriz_riesgos_prof';
+@import 'components/tutorial-guiado';
 
 // Utilities
-@use 'utilities/helpers';
-@use 'utilities/animations';
+@import 'utilities/helpers';
+@import 'utilities/animations';
 
 //===================================================================
 // ESTILOS PRINCIPALES PARA DIAGNÓSTICO INTERACTIVO
@@ -43,8 +41,8 @@
   position: relative;
   min-height: 100vh;
   background: linear-gradient(135deg, 
-    map.get(variables.$colors, 'background') 0%, 
-    map.get(variables.$colors, 'background-alternative') 100%);
+    map-get($colors, 'background') 0%, 
+    map-get($colors, 'background-alternative') 100%);
   
   .background-fixed {
     position: fixed;
@@ -54,8 +52,8 @@
     height: 100vh;
     z-index: -1;
     background: linear-gradient(135deg, 
-      rgba(map.get(variables.$colors, 'primary'), 0.05) 0%, 
-      rgba(map.get(variables.$colors, 'secondary'), 0.02) 100%);
+      rgba(map-get($colors, 'primary'), 0.05) 0%, 
+      rgba(map-get($colors, 'secondary'), 0.02) 100%);
     will-change: transform;
   }
 }
@@ -69,11 +67,11 @@
   justify-content: flex-start;
   padding: 2rem 1rem 4rem;
   
-  @include mixins.respond-to('tablet') {
+  @include respond-to('tablet') {
     padding: 3rem 2rem 6rem;
   }
   
-  @include mixins.respond-to('desktop') {
+  @include respond-to('desktop') {
     padding: 4rem 3rem 8rem;
   }
 
@@ -85,23 +83,23 @@
     animation: fadeInUp 0.8s ease-out;
 
     h1 {
-      font-family: map.get(variables.$fonts, "title");
+      font-family: map-get($fonts, "title");
       font-size: 2.8rem;
       line-height: 1.2;
       margin-bottom: 1.5rem;
-      color: map.get(variables.$colors, 'secondary');
+      color: map-get($colors, 'secondary');
       font-weight: 800;
 
-      @include mixins.respond-to('tablet') {
+      @include respond-to('tablet') {
         font-size: 3.5rem;
       }
 
-      @include mixins.respond-to('desktop') {
+      @include respond-to('desktop') {
         font-size: 4.2rem;
       }
 
       .green {
-        color: map.get(variables.$colors, 'primary');
+        color: map-get($colors, 'primary');
         position: relative;
         
         &::after {
@@ -112,8 +110,8 @@
           width: 100%;
           height: 3px;
           background: linear-gradient(90deg, 
-            map.get(variables.$colors, 'primary') 0%, 
-            map.get(variables.$colors, 'alternative') 100%);
+            map-get($colors, 'primary') 0%, 
+            map-get($colors, 'alternative') 100%);
           border-radius: 2px;
           animation: slideInLeft 0.6s ease-out 0.5s both;
         }
@@ -121,41 +119,41 @@
     }
 
     .intro {
-      font-family: map.get(variables.$fonts, "body");
+      font-family: map-get($fonts, "body");
       font-size: 1.4rem;
       line-height: 1.6;
-      color: color.adjust(map.get(variables.$colors, 'text'), $lightness: 10%);
+      color: lighten(map-get($colors, 'text'), 10%);
       margin-bottom: 2rem;
       max-width: 800px;
       margin-left: auto;
       margin-right: auto;
 
-      @include mixins.respond-to('tablet') {
+      @include respond-to('tablet') {
         font-size: 1.6rem;
       }
 
-      @include mixins.respond-to('desktop') {
+      @include respond-to('desktop') {
         font-size: 1.8rem;
       }
     }
 
     .cta-button {
-      @include mixins.button();
-      background-color: map.get(variables.$colors, 'primary');
+      @include button();
+      background-color: map-get($colors, 'primary');
       color: white;
       font-size: 1.6rem;
       padding: 0px 35px;
       margin-top: 0rem;
       border-radius: 30px;
-      box-shadow: 0 4px 15px rgba(map.get(variables.$colors, 'primary'), 0.3);
+      box-shadow: 0 4px 15px rgba(map-get($colors, 'primary'), 0.3);
       transition: all 0.3s ease;
       
       &:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(map.get(variables.$colors, 'primary'), 0.4);
+        box-shadow: 0 8px 25px rgba(map-get($colors, 'primary'), 0.4);
       }
 
-      @include mixins.respond-to('tablet') {
+      @include respond-to('tablet') {
         font-size: 1.8rem;
         padding: 18px 40px;
       }
@@ -180,14 +178,14 @@
 
   // Título de sección (si se necesita)
   .section-title {
-    font-family: map.get(variables.$fonts, 'title');
+    font-family: map-get($fonts, 'title');
     font-size: 2.5rem;
-    color: map.get(variables.$colors, 'secondary');
+    color: map-get($colors, 'secondary');
     text-align: center;
     margin-bottom: 2rem;
     position: relative;
 
-    @include mixins.respond-to('tablet') {
+    @include respond-to('tablet') {
       font-size: 3rem;
     }
 
@@ -199,21 +197,21 @@
       transform: translateX(-50%);
       width: 60px;
       height: 4px;
-      background: map.get(variables.$colors, 'primary');
+      background: map-get($colors, 'primary');
       border-radius: 2px;
     }
   }
 
   .subtitle {
-    font-family: map.get(variables.$fonts, 'body');
+    font-family: map-get($fonts, 'body');
     font-size: 1.6rem;
-    color: color.adjust(map.get(variables.$colors, 'text'), $lightness: 15%);
+    color: lighten(map-get($colors, 'text'), 15%);
     text-align: center;
     margin-bottom: 3rem;
     max-width: 600px;
     line-height: 1.5;
 
-    @include mixins.respond-to('tablet') {
+    @include respond-to('tablet') {
       font-size: 1.8rem;
     }
   }
@@ -229,7 +227,7 @@
     max-width: 600px;
     
 
-    @include mixins.respond-to('tablet') {
+    @include respond-to('tablet') {
       flex-direction: column;
       justify-content: center;
       gap: 2rem;
@@ -248,7 +246,7 @@
       position: relative;
       overflow: hidden;
 
-      @include mixins.respond-to('tablet') {
+      @include respond-to('tablet') {
         width: auto;
         min-width: 220px;
       }
@@ -278,34 +276,34 @@
     }
 
     #btnReactivarTutorial {
-      background-color: map.get(variables.$colors, 'alternative');
-      color: map.get(variables.$colors, 'secondary');
-      border: 2px solid map.get(variables.$colors, 'alternative');
+      background-color: map-get($colors, 'alternative');
+      color: map-get($colors, 'secondary');
+      border: 2px solid map-get($colors, 'alternative');
 
       &:hover {
-        background-color: color.adjust(map.get(variables.$colors, 'alternative'), $lightness: -10%);
+        background-color: darken(map-get($colors, 'alternative'), 10%);
       }
     }
 
     #addCargoBtn {
-      background-color: map.get(variables.$colors, 'primary');
+      background-color: map-get($colors, 'primary');
       color: white;
-      border: 2px solid map.get(variables.$colors, 'primary');
+      border: 2px solid map-get($colors, 'primary');
 
       &:hover {
-        background-color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -8%);
+        background-color: darken(map-get($colors, 'primary'), 8%);
       }
     }
 
     button[type="submit"] {
-      background-color: map.get(variables.$colors, 'secondary');
+      background-color: map-get($colors, 'secondary');
       color: white;
-      border: 2px solid map.get(variables.$colors, 'secondary');
+      border: 2px solid map-get($colors, 'secondary');
       font-size: 1.6rem;
       padding: 0px 35px;
 
       &:hover {
-        background-color: color.adjust(map.get(variables.$colors, 'secondary'), $lightness: 10%);
+        background-color: lighten(map-get($colors, 'secondary'), 10%);
       }
     }
   }
@@ -321,11 +319,11 @@
     padding: 2rem 1rem;
     position: relative;
 
-    @include mixins.respond-to('tablet') {
+    @include respond-to('tablet') {
       padding: 2rem;
     }
 
-    @include mixins.respond-to('desktop') {
+    @include respond-to('desktop') {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
       gap: 3rem;
@@ -350,7 +348,7 @@
   .cargo {
     width: 100%;
     max-width: 420px;
-    border: 1px solid rgba(map.get(variables.$colors, 'border-color'), 0.3);
+    border: 1px solid rgba(map-get($colors, 'border-color'), 0.3);
     border-radius: 15px;
     overflow: hidden;
     background: white;
@@ -371,19 +369,19 @@
       width: 100%;
       height: 4px;
       background: linear-gradient(90deg, 
-        map.get(variables.$colors, 'primary') 0%, 
-        map.get(variables.$colors, 'alternative') 100%);
+        map-get($colors, 'primary') 0%, 
+        map-get($colors, 'alternative') 100%);
     }
 
     .cargo-header {
       background: linear-gradient(135deg, 
-        rgba(map.get(variables.$colors, 'input-border'), 0.8) 0%, 
-        rgba(map.get(variables.$colors, 'background'), 0.9) 100%);
+        rgba(map-get($colors, 'input-border'), 0.8) 0%, 
+        rgba(map-get($colors, 'background'), 0.9) 100%);
       padding: 1.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(map.get(variables.$colors, 'border-color'), 0.2);
+      border-bottom: 1px solid rgba(map-get($colors, 'border-color'), 0.2);
 
       .header-left {
         display: flex;
@@ -392,20 +390,20 @@
 
         .area-label {
           font-size: 1.1rem;
-          color: color.adjust(map.get(variables.$colors, 'text'), $lightness: 20%);
-          font-family: map.get(variables.$fonts, 'body');
+          color: lighten(map-get($colors, 'text'), 20%);
+          font-family: map-get($fonts, 'body');
           font-weight: 500;
           margin-bottom: 0.3rem;
         }
 
         .cargo-title {
-          font-family: map.get(variables.$fonts, 'title');
+          font-family: map-get($fonts, 'title');
           font-size: 1.4rem;
-          color: map.get(variables.$colors, 'secondary');
+          color: map-get($colors, 'secondary');
           font-weight: 700;
           line-height: 1.2;
 
-          @include mixins.respond-to('tablet') {
+          @include respond-to('tablet') {
             font-size: 1.6rem;
           }
         }
@@ -425,7 +423,7 @@
           box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 
           button {
-            @include mixins.button-small();
+            @include button-small();
             width: 2.5rem;
             height: 2.5rem;
             display: flex;
@@ -444,8 +442,8 @@
             padding: 0.5rem;
             border: none;
             background: transparent;
-            color: map.get(variables.$colors, 'text');
-            font-family: map.get(variables.$fonts, 'body');
+            color: map-get($colors, 'text');
+            font-family: map-get($fonts, 'body');
             font-weight: 600;
             font-size: 1.2rem;
           }
@@ -453,7 +451,7 @@
 
         .minimize-btn,
         .delete-btn {
-          @include mixins.button-small();
+          @include button-small();
           width: 2.8rem;
           height: 2.8rem;
           display: flex;
@@ -467,12 +465,12 @@
         }
 
         .minimize-btn {
-          background-color: map.get(variables.$colors, 'primary');
+          background-color: map-get($colors, 'primary');
           color: white;
         }
 
         .delete-btn {
-          background-color: map.get(variables.$colors, 'danger');
+          background-color: map-get($colors, 'danger');
           color: white;
 
           &:disabled {
@@ -510,23 +508,23 @@
         textarea {
           width: 100%;
           padding: 1rem 1.2rem;
-          border: 2px solid rgba(map.get(variables.$colors, 'input-border'), 0.3);
+          border: 2px solid rgba(map-get($colors, 'input-border'), 0.3);
           border-radius: 10px;
-          background-color: map.get(variables.$colors, 'input-bg');
-          color: map.get(variables.$colors, 'text');
-          font-family: map.get(variables.$fonts, 'body');
+          background-color: map-get($colors, 'input-bg');
+          color: map-get($colors, 'text');
+          font-family: map-get($fonts, 'body');
           font-size: 1.3rem;
           transition: all 0.3s ease;
 
           &:focus {
             outline: none;
-            border-color: map.get(variables.$colors, 'primary');
-            box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'primary'), 0.1);
+            border-color: map-get($colors, 'primary');
+            box-shadow: 0 0 0 3px rgba(map-get($colors, 'primary'), 0.1);
             transform: translateY(-1px);
           }
 
           &::placeholder {
-            color: map.get(variables.$colors, 'placeholder');
+            color: map-get($colors, 'placeholder');
             opacity: 0.7;
           }
         }
@@ -543,9 +541,9 @@
         gap: 1.5rem;
         margin-bottom: 2.5rem;
         padding: 1.5rem;
-        background: rgba(map.get(variables.$colors, 'background'), 0.5);
+        background: rgba(map-get($colors, 'background'), 0.5);
         border-radius: 12px;
-        border: 1px solid rgba(map.get(variables.$colors, 'border-color'), 0.2);
+        border: 1px solid rgba(map-get($colors, 'border-color'), 0.2);
 
         .toggle {
           display: flex;
@@ -553,8 +551,8 @@
           justify-content: space-between;
 
           label {
-            color: map.get(variables.$colors, 'text');
-            font-family: map.get(variables.$fonts, 'body');
+            color: map-get($colors, 'text');
+            font-family: map-get($fonts, 'body');
             font-size: 1.2rem;
             font-weight: 500;
             line-height: 1.3;
@@ -600,7 +598,7 @@
             }
 
             input:checked + .slider {
-              background-color: map.get(variables.$colors, 'primary');
+              background-color: map-get($colors, 'primary');
             }
 
             input:checked + .slider::before {
@@ -618,11 +616,11 @@
           position: relative;
           padding: 1rem 3rem 2rem;
           border-radius: 12px;
-          background: rgba(map.get(variables.$colors, 'background-alternative'), 0.3);
+          background: rgba(map-get($colors, 'background-alternative'), 0.3);
 
           .swiper-slide {
             background: white;
-            border: 1px solid rgba(map.get(variables.$colors, 'border-color'), 0.3);
+            border: 1px solid rgba(map-get($colors, 'border-color'), 0.3);
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: 0 3px 15px rgba(0,0,0,0.05);
@@ -638,10 +636,10 @@
                 text-align: center;
                 font-size: 1.6rem;
                 margin-bottom: 1.5rem;
-                color: map.get(variables.$colors, 'secondary');
+                color: map-get($colors, 'secondary');
                 font-weight: 700;
 
-                @include mixins.respond-to('tablet') {
+                @include respond-to('tablet') {
                   font-size: 1.8rem;
                 }
               }
@@ -660,7 +658,7 @@
                   transition: all 0.2s ease;
 
                   &:hover {
-                    background-color: rgba(map.get(variables.$colors, 'primary'), 0.05);
+                    background-color: rgba(map-get($colors, 'primary'), 0.05);
                   }
 
                   input[type='checkbox'] {
@@ -669,17 +667,17 @@
                     margin-right: 1rem;
                     margin-top: 0.2rem;
                     flex-shrink: 0;
-                    accent-color: map.get(variables.$colors, 'primary');
+                    accent-color: map-get($colors, 'primary');
                   }
 
                   label {
                     font-size: 1.1rem;
-                    color: map.get(variables.$colors, 'text');
+                    color: map-get($colors, 'text');
                     line-height: 1.4;
                     cursor: pointer;
                     
                     &:hover {
-                      color: map.get(variables.$colors, 'secondary');
+                      color: map-get($colors, 'secondary');
                     }
                   }
                 }
@@ -689,7 +687,7 @@
 
           .swiper-button-next,
           .swiper-button-prev {
-            color: map.get(variables.$colors, 'primary');
+            color: map-get($colors, 'primary');
             width: 35px;
             height: 35px;
             background: white;
@@ -699,7 +697,7 @@
 
             &:hover {
               transform: scale(1.1);
-              background-color: map.get(variables.$colors, 'primary');
+              background-color: map-get($colors, 'primary');
               color: white;
             }
 
@@ -715,12 +713,12 @@
             .swiper-pagination-bullet {
               width: 10px;
               height: 10px;
-              background-color: rgba(map.get(variables.$colors, 'secondary'), 0.3);
+              background-color: rgba(map-get($colors, 'secondary'), 0.3);
               opacity: 1;
               transition: all 0.3s ease;
 
               &.swiper-pagination-bullet-active {
-                background-color: map.get(variables.$colors, 'primary');
+                background-color: map-get($colors, 'primary');
                 transform: scale(1.2);
               }
             }
@@ -731,9 +729,9 @@
       .ges-resumen {
         margin-top: 2rem;
         padding: 1.5rem;
-        background: rgba(map.get(variables.$colors, 'background'), 0.7);
+        background: rgba(map-get($colors, 'background'), 0.7);
         border-radius: 12px;
-        border: 1px solid rgba(map.get(variables.$colors, 'border-color'), 0.2);
+        border: 1px solid rgba(map-get($colors, 'border-color'), 0.2);
 
         .ges-resumen-item {
           display: flex;
@@ -751,16 +749,16 @@
           
           &.incomplete-ges {
             background: linear-gradient(135deg, 
-              rgba(map.get(variables.$colors, 'warning'), 0.1) 0%, 
-              rgba(map.get(variables.$colors, 'warning'), 0.05) 100%);
-            border-left: 4px solid map.get(variables.$colors, 'warning');
+              rgba(map-get($colors, 'warning'), 0.1) 0%, 
+              rgba(map-get($colors, 'warning'), 0.05) 100%);
+            border-left: 4px solid map-get($colors, 'warning');
           }
           
           &.complete-ges {
             background: linear-gradient(135deg, 
-              rgba(map.get(variables.$colors, 'success'), 0.1) 0%, 
-              rgba(map.get(variables.$colors, 'success'), 0.05) 100%);
-            border-left: 4px solid map.get(variables.$colors, 'success');
+              rgba(map-get($colors, 'success'), 0.1) 0%, 
+              rgba(map-get($colors, 'success'), 0.05) 100%);
+            border-left: 4px solid map-get($colors, 'success');
           }
           
           .check-mark {
@@ -775,20 +773,20 @@
             font-weight: 700;
             
             &.complete {
-              background-color: map.get(variables.$colors, 'success');
+              background-color: map-get($colors, 'success');
               color: white;
             }
             
             &.incomplete {
-              background-color: map.get(variables.$colors, 'warning');
-              color: map.get(variables.$colors, 'secondary');
+              background-color: map-get($colors, 'warning');
+              color: map-get($colors, 'secondary');
             }
           }
 
           span:not(.check-mark) {
-            font-family: map.get(variables.$fonts, 'body');
+            font-family: map-get($fonts, 'body');
             font-size: 1.2rem;
-            color: map.get(variables.$colors, 'text');
+            color: map-get($colors, 'text');
             font-weight: 500;
           }
         }
@@ -808,12 +806,12 @@
   width: 320px;
   z-index: 1000;
   overflow: hidden;
-  border: 1px solid rgba(map.get(variables.$colors, 'border-color'), 0.2);
+  border: 1px solid rgba(map-get($colors, 'border-color'), 0.2);
   
   .popup-header {
     background: linear-gradient(135deg, 
-      map.get(variables.$colors, 'primary') 0%, 
-      color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%) 100%);
+      map-get($colors, 'primary') 0%, 
+      darken(map-get($colors, 'primary'), 10%) 100%);
     color: white;
     padding: 1.5rem;
     display: flex;
@@ -824,14 +822,14 @@
       margin: 0;
       color: white;
       font-size: 1.4rem;
-      font-family: map.get(variables.$fonts, 'title');
+      font-family: map-get($fonts, 'title');
       font-weight: 700;
     }
 
     .riesgo-label {
       font-size: 1.1rem;
       opacity: 0.9;
-      font-family: map.get(variables.$fonts, 'body');
+      font-family: map-get($fonts, 'body');
     }
 
     .close-popup {
@@ -862,12 +860,12 @@
       margin-bottom: 2rem;
 
       h5 {
-        font-family: map.get(variables.$fonts, "title");
+        font-family: map-get($fonts, "title");
         font-size: 1.2rem;
-        color: map.get(variables.$colors, "secondary");
+        color: map-get($colors, "secondary");
         margin-bottom: 1.5rem;
         padding-bottom: 0.5rem;
-        border-bottom: 2px solid map.get(variables.$colors, "primary");
+        border-bottom: 2px solid map-get($colors, "primary");
         font-weight: 700;
       }
     }
@@ -878,8 +876,8 @@
       label {
         display: block;
         margin-bottom: 0.8rem;
-        color: map.get(variables.$colors, 'text');
-        font-family: map.get(variables.$fonts, 'body');
+        color: map-get($colors, 'text');
+        font-family: map-get($fonts, 'body');
         font-size: 1.2rem;
         font-weight: 600;
       }
@@ -887,20 +885,20 @@
       input {
         width: 100%;
         padding: 1rem;
-        border: 2px solid rgba(map.get(variables.$colors, 'input-border'), 0.3);
+        border: 2px solid rgba(map-get($colors, 'input-border'), 0.3);
         border-radius: 8px;
-        font-family: map.get(variables.$fonts, 'body');
+        font-family: map-get($fonts, 'body');
         font-size: 1.1rem;
         transition: all 0.3s ease;
 
         &::placeholder {
-          color: map.get(variables.$colors, 'placeholder');
+          color: map-get($colors, 'placeholder');
         }
 
         &:focus {
           outline: none;
-          border-color: map.get(variables.$colors, 'primary');
-          box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'primary'), 0.1);
+          border-color: map-get($colors, 'primary');
+          box-shadow: 0 0 0 3px rgba(map-get($colors, 'primary'), 0.1);
         }
       }
     }
@@ -914,9 +912,9 @@
         gap: 0.8rem;
         font-weight: 600;
         margin-bottom: 1rem;
-        font-family: map.get(variables.$fonts, 'title');
+        font-family: map-get($fonts, 'title');
         font-size: 1.1rem;
-        color: map.get(variables.$colors, 'secondary');
+        color: map-get($colors, 'secondary');
 
         .info-icon {
           font-size: 1.4rem;
@@ -994,14 +992,14 @@
 
 .restore-banner {
   background: linear-gradient(135deg, 
-    rgba(map.get(variables.$colors, 'primary'), 0.1) 0%, 
-    rgba(map.get(variables.$colors, 'background-alternative'), 0.8) 100%);
+    rgba(map-get($colors, 'primary'), 0.1) 0%, 
+    rgba(map-get($colors, 'background-alternative'), 0.8) 100%);
   border-radius: 15px;
   margin: 2rem auto;
   padding: 2rem;
   max-width: 600px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  border: 1px solid rgba(map.get(variables.$colors, 'primary'), 0.2);
+  border: 1px solid rgba(map-get($colors, 'primary'), 0.2);
   animation: slideInDown 0.6s ease-out;
 
   .banner-content {
@@ -1011,9 +1009,9 @@
     text-align: center;
 
     .banner-message {
-      font-family: map.get(variables.$fonts, "body");
+      font-family: map-get($fonts, "body");
       font-size: 1.4rem;
-      color: map.get(variables.$colors, "secondary");
+      color: map-get($colors, "secondary");
       font-weight: 500;
       line-height: 1.5;
     }
@@ -1051,7 +1049,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(map.get(variables.$colors, 'secondary'), 0.85);
+  background-color: rgba(map-get($colors, 'secondary'), 0.85);
   backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
@@ -1067,7 +1065,7 @@
     pointer-events: auto;
   }
 
-  @include mixins.respond-to('mobile') {
+  @include respond-to('mobile') {
     padding: 1rem;
   }
 }
@@ -1090,16 +1088,16 @@
   }
 
   &::-webkit-scrollbar-track {
-    background: map.get(variables.$colors, 'background');
+    background: map-get($colors, 'background');
     border-radius: 0 24px 24px 0;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: map.get(variables.$colors, 'primary');
+    background: map-get($colors, 'primary');
     border-radius: 8px;
 
     &:hover {
-      background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%);
+      background: darken(map-get($colors, 'primary'), 10%);
     }
   }
 
@@ -1107,7 +1105,7 @@
     transform: scale(1) translateY(0);
   }
 
-  @include mixins.respond-to('mobile') {
+  @include respond-to('mobile') {
     border-radius: 16px;
     max-height: 95vh;
   }
@@ -1120,10 +1118,10 @@
   justify-content: center;
   padding: 3rem 3rem 2rem;
   gap: 0;
-  background: map.get(variables.$colors, 'background');
+  background: map-get($colors, 'background');
   border-radius: 24px 24px 0 0;
 
-  @include mixins.respond-to('mobile') {
+  @include respond-to('mobile') {
     padding: 2rem 1.5rem 1.5rem;
     gap: 0;
   }
@@ -1149,9 +1147,9 @@
       font-size: 1.6rem;
       color: #999;
       transition: all 0.3s ease;
-      font-family: map.get(variables.$fonts, 'title');
+      font-family: map-get($fonts, 'title');
 
-      @include mixins.respond-to('mobile') {
+      @include respond-to('mobile') {
         width: 3.5rem;
         height: 3.5rem;
         font-size: 1.4rem;
@@ -1164,21 +1162,21 @@
       font-weight: 500;
       transition: all 0.3s ease;
 
-      @include mixins.respond-to('mobile') {
+      @include respond-to('mobile') {
         font-size: 1rem;
       }
     }
 
     &.active {
       .step-number {
-        background: map.get(variables.$colors, 'primary');
-        border-color: map.get(variables.$colors, 'primary');
+        background: map-get($colors, 'primary');
+        border-color: map-get($colors, 'primary');
         color: white;
-        box-shadow: 0 4px 16px rgba(map.get(variables.$colors, 'primary'), 0.4);
+        box-shadow: 0 4px 16px rgba(map-get($colors, 'primary'), 0.4);
       }
 
       .step-label {
-        color: map.get(variables.$colors, 'primary');
+        color: map-get($colors, 'primary');
         font-weight: 700;
       }
     }
@@ -1193,7 +1191,7 @@
     position: relative;
     z-index: 0;
 
-    @include mixins.respond-to('mobile') {
+    @include respond-to('mobile') {
       margin-bottom: 2.5rem;
     }
   }
@@ -1205,7 +1203,7 @@
   padding: 3rem 4rem 2rem;
   position: relative;
 
-  @include mixins.respond-to('mobile') {
+  @include respond-to('mobile') {
     padding: 2rem 2rem 1.5rem;
   }
 
@@ -1213,19 +1211,19 @@
     width: 8rem;
     height: 8rem;
     border-radius: 50%;
-    background: rgba(map.get(variables.$colors, 'primary'), 0.1);
+    background: rgba(map-get($colors, 'primary'), 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 2rem;
 
     svg {
-      color: map.get(variables.$colors, 'primary');
+      color: map-get($colors, 'primary');
       width: 4.8rem;
       height: 4.8rem;
     }
 
-    @include mixins.respond-to('mobile') {
+    @include respond-to('mobile') {
       width: 6rem;
       height: 6rem;
 
@@ -1237,24 +1235,24 @@
   }
 
   h2 {
-    font-family: map.get(variables.$fonts, 'title');
+    font-family: map-get($fonts, 'title');
     font-size: 3.2rem;
-    color: map.get(variables.$colors, 'secondary');
+    color: map-get($colors, 'secondary');
     font-weight: 800;
     margin: 0 0 1rem;
 
-    @include mixins.respond-to('mobile') {
+    @include respond-to('mobile') {
       font-size: 2.4rem;
     }
   }
 
   .modal-description {
     font-size: 1.6rem;
-    color: color.adjust(map.get(variables.$colors, 'text'), $lightness: 10%);
+    color: lighten(map-get($colors, 'text'), 10%);
     line-height: 1.6;
     margin: 0;
 
-    @include mixins.respond-to('mobile') {
+    @include respond-to('mobile') {
       font-size: 1.4rem;
     }
   }
@@ -1267,7 +1265,7 @@
     height: 4rem;
     border-radius: 50%;
     border: none;
-    background: rgba(map.get(variables.$colors, 'danger'), 0.1);
+    background: rgba(map-get($colors, 'danger'), 0.1);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1276,12 +1274,12 @@
     padding: 0;
 
     svg {
-      color: map.get(variables.$colors, 'danger');
+      color: map-get($colors, 'danger');
       transition: transform 0.3s ease;
     }
 
     &:hover {
-      background: map.get(variables.$colors, 'danger');
+      background: map-get($colors, 'danger');
       transform: rotate(90deg);
 
       svg {
@@ -1289,7 +1287,7 @@
       }
     }
 
-    @include mixins.respond-to('mobile') {
+    @include respond-to('mobile') {
       width: 3.6rem;
       height: 3.6rem;
       top: 1.5rem;
@@ -1302,7 +1300,7 @@
 #registroModalForm {
   padding: 0 4rem 3rem;
 
-  @include mixins.respond-to('mobile') {
+  @include respond-to('mobile') {
     padding: 0 2rem 2rem;
   }
 
@@ -1317,19 +1315,19 @@
       display: flex;
       align-items: center;
       gap: 1rem;
-      font-family: map.get(variables.$fonts, 'title');
+      font-family: map-get($fonts, 'title');
       font-size: 1.8rem;
-      color: map.get(variables.$colors, 'secondary');
+      color: map-get($colors, 'secondary');
       font-weight: 700;
       margin-bottom: 2rem;
       padding-bottom: 1rem;
-      border-bottom: 2px solid map.get(variables.$colors, 'background');
+      border-bottom: 2px solid map-get($colors, 'background');
 
       svg {
-        color: map.get(variables.$colors, 'primary');
+        color: map-get($colors, 'primary');
       }
 
-      @include mixins.respond-to('mobile') {
+      @include respond-to('mobile') {
         font-size: 1.6rem;
       }
     }
@@ -1343,11 +1341,11 @@
       margin-bottom: 0.8rem;
       font-weight: 600;
       font-size: 1.4rem;
-      color: map.get(variables.$colors, 'secondary');
-      font-family: map.get(variables.$fonts, 'body');
+      color: map-get($colors, 'secondary');
+      font-family: map-get($fonts, 'body');
 
       .required {
-        color: map.get(variables.$colors, 'danger');
+        color: map-get($colors, 'danger');
         margin-left: 0.4rem;
       }
 
@@ -1364,26 +1362,26 @@
       input {
         width: 100%;
         padding: 1.4rem 4.5rem 1.4rem 1.6rem;
-        border: 2px solid rgba(map.get(variables.$colors, 'input-border'), 0.3);
+        border: 2px solid rgba(map-get($colors, 'input-border'), 0.3);
         border-radius: 12px;
         font-size: 1.5rem;
-        font-family: map.get(variables.$colors, 'body');
-        background: map.get(variables.$colors, 'input-bg');
+        font-family: map-get($colors, 'body');
+        background: map-get($colors, 'input-bg');
         transition: all 0.3s ease;
         box-sizing: border-box;
 
         &::placeholder {
-          color: map.get(variables.$colors, 'placeholder');
+          color: map-get($colors, 'placeholder');
         }
 
         &:focus {
           outline: none;
-          border-color: map.get(variables.$colors, 'primary');
-          box-shadow: 0 0 0 4px rgba(map.get(variables.$colors, 'primary'), 0.1);
+          border-color: map-get($colors, 'primary');
+          box-shadow: 0 0 0 4px rgba(map-get($colors, 'primary'), 0.1);
           transform: translateY(-2px);
         }
 
-        @include mixins.respond-to('mobile') {
+        @include respond-to('mobile') {
           padding: 1.2rem 4rem 1.2rem 1.4rem;
           font-size: 1.4rem;
         }
@@ -1398,7 +1396,7 @@
         pointer-events: none;
         opacity: 0.5;
 
-        @include mixins.respond-to('mobile') {
+        @include respond-to('mobile') {
           font-size: 1.8rem;
           right: 1.2rem;
         }
@@ -1411,19 +1409,19 @@
       gap: 0.8rem;
       margin-top: 0.8rem;
       padding: 1rem 1.2rem;
-      background: rgba(map.get(variables.$colors, 'primary'), 0.05);
+      background: rgba(map-get($colors, 'primary'), 0.05);
       border-radius: 8px;
       font-size: 1.2rem;
-      color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%);
+      color: darken(map-get($colors, 'primary'), 10%);
       line-height: 1.5;
 
       svg {
         flex-shrink: 0;
         margin-top: 0.2rem;
-        color: map.get(variables.$colors, 'primary');
+        color: map-get($colors, 'primary');
       }
 
-      @include mixins.respond-to('mobile') {
+      @include respond-to('mobile') {
         font-size: 1.1rem;
         padding: 0.8rem 1rem;
       }
@@ -1431,11 +1429,11 @@
   }
 
   .modal-error {
-    background: rgba(map.get(variables.$colors, 'danger'), 0.1);
-    border-left: 4px solid map.get(variables.$colors, 'danger');
+    background: rgba(map-get($colors, 'danger'), 0.1);
+    border-left: 4px solid map-get($colors, 'danger');
     padding: 1.2rem 1.6rem;
     border-radius: 8px;
-    color: map.get(variables.$colors, 'danger');
+    color: map-get($colors, 'danger');
     font-size: 1.4rem;
     margin-bottom: 2rem;
     font-weight: 500;
@@ -1448,9 +1446,9 @@
   justify-content: space-between;
   gap: 1.5rem;
   padding-top: 2rem;
-  border-top: 2px solid map.get(variables.$colors, 'background');
+  border-top: 2px solid map-get($colors, 'background');
 
-  @include mixins.respond-to('mobile') {
+  @include respond-to('mobile') {
     flex-direction: column-reverse;
     gap: 1rem;
   }
@@ -1465,7 +1463,7 @@
     border-radius: 12px;
     font-size: 1.6rem;
     font-weight: 700;
-    font-family: map.get(variables.$fonts, 'title');
+    font-family: map-get($fonts, 'title');
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
     cursor: pointer;
@@ -1491,19 +1489,19 @@
       transition: transform 0.3s ease;
     }
 
-    @include mixins.respond-to('mobile') {
+    @include respond-to('mobile') {
       padding: 1.4rem 2rem;
       font-size: 1.5rem;
     }
   }
 
   .cancel-modal-btn {
-    background: map.get(variables.$colors, 'background');
-    color: map.get(variables.$colors, 'secondary');
-    border: 2px solid map.get(variables.$colors, 'border-color');
+    background: map-get($colors, 'background');
+    color: map-get($colors, 'secondary');
+    border: 2px solid map-get($colors, 'border-color');
 
     &:hover {
-      background: color.adjust(map.get(variables.$colors, 'background'), $lightness: -5%);
+      background: darken(map-get($colors, 'background'), 5%);
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
@@ -1514,13 +1512,13 @@
   }
 
   .submit-modal-btn {
-    background: map.get(variables.$colors, 'primary');
+    background: map-get($colors, 'primary');
     color: white;
 
     &:hover {
-      background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -8%);
+      background: darken(map-get($colors, 'primary'), 8%);
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(map.get(variables.$colors, 'primary'), 0.4);
+      box-shadow: 0 8px 20px rgba(map-get($colors, 'primary'), 0.4);
 
       svg {
         transform: translateX(4px);
@@ -1595,9 +1593,9 @@
 //===================================================================
 
 // Importar secciones necesarias
-@include meta.load-css('sections/clients');
-@include meta.load-css('sections/faqs');
-@include meta.load-css('sections/location');
+@import 'sections/clients';
+@import 'sections/faqs';
+@import 'sections/location';
 
 // Ajustes específicos para estas secciones en contexto de diagnóstico
 .section-clientes,
@@ -1607,7 +1605,7 @@
   position: relative;
   z-index: 1;
 
-  @include mixins.respond-to('tablet') {
+  @include respond-to('tablet') {
     margin-top: 8rem;
   }
 }
@@ -1616,7 +1614,7 @@
 // RESPONSIVE REFINEMENTS
 //===================================================================
 
-@include mixins.respond-to('mobile') {
+@include respond-to('mobile') {
   .matriz-riesgos-section {
     .buttons-container {
       gap: 1rem;
@@ -1678,7 +1676,7 @@
   }
 }
 
-@include mixins.respond-to('desktop') {
+@include respond-to('desktop') {
   .hero .hero-content {
     margin-bottom: 4rem;
   }
@@ -1689,3 +1687,823 @@
 }
 
 //===================================================================
+// DIAGNÓSTICO INTERACTIVO - LAYOUT 2 COLUMNAS OPTIMIZADO
+// Sin hero tradicional - Formulario directamente visible
+// Panel lateral con información y controles
+//===================================================================
+
+// Base imports
+@import 'base/variables';
+@import 'base/mixins';
+@import 'base/reset';
+@import 'base/typography';
+
+// Components
+@import 'components/buttons';
+@import 'components/dropdown';
+@import 'components/whatsapp';
+@import 'components/tutorial-guiado';
+
+// Layout
+@import 'layout/header';
+@import 'layout/footer';
+
+// Sections específicas
+@import 'sections/form_matriz_riesgos_prof';
+@import 'sections/clients';
+@import 'sections/faqs';
+@import 'sections/location';
+
+// Utilities
+@import 'utilities/helpers';
+@import 'utilities/animations';
+
+//===================================================================
+// CONTAINER PRINCIPAL OPTIMIZADO
+//===================================================================
+
+.main-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  position: relative;
+  
+  // Efecto de fondo sutil
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: radial-gradient(ellipse at top left, rgba(79, 172, 254, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(67, 233, 123, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+//===================================================================
+// LAYOUT GRID PRINCIPAL (70/30)
+//===================================================================
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  min-height: calc(100vh - 80px); // Resta altura del header
+  gap: 0;
+  max-width: 100vw;
+  
+  @include respond-to('tablet') {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+//===================================================================
+// COLUMNA IZQUIERDA: FORMULARIO
+//===================================================================
+
+.form-column {
+  background: white;
+  overflow-y: auto;
+  max-height: calc(100vh - 80px);
+  position: relative;
+  
+  // Scrollbar personalizada
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+  
+  @include respond-to('tablet') {
+    max-height: none;
+    overflow-y: visible;
+    order: 2;
+  }
+}
+
+.form-wrapper {
+  padding: 3rem 4rem;
+  
+  @include respond-to('tablet') {
+    padding: 2rem;
+  }
+  
+  @include respond-to('mobile') {
+    padding: 1.5rem;
+  }
+}
+
+//===================================================================
+// HEADER DE PÁGINA OPTIMIZADO
+//===================================================================
+
+.page-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  
+  @include respond-to('tablet') {
+    margin-bottom: 3rem;
+  }
+  
+  h1 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    
+    @include respond-to('tablet') {
+      font-size: 2.8rem;
+    }
+    
+    @include respond-to('mobile') {
+      font-size: 2.4rem;
+    }
+    
+    .highlight {
+      color: #4facfe;
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        border-radius: 2px;
+        animation: slideInLeft 0.6s ease-out 0.5s both;
+      }
+    }
+  }
+  
+  .page-subtitle {
+    font-size: 1.6rem;
+    color: #64748b;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+    
+    @include respond-to('tablet') {
+      font-size: 1.4rem;
+    }
+  }
+}
+
+//===================================================================
+// FORMULARIO PRINCIPAL
+//===================================================================
+
+.matriz-form {
+  .cargo-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    margin-bottom: 4rem;
+    
+    @include respond-to('tablet') {
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+  }
+  
+  .form-actions {
+    @include flex-center;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 3rem 0;
+    border-top: 2px solid #e2e8f0;
+    
+    @include respond-to('tablet') {
+      padding: 2rem 0;
+      gap: 1.5rem;
+    }
+    
+    .btn-primary,
+    .btn-submit {
+      @include flex-center;
+      gap: 1rem;
+      padding: 1.5rem 3rem;
+      border-radius: 16px;
+      font-size: 1.6rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-width: 280px;
+      position: relative;
+      overflow: hidden;
+      
+      @include respond-to('tablet') {
+        min-width: 240px;
+        padding: 1.2rem 2.5rem;
+        font-size: 1.4rem;
+      }
+      
+      .btn-icon {
+        font-size: 1.8rem;
+        transition: transform 0.3s ease;
+      }
+      
+      &:hover .btn-icon {
+        transform: scale(1.2);
+      }
+      
+      // Efecto de brillo
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+      }
+      
+      &:hover::before {
+        left: 100%;
+      }
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(79, 172, 254, 0.4);
+      }
+    }
+    
+    .btn-submit {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+      }
+    }
+  }
+}
+
+//===================================================================
+// COLUMNA DERECHA: PANEL DE CONTROL
+//===================================================================
+
+.control-panel {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+  overflow-y: auto;
+  max-height: calc(100vh - 80px);
+  position: relative;
+  
+  // Scrollbar personalizada para panel oscuro
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+  
+  @include respond-to('tablet') {
+    max-height: none;
+    overflow-y: visible;
+    order: 1;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    color: #1e293b;
+  }
+}
+
+.panel-content {
+  padding: 3rem 2.5rem;
+  
+  @include respond-to('tablet') {
+    padding: 2rem;
+  }
+}
+
+//===================================================================
+// BOTONES DE ACCIÓN DEL PANEL
+//===================================================================
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  
+  @include respond-to('tablet') {
+    flex-direction: row;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  button {
+    @include flex-center;
+    justify-content: flex-start;
+    gap: 1.5rem;
+    padding: 1.8rem;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    
+    @include respond-to('tablet') {
+      flex-direction: column;
+      text-align: center;
+      padding: 1.5rem;
+      flex: 1;
+    }
+    
+    .btn-icon {
+      font-size: 2.4rem;
+      transition: all 0.3s ease;
+      
+      @include respond-to('tablet') {
+        font-size: 2rem;
+      }
+    }
+    
+    .btn-content {
+      @include flex-column;
+      align-items: flex-start;
+      
+      @include respond-to('tablet') {
+        align-items: center;
+      }
+      
+      .btn-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+        
+        @include respond-to('tablet') {
+          font-size: 1.2rem;
+        }
+      }
+      
+      .btn-desc {
+        font-size: 1.1rem;
+        opacity: 0.8;
+        
+        @include respond-to('tablet') {
+          font-size: 1rem;
+        }
+      }
+    }
+    
+    &:hover {
+      transform: translateX(8px) scale(1.02);
+      
+      @include respond-to('tablet') {
+        transform: translateY(-4px) scale(1.02);
+      }
+      
+      .btn-icon {
+        transform: rotate(15deg) scale(1.1);
+      }
+    }
+  }
+  
+  .btn-tutorial {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    
+    &:hover {
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+    }
+    
+    @include respond-to('tablet') {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1e293b;
+    }
+  }
+  
+  .btn-quick {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    
+    &:hover {
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+    }
+    
+    @include respond-to('tablet') {
+      background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+      color: #1e293b;
+    }
+  }
+  
+  .btn-generate {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    
+    &:hover {
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    }
+    
+    @include respond-to('tablet') {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      color: #1e293b;
+    }
+  }
+}
+
+//===================================================================
+// SECCIÓN DE INFORMACIÓN
+//===================================================================
+
+.info-section {
+  margin-bottom: 3rem;
+  
+  h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: white;
+    
+    @include respond-to('tablet') {
+      color: #1e293b;
+      font-size: 1.6rem;
+    }
+  }
+}
+
+.info-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  
+  @include respond-to('tablet') {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  
+  @include respond-to('tablet') {
+    background: white;
+    border: 1px solid #e2e8f0;
+    flex: 1;
+    padding: 1.5rem;
+  }
+  
+  &:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.15);
+    
+    @include respond-to('tablet') {
+      background: #f8fafc;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  h4 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    color: white;
+    
+    @include respond-to('tablet') {
+      color: #1e293b;
+      font-size: 1.2rem;
+    }
+  }
+  
+  p {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    opacity: 0.9;
+    color: #cbd5e1;
+    
+    @include respond-to('tablet') {
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+//===================================================================
+// BADGE DE CUMPLIMIENTO
+//===================================================================
+
+.compliance-badge {
+  @include flex-center;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  padding: 2rem;
+  border-radius: 16px;
+  margin-bottom: 2.5rem;
+  
+  @include respond-to('tablet') {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    border: 2px solid #10b981;
+  }
+  
+  .badge-icon {
+    font-size: 3rem;
+    color: white;
+    
+    @include respond-to('tablet') {
+      color: #10b981;
+    }
+  }
+  
+  .badge-content {
+    strong {
+      display: block;
+      font-size: 1.4rem;
+      color: white;
+      margin-bottom: 0.5rem;
+      
+      @include respond-to('tablet') {
+        color: #1e293b;
+        font-size: 1.3rem;
+      }
+    }
+    
+    p {
+      font-size: 1.2rem;
+      color: #a7f3d0;
+      margin: 0;
+      
+      @include respond-to('tablet') {
+        color: #064e3b;
+        font-size: 1.1rem;
+      }
+    }
+  }
+}
+
+//===================================================================
+// SECCIÓN DE PROGRESO
+//===================================================================
+
+.progress-section {
+  margin-bottom: 3rem;
+  
+  @include respond-to('tablet') {
+    margin-bottom: 2rem;
+  }
+  
+  h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: white;
+    
+    @include respond-to('tablet') {
+      color: #1e293b;
+      font-size: 1.4rem;
+    }
+  }
+}
+
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  
+  .stat-item {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    @include respond-to('tablet') {
+      background: white;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .stat-number {
+      display: block;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #4facfe;
+      margin-bottom: 0.5rem;
+      
+      @include respond-to('tablet') {
+        font-size: 2rem;
+      }
+    }
+    
+    .stat-label {
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      font-weight: 500;
+      
+      @include respond-to('tablet') {
+        color: #64748b;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+//===================================================================
+// SECCIÓN DE AYUDA
+//===================================================================
+
+.help-section {
+  .help-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    
+    @include respond-to('tablet') {
+      background: white;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .help-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    h4 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      color: white;
+      
+      @include respond-to('tablet') {
+        color: #1e293b;
+      }
+    }
+    
+    p {
+      font-size: 1.2rem;
+      color: #cbd5e1;
+      margin-bottom: 1.5rem;
+      
+      @include respond-to('tablet') {
+        color: #64748b;
+      }
+    }
+    
+    .help-btn {
+      @include flex-center;
+      gap: 0.8rem;
+      background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+      color: white;
+      padding: 1.2rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+      }
+      
+      span {
+        font-size: 1.3rem;
+      }
+    }
+  }
+}
+
+//===================================================================
+// ANIMACIONES
+//===================================================================
+
+@keyframes slideInLeft {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Animaciones de entrada
+.form-wrapper {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.panel-content {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+//===================================================================
+// PRINT STYLES
+//===================================================================
+
+@media print {
+  .control-panel {
+    display: none;
+  }
+  
+  .layout-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-column {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+//===================================================================
+// DARK MODE SUPPORT (para futuro)
+//===================================================================
+
+@media (prefers-color-scheme: dark) {
+  @include respond-to('tablet') {
+    .control-panel {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: white;
+      
+      .info-card,
+      .help-card {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        
+        h4 {
+          color: white;
+        }
+        
+        p {
+          color: #cbd5e1;
+        }
+      }
+    }
+  }
+}
+
+//===================================================================
+// PERFORMANCE OPTIMIZATIONS
+//===================================================================
+
+// Reducir animaciones si se prefiere
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .page-header h1 .highlight::after {
+    animation: none;
+    width: 100%;
+  }
+}

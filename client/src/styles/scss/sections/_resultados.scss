@@ -5,12 +5,14 @@
 // 1rem = 10px (html font-size: 62.5%)
 // ============================================
 
-@import '../base/variables';
+@use "sass:color";
+@use "sass:map";
+@use '../base/variables';
 
 .resultados-section {
   min-height: 100vh;
   padding: 4rem 15rem;
-  background: map-get($colors, 'accordion-header-bg');
+  background: map.get(variables.$colors, 'accordion-header-bg');
 
   .container {
     max-width: 1400px;
@@ -50,21 +52,21 @@
       &.circle-1 {
         width: 160px;
         height: 160px;
-        border: 3px solid map-get($colors, 'primary');
+        border: 3px solid map.get(variables.$colors, 'primary');
         animation: pulse-circle 2s ease-in-out infinite;
       }
 
       &.circle-2 {
         width: 120px;
         height: 120px;
-        border: 3px solid map-get($colors, 'primary');
+        border: 3px solid map.get(variables.$colors, 'primary');
         animation: pulse-circle 2s ease-in-out 0.5s infinite;
       }
 
       &.circle-3 {
         width: 80px;
         height: 80px;
-        border: 3px solid map-get($colors, 'primary');
+        border: 3px solid map.get(variables.$colors, 'primary');
         animation: pulse-circle 2s ease-in-out 1s infinite;
       }
     }
@@ -85,15 +87,15 @@
       animation: float 3s ease-in-out infinite;
 
       svg {
-        color: map-get($colors, 'primary');
+        color: map.get(variables.$colors, 'primary');
       }
     }
   }
 
   .loader-title {
-    font-family: map-get($fonts, 'title');
+    font-family: map.get(variables.$fonts, 'title');
     font-size: 3.2rem;
-    color: map-get($colors, 'secondary');
+    color: map.get(variables.$colors, 'secondary');
     margin-bottom: 1.5rem;
     font-weight: 800;
     animation: fadeInUp 0.6s ease 0.2s both;
@@ -105,7 +107,7 @@
 
   .loader-description {
     font-size: 1.8rem;
-    color: lighten(map-get($colors, 'text'), 10%);
+    color: color.adjust(map.get(variables.$colors, 'text'), $lightness: 10%);
     margin-bottom: 4rem;
     line-height: 1.6;
     max-width: 600px;
@@ -156,19 +158,19 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(map-get($colors, 'primary'), 0.1);
+        background: rgba(map.get(variables.$colors, 'primary'), 0.1);
         position: relative;
 
         svg {
-          color: map-get($colors, 'primary');
+          color: map.get(variables.$colors, 'primary');
           opacity: 0;
         }
 
         .step-spinner {
           width: 32px;
           height: 32px;
-          border: 3px solid rgba(map-get($colors, 'primary'), 0.2);
-          border-top-color: map-get($colors, 'primary');
+          border: 3px solid rgba(map.get(variables.$colors, 'primary'), 0.2);
+          border-top-color: map.get(variables.$colors, 'primary');
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
         }
@@ -176,7 +178,7 @@
 
       span {
         font-size: 1.4rem;
-        color: map-get($colors, 'text');
+        color: map.get(variables.$colors, 'text');
         font-weight: 600;
         text-align: center;
 
@@ -186,15 +188,15 @@
       }
 
       &.active {
-        background: map-get($colors, 'primary');
-        box-shadow: 0 8px 24px rgba(map-get($colors, 'primary'), 0.3);
+        background: map.get(variables.$colors, 'primary');
+        box-shadow: 0 8px 24px rgba(map.get(variables.$colors, 'primary'), 0.3);
 
         .step-icon {
           background: white;
 
           svg {
             opacity: 1;
-            color: map-get($colors, 'primary');
+            color: map.get(variables.$colors, 'primary');
             animation: checkmark 0.6s ease;
           }
 
@@ -215,7 +217,7 @@
     width: 100%;
     max-width: 600px;
     height: 8px;
-    background: rgba(map-get($colors, 'primary'), 0.1);
+    background: rgba(map.get(variables.$colors, 'primary'), 0.1);
     border-radius: 8px;
     margin: 0 auto 3rem;
     overflow: hidden;
@@ -223,10 +225,10 @@
 
     .progress-bar-fill {
       height: 100%;
-      background: map-get($colors, 'primary');
+      background: map.get(variables.$colors, 'primary');
       border-radius: 8px;
       animation: progressFill 3s ease-in-out infinite;
-      box-shadow: 0 0 12px rgba(map-get($colors, 'primary'), 0.5);
+      box-shadow: 0 0 12px rgba(map.get(variables.$colors, 'primary'), 0.5);
     }
   }
 
@@ -240,7 +242,7 @@
     animation: fadeInUp 0.6s ease 0.6s both;
 
     svg {
-      color: map-get($colors, 'primary');
+      color: map.get(variables.$colors, 'primary');
       flex-shrink: 0;
     }
 
@@ -350,7 +352,7 @@
 
     h1 {
       font-size: 3.2rem; // 32px
-      color: map-get($colors, 'secondary');
+      color: map.get(variables.$colors, 'secondary');
       margin-bottom: 1.5rem;
       font-weight: 800;
       text-align: left;
@@ -359,7 +361,7 @@
 
     .results-subtitle {
       font-size: 1.8rem; // 18px
-      color: map-get($colors, 'text');
+      color: map.get(variables.$colors, 'text');
       margin-bottom: 2rem;
       line-height: 1.6;
       text-align: left;
@@ -371,15 +373,15 @@
     text-align: center;
     margin-top: 6rem;
     padding-top: 3rem;
-    border-top: 2px solid map-get($colors, 'border-color');
+    border-top: 2px solid map.get(variables.$colors, 'border-color');
 
     p {
       font-size: 1.6rem; // 16px
-      color: map-get($colors, 'text');
+      color: map.get(variables.$colors, 'text');
     }
 
     a {
-      color: map-get($colors, 'primary');
+      color: map.get(variables.$colors, 'primary');
       text-decoration: underline;
       font-weight: 600;
 
@@ -399,7 +401,7 @@
   gap: 0.6rem;
   margin-top: 3rem;
   padding: 2.2rem;
-  background: map-get($colors, 'accordion-header-bg');
+  background: map.get(variables.$colors, 'accordion-header-bg');
   border-radius: 40px;
   box-shadow:  20px 20px 60px #c4c4c4,
              -20px -20px 60px #ffffff;
@@ -415,15 +417,15 @@
 
     .metadata-label {
       font-weight: 800;
-      font-family: map-get($fonts, "title");
-      color: map-get($colors, 'primary');
+      font-family: map.get(variables.$fonts, "title");
+      color: map.get(variables.$colors, 'primary');
       font-size: 2rem; // 14px
       white-space: nowrap;
     }
 
     .metadata-value {
-      font-family: map-get($fonts, "title");
-      color: map-get($colors, 'secondary');
+      font-family: map.get(variables.$fonts, "title");
+      color: map.get(variables.$colors, 'secondary');
       font-weight: 500;
       font-size: 1.6rem; // 16px
     }
@@ -454,7 +456,7 @@
 // TARJETA DE DOCUMENTO (SIMPLIFICADA)
 // ============================================
 .document-card {
-  background: map-get($colors, 'accordion-header-bg');
+  background: map.get(variables.$colors, 'accordion-header-bg');
   border-radius: 40px;
   overflow: hidden;
   box-shadow:  20px 20px 60px #c4c4c4,
@@ -480,17 +482,17 @@
   text-align: end;
 
   &.free {
-    background: map-get($colors, 'accordion-header-bg');
-    color: map-get($colors, 'secondary');
+    background: map.get(variables.$colors, 'accordion-header-bg');
+    color: map.get(variables.$colors, 'secondary');
   }
 
   &.paid {
-    background: map-get($colors, 'accordion-header-bg');
-    color: map-get($colors, 'secondary');
+    background: map.get(variables.$colors, 'accordion-header-bg');
+    color: map.get(variables.$colors, 'secondary');
   }
 
   .price-text {
-    font-family: map-get($fonts, "title");
+    font-family: map.get(variables.$fonts, "title");
     display: block;
     font-size: 2.7rem; // 20px
   }
@@ -504,7 +506,7 @@
   width: 100%;
   height: 300px;
   overflow: hidden;
-  background: map-get($colors, 'background');
+  background: map.get(variables.$colors, 'background');
 
   .card-thumbnail-image {
     width: 100%;
@@ -522,7 +524,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: map-get($colors, 'background');
+    background: map.get(variables.$colors, 'background');
 
     .card-icon {
       font-size: 8rem; // 80px
@@ -567,13 +569,13 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: map-get($colors, 'border-color');
+  background-color: map.get(variables.$colors, 'border-color');
 }
 
 .card-document-title {
   font-size: 2rem; // 20px
   font-weight: 700;
-  color: map-get($colors, 'secondary');
+  color: map.get(variables.$colors, 'secondary');
   
   line-height: 1.3;
 }
@@ -590,12 +592,12 @@
   }
 
   .card-company-name {
-    color: map-get($colors, 'secondary');
+    color: map.get(variables.$colors, 'secondary');
     font-weight: 600;
   }
 
   .card-cargos-count {
-    color: map-get($colors, 'text');
+    color: map.get(variables.$colors, 'text');
     font-weight: 500;
   }
 }
@@ -645,7 +647,7 @@
   }
 
   .btn-cart {
-    background: map-get($colors, 'primary');
+    background: map.get(variables.$colors, 'primary');
     color: white;
 
     svg {
@@ -653,13 +655,13 @@
     }
 
     &.active {
-      background: map-get($colors, 'success');
+      background: map.get(variables.$colors, 'success');
       animation: cartPulse 0.5s ease;
     }
   }
 
   .btn-download {
-    background: map-get($colors, 'success');
+    background: map.get(variables.$colors, 'success');
     color: white;
 
     svg {
@@ -667,7 +669,7 @@
     }
 
     &:disabled {
-      background: map-get($colors, 'border-color');
+      background: map.get(variables.$colors, 'border-color');
       color: #999;
 
       svg {
@@ -677,7 +679,7 @@
   }
 
   .btn-lock {
-    background: map-get($colors, 'danger');
+    background: map.get(variables.$colors, 'danger');
     color: white;
     pointer-events: none;
 
@@ -718,14 +720,14 @@
 
     h1 {
       font-size: 2.8rem; // 28px
-      color: map-get($colors, 'secondary');
+      color: map.get(variables.$colors, 'secondary');
       margin-bottom: 1.5rem;
       font-weight: 700;
     }
 
     p {
       font-size: 1.8rem; // 18px
-      color: map-get($colors, 'text');
+      color: map.get(variables.$colors, 'text');
       max-width: 600px;
       margin: 0 auto;
       line-height: 1.6;
@@ -738,7 +740,7 @@
     .cta-button-1 {
       display: inline-block;
       padding: 1.5rem 3rem;
-      background: map-get($colors, 'primary');
+      background: map.get(variables.$colors, 'primary');
       color: white;
       border-radius: 8px;
       font-weight: 700;
@@ -748,7 +750,7 @@
       box-shadow: 0 4px 12px rgba(93, 196, 175, 0.3);
 
       &:hover {
-        background: darken(#5dc4af, 10%);
+        background: color.adjust(#5dc4af, $lightness: -10%);
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(93, 196, 175, 0.4);
       }
@@ -770,7 +772,7 @@
   min-width: 320px;
   z-index: 1000;
   animation: slideInUp 0.4s ease;
-  border: 2px solid map-get($colors, 'primary');
+  border: 2px solid map.get(variables.$colors, 'primary');
 
   .cart-header {
     display: flex;
@@ -778,7 +780,7 @@
     gap: 1rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 2px solid map-get($colors, 'border-color');
+    border-bottom: 2px solid map.get(variables.$colors, 'border-color');
 
     .cart-icon {
       font-size: 2.4rem; // 24px
@@ -786,7 +788,7 @@
 
     .cart-title {
       font-weight: 700;
-      color: map-get($colors, 'secondary');
+      color: map.get(variables.$colors, 'secondary');
       font-size: 1.8rem; // 18px
     }
   }
@@ -798,12 +800,12 @@
       align-items: center;
       margin-bottom: 1.5rem;
       font-size: 1.6rem; // 16px
-      color: map-get($colors, 'text');
+      color: map.get(variables.$colors, 'text');
 
       .cart-total-value {
         font-size: 2.4rem; // 24px
         font-weight: 800;
-        color: map-get($colors, 'secondary');
+        color: map.get(variables.$colors, 'secondary');
       }
     }
 
@@ -814,14 +816,14 @@
       font-weight: 700;
       border-radius: 8px;
       border: none;
-      background: map-get($colors, 'primary');
+      background: map.get(variables.$colors, 'primary');
       color: white;
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 12px rgba(93, 196, 175, 0.4);
 
       &:hover {
-        background: darken(#5dc4af, 10%);
+        background: color.adjust(#5dc4af, $lightness: -10%);
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(93, 196, 175, 0.5);
       }

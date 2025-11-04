@@ -1,12 +1,15 @@
+@use "sass:color";
+@use "sass:map";
+@use "../base/variables";
+
 // client/src/styles/scss/components/_tutorial-guiado.scss
-// NO @use aquí. Asumimos que $colors, $fonts, etc., vienen de un @import global anterior.
-// Si necesitas mixins de _mixins.scss, impórtalos aquí también si no están ya globales.
-// Ejemplo: @import '../base/mixins'; (asegúrate que _mixins.scss use variables globales también)
+// Las variables se cargan desde el archivo padre que importa este componente
+@use 'buttons' as *;
 
 .tutorial-popup {
     position: fixed;
-    background-color: lighten(map-get($colors, "secondary"), 10%); // Acceso directo a $colors
-    color: map-get($colors, "background");
+    background-color: color.adjust(map.get(variables.$colors, "secondary"), $lightness: 10%); // Acceso directo a $colors
+    color: map.get(variables.$colors, "background");
     padding: 1.8rem 2.2rem;
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.08) inset;
@@ -14,8 +17,8 @@
     max-width: 320px;
     font-size: 1.45rem;
     line-height: 1.65;
-    font-family: map-get($fonts, "body"); // Acceso directo a $fonts
-    border: 1px solid rgba(map-get($colors, "primary"), 0.5);
+    font-family: map.get(variables.$fonts, "body"); // Acceso directo a $fonts
+    border: 1px solid rgba(map.get(variables.$colors, "primary"), 0.5);
     opacity: 0;
     transform: translateY(10px) scale(0.95);
     animation: tutorialPopupFadeIn 0.3s 0.1s ease-out forwards;
@@ -33,28 +36,28 @@
         left: 50%;
         transform: translateX(-50%);
         border-width: 0 8px 8px 8px;
-        border-color: transparent transparent lighten(map-get($colors, "secondary"), 10%) transparent;
+        border-color: transparent transparent color.adjust(map.get(variables.$colors, "secondary"), $lightness: 10%) transparent;
     }
     &.pos-top::before {
         top: 100%;
         left: 50%;
         transform: translateX(-50%);
         border-width: 8px 8px 0 8px;
-        border-color: lighten(map-get($colors, "secondary"), 10%) transparent transparent transparent;
+        border-color: color.adjust(map.get(variables.$colors, "secondary"), $lightness: 10%) transparent transparent transparent;
     }
     &.pos-right::before {
         right: 100%;
         top: 50%;
         transform: translateY(-50%);
         border-width: 8px 8px 8px 0;
-        border-color: transparent lighten(map-get($colors, "secondary"), 10%) transparent transparent;
+        border-color: transparent color.adjust(map.get(variables.$colors, "secondary"), $lightness: 10%) transparent transparent;
     }
     &.pos-left::before {
         left: 100%;
         top: 50%;
         transform: translateY(-50%);
         border-width: 8px 0 8px 8px;
-        border-color: transparent transparent transparent lighten(map-get($colors, "secondary"), 10%);
+        border-color: transparent transparent transparent color.adjust(map.get(variables.$colors, "secondary"), $lightness: 10%);
     }
 
     .tutorial-mensaje {
@@ -85,37 +88,37 @@
         }
 
         .tutorial-btn-siguiente {
-            background-color: map-get($colors, "primary");
-            color: map-get($colors, "secondary");
+            background-color: map.get(variables.$colors, "primary");
+            color: map.get(variables.$colors, "secondary");
             border: none;
 
             &:hover {
-                background-color: darken(map-get($colors, "primary"), 8%);
-                box-shadow: 0 2px 8px rgba(map-get($colors, "primary"), 0.4);
+                background-color: color.adjust(map.get(variables.$colors, "primary"), $lightness: -8%);
+                box-shadow: 0 2px 8px rgba(map.get(variables.$colors, "primary"), 0.4);
             }
         }
 
         .tutorial-btn-anterior {
             background-color: transparent;
-            color: map-get($colors, "background");
-            border: 1px solid rgba(map-get($colors, "primary"), 0.7);
+            color: map.get(variables.$colors, "background");
+            border: 1px solid rgba(map.get(variables.$colors, "primary"), 0.7);
 
             &:hover {
-                background-color: rgba(map-get($colors, "primary"), 0.15);
-                color: lighten(map-get($colors, "primary"), 10%);
+                background-color: rgba(map.get(variables.$colors, "primary"), 0.15);
+                color: color.adjust(map.get(variables.$colors, "primary"), $lightness: 10%);
             }
         }
         
         .tutorial-btn-saltar {
             background-color: transparent;
-            color: rgba(map-get($colors, "background"), 0.7);
+            color: rgba(map.get(variables.$colors, "background"), 0.7);
             border: none;
             margin-left: auto; 
             padding: 0.8rem 1.0rem;
             font-weight: 500;
 
             &:hover {
-                color: map-get($colors, "background");
+                color: map.get(variables.$colors, "background");
                 text-decoration: underline;
             }
         }
@@ -124,8 +127,8 @@
 
 .tutorial-highlight {
     outline: none; 
-    box-shadow: 0 0 0 3px rgba(map-get($colors, "primary"), 0.7), 
-                0 0 0 9999px rgba(map-get($colors, "secondary"), 0.4); 
+    box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, "primary"), 0.7), 
+                0 0 0 9999px rgba(map.get(variables.$colors, "secondary"), 0.4); 
     border-radius: 8px; 
     position: relative; 
     z-index: 10000 !important; 
