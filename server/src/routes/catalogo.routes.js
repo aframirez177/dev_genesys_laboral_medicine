@@ -5,6 +5,9 @@ import {
   getRiesgoById,
   getSectores,
   getSectorById,
+  getCiudades,
+  getDepartamentos,
+  searchCiudades,
   buscarGES,
   getGESById,
   getGESBatch,
@@ -41,6 +44,19 @@ router.get('/sectores', getSectores);
 
 // GET /api/catalogo/sectores/:id - Obtener un sector por ID o código
 router.get('/sectores/:id', getSectorById);
+
+// ========================================
+// CIUDADES DE COLOMBIA
+// ========================================
+
+// GET /api/catalogo/ciudades/search - Buscar ciudades (debe ir antes de /:departamento)
+router.get('/ciudades/search', searchCiudades);
+
+// GET /api/catalogo/departamentos - Obtener lista de departamentos
+router.get('/departamentos', getDepartamentos);
+
+// GET /api/catalogo/ciudades - Obtener todas las ciudades
+router.get('/ciudades', getCiudades);
 
 // ========================================
 // GES (Grupos de Exposición Similar)

@@ -174,6 +174,11 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       inject: true,
+      template: "./public/pages/Blogs.html",
+      filename: "./pages/Blogs.html",
+    }),
+    new HtmlWebpackPlugin({
+      inject: true,
       template: "./public/pages/Contacto.html",
       filename: "./pages/Contacto.html",
     }),

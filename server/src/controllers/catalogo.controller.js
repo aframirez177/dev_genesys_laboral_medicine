@@ -137,6 +137,104 @@ export const getSectorById = async (req, res) => {
   }
 };
 
+// ========================================
+// CIUDADES DE COLOMBIA
+// ========================================
+
+/**
+ * GET /api/catalogo/ciudades
+ * Obtener todas las ciudades de Colombia
+ * Query params:
+ * - departamento: Filtrar por departamento
+ * - activo: Filtrar solo activas (true/false)
+ */
+export const getCiudades = async (req, res) => {
+  try {
+    const { departamento, activo } = req.query;
+
+    const options = {};
+    if (departamento) options.departamento = departamento;
+    if (activo !== undefined) options.activo = activo === 'true';
+
+    const ciudades = await CatalogoService.getCiudades(options);
+
+    res.json({
+      success: true,
+      data: ciudades,
+      total: ciudades.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error en getCiudades:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error obteniendo ciudades',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * GET /api/catalogo/departamentos
+ * Obtener lista de departamentos únicos
+ */
+export const getDepartamentos = async (req, res) => {
+  try {
+    const departamentos = await CatalogoService.getDepartamentos();
+
+    res.json({
+      success: true,
+      data: departamentos.map(d => d.departamento),
+      total: departamentos.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error en getDepartamentos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error obteniendo departamentos',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * GET /api/catalogo/ciudades/search
+ * Buscar ciudades por nombre (para autocompletado)
+ * Query params:
+ * - q: Término de búsqueda
+ * - limit: Límite de resultados (default: 10)
+ */
+export const searchCiudades = async (req, res) => {
+  try {
+    const { q, limit = 10 } = req.query;
+
+    if (!q || q.length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: 'El término de búsqueda debe tener al menos 2 caracteres'
+      });
+    }
+
+    const ciudades = await CatalogoService.searchCiudades(q, parseInt(limit));
+
+    res.json({
+      success: true,
+      data: ciudades,
+      total: ciudades.length,
+      query: q
+    });
+
+  } catch (error) {
+    console.error('❌ Error en searchCiudades:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error buscando ciudades',
+      error: error.message
+    });
+  }
+};
+
 /**
  * GET /api/catalogo/ges
  * Buscar GES con múltiples filtros

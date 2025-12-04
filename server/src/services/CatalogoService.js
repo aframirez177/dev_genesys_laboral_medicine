@@ -261,6 +261,56 @@ class CatalogoService {
   }
 
   // ========================================
+  // MÉTODOS PÚBLICOS - CIUDADES
+  // ========================================
+
+  /**
+   * Obtener todas las ciudades de Colombia (con cache)
+   * @param {Object} options - { departamento: String, activo: Boolean }
+   * @returns {Array} Lista de ciudades
+   */
+  async getCiudades(options = {}) {
+    const cacheKey = this._generateCacheKey('ciudades', options);
+
+    let data = await this._getFromCache(cacheKey);
+    if (data) return data;
+
+    data = await CatalogoRepository.getAllCiudades(options);
+
+    await this._setCache(cacheKey, data, this.ttl.sectores); // Mismo TTL que sectores
+
+    return data;
+  }
+
+  /**
+   * Obtener lista de departamentos
+   * @returns {Array} Lista de departamentos
+   */
+  async getDepartamentos() {
+    const cacheKey = this._generateCacheKey('departamentos', 'all');
+
+    let data = await this._getFromCache(cacheKey);
+    if (data) return data;
+
+    data = await CatalogoRepository.getDepartamentos();
+
+    await this._setCache(cacheKey, data, this.ttl.sectores);
+
+    return data;
+  }
+
+  /**
+   * Buscar ciudades por nombre (para autocompletado)
+   * @param {String} searchTerm - Término de búsqueda
+   * @param {Number} limit - Límite de resultados
+   * @returns {Array} Ciudades que coinciden
+   */
+  async searchCiudades(searchTerm, limit = 10) {
+    // No cachear búsquedas dinámicas
+    return await CatalogoRepository.searchCiudades(searchTerm, limit);
+  }
+
+  // ========================================
   // MÉTODOS PÚBLICOS - GES
   // ========================================
 

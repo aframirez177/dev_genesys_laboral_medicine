@@ -102,7 +102,56 @@ class CatalogoRepository {
       query = query.where('activo', options.activo);
     }
 
-    return await query.orderBy('nombre', 'asc');
+    return await query.orderBy('orden', 'asc');
+  }
+
+  // ========================================
+  // CATALOGO_CIUDADES - Ciudades de Colombia
+  // ========================================
+
+  /**
+   * Obtener todas las ciudades de Colombia
+   * @param {Object} options - { departamento: String, activo: Boolean }
+   * @returns {Array} Lista de ciudades
+   */
+  async getAllCiudades(options = {}) {
+    let query = db('catalogo_ciudades').select('*');
+
+    if (options.departamento) {
+      query = query.where('departamento', options.departamento);
+    }
+
+    if (options.activo !== undefined) {
+      query = query.where('activo', options.activo);
+    }
+
+    return await query.orderBy(['departamento', 'orden', 'nombre']);
+  }
+
+  /**
+   * Obtener lista de departamentos únicos
+   * @returns {Array} Lista de departamentos
+   */
+  async getDepartamentos() {
+    return await db('catalogo_ciudades')
+      .distinct('departamento')
+      .where('activo', true)
+      .orderBy('departamento', 'asc');
+  }
+
+  /**
+   * Buscar ciudades por nombre (para autocompletado)
+   * @param {String} searchTerm - Término de búsqueda
+   * @param {Number} limit - Límite de resultados
+   * @returns {Array} Ciudades que coinciden
+   */
+  async searchCiudades(searchTerm, limit = 10) {
+    return await db('catalogo_ciudades')
+      .select('*')
+      .whereRaw('LOWER(nombre) LIKE ?', [`%${searchTerm.toLowerCase()}%`])
+      .where('activo', true)
+      .orderByRaw('es_capital DESC, nombre ASC')
+      .limit(limit);
   }
 
   /**
