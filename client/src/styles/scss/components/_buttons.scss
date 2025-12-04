@@ -197,11 +197,10 @@ a {
     font-weight: 500;
     text-decoration: none;
     color: map.get(variables.$colors, "secondary");
-    transition: all map.get(variables.$transitions, "fast");
+    transition: font-weight 0.2s ease;
     
     &:hover {
-        color: map.get(variables.$colors, "text-primary-accessible");
-        text-decoration: underline;
+        font-weight: 800;
     }
     
     &:focus-visible {

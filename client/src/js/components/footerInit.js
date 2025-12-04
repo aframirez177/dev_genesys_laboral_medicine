@@ -99,6 +99,10 @@ export function initFooter() {
      * @returns {string} - La ruta ajustada
      */
     function adjustPath(path) {
+        // Si la ruta ya es una URL absoluta (http:// o https://), no modificar
+        if (path.startsWith('http://') || path.startsWith('https://')) {
+            return path;
+        }
         if (!isIndex) {
             return '../' + path;
         }

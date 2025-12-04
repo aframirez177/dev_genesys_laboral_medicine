@@ -43,6 +43,12 @@ header {
             a {
                 position: relative;
                 top: 4px;
+                font-weight: 500;
+                transition: font-weight 0.2s ease;
+                
+                &:hover {
+                    font-weight: 800;
+                }
             }
         }
         .cta-buttons{
@@ -222,11 +228,11 @@ header {
         color: map.get(variables.$colors,"secondary");
         text-decoration: none;
         font-size: 1.4rem;
-        transition: color 0.2s ease;
+        font-weight: 500;
+        transition: font-weight 0.2s ease;
 
         &:hover {
-            color: map.get(variables.$colors,"primary");
-            font-weight: 600;
+            font-weight: 800;
         }
         }
     }
@@ -255,6 +261,15 @@ header {
             flex-direction: column;
             gap: 1.5rem;
             align-items: center;
+            
+            a {
+                font-weight: 500;
+                transition: font-weight 0.2s ease;
+                
+                &:hover {
+                    font-weight: 800;
+                }
+            }
         }
         .mobile-services {
             width: 100%;
@@ -307,13 +322,14 @@ header {
                         color: map.get(variables.$colors, "secondary");
                         text-decoration: none;
                         font-size: 1.2rem;
-                        transition: 0.2s;
+                        font-weight: 500;
+                        transition: font-weight 0.2s ease;
                         text-align: left;
                         max-width: 140px;
                         padding-bottom: 1.6rem;                        
                         
                         &:hover {
-                            color: map.get(variables.$colors, "primary");
+                            font-weight: 800;
                         }
                     }
                 }
