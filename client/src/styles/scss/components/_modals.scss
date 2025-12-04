@@ -1,0 +1,566 @@
+/**
+ * _modals.scss - Sistema de modales profesionales
+ *
+ * Estilos para modales, confirmaciones y toasts
+ * Sigue el design system de Genesys:
+ * - Sin gradientes (colores sólidos)
+ * - Sistema de espaciado 8px
+ * - Accesibilidad WCAG AA
+ * - Animaciones suaves
+ */
+
+@use "sass:map";
+@use "sass:color";
+@use "../base/variables";
+@use "../base/mixins";
+
+// ============================================================================
+// MODAL RESUME (Continuar sesión guardada)
+// ============================================================================
+
+.wizard-resume-modal,
+.wizard-confirm-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: map.get(variables.$spacing, 'md');
+
+  &.modal-visible {
+    opacity: 1;
+
+    .modal-content {
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  &.modal-closing {
+    opacity: 0;
+
+    .modal-content {
+      transform: scale(0.95) translateY(1rem);
+    }
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(45, 50, 56, 0.6); // text color con 60% opacity
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+  }
+
+  .modal-content {
+    position: relative;
+    background: white;
+    border-radius: map.get(variables.$radius, 'lg'); // 16px
+    padding: map.get(variables.$spacing, 'lg'); // 32px
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    transform: scale(0.9) translateY(-1rem);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    @include mixins.respond-to('mobile') {
+      padding: map.get(variables.$spacing, 'md'); // 24px en mobile
+      max-width: 100%;
+    }
+  }
+
+  .modal-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto map.get(variables.$spacing, 'md');
+    background: map.get(variables.$colors, 'primary'); // Color sólido, no gradiente
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+
+    i {
+      font-size: 3.2rem;
+      color: white;
+    }
+
+    // Variantes por tipo
+    &--info {
+      background: map.get(variables.$colors, 'link-accessible');
+    }
+
+    &--success {
+      background: map.get(variables.$colors, 'success');
+    }
+
+    &--warning {
+      background: map.get(variables.$colors, 'atention');
+    }
+
+    &--danger {
+      background: map.get(variables.$colors, 'danger');
+    }
+  }
+
+  .modal-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'secondary');
+    margin-bottom: map.get(variables.$spacing, 'sm'); // 16px
+    font-family: map.get(variables.$fonts, 'title');
+
+    @include mixins.respond-to('mobile') {
+      font-size: 2rem;
+    }
+  }
+
+  .modal-message {
+    font-size: 1.6rem;
+    color: map.get(variables.$colors, 'text');
+    margin-bottom: map.get(variables.$spacing, 'xs'); // 8px
+    line-height: 1.6;
+
+    strong {
+      color: map.get(variables.$colors, 'primary');
+      font-weight: 600;
+    }
+
+    @include mixins.respond-to('mobile') {
+      font-size: 1.5rem;
+    }
+  }
+
+  .modal-subtitle {
+    font-size: 1.4rem;
+    color: #999;
+    margin-bottom: map.get(variables.$spacing, 'md'); // 24px
+
+    @include mixins.respond-to('mobile') {
+      font-size: 1.3rem;
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: map.get(variables.$spacing, 'sm'); // 16px
+    justify-content: center;
+    flex-wrap: wrap;
+
+    @include mixins.respond-to('mobile') {
+      flex-direction: column;
+      gap: map.get(variables.$spacing, 'xs'); // 8px
+    }
+
+    button {
+      flex: 1;
+      min-width: 140px;
+      max-width: 200px;
+      padding: 1.2rem 2.4rem;
+      font-size: 1.5rem;
+      border-radius: map.get(variables.$radius, 'md'); // 8px
+      border: none;
+      cursor: pointer;
+      font-family: map.get(variables.$fonts, 'title');
+      font-weight: 600;
+      transition: all map.get(variables.$transitions, 'base');
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+
+      @include mixins.respond-to('mobile') {
+        max-width: 100%;
+        padding: 1.4rem 2rem;
+      }
+
+      i {
+        font-size: 1.6rem;
+      }
+
+      &.cta-button {
+        background: map.get(variables.$colors, 'primary');
+        color: white;
+
+        &:hover {
+          background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -8%);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(93, 196, 175, 0.4);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        // Variantes de confirmación
+        &.btn-confirm--danger {
+          background: map.get(variables.$colors, 'danger');
+
+          &:hover {
+            background: color.adjust(map.get(variables.$colors, 'danger'), $lightness: -8%);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+          }
+        }
+
+        &.btn-confirm--success {
+          background: map.get(variables.$colors, 'success');
+
+          &:hover {
+            background: color.adjust(map.get(variables.$colors, 'success'), $lightness: -8%);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+          }
+        }
+      }
+
+      &.cta-button-1 {
+        background: map.get(variables.$colors, 'background');
+        color: map.get(variables.$colors, 'secondary');
+        border: 2px solid map.get(variables.$colors, 'border-color');
+
+        &:hover {
+          background: #e0e0e0;
+          border-color: map.get(variables.$colors, 'secondary');
+        }
+      }
+
+      &:focus-visible {
+        outline: 2px solid map.get(variables.$colors, 'primary');
+        outline-offset: 2px;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// TOAST NOTIFICATIONS
+// ============================================================================
+
+.wizard-toast-container {
+  position: fixed;
+  top: map.get(variables.$spacing, 'md'); // 24px
+  right: map.get(variables.$spacing, 'md');
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+  gap: map.get(variables.$spacing, 'xs'); // 8px
+  pointer-events: none;
+
+  @include mixins.respond-to('mobile') {
+    top: map.get(variables.$spacing, 'sm');
+    right: map.get(variables.$spacing, 'sm');
+    left: map.get(variables.$spacing, 'sm');
+  }
+}
+
+.wizard-toast {
+  display: flex;
+  align-items: center;
+  gap: map.get(variables.$spacing, 'sm'); // 16px
+  background: white;
+  padding: map.get(variables.$spacing, 'sm'); // 16px
+  border-radius: map.get(variables.$radius, 'md'); // 8px
+  box-shadow: map.get(variables.$shadows, 'lg');
+  min-width: 320px;
+  max-width: 480px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all map.get(variables.$transitions, 'base');
+  border-left: 4px solid;
+
+  @include mixins.respond-to('mobile') {
+    min-width: auto;
+    max-width: 100%;
+  }
+
+  &.toast-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  &.toast-closing {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  // Variantes por tipo
+  &--info {
+    border-left-color: map.get(variables.$colors, 'link-accessible');
+
+    .toast-icon {
+      color: map.get(variables.$colors, 'link-accessible');
+    }
+  }
+
+  &--success {
+    border-left-color: map.get(variables.$colors, 'success');
+
+    .toast-icon {
+      color: map.get(variables.$colors, 'success');
+    }
+  }
+
+  &--warning {
+    border-left-color: map.get(variables.$colors, 'atention');
+
+    .toast-icon {
+      color: map.get(variables.$colors, 'atention');
+    }
+  }
+
+  &--danger {
+    border-left-color: map.get(variables.$colors, 'danger');
+
+    .toast-icon {
+      color: map.get(variables.$colors, 'danger');
+    }
+  }
+
+  .toast-icon {
+    flex-shrink: 0;
+    font-size: 2rem;
+  }
+
+  .toast-message {
+    flex: 1;
+    font-size: 1.4rem;
+    color: map.get(variables.$colors, 'text');
+    line-height: 1.5;
+  }
+
+  .toast-close {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: map.get(variables.$radius, 'sm');
+    transition: all map.get(variables.$transitions, 'fast');
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 1.4rem;
+    }
+
+    &:hover {
+      background: map.get(variables.$colors, 'background');
+      color: map.get(variables.$colors, 'text');
+    }
+
+    &:focus-visible {
+      outline: 2px solid map.get(variables.$colors, 'primary');
+      outline-offset: 1px;
+    }
+  }
+}
+
+// ============================================================================
+// REGISTRATION MODAL (Wizard final step)
+// ============================================================================
+
+.wizard-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  background: rgba(45, 50, 56, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: map.get(variables.$spacing, 'md');
+  animation: fadeIn 0.3s ease;
+}
+
+.wizard-modal-content {
+  background: white;
+  border-radius: map.get(variables.$radius, 'lg'); // 16px
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  @include mixins.respond-to('mobile') {
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: map.get(variables.$radius, 'md');
+  }
+}
+
+.wizard-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: map.get(variables.$spacing, 'md'); // 24px
+  border-bottom: 2px solid map.get(variables.$colors, 'background');
+
+  @include mixins.respond-to('mobile') {
+    padding: map.get(variables.$spacing, 'sm');
+  }
+
+  h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'secondary');
+    margin: 0;
+    font-family: map.get(variables.$fonts, 'title');
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    @include mixins.respond-to('mobile') {
+      font-size: 1.8rem;
+    }
+  }
+
+  .btn-close {
+    background: transparent;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    padding: 0.8rem;
+    border-radius: map.get(variables.$radius, 'sm');
+    transition: all map.get(variables.$transitions, 'fast');
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+
+    i {
+      font-size: 1.8rem;
+    }
+
+    &:hover {
+      background: map.get(variables.$colors, 'background');
+      color: map.get(variables.$colors, 'text');
+    }
+
+    &:focus-visible {
+      outline: 2px solid map.get(variables.$colors, 'primary');
+      outline-offset: 2px;
+    }
+  }
+}
+
+.wizard-modal-body {
+  padding: map.get(variables.$spacing, 'md'); // 24px
+
+  @include mixins.respond-to('mobile') {
+    padding: map.get(variables.$spacing, 'sm');
+  }
+
+  p {
+    line-height: 1.6;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: map.get(variables.$spacing, 'sm'); // 16px
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      color: map.get(variables.$colors, 'secondary');
+      font-size: 1.5rem;
+
+      @include mixins.respond-to('mobile') {
+        font-size: 1.4rem;
+      }
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 1.2rem;
+      font-family: map.get(variables.$fonts, 'body');
+      font-size: 1.5rem;
+      color: map.get(variables.$colors, 'text');
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: map.get(variables.$radius, 'md');
+      transition: all map.get(variables.$transitions, 'base');
+
+      @include mixins.respond-to('mobile') {
+        font-size: 1.4rem;
+        padding: 1rem;
+      }
+
+      &::placeholder {
+        color: #999;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: map.get(variables.$colors, 'primary');
+        box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'primary'), 0.1);
+      }
+
+      &:hover:not(:focus):not(:disabled) {
+        border-color: #c0c0c0;
+      }
+
+      &:disabled,
+      &[readonly] {
+        background: #f5f5f5;
+        cursor: not-allowed;
+        color: #999;
+      }
+    }
+
+    small {
+      display: block;
+      margin-top: 0.4rem;
+      color: #666;
+      font-size: 1.3rem;
+      line-height: 1.4;
+
+      @include mixins.respond-to('mobile') {
+        font-size: 1.2rem;
+      }
+    }
+
+    button[type="submit"] {
+      margin-top: map.get(variables.$spacing, 'sm'); // 16px
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(2rem) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

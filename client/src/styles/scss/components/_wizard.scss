@@ -7,6 +7,7 @@
 @use "sass:map";
 @use '../base/variables';
 @use '../base/mixins';
+@use '../utilities/neumorphism' as neumorph;
 
 // Container principal
 .wizard-container {
@@ -21,24 +22,205 @@
   overflow: hidden;
 }
 
-// Barra de progreso
-.wizard-progress {
+// ========================================
+// 🎨 H4 - HEADER CON 3 NIVELES JER\u00c1RQUICOS
+// ========================================
+
+// Contenedor principal del header
+.wizard-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
   background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
 
-  .wizard-progress-bar {
-    height: 4px;
-    background: linear-gradient(90deg,
-      map.get(variables.$colors, 'primary'),
-      map.get(variables.$colors, 'alternative'));
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+// NIVEL 1: BRANDING (Logo + Título)
+.wizard-branding-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg,
+    white 0%,
+    rgba(map.get(variables.$colors, 'primary'), 0.02) 100%
+  );
+
+  .wizard-branding-content {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
   }
 
+  .wizard-logo {
+    flex-shrink: 0;
+
+    img {
+      height: 50px;
+      width: auto;
+      display: block;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  .wizard-title-group {
+    flex: 1;
+    min-width: 0; // Para text-overflow
+  }
+
+  .wizard-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'secondary');
+    margin: 0 0 0.4rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    i {
+      color: map.get(variables.$colors, 'primary');
+      font-size: 2rem;
+    }
+  }
+
+  .wizard-subtitle {
+    font-size: 1.4rem;
+    color: rgba(map.get(variables.$colors, 'text'), 0.7);
+    margin: 0;
+    font-weight: 500;
+  }
+
+  @include mixins.respond-to('mobile') {
+    .wizard-branding-content {
+      padding: 1.2rem 2rem;
+      gap: 1.5rem;
+    }
+
+    .wizard-logo img {
+      height: 40px;
+    }
+
+    .wizard-title {
+      font-size: 1.8rem;
+
+      i {
+        font-size: 1.6rem;
+      }
+    }
+
+    .wizard-subtitle {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+// NIVEL 2: PROGRESS BAR (Mejorado con mejor spacing)
+.wizard-progress {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  // Header con "Paso X de Y" y tiempo estimado
+  .wizard-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 2rem 0.8rem;
+    background: linear-gradient(180deg, white 0%, map.get(variables.$colors, 'background') 100%);
+
+    @include mixins.respond-to('mobile') {
+      padding: 1rem 1.5rem 0.6rem;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .progress-step-label {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: map.get(variables.$colors, 'secondary');
+
+      i {
+        color: map.get(variables.$colors, 'primary');
+        font-size: 1.6rem;
+      }
+
+      @include mixins.respond-to('mobile') {
+        font-size: 1.4rem;
+      }
+    }
+
+    .progress-time-estimate {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: color.adjust(map.get(variables.$colors, 'text'), $lightness: 20%);
+
+      i {
+        color: map.get(variables.$colors, 'primary');
+        font-size: 1.4rem;
+      }
+
+      &--complete {
+        color: map.get(variables.$colors, 'success');
+
+        i {
+          color: map.get(variables.$colors, 'success');
+        }
+      }
+
+      @include mixins.respond-to('mobile') {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  // Track de la barra de progreso
+  .wizard-progress-bar-track {
+    height: 6px;
+    background: rgba(map.get(variables.$colors, 'primary'), 0.1);
+    position: relative;
+    overflow: hidden;
+
+    @include mixins.respond-to('mobile') {
+      height: 4px;
+    }
+  }
+
+  // Barra de progreso animada
+  .wizard-progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg,
+      map.get(variables.$colors, 'primary'),
+      color.adjust(map.get(variables.$colors, 'primary'), $lightness: 10%));
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+
+    // Shimmer effect
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(white, 0.3),
+        transparent);
+      animation: shimmer 2s infinite;
+    }
+  }
+
+  // Pasos iconográficos
   .wizard-progress-steps {
     display: flex;
     justify-content: center;
@@ -66,11 +248,46 @@
     border: 2px solid #e0e0e0;
     transition: all 0.3s ease;
     cursor: default;
+    position: relative;
 
     @include mixins.respond-to('mobile') {
       width: 30px;
       height: 30px;
       font-size: 1.2rem;
+    }
+
+    // Tooltip en hover
+    .step-tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-0.8rem);
+      background: map.get(variables.$colors, 'secondary');
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      z-index: 10;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: map.get(variables.$colors, 'secondary');
+      }
+    }
+
+    &:hover .step-tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-1.2rem);
     }
 
     &.active {
@@ -95,24 +312,426 @@
   }
 }
 
+// Animación shimmer para la barra de progreso
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+// =================================================================
+// CONTEXT BAR - Información clave persistente
+// =================================================================
+
+// NIVEL 3: CONTEXT BAR (Sticky dentro del header)
+.wizard-context-bar {
+  border-bottom: 1px solid rgba(map.get(variables.$colors, 'secondary'), 0.1);
+  background: linear-gradient(135deg,
+    rgba(map.get(variables.$colors, 'primary'), 0.02) 0%,
+    rgba(map.get(variables.$colors, 'primary'), 0.05) 100%
+  );
+  animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  .context-bar-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.2rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    justify-content: center;
+
+    @include mixins.respond-to('tablet') {
+      gap: 2rem;
+      padding: 1rem 2rem;
+    }
+
+    @include mixins.respond-to('mobile') {
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+    }
+  }
+
+  .context-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 1.5rem;
+    background: rgba(map.get(variables.$colors, 'primary'), 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(map.get(variables.$colors, 'primary'), 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); // Smoother cubic-bezier
+
+    &:hover {
+      background: rgba(map.get(variables.$colors, 'primary'), 0.08);
+      border-color: rgba(map.get(variables.$colors, 'primary'), 0.2);
+      transform: translateY(-2px) scale(1.02); // Micro-animation: lift + scale
+      box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.15);
+    }
+
+    i {
+      font-size: 1.8rem;
+      color: map.get(variables.$colors, 'primary');
+      flex-shrink: 0;
+    }
+
+    &--empresa i {
+      color: map.get(variables.$colors, 'primary');
+    }
+
+    &--cargos i {
+      color: #6366f1; // Indigo
+    }
+
+    &--riesgos i {
+      color: #f59e0b; // Amber
+    }
+
+    @include mixins.respond-to('mobile') {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 1rem 1.2rem;
+    }
+  }
+
+  .context-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .context-item-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: map.get(variables.$colors, 'secondary');
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .context-item-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'secondary');
+    line-height: 1;
+  }
+}
+
+// =================================================================
+// 🆕 TASK 5: UNIFIED PROGRESS BAR
+// Combina progress bar + steps + context en una sola línea
+// Layout: [← Volver] [Steps Dots + Bar] [Context Info]
+// =================================================================
+
+.wizard-progress-unified {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg,
+    rgba(map.get(variables.$colors, 'primary'), 0.02) 0%,
+    rgba(map.get(variables.$colors, 'primary'), 0.05) 100%
+  );
+  animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  .wizard-progress-unified-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.2rem 3rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 3rem;
+
+    @include mixins.respond-to('tablet') {
+      padding: 1rem 2rem;
+      gap: 2rem;
+    }
+
+    @include mixins.respond-to('mobile') {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+    }
+  }
+
+  // LEFT: Botón volver
+  .progress-left {
+    display: flex;
+    align-items: center;
+
+    @include mixins.respond-to('mobile') {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .btn-volver {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem 1.6rem;
+      background: white;
+      color: map.get(variables.$colors, 'secondary');
+      border: 2px solid rgba(map.get(variables.$colors, 'secondary'), 0.2);
+      border-radius: 8px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      i {
+        font-size: 1.4rem;
+        transition: transform 0.3s ease;
+      }
+
+      &:hover {
+        background: map.get(variables.$colors, 'secondary');
+        color: white;
+        border-color: map.get(variables.$colors, 'secondary');
+        transform: translateX(-4px);
+
+        i {
+          transform: translateX(-3px);
+        }
+      }
+
+      &:active {
+        transform: translateX(-2px) scale(0.98);
+      }
+
+      @include mixins.respond-to('mobile') {
+        font-size: 1.3rem;
+        padding: 0.7rem 1.4rem;
+      }
+    }
+
+    .progress-spacer {
+      width: 1px; // Empty space when no button
+    }
+  }
+
+  // CENTER: Steps + Progress Bar
+  .progress-center {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0; // Allow shrinking
+
+    @include mixins.respond-to('mobile') {
+      order: 3; // Move to bottom on mobile
+    }
+
+    .wizard-progress-steps {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+
+      @include mixins.respond-to('mobile') {
+        gap: 1rem;
+      }
+    }
+
+    .wizard-progress-step {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 600;
+      background: map.get(variables.$colors, 'background');
+      color: map.get(variables.$colors, 'text');
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+      cursor: default;
+      position: relative;
+
+      @include mixins.respond-to('mobile') {
+        width: 30px;
+        height: 30px;
+        font-size: 1.2rem;
+      }
+
+      // Tooltip en hover
+      .step-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-0.8rem);
+        background: map.get(variables.$colors, 'secondary');
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        z-index: 10;
+
+        &::after {
+          content: '';
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border: 5px solid transparent;
+          border-top-color: map.get(variables.$colors, 'secondary');
+        }
+      }
+
+      &:hover .step-tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-1.2rem);
+      }
+
+      &.active {
+        background: map.get(variables.$colors, 'primary');
+        color: white;
+        border-color: map.get(variables.$colors, 'primary');
+        box-shadow: 0 0 0 4px rgba(map.get(variables.$colors, 'primary'), 0.2);
+        transform: scale(1.1);
+      }
+
+      &.completed {
+        background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 10%);
+        color: white;
+        border-color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 10%);
+        cursor: pointer;
+
+        &:hover {
+          transform: scale(1.05);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+      }
+    }
+
+    .wizard-progress-bar-track {
+      height: 6px;
+      background: rgba(map.get(variables.$colors, 'primary'), 0.1);
+      position: relative;
+      overflow: hidden;
+      border-radius: 3px;
+
+      @include mixins.respond-to('mobile') {
+        height: 4px;
+      }
+    }
+
+    .wizard-progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg,
+        map.get(variables.$colors, 'primary'),
+        color.adjust(map.get(variables.$colors, 'primary'), $lightness: 10%));
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      border-radius: 3px;
+
+      // Shimmer effect
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg,
+          transparent,
+          rgba(white, 0.3),
+          transparent);
+        animation: shimmer 2s infinite;
+      }
+    }
+  }
+
+  // RIGHT: Context Info
+  .progress-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+
+    @include mixins.respond-to('mobile') {
+      width: 100%;
+      justify-content: center;
+      order: 2; // Move above steps on mobile
+    }
+
+    .context-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.6rem 1.2rem;
+      background: rgba(map.get(variables.$colors, 'primary'), 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(map.get(variables.$colors, 'primary'), 0.1);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(map.get(variables.$colors, 'primary'), 0.08);
+        border-color: rgba(map.get(variables.$colors, 'primary'), 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.15);
+      }
+
+      i {
+        font-size: 1.6rem;
+        flex-shrink: 0;
+      }
+
+      &--empresa i {
+        color: map.get(variables.$colors, 'primary');
+      }
+
+      &--cargos i {
+        color: #6366f1; // Indigo
+      }
+
+      &--riesgos i {
+        color: #f59e0b; // Amber
+      }
+
+      @include mixins.respond-to('mobile') {
+        padding: 0.8rem 1rem;
+      }
+    }
+
+    .context-item-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: map.get(variables.$colors, 'secondary');
+      line-height: 1;
+
+      @include mixins.respond-to('mobile') {
+        font-size: 1.3rem;
+      }
+    }
+  }
+}
+
 // Contenido principal
 .wizard-content {
   flex: 1;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 12rem 2rem 18rem;
+  padding: 26rem 2rem 18rem; // 🎨 H4: Aumentado para header de 3 niveles (branding + progress + context)
   overflow-y: auto;
-  max-height: calc(100vh - 20rem);
+  max-height: calc(100vh - 8rem);
 
   @include mixins.respond-to('tablet') {
-    padding: 10rem 3rem 16rem;
-    max-height: calc(100vh - 18rem);
+    padding: 24rem 3rem 16rem;
+    max-height: calc(100vh - 8rem);
   }
 
   @include mixins.respond-to('mobile') {
-    padding: 8rem 1.5rem 14rem;
-    max-height: calc(100vh - 16rem);
+    padding: 28rem 1.5rem 14rem; // Más espacio en mobile por header vertical
+    max-height: calc(100vh - 8rem);
   }
 }
 
@@ -263,6 +882,7 @@
   background: white;
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
   display: flex;
+  flex-direction: row; // 🔧 FIX: Asegurar alineación horizontal
   justify-content: space-between;
   align-items: center;
   gap: 1.5rem;
@@ -270,6 +890,21 @@
 
   @include mixins.respond-to('mobile') {
     padding: 1.5rem;
+  }
+}
+
+// Navegación del wizard (contenedor de botones Anterior/Siguiente)
+.wizard-navigation {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 3rem;
+  padding: 2rem 0;
+
+  @include mixins.respond-to('mobile') {
+    gap: 1.5rem;
   }
 }
 
@@ -297,28 +932,146 @@
   }
 
   &.wizard-btn-back {
-    background: transparent;
-    color: map.get(variables.$colors, 'text');
+    // Botón secundario - menos prominente
+    background: white;
+    color: map.get(variables.$colors, 'secondary');
+    border: 1.5px solid rgba(map.get(variables.$colors, 'secondary'), 0.3);
+    font-weight: 600; // Menos peso que el next
+    font-size: 1.4rem; // Más pequeño
+    padding: 1.2rem 2.4rem; // Más compacto
+    opacity: 0.85; // Ligeramente transparente
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); // Sombra sutil
+    align-self: center;
 
     &:hover:not(:disabled) {
+      opacity: 1;
       background: map.get(variables.$colors, 'background');
-    }
-  }
-
-  &.wizard-btn-next {
-    background: map.get(variables.$colors, 'primary');
-    color: white;
-    margin-left: auto;
-    box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.3);
-
-    &:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(map.get(variables.$colors, 'primary'), 0.4);
+      border-color: rgba(map.get(variables.$colors, 'secondary'), 0.5);
+      transform: translateY(-1px);
+      box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.12),
+        0 8px 24px rgba(0, 0, 0, 0.1);
     }
 
     &:active:not(:disabled) {
       transform: translateY(0);
     }
+  }
+
+  &.wizard-btn-next {
+    // Botón primario - MÁXIMA visibilidad (3x más prominente)
+    background: map.get(variables.$colors, 'primary');
+    color: white;
+    font-weight: 800; // Muy bold
+    font-size: 1.7rem; // Más grande que back button
+    padding: 1.8rem 4rem; // Más espacioso
+    box-shadow:
+      0 8px 24px rgba(map.get(variables.$colors, 'primary'), 0.6),
+      0 12px 40px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2); // Highlight interno
+    align-self: center;
+    margin-left: auto; // Empujar a la derecha
+    position: relative;
+    overflow: hidden;
+
+    // Efecto de brillo animado
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transition: left 0.5s ease;
+    }
+
+    &:hover::before {
+      left: 100%;
+    }
+
+    &:hover:not(:disabled) {
+      transform: translateY(-4px) scale(1.05);
+      background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -15%, $saturation: 15%);
+      box-shadow:
+        0 8px 20px rgba(map.get(variables.$colors, 'primary'), 0.6),
+        0 12px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow:
+        0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.5),
+        0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+}
+
+// ========================================
+// FLOATING KEYBOARD TOOLTIPS (H1 - UX Audit)
+// ========================================
+
+.floating-tooltip {
+  position: absolute;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  &--visible {
+    opacity: 1;
+  }
+
+  &--keyboard {
+    .tooltip-content {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem 1.2rem;
+      background: rgba(map.get(variables.$colors, 'secondary'), 0.95);
+      color: white;
+      border-radius: 8px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(4px);
+
+      i {
+        font-size: 1.4rem;
+        opacity: 0.9;
+      }
+
+      span {
+        padding: 0.2rem 0.6rem;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+
+  &__arrow {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: rgba(map.get(variables.$colors, 'secondary'), 0.95);
+    transform: rotate(45deg);
+  }
+
+  // Hide on mobile (no keyboard on touch devices)
+  @include mixins.respond-to('mobile') {
+    display: none;
   }
 }
 
@@ -547,4 +1300,5059 @@
   .wizard-step textarea {
     font-size: 1.6rem;
   }
+}
+
+// =================================================================
+// FIX 1.4: SKELETON LOADER ANIMATION
+// =================================================================
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// =================================================================
+// WIZARD CORE ADDITIONAL STYLES
+// =================================================================
+
+// Wizard wrapper
+.wizard-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// Wizard forms
+.wizard-form {
+  max-width: 650px;
+  margin: 0 auto;
+  box-shadow: inset 5px 5px 20px #bebebe, inset -5px -5px 20px #ffffff;
+  border-radius: 3rem;
+  padding: 0rem;
+  height: 55rem;
+
+  .form-group {
+    margin-bottom: 2.5rem;
+
+    label {
+      display: block;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, 'secondary');
+      margin-bottom: 0.8rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+    }
+  }
+
+  // Inline validation error styles
+  .input-error {
+    border: 2px solid map.get(variables.$colors, 'danger') !important;
+    background-color: rgba(map.get(variables.$colors, 'danger'), 0.03) !important;
+    box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'danger'), 0.1) !important;
+
+    &:focus {
+      outline: none;
+      border-color: map.get(variables.$colors, 'danger') !important;
+      box-shadow: 0 0 0 4px rgba(map.get(variables.$colors, 'danger'), 0.15) !important;
+    }
+  }
+
+  .field-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+    padding: 1rem 1.2rem;
+    background: rgba(map.get(variables.$colors, 'danger'), 0.05);
+    border-left: 3px solid map.get(variables.$colors, 'danger');
+    border-radius: 6px;
+    font-size: 1.3rem;
+    color: map.get(variables.$colors, 'danger');
+    animation: slideDown 0.3s ease-out;
+
+    i {
+      color: map.get(variables.$colors, 'danger');
+      font-size: 1.4rem;
+      margin-top: 0.2rem;
+      flex-shrink: 0;
+    }
+
+    span {
+      line-height: 1.5;
+      font-weight: 500;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// Positioning context for carousel navigation (arrows and dots are outside wizard-form)
+.wizard-step[data-step="cargos"] {
+  position: relative;
+}
+
+// Cargo cards - Carousel con paper cut layering
+.cargos-list {
+  position: relative;
+  max-width: 650px;
+  margin: 0;
+  padding: 10rem 6.5rem 0rem;
+  overflow: hidden;
+  height: 35rem;
+
+  @media screen and (max-width: 768px) {
+    max-width: 100%;
+    padding: 10rem 6rem 0rem;
+  }
+}
+
+// Contenedor del carousel con espacio para sombras
+.cargos-carousel-container {
+  overflow: visible; // Permite ver sombras fuera del contenedor
+  padding: 2rem 0; // Espacio vertical para sombras
+}
+
+.cargos-carousel {
+  display: flex;
+  gap: 2rem; // Gap entre cards para el efecto de apilado
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cargo-card {
+  background: white; // Blanco para mejor contraste
+  border: none;
+  border-radius: 16px;
+  padding: 2.5rem;
+  min-width: 100%; // Cada card ocupa el 100% del contenedor
+  max-width: 100%;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+
+  // Paper cut layering effect - pronounced shadow
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.15),
+    0 20px 60px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    // Enhanced paper cut layering on hover
+    box-shadow:
+      0 15px 40px rgba(0, 0, 0, 0.2),
+      0 25px 70px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(0, 0, 0, 0.08);
+    transform: translateY(-6px) scale(1.02);
+  }
+
+  .cargo-area {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.8rem;
+  }
+
+  .cargo-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h3 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: map.get(variables.$colors, 'secondary');
+      margin: 0;
+    }
+
+    .cargo-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: map.get(variables.$colors, 'primary');
+      cursor: pointer;
+      padding: 0.5rem;
+      font-size: 1.6rem;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+
+      &--danger {
+        color: map.get(variables.$colors, 'danger');
+
+        &:hover {
+          color: color.adjust(map.get(variables.$colors, 'danger'), $lightness: -10%);
+        }
+      }
+    }
+  }
+
+  .cargo-card-body {
+    // Scrollable description container
+    .cargo-description-scroll {
+      max-height: 80px; // Limited height to show ~3-4 lines
+      overflow-y: auto;
+      margin-bottom: 1.2rem;
+      padding-right: 0.5rem; // Space for scrollbar
+
+      // Custom scrollbar styling
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: map.get(variables.$colors, 'primary');
+        border-radius: 3px;
+
+        &:hover {
+          background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%);
+        }
+      }
+
+      p {
+        font-size: 1.4rem;
+        color: map.get(variables.$colors, 'text');
+        margin: 0;
+        line-height: 1.6;
+      }
+    }
+
+    // Special characteristics badges
+    .cargo-characteristics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+
+      .cargo-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 20px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+
+        i {
+          font-size: 1.3rem;
+        }
+
+        &--warning {
+          background: rgba(map.get(variables.$colors, 'atention'), 0.1);
+          color: color.adjust(map.get(variables.$colors, 'atention'), $lightness: -20%);
+          border: 1px solid rgba(map.get(variables.$colors, 'atention'), 0.3);
+        }
+
+        &--danger {
+          background: rgba(map.get(variables.$colors, 'danger'), 0.1);
+          color: color.adjust(map.get(variables.$colors, 'danger'), $lightness: -10%);
+          border: 1px solid rgba(map.get(variables.$colors, 'danger'), 0.3);
+        }
+      }
+    }
+
+    .cargo-meta {
+      display: flex;
+      gap: 2rem;
+      font-size: 1.3rem;
+      color: color.adjust(map.get(variables.$colors, 'text'), $lightness: 20%);
+
+      span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      i {
+        color: map.get(variables.$colors, 'primary');
+      }
+
+      // Icono de zona con color verde (map-marker-alt)
+      span:nth-child(3) {
+        i {
+          color: #10b981; // Verde para ubicación
+        }
+      }
+    }
+  }
+}
+
+// Carousel navigation arrows - OUTSIDE wizard-form, high contrast
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6rem; // Increased from 5rem
+  height: 6rem; // Increased from 5rem
+  border-radius: 50%;
+  background: map.get(variables.$colors, 'primary'); // Verde agua para mejor contraste
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+
+  // Paper cut shadow for arrows
+  box-shadow:
+    0 8px 16px rgba(map.get(variables.$colors, 'primary'), 0.3),
+    0 12px 24px rgba(0, 0, 0, 0.15);
+
+  &:hover:not(:disabled) {
+    background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -5%);
+    transform: translateY(-50%) scale(1.15);
+    box-shadow:
+      0 10px 20px rgba(map.get(variables.$colors, 'primary'), 0.4),
+      0 15px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(-50%) scale(1.05);
+    box-shadow:
+      0 4px 8px rgba(map.get(variables.$colors, 'primary'), 0.3),
+      0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: map.get(variables.$colors, 'background');
+
+    svg {
+      fill: color.adjust(map.get(variables.$colors, 'text'), $lightness: 30%);
+    }
+  }
+
+  &--prev {
+    left: calc((100% - 551px) / 2 - 7rem); // Position outside wizard-form left edge
+
+    @media screen and (max-width: 768px) {
+      left: 0.5rem;
+    }
+  }
+
+  &--next {
+    right: calc((100% - 551px) / 2 - 7rem); // Position outside wizard-form right edge
+
+    @media screen and (max-width: 768px) {
+      right: 0.5rem;
+    }
+  }
+
+  svg {
+    width: 3rem; // Increased from 2.4rem
+    height: 3rem; // Increased from 2.4rem
+    fill: white; // Blanco para máximo contraste con fondo verde
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 5rem;
+    height: 5rem;
+
+    svg {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
+  }
+}
+
+// Carousel dots indicator (interactive navigation)
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-top: 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.carousel-dot {
+  width: 1.2rem;
+  height: 1.2rem;
+  min-width: 1.2rem; // Prevent compression to oval
+  min-height: 1.2rem; // Prevent compression to oval
+  border-radius: 50%; // Perfect circle
+  border: none;
+  background: #c4c4c4; // Light gray for inactive dots
+  cursor: pointer;
+  padding: 0;
+  // Smooth fluid animation
+  transition:
+    all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), // Elastic easing
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+  flex-shrink: 0; // Prevent flexbox from squishing
+  position: relative;
+
+  // Subtle paper-cut shadow
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.05);
+
+  // Ripple effect on click
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(map.get(variables.$colors, 'primary'), 0.3);
+    opacity: 0;
+    transition: width 0.6s ease-out, height 0.6s ease-out, opacity 0.6s ease-out;
+  }
+
+  &:active::before {
+    width: 200%;
+    height: 200%;
+    opacity: 1;
+    transition: width 0s, height 0s, opacity 0s;
+  }
+
+  &:hover:not(.active) {
+    background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 15%);
+    transform: scale(1.3);
+    box-shadow:
+      0 3px 6px rgba(map.get(variables.$colors, 'primary'), 0.2),
+      0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &.active {
+    background: map.get(variables.$colors, 'primary');
+    width: 3rem; // Elongated pill shape for active state
+    border-radius: 1rem;
+    box-shadow:
+      0 4px 8px rgba(map.get(variables.$colors, 'primary'), 0.3),
+      0 8px 16px rgba(0, 0, 0, 0.15);
+    // Pulse animation for active dot
+    animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 1rem;
+    height: 1rem;
+    min-width: 1rem;
+    min-height: 1rem;
+
+    &.active {
+      width: 2.5rem;
+    }
+  }
+}
+
+// Pulse animation for active dot
+@keyframes pulse-dot {
+  0%, 100% {
+    box-shadow:
+      0 4px 8px rgba(map.get(variables.$colors, 'primary'), 0.3),
+      0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.5),
+      0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Add button - Replaced by FAB but keeping for compatibility
+.wizard-btn-add {
+  display: none; // Replaced by FAB (Floating Action Button)
+}
+
+// FAB (Floating Action Button) for adding cargo
+// Positioned in bottom-right corner
+// Expands on hover to show text
+.fab {
+  position: fixed;
+  bottom: 2.4rem;
+  right: 2.4rem;
+  height: 6.5rem;
+  width: 6.5rem; // Circular by default
+  border-radius: 3.25rem; // Pill shape
+  background: map.get(variables.$colors, 'primary');
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  gap: 0;
+  z-index: 1000;
+  overflow: visible; // Allow expansion beyond initial bounds
+  transform-origin: left center; // Pivot point on left edge for rightward expansion
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Paper cut layering shadow for FAB
+  @include mixins.box-shadow("lg");
+
+  // Text (hidden by default, appears on hover)
+  .fab-text {
+    font-family: map.get(variables.$fonts, 'title');
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    max-width: 0; // Collapsed
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // Icon (always visible, moves to right edge on hover)
+  .fab-icon {
+    width: 3rem;
+    height: 3rem;
+    fill: white;
+    color: white;
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover {
+    width: 27rem; // Fixed expanded width (text + icon + padding)
+    transform: translateX(20.5rem); // Shift right (27rem - 6.5rem = 20.5rem)
+    padding: 0 1.8rem 0 2.2rem; // Balanced padding
+    justify-content: space-between; // Text left, icon right
+    gap: 1.2rem;
+    background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -5%);
+
+    .fab-text {
+      opacity: 1;
+      visibility: visible;
+      max-width: 20rem; // Expanded
+    }
+
+    .fab-icon {
+      transform: scale(1.08); // Slightly larger
+    }
+  }
+
+  &:active {
+    transform: translateX(20.5rem) scale(0.98); // Maintain position while scaling
+  }
+
+  &:focus-visible {
+    outline: 3px solid white;
+    outline-offset: 4px;
+  }
+
+  @media screen and (max-width: 768px) {
+    height: 6rem;
+    width: 6rem;
+
+    .fab-icon {
+      width: 2.6rem;
+      height: 2.6rem;
+    }
+
+    .fab-text {
+      font-size: 1.3rem;
+    }
+
+    &:hover {
+      width: 24rem; // Slightly narrower for mobile
+      transform: translateX(18rem); // Shift right (24rem - 6rem = 18rem)
+      padding: 0 1.5rem 0 1.8rem;
+    }
+
+    &:active {
+      transform: translateX(18rem) scale(0.98); // Maintain position
+    }
+  }
+}
+
+// =================================================================
+// ANIMACIONES DE BOTONES DE CARGOS
+// =================================================================
+
+// Animación de flotabilidad suave (no exagerada)
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+// Animación de entrada tipo "bounce" (cayendo del cielo)
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-200px) scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0) scale(1.05);
+  }
+  70% {
+    transform: translateY(-10px) scale(0.95);
+  }
+  85% {
+    transform: translateY(0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Botón "Agregar Primer Cargo" con flotabilidad
+.wizard-btn-add-first {
+  animation: gentleFloat 3s ease-in-out infinite;
+  box-shadow: 0 8px 16px rgba(93, 196, 175, 0.25);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(93, 196, 175, 0.35);
+    animation-play-state: paused;
+  }
+
+  &:active {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(93, 196, 175, 0.3);
+  }
+}
+
+// FAB con flotabilidad y bounce
+.fab {
+  // Flotabilidad suave cuando NO está en bounce
+  &:not(.fab--bounce-in) {
+    animation: gentleFloat 4s ease-in-out infinite;
+  }
+
+  // Clase para ocultar FAB
+  &--hidden {
+    display: none !important;
+  }
+
+  // Clase para animación de entrada bounce
+  &--bounce-in {
+    animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  }
+}
+
+// Modal
+.wizard-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 2rem;
+
+  .wizard-modal-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.3s ease;
+  }
+
+  .wizard-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    border-bottom: 1px solid #e0e0e0;
+
+    h3 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, 'secondary');
+      margin: 0;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 2rem;
+      color: map.get(variables.$colors, 'text');
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: map.get(variables.$colors, 'danger');
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .wizard-modal-body {
+    padding: 2rem;
+
+    // Estilos para toggles especiales
+    .form-label-section {
+      display: block;
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: map.get(variables.$colors, 'secondary');
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid map.get(variables.$colors, 'primary');
+    }
+
+    .toggles-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+
+      @media (min-width: 500px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .toggle-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 1.2rem;
+      background: #f8f8f8;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+      border: 2px solid transparent;
+
+      &:hover {
+        background: #f0f0f0;
+      }
+
+      input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: map.get(variables.$colors, 'primary');
+      }
+
+      span {
+        font-size: 1.4rem;
+        color: map.get(variables.$colors, 'text');
+        font-weight: 500;
+      }
+
+      &:has(input:checked) {
+        background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 45%);
+        border: 2px solid map.get(variables.$colors, 'primary');
+        padding: calc(1.2rem - 2px); // Compensate for border
+      }
+    }
+  }
+
+  .wizard-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 2rem;
+    border-top: 1px solid #e0e0e0;
+
+    .wizard-btn-secondary {
+      background: transparent;
+      color: map.get(variables.$colors, 'text');
+      border: 2px solid #e0e0e0;
+
+      &:hover {
+        background: map.get(variables.$colors, 'background');
+      }
+    }
+
+    .wizard-btn-primary {
+      background: map.get(variables.$colors, 'primary');
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.3);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(map.get(variables.$colors, 'primary'), 0.4);
+      }
+    }
+  }
+
+  // ============================================================================
+  // MODAL LAYOUT DE 2 COLUMNAS
+  // ============================================================================
+
+  .wizard-modal-content--two-cols {
+    max-width: 780px; // 87% de 900px ≈ 780px (más compacto)
+
+    // Mobile: modal casi full width
+    @media screen and (max-width: 768px) {
+      max-width: 95vw;
+    }
+  }
+
+  .wizard-modal-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .wizard-btn-compact {
+    padding: 0.8rem 1.6rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    &.wizard-btn-primary {
+      background: map.get(variables.$colors, 'primary');
+      color: white;
+      border: none;
+      box-shadow: 0 2px 8px rgba(map.get(variables.$colors, 'primary'), 0.3);
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.4);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+
+  .wizard-modal-body--two-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 2rem;
+
+    // Mobile: 1 columna (stacked)
+    @media screen and (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+
+  .wizard-modal-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 0; // Prevenir overflow en grid
+  }
+}
+
+// Resumen
+.resumen-container {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2rem;
+
+  .resumen-section {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 2rem;
+
+    h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, 'secondary');
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+
+      i {
+        color: map.get(variables.$colors, 'primary');
+      }
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        font-size: 1.4rem;
+        color: map.get(variables.$colors, 'text');
+        margin-bottom: 0.8rem;
+        line-height: 1.6;
+
+        strong {
+          color: map.get(variables.$colors, 'secondary');
+        }
+      }
+    }
+  }
+}
+
+// Riesgos preview
+.riesgos-preview {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2rem;
+
+  .cargo-riesgos-summary {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 2rem;
+
+    h3 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, 'secondary');
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1.4rem;
+      color: map.get(variables.$colors, 'text');
+      margin: 0;
+    }
+  }
+}
+
+// Loading overlay
+.wizard-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+// =================================================================
+// RIESGO SELECTOR COMPONENT
+// =================================================================
+
+.riesgo-selector-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.riesgo-selector {
+  width: 100%;
+
+  .riesgo-selector__header {
+    margin-bottom: 2rem;
+
+    h2 {
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, 'secondary');
+      margin-bottom: 0.5rem;
+    }
+
+    .riesgo-selector__cargo-info {
+      font-size: 1.4rem;
+      color: map.get(variables.$colors, 'text');
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+
+      i {
+        color: map.get(variables.$colors, 'primary');
+      }
+
+      strong {
+        color: map.get(variables.$colors, 'secondary');
+      }
+    }
+  }
+
+  // Search bar
+  .riesgo-selector__search {
+    margin-bottom: 2rem;
+
+    .search-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .search-icon {
+        position: absolute;
+        left: 1.5rem;
+        color: #aaa;
+        pointer-events: none;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 1.2rem 1.5rem 1.2rem 4.5rem;
+        font-size: 1.6rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+
+        &:focus {
+          border-color: map.get(variables.$colors, 'primary');
+          box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'primary'), 0.1);
+        }
+      }
+
+      .search-clear {
+        position: absolute;
+        right: 1rem;
+        background: transparent;
+        border: none;
+        color: #aaa;
+        font-size: 1.6rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: map.get(variables.$colors, 'danger');
+        }
+      }
+    }
+  }
+
+  // Filters
+  .riesgo-selector__filters {
+    margin-bottom: 2rem;
+
+    // Toggle button to collapse/expand filters
+    .filters-toggle-btn {
+      width: 100%;
+      padding: 1.2rem 2rem;
+      background: linear-gradient(135deg,
+        rgba(map.get(variables.$colors, 'primary'), 0.08) 0%,
+        rgba(map.get(variables.$colors, 'primary'), 0.04) 100%);
+      border: 2px solid rgba(map.get(variables.$colors, 'primary'), 0.2);
+      border-radius: 12px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: map.get(variables.$colors, 'primary');
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+
+      i {
+        font-size: 1.4rem;
+        transition: transform 0.3s ease;
+      }
+
+      &:hover {
+        background: linear-gradient(135deg,
+          rgba(map.get(variables.$colors, 'primary'), 0.12) 0%,
+          rgba(map.get(variables.$colors, 'primary'), 0.06) 100%);
+        border-color: rgba(map.get(variables.$colors, 'primary'), 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.15);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      // Badge for active filter count
+      .filters-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.4rem;
+        height: 2.4rem;
+        padding: 0 0.8rem;
+        background: map.get(variables.$colors, 'primary');
+        color: white;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-left: 0.5rem;
+      }
+    }
+
+    // Collapsible content wrapper
+    .filters-content {
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 0.3s ease,
+                  margin 0.3s ease;
+
+      &.hidden {
+        max-height: 0;
+        opacity: 0;
+        margin: 0;
+        pointer-events: none;
+      }
+
+      &.visible {
+        max-height: 100rem; // Large enough to accommodate all filters
+        opacity: 1;
+        margin-bottom: 0;
+      }
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+
+      .view-toggle-btn {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: map.get(variables.$colors, 'text');
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+
+        i {
+          font-size: 1.2rem;
+        }
+
+        &:hover {
+          border-color: map.get(variables.$colors, 'primary');
+          color: map.get(variables.$colors, 'primary');
+        }
+
+        &.active {
+          background: map.get(variables.$colors, 'primary');
+          border-color: map.get(variables.$colors, 'primary');
+          color: white;
+        }
+      }
+    }
+
+    .category-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+
+      .category-filter {
+        padding: 0.8rem 1.5rem;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 20px;
+        font-size: 1.3rem;
+        color: map.get(variables.$colors, 'text');
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: map.get(variables.$colors, 'primary');
+          color: map.get(variables.$colors, 'primary');
+        }
+
+        &.active {
+          background: map.get(variables.$colors, 'primary');
+          border-color: map.get(variables.$colors, 'primary');
+          color: white;
+        }
+      }
+    }
+  }
+
+  // =================================================================
+  // ✅ P1 FIX: COMPACT HORIZONTAL FILTERS LAYOUT
+  // Reduce altura de ~200px a ~80px con layout horizontal
+  // =================================================================
+  .riesgo-selector__filters-compact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    padding: 1.2rem 2rem;
+    background: white;
+    border-radius: 12px;
+    @include mixins.box-shadow('sm');
+    margin-bottom: 2rem;
+
+    @include mixins.respond-to('tablet') {
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+
+    @include mixins.respond-to('mobile') {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.2rem;
+    }
+
+    // View toggle switch (left)
+    .filters-view-toggle {
+      display: flex;
+      gap: 0.8rem;
+      background: #f5f5f5;
+      padding: 0.4rem;
+      border-radius: 8px;
+
+      .view-toggle-btn {
+        padding: 0.8rem 1.5rem;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: map.get(variables.$colors, 'text');
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        white-space: nowrap;
+
+        i {
+          font-size: 1.2rem;
+        }
+
+        &:hover:not(.active) {
+          background: rgba(map.get(variables.$colors, 'primary'), 0.1);
+          color: map.get(variables.$colors, 'primary');
+        }
+
+        &.active {
+          background: white;
+          color: map.get(variables.$colors, 'primary');
+          @include mixins.box-shadow('sm');
+        }
+
+        @include mixins.respond-to('mobile') {
+          padding: 0.8rem 1.2rem;
+          font-size: 1.2rem;
+
+          span {
+            display: none; // Solo iconos en móvil
+          }
+        }
+      }
+    }
+
+    // Category dropdown (right)
+    .filters-category-dropdown {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: map.get(variables.$colors, 'text');
+        white-space: nowrap;
+
+        i {
+          color: map.get(variables.$colors, 'primary');
+          font-size: 1.3rem;
+        }
+
+        @include mixins.respond-to('mobile') {
+          display: none; // Ocultar label en móvil
+        }
+      }
+
+      select {
+        min-width: 200px;
+        padding: 1rem 3.5rem 1rem 1.2rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1.4rem;
+        font-family: map.get(variables.$fonts, 'body');
+        font-weight: 500;
+        color: map.get(variables.$colors, 'text');
+        background: white url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235dc4af"><path d="M7 10l5 5 5-5H7z"/></svg>') no-repeat right 1rem center;
+        background-size: 2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        appearance: none;
+
+        &:hover {
+          border-color: map.get(variables.$colors, 'primary');
+        }
+
+        &:focus {
+          outline: none;
+          border-color: map.get(variables.$colors, 'primary');
+          @include mixins.box-shadow('md');
+        }
+
+        @include mixins.respond-to('mobile') {
+          min-width: 100%;
+        }
+      }
+    }
+  }
+
+  // =================================================================
+  // 🤖 DISEÑO #4: Popover Anclado al Header
+  // Profesional, no invasivo, máximo control del usuario
+  // =================================================================
+  .ai-suggestions-panel {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+
+    // Badge trigger button
+    .ai-trigger-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem 1.6rem;
+      background: map.get(variables.$colors, 'primary');
+      color: #ffffff;
+      border: none;
+      border-radius: 2rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      cursor: pointer;
+      @include mixins.box-shadow('md');
+      transition: all 0.3s ease;
+      position: relative;
+
+      // Pulse animation
+      animation: badgePulse 2s infinite;
+
+      i {
+        font-size: 1.6rem;
+      }
+
+      .ai-badge-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.2rem;
+        height: 2.2rem;
+        background: #ffffff;
+        color: map.get(variables.$colors, 'primary');
+        border-radius: 50%;
+        font-size: 1.2rem;
+        font-weight: 700;
+        padding: 0 0.4rem;
+      }
+
+      &:hover {
+        background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -8%);
+        transform: translateY(-2px);
+        @include mixins.box-shadow('lg');
+        animation: none;
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &.active {
+        background: map.get(variables.$colors, 'secondary');
+
+        .ai-badge-count {
+          background: map.get(variables.$colors, 'primary');
+          color: #ffffff;
+        }
+      }
+    }
+
+    // Popover overlay (invisible backdrop)
+    .ai-popover-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: transparent;
+      z-index: 1040;
+      display: none;
+
+      &.active {
+        display: block;
+      }
+    }
+
+    // Popover content - MÁS COMPACTO
+    .ai-popover {
+      position: absolute;
+      z-index: 1050;
+      width: 34rem;
+      max-height: 55vh;
+      background: #ffffff;
+      border-radius: 1.2rem;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15),
+                  0 0 0 1px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+
+      &.active {
+        opacity: 1;
+        pointer-events: all;
+        animation: popoverBounceIn 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+      }
+
+      // Arrow (popper arrow)
+      &[data-popper-placement^='top'] > .ai-popover-arrow {
+        bottom: -8px;
+        &::before {
+          border-width: 8px 8px 0 8px;
+          border-color: #ffffff transparent transparent transparent;
+        }
+      }
+
+      &[data-popper-placement^='bottom'] > .ai-popover-arrow {
+        top: -8px;
+        &::before {
+          border-width: 0 8px 8px 8px;
+          border-color: transparent transparent #ffffff transparent;
+        }
+      }
+
+      .ai-popover-arrow {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+
+        &::before {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 0;
+          border-style: solid;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+      }
+    }
+
+    // Popover header - MÁS COMPACTO
+    .ai-popover-header {
+      padding: 1.4rem 1.6rem;
+      border-bottom: 1px solid map.get(variables.$colors, 'background');
+      background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+
+      h3 {
+        margin: 0 0 0.3rem 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: map.get(variables.$colors, 'secondary');
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+
+        i {
+          color: map.get(variables.$colors, 'primary');
+          font-size: 1.6rem;
+        }
+      }
+
+      .ai-subtitle {
+        margin: 0;
+        font-size: 1.1rem;
+        color: #64748b;
+        font-weight: 500;
+      }
+    }
+
+    // Popover body (scrollable) - MÁS COMPACTO
+    .ai-popover-body {
+      padding: 1rem;
+      max-height: 45vh;
+      overflow-y: auto;
+
+      // Custom scrollbar
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: map.get(variables.$colors, 'background');
+        border-radius: 4px;
+        margin: 0.5rem 0;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: map.get(variables.$colors, 'primary');
+        border-radius: 4px;
+
+        &:hover {
+          background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%);
+        }
+      }
+    }
+
+    // Chips container - MÁS COMPACTO
+    .ai-chips-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    // Individual chip (compact card) - MÁS COMPACTO
+    .ai-chip {
+      background: map.get(variables.$colors, 'background');
+      border: 2px solid transparent;
+      border-radius: 1rem;
+      padding: 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(map.get(variables.$colors, 'primary'), 0.08);
+        border-color: map.get(variables.$colors, 'primary');
+        transform: translateX(3px);
+      }
+
+      // Estados
+      &.all-selected {
+        background: rgba(map.get(variables.$colors, 'primary'), 0.15);
+        border-color: map.get(variables.$colors, 'primary');
+
+        .ai-chip-badge {
+          background: map.get(variables.$colors, 'primary');
+          color: #ffffff;
+        }
+      }
+
+      &.partial-selected {
+        border-color: rgba(map.get(variables.$colors, 'primary'), 0.5);
+      }
+
+      .ai-chip-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
+
+        .ai-chip-icon {
+          font-size: 2rem;
+          flex-shrink: 0;
+        }
+
+        .ai-chip-info {
+          flex: 1;
+
+          .ai-chip-name {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: map.get(variables.$colors, 'secondary');
+            margin-bottom: 0.3rem;
+            line-height: 1.3;
+          }
+
+          .ai-chip-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+
+            .ai-chip-count {
+              font-size: 1.1rem;
+              font-weight: 600;
+              color: map.get(variables.$colors, 'primary');
+              background: #ffffff;
+              padding: 0.2rem 0.6rem;
+              border-radius: 0.6rem;
+            }
+
+            .ai-confidence {
+              font-size: 1rem;
+              font-weight: 600;
+              color: #64748b;
+              display: flex;
+              align-items: center;
+              gap: 0.3rem;
+
+              i {
+                color: map.get(variables.$colors, 'primary');
+              }
+            }
+          }
+        }
+
+        .ai-chip-badge {
+          flex-shrink: 0;
+          width: 2rem;
+          height: 2rem;
+          border-radius: 50%;
+          background: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+          color: map.get(variables.$colors, 'primary');
+          font-weight: 700;
+          @include mixins.box-shadow('sm');
+        }
+      }
+
+      .ai-chip-action {
+        width: 100%;
+        padding: 0.8rem;
+        background: transparent;
+        color: map.get(variables.$colors, 'primary');
+        border: 2px solid map.get(variables.$colors, 'primary');
+        border-radius: 0.8rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: map.get(variables.$colors, 'primary');
+          color: #ffffff;
+          transform: translateY(-2px);
+          @include mixins.box-shadow('md');
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+
+    // Popover footer - MÁS COMPACTO
+    .ai-popover-footer {
+      padding: 1rem 1.6rem;
+      border-top: 1px solid map.get(variables.$colors, 'background');
+      background: #fafafa;
+
+      .ai-info-text {
+        margin: 0;
+        font-size: 1rem;
+        color: #64748b;
+        line-height: 1.5;
+        display: flex;
+        gap: 0.5rem;
+
+        i {
+          color: map.get(variables.$colors, 'primary');
+          flex-shrink: 0;
+          margin-top: 0.2rem;
+        }
+      }
+    }
+
+    // Animations
+    @keyframes badgePulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(map.get(variables.$colors, 'primary'), 0.7);
+      }
+      50% {
+        box-shadow: 0 0 0 8px rgba(map.get(variables.$colors, 'primary'), 0);
+      }
+    }
+
+    @keyframes popoverBounceIn {
+      0% {
+        transform: scale(0.8) translateY(10px);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.05) translateY(-5px);
+      }
+      100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+    }
+
+    // Responsive
+    @include mixins.respond-to('tablet') {
+      .ai-popover {
+        width: calc(100vw - 3rem);
+        max-width: 42rem;
+        left: 50% !important;
+        transform: translateX(-50%);
+      }
+    }
+
+    @include mixins.respond-to('mobile') {
+      .ai-trigger-badge {
+        padding: 0.6rem 1.2rem;
+        font-size: 1.2rem;
+
+        i {
+          font-size: 1.4rem;
+        }
+
+        .ai-badge-count {
+          min-width: 2rem;
+          height: 2rem;
+          font-size: 1.1rem;
+        }
+      }
+
+      .ai-popover {
+        width: calc(100vw - 2rem);
+      }
+
+      .ai-chip {
+        .ai-chip-header {
+          .ai-chip-icon {
+            font-size: 2rem;
+          }
+
+          .ai-chip-info .ai-chip-name {
+            font-size: 1.4rem;
+          }
+        }
+      }
+    }
+  }
+
+  // GES List
+  .riesgo-selector__list {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding: 0.5rem;
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: map.get(variables.$colors, 'primary');
+      border-radius: 4px;
+
+      &:hover {
+        background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%);
+      }
+    }
+  }
+
+  // ========================================
+  // WARNING BANNER (H3 - UX Audit)
+  // ========================================
+
+  .riesgo-selector__warning-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.6rem 2rem;
+    margin: 1.5rem 0;
+    background: linear-gradient(135deg,
+      rgba(#ff9800, 0.08) 0%,
+      rgba(#ff9800, 0.04) 100%
+    );
+    border-left: 4px solid #ff9800;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(#ff9800, 0.12);
+    animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    i.fa-exclamation-triangle {
+      font-size: 2.4rem;
+      color: #ff9800;
+      margin-top: 0.2rem;
+      flex-shrink: 0;
+    }
+
+    .riesgo-selector__warning-content {
+      flex: 1;
+
+      strong {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: map.get(variables.$colors, 'secondary');
+        display: block;
+        margin-bottom: 0.6rem;
+      }
+
+      small {
+        font-size: 1.3rem;
+        color: #666;
+        line-height: 1.6;
+        display: block;
+
+        strong {
+          display: inline;
+          font-size: inherit;
+          color: #e65100; // Darker orange for missing categories
+          font-weight: 600;
+        }
+      }
+    }
+
+    @include mixins.respond-to('mobile') {
+      padding: 1.2rem 1.5rem;
+
+      i.fa-exclamation-triangle {
+        font-size: 2rem;
+      }
+
+      .riesgo-selector__warning-content {
+        strong {
+          font-size: 1.4rem;
+        }
+
+        small {
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }
+
+  // GES Item
+  .ges-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 2rem; // ⬆️ Aumentado de 1.5rem a 2rem para mejor respiración
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); // Smoother easing
+    position: relative;
+    animation: fadeInScale 0.4s ease-out; // Micro-animation: fade in on appear
+    overflow: hidden; // 🎨 H2: Para contener la barra de color
+
+    // 📱 Responsive: Padding reducido en mobile
+    @media (max-width: 768px) {
+      padding: 1.5rem;
+    }
+
+    &:hover {
+      border-color: map.get(variables.$colors, 'primary');
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px) scale(1.01); // Micro-animation: lift on hover
+
+      // 🎨 H2: Expandir barra de color en hover
+      .ges-item__color-bar {
+        width: 8px;
+      }
+    }
+
+    &.selected {
+      border-color: map.get(variables.$colors, 'primary');
+      background: rgba(map.get(variables.$colors, 'primary'), 0.05);
+    }
+
+    // 🎨 H2: Barra de color lateral
+    .ges-item__color-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      transition: width 0.3s ease;
+    }
+
+    .ges-item__checkbox {
+      margin-top: 0.3rem;
+      margin-left: 0.8rem; // 🎨 H2: Offset para la barra de color
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .ges-item__content {
+      flex: 1;
+    }
+
+    .ges-item__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+
+      .ges-item__name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: map.get(variables.$colors, 'secondary');
+      }
+
+      .ges-item__badge {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.3rem 0.8rem;
+        background: map.get(variables.$colors, 'primary');
+        color: white;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        white-space: nowrap;
+
+        i {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .ges-item__description {
+      font-size: 1.3rem;
+      color: map.get(variables.$colors, 'text');
+      line-height: 1.5;
+      margin: 0.5rem 0;
+    }
+
+    .ges-item__meta {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.8rem;
+
+      .ges-item__category {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.2rem;
+        color: color.adjust(map.get(variables.$colors, 'text'), $lightness: 20%);
+
+        i {
+          color: map.get(variables.$colors, 'primary');
+        }
+      }
+    }
+
+    .ges-item__checkmark {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 30px;
+      height: 30px;
+      background: map.get(variables.$colors, 'primary');
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: bold;
+      animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); // Micro-animation: bounce on appear
+    }
+
+    // Skeleton loading state
+    &.skeleton {
+      pointer-events: none;
+      cursor: default;
+      border-color: #f0f0f0;
+
+      &:hover {
+        border-color: #f0f0f0;
+        box-shadow: none;
+      }
+    }
+  }
+
+  // ========================================
+  // 🎨 H2 - COLOR GROUPING DE GES
+  // ========================================
+
+  // Modificador de lista agrupada
+  .riesgo-selector__list--grouped {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; // Separación entre grupos
+  }
+
+  // Grupo de GES
+  .ges-group {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    background: white;
+    animation: fadeInScale 0.4s ease-out;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2rem;
+      gap: 2rem;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    &__header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      flex: 1;
+      min-width: 0; // Para text-overflow
+    }
+
+    &__toggle {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.08);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: map.get(variables.$colors, 'secondary');
+
+      i {
+        font-size: 1.4rem;
+        transition: transform 0.3s ease;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.15);
+        transform: scale(1.05);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+
+    &__title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: map.get(variables.$colors, 'secondary');
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex: 1;
+      min-width: 0; // Para text-overflow
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &__count {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: rgba(map.get(variables.$colors, 'secondary'), 0.6);
+      white-space: nowrap;
+    }
+
+    &__select-all {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.8rem 1.4rem;
+      background: rgba(map.get(variables.$colors, 'primary'), 0.1);
+      color: map.get(variables.$colors, 'primary');
+      border: 2px solid transparent;
+      border-radius: 8px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+
+      i {
+        font-size: 1.4rem;
+      }
+
+      &:hover {
+        background: rgba(map.get(variables.$colors, 'primary'), 0.2);
+        border-color: map.get(variables.$colors, 'primary');
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &.active {
+        background: map.get(variables.$colors, 'primary');
+        color: white;
+
+        &:hover {
+          background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%);
+        }
+      }
+    }
+
+    &__items {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      padding: 1.5rem;
+      background: #fafafa;
+    }
+
+    // Responsive
+    @include mixins.respond-to('mobile') {
+      &__header {
+        padding: 1.2rem 1.5rem;
+        gap: 1rem;
+      }
+
+      &__toggle {
+        width: 32px;
+        height: 32px;
+
+        i {
+          font-size: 1.2rem;
+        }
+      }
+
+      &__title {
+        font-size: 1.5rem;
+      }
+
+      &__count {
+        font-size: 1.3rem;
+      }
+
+      &__select-all {
+        padding: 0.6rem 1rem;
+        font-size: 1.2rem;
+
+        // En móvil, ocultar texto y solo mostrar icono
+        span {
+          display: none;
+        }
+      }
+
+      &__items {
+        padding: 1rem;
+        gap: 1rem;
+      }
+    }
+  }
+
+  // Skeleton placeholders with shimmer animation
+  .skeleton-text {
+    display: block;
+    height: 1.4rem;
+    background: linear-gradient(
+      90deg,
+      #f0f0f0 25%,
+      #e0e0e0 50%,
+      #f0f0f0 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite ease-in-out;
+    border-radius: 4px;
+    margin: 0.4rem 0;
+
+    &.skeleton-text--title {
+      width: 70%;
+      height: 1.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    &.skeleton-text--description {
+      width: 90%;
+      height: 1.3rem;
+      margin: 0.3rem 0;
+
+      &.short {
+        width: 60%;
+      }
+    }
+
+    &.skeleton-text--category {
+      width: 40%;
+      height: 1.2rem;
+      margin-top: 0.5rem;
+    }
+  }
+
+  .skeleton-badge {
+    display: inline-block;
+    width: 70px;
+    height: 24px;
+    background: linear-gradient(
+      90deg,
+      #f0f0f0 25%,
+      #e0e0e0 50%,
+      #f0f0f0 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite ease-in-out;
+    border-radius: 12px;
+  }
+
+  // Shimmer animation keyframes
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  // Empty state
+  .riesgo-selector__empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: map.get(variables.$colors, 'text');
+
+    p {
+      font-size: 1.6rem;
+      margin: 1rem 0 2rem;
+    }
+  }
+
+  // Footer
+  .riesgo-selector__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: rgba(map.get(variables.$colors, 'primary'), 0.05);
+    border-radius: 12px;
+    margin-top: 2rem;
+
+    .riesgo-selector__counter {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 1.5rem;
+      color: map.get(variables.$colors, 'text');
+
+      i {
+        color: map.get(variables.$colors, 'primary');
+        font-size: 1.8rem;
+      }
+
+      strong {
+        color: map.get(variables.$colors, 'primary');
+        font-size: 2rem;
+        transition: all 0.3s ease;
+
+        // Class to trigger pulse animation on value change
+        &.pulse-update {
+          animation: pulse 0.4s ease-out;
+        }
+      }
+    }
+  }
+}
+
+// =================================================================
+// P1-2: CARGO TABS - Neumorphism Design (Rediseño moderno)
+// =================================================================
+
+.cargo-tabs-wrapper {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2.4rem;
+
+  // Fade indicators para scroll horizontal (mobile)
+  &.has-scroll-left::before,
+  &.has-scroll-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  &.has-scroll-left::before {
+    left: 0;
+    background: linear-gradient(to right, #f5f5f5, transparent);
+  }
+
+  &.has-scroll-right::after {
+    right: 0;
+    background: linear-gradient(to left, #f5f5f5, transparent);
+  }
+}
+
+.cargo-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  padding: 1.6rem;
+  background: #f5f5f5;
+  border-radius: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(map.get(variables.$colors, 'primary'), 0.3) transparent;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(map.get(variables.$colors, 'primary'), 0.3);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(map.get(variables.$colors, 'primary'), 0.5);
+    }
+  }
+
+  @include mixins.respond-to('mobile') {
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+  }
+
+  .cargo-tab {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.8rem;
+    border: none;
+    border-radius: 12px;
+    background: #f5f5f5;
+    cursor: pointer;
+    font-family: map.get(variables.$fonts, 'title');
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: map.get(variables.$colors, 'secondary');
+    white-space: nowrap;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    // Neumorphism soft shadow
+    box-shadow:
+      4px 4px 10px rgba(0, 0, 0, 0.08),
+      -3px -3px 8px rgba(255, 255, 255, 0.9);
+
+    &:hover:not(.active) {
+      transform: translateY(-2px);
+      box-shadow:
+        6px 6px 14px rgba(0, 0, 0, 0.12),
+        -4px -4px 10px rgba(255, 255, 255, 1);
+    }
+
+    &.active {
+      background: white;
+      box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.12),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.9);
+
+      .cargo-name {
+        color: map.get(variables.$colors, 'primary');
+        font-weight: 700;
+      }
+
+      .cargo-count {
+        background: map.get(variables.$colors, 'primary');
+        color: white;
+      }
+
+      // Indicador de tab activa (línea inferior)
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 3px;
+        background: map.get(variables.$colors, 'primary');
+        border-radius: 2px;
+      }
+    }
+
+    .cargo-name {
+      font-family: map.get(variables.$fonts, 'title');
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, 'secondary');
+      transition: color 0.3s ease;
+    }
+
+    .cargo-count {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.8rem;
+      height: 2.8rem;
+      padding: 0 0.6rem;
+      border-radius: 50%;
+      background: #e0e0e0;
+      color: #666;
+      font-family: map.get(variables.$fonts, 'title');
+      font-size: 1.3rem;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    // Indicador de progreso (checkmark si tiene riesgos)
+    &[data-has-risks="true"] {
+      .cargo-count {
+        background: rgba(map.get(variables.$colors, 'primary'), 0.15);
+        color: map.get(variables.$colors, 'primary');
+      }
+
+      &::before {
+        content: '✓';
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: map.get(variables.$colors, 'success');
+        color: white;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}
+
+// =================================================================
+// NIVELES RIESGO FORM - Formulario de configuración ND/NE/NC
+// =================================================================
+
+.niveles-form {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  // Header
+  &__header {
+    text-align: center;
+    margin-bottom: 3rem;
+
+    h2 {
+      font-family: map.get(variables.$fonts, 'title');
+      font-size: 2.8rem;
+      color: map.get(variables.$colors, 'secondary');
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__cargo-info {
+    font-size: 1.6rem;
+    color: map.get(variables.$colors, 'text');
+    margin: 1rem 0;
+
+    i {
+      color: map.get(variables.$colors, 'primary');
+      margin-right: 0.8rem;
+    }
+
+    strong {
+      color: map.get(variables.$colors, 'secondary');
+    }
+  }
+
+  &__ges-counter {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 1.4rem;
+    color: map.get(variables.$colors, 'text');
+    margin-top: 0.5rem;
+
+    .current-ges {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: map.get(variables.$colors, 'primary');
+    }
+
+    .separator {
+      font-size: 1.8rem;
+      color: #ccc;
+    }
+
+    .total-ges {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, 'secondary');
+    }
+  }
+
+  // Progress bar
+  &__progress {
+    margin-bottom: 3rem;
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #e0e0e0;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+
+      &__fill {
+        height: 100%;
+        background: linear-gradient(90deg, map.get(variables.$colors, 'primary'), map.get(variables.$colors, 'success'));
+        border-radius: 5px;
+        transition: width 0.4s ease;
+      }
+    }
+
+    .progress-text {
+      font-size: 1.4rem;
+      color: map.get(variables.$colors, 'text');
+      text-align: center;
+
+      strong {
+        color: map.get(variables.$colors, 'primary');
+        font-weight: 700;
+      }
+
+      .progress-percentage {
+        color: map.get(variables.$colors, 'secondary');
+        font-weight: 600;
+        margin-left: 0.5rem;
+      }
+    }
+  }
+
+  // GES Card
+  &__ges-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  // Section (ND, NE, NC)
+  &__section {
+    margin-bottom: 3rem;
+  }
+
+  // Calculator results
+  &__calculator {
+    background: #f9f9f9;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin: 3rem 0;
+
+    .calculator__title {
+      font-family: map.get(variables.$fonts, 'title');
+      font-size: 2rem;
+      color: map.get(variables.$colors, 'secondary');
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      i {
+        color: map.get(variables.$colors, 'primary');
+      }
+    }
+
+    .calculator__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+
+      @include mixins.respond-to('mobile') {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .calculator__result {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 2rem;
+    }
+
+    .calculator__formula {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 1.4rem;
+      color: map.get(variables.$colors, 'text');
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+
+      .formula-label {
+        font-weight: 700;
+        font-size: 1.6rem;
+        color: map.get(variables.$colors, 'secondary');
+      }
+
+      .formula-part {
+        background: #f0f0f0;
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+      }
+
+      .formula-operator {
+        font-weight: 700;
+        color: map.get(variables.$colors, 'primary');
+      }
+    }
+
+    .calculator__value {
+      text-align: center;
+      margin-bottom: 1rem;
+
+      .value-number {
+        display: block;
+        font-size: 4rem;
+        font-weight: 800;
+        font-family: map.get(variables.$fonts, 'title');
+        color: map.get(variables.$colors, 'secondary');
+      }
+
+      .value-label {
+        display: block;
+        font-size: 1.3rem;
+        color: map.get(variables.$colors, 'text');
+        margin-top: 0.5rem;
+      }
+
+      // Color coding
+      &.risk-bajo .value-number {
+        color: map.get(variables.$colors, 'success');
+      }
+
+      &.risk-medio .value-number {
+        color: map.get(variables.$colors, 'warning');
+      }
+
+      &.risk-alto .value-number {
+        color: map.get(variables.$colors, 'atention');
+      }
+
+      &.risk-muy-alto .value-number {
+        color: map.get(variables.$colors, 'danger');
+      }
+    }
+
+    .calculator__interpretation {
+      padding: 1.5rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+
+      i {
+        font-size: 2rem;
+        margin-top: 0.2rem;
+      }
+
+      strong {
+        display: block;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        font-size: 1.3rem;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      &.risk-bajo {
+        background: rgba(map.get(variables.$colors, 'success'), 0.1);
+        border: 1px solid map.get(variables.$colors, 'success');
+        color: color.adjust(map.get(variables.$colors, 'success'), $lightness: -20%);
+      }
+
+      &.risk-medio {
+        background: rgba(map.get(variables.$colors, 'warning'), 0.15);
+        border: 1px solid map.get(variables.$colors, 'warning');
+        color: color.adjust(map.get(variables.$colors, 'warning'), $lightness: -40%);
+      }
+
+      &.risk-alto {
+        background: rgba(map.get(variables.$colors, 'atention'), 0.15);
+        border: 1px solid map.get(variables.$colors, 'atention');
+        color: color.adjust(map.get(variables.$colors, 'atention'), $lightness: -20%);
+      }
+
+      &.risk-muy-alto {
+        background: rgba(map.get(variables.$colors, 'danger'), 0.1);
+        border: 1px solid map.get(variables.$colors, 'danger');
+        color: color.adjust(map.get(variables.$colors, 'danger'), $lightness: -15%);
+      }
+    }
+  }
+
+  // Navigation
+  &__navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 4rem;
+
+    @include mixins.respond-to('mobile') {
+      flex-direction: column;
+    }
+
+    .navigation__info {
+      flex: 1;
+      text-align: center;
+
+      .navigation__warning {
+        color: map.get(variables.$colors, 'atention');
+        font-size: 1.4rem;
+        font-weight: 600;
+
+        i {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+
+  // Empty state
+  &__empty {
+    text-align: center;
+    padding: 6rem 2rem;
+
+    i {
+      font-size: 6rem;
+      color: #ccc;
+      margin-bottom: 2rem;
+    }
+
+    h3 {
+      font-size: 2.4rem;
+      color: map.get(variables.$colors, 'secondary');
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.6rem;
+      color: map.get(variables.$colors, 'text');
+      margin-bottom: 3rem;
+    }
+  }
+
+  // Cargo tabs (for multiple cargos)
+  &__cargo-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+
+    .cargo-tab {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.2rem 2rem;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      font-size: 1.4rem;
+      color: map.get(variables.$colors, 'text');
+
+      &:hover {
+        border-color: map.get(variables.$colors, 'primary');
+        transform: translateY(-2px);
+      }
+
+      &.active {
+        background: map.get(variables.$colors, 'primary');
+        border-color: map.get(variables.$colors, 'primary');
+        color: white;
+      }
+
+      &__name {
+        font-weight: 600;
+      }
+
+      &__progress {
+        font-size: 1.2rem;
+        padding: 0.3rem 0.8rem;
+        background: #f0f0f0;
+        border-radius: 10px;
+        font-weight: 700;
+
+        &.completed {
+          background: map.get(variables.$colors, 'success');
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+// GES Card details
+.ges-card {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  &__name {
+    font-family: map.get(variables.$fonts, 'title');
+    font-size: 2rem;
+    color: map.get(variables.$colors, 'secondary');
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    i {
+      color: map.get(variables.$colors, 'atention');
+    }
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    font-weight: 700;
+
+    &--complete {
+      background: map.get(variables.$colors, 'success');
+      color: white;
+    }
+
+    &--incomplete {
+      background: #f0f0f0;
+      color: map.get(variables.$colors, 'text');
+    }
+  }
+
+  &__description {
+    font-size: 1.4rem;
+    color: map.get(variables.$colors, 'text');
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  &__meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 1.3rem;
+    color: map.get(variables.$colors, 'text');
+  }
+
+  &__category {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    i {
+      color: map.get(variables.$colors, 'primary');
+    }
+  }
+}
+
+// Nivel section (ND, NE, NC)
+.nivel-section {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-family: map.get(variables.$fonts, 'title');
+    font-size: 1.8rem;
+    color: map.get(variables.$colors, 'secondary');
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__help {
+    background: none;
+    border: none;
+    color: map.get(variables.$colors, 'primary');
+    font-size: 2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+      color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%);
+    }
+  }
+
+  &__options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+
+    @include mixins.respond-to('mobile') {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .nivel-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: map.get(variables.$colors, 'primary');
+    color: white;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 1.3rem;
+  }
+}
+
+// Nivel option (radio button styled)
+.nivel-option {
+  position: relative;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: map.get(variables.$colors, 'primary');
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &.selected {
+    border-color: map.get(variables.$colors, 'primary');
+    border-width: 3px;
+    background: rgba(map.get(variables.$colors, 'primary'), 0.05);
+  }
+
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  &__content {
+    pointer-events: none;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+  }
+
+  &__value {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: map.get(variables.$colors, 'primary');
+    font-family: map.get(variables.$fonts, 'title');
+  }
+
+  &__label {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'secondary');
+  }
+
+  &__description {
+    font-size: 1.3rem;
+    color: map.get(variables.$colors, 'text');
+    line-height: 1.5;
+  }
+
+  &__checkmark {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 28px;
+    height: 28px;
+    background: map.get(variables.$colors, 'primary');
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.4rem;
+  }
+}
+
+// Help Modal
+.niveles-help-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .help-modal__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .help-modal__content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 10001;
+    animation: slideInDown 0.3s ease;
+  }
+
+  .help-modal__close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    font-size: 2.4rem;
+    color: map.get(variables.$colors, 'text');
+    cursor: pointer;
+    transition: color 0.2s ease;
+    z-index: 10002;
+
+    &:hover {
+      color: map.get(variables.$colors, 'danger');
+    }
+  }
+
+  .help-modal__body {
+    padding: 4rem 3rem 3rem;
+    font-size: 1.4rem;
+    line-height: 1.7;
+    color: map.get(variables.$colors, 'text');
+
+    strong {
+      color: map.get(variables.$colors, 'secondary');
+      font-size: 1.6rem;
+    }
+
+    ul {
+      margin-top: 1rem;
+      padding-left: 2rem;
+
+      li {
+        margin-bottom: 0.8rem;
+      }
+    }
+  }
+}
+
+// ============================================================
+// CONTROLES MANAGER - Paso 5: Definir controles de riesgo
+// ============================================================
+
+.controles-form {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+}
+
+// Header Section
+.controles-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 3rem;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__title {
+    font-family: map.get(variables.$fonts, 'title'), sans-serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'secondary');
+    margin: 0 0 1rem 0;
+
+    @media (max-width: 768px) {
+      font-size: 2.4rem;
+    }
+  }
+
+  &__subtitle {
+    font-family: map.get(variables.$fonts, 'body'), sans-serif;
+    font-size: 1.6rem;
+    color: map.get(variables.$colors, 'text');
+    margin: 0 0 0.5rem 0;
+    line-height: 1.5;
+
+    strong {
+      color: map.get(variables.$colors, 'primary');
+      font-weight: 600;
+    }
+  }
+
+  &__cargo {
+    font-family: map.get(variables.$fonts, 'body'), sans-serif;
+    font-size: 1.4rem;
+    color: #666;
+    margin: 0;
+
+    strong {
+      color: map.get(variables.$colors, 'secondary');
+    }
+  }
+
+  &__progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+// Progress Circle (SVG)
+.progress-circle {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.circular-chart {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: map.get(variables.$colors, 'background');
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke: map.get(variables.$colors, 'primary');
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+}
+
+.niveles-form__progress {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.progress-text {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 1.4rem;
+  color: #666;
+}
+
+.progress-number {
+  font-family: map.get(variables.$fonts, 'title'), sans-serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: map.get(variables.$colors, 'primary');
+  line-height: 1;
+}
+
+.progress-total {
+  font-family: map.get(variables.$fonts, 'title'), sans-serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #999;
+  line-height: 1;
+}
+
+.progress-label {
+  font-family: map.get(variables.$fonts, 'body'), sans-serif;
+  font-size: 1.2rem;
+  color: #666;
+  text-align: center;
+  margin: 0;
+}
+
+// Hierarchy Intro
+.controles-hierarchy {
+  margin-bottom: 3rem;
+}
+
+.hierarchy-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(map.get(variables.$colors, 'primary'), 0.05);
+  border-left: 4px solid map.get(variables.$colors, 'primary');
+  border-radius: 8px;
+  margin-bottom: 2rem;
+
+  i {
+    font-size: 2rem;
+    color: map.get(variables.$colors, 'primary');
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+  }
+
+  p {
+    font-family: map.get(variables.$fonts, 'body'), sans-serif;
+    font-size: 1.4rem;
+    color: map.get(variables.$colors, 'text');
+    margin: 0;
+    line-height: 1.6;
+  }
+}
+
+// Control Group (cada tipo de control)
+.control-group {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  // Hierarchy level indicator (color coding)
+  &[data-level="1"] .control-number { background: #4caf50; } // Green - Most effective
+  &[data-level="2"] .control-number { background: #8bc34a; }
+  &[data-level="3"] .control-number { background: #ffeb3b; color: #333; }
+  &[data-level="4"] .control-number { background: #ff9800; }
+  &[data-level="5"] .control-number { background: #ff5722; }
+  &[data-level="6"] .control-number { background: #f44336; } // Red - Least effective
+}
+
+.control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: map.get(variables.$colors, 'background');
+  border-bottom: 2px solid #e0e0e0;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+}
+
+.control-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: map.get(variables.$colors, 'primary');
+  color: white;
+  font-family: map.get(variables.$fonts, 'title'), sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.control-icon {
+  font-size: 2rem;
+  color: map.get(variables.$colors, 'primary');
+  flex-shrink: 0;
+}
+
+.control-title {
+  font-family: map.get(variables.$fonts, 'title'), sans-serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: map.get(variables.$colors, 'secondary');
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 1.6rem;
+  }
+}
+
+.control-char-count {
+  font-family: map.get(variables.$fonts, 'body'), sans-serif;
+  font-size: 1.2rem;
+  color: #999;
+
+  .char-current {
+    color: map.get(variables.$colors, 'primary');
+    font-weight: 600;
+  }
+}
+
+.control-body {
+  padding: 2rem;
+}
+
+.control-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 1.2rem;
+  font-family: map.get(variables.$fonts, 'body'), sans-serif;
+  font-size: 1.4rem;
+  color: map.get(variables.$colors, 'text');
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  resize: vertical;
+  transition: all 0.3s ease;
+
+  &::placeholder {
+    color: #999;
+    font-style: italic;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: map.get(variables.$colors, 'primary');
+    box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'primary'), 0.1);
+  }
+
+  &:hover:not(:focus) {
+    border-color: #bbb;
+  }
+}
+
+// Navigation Buttons
+.controles-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 3rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  .btn-wizard {
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  .btn-wizard--success {
+    background: map.get(variables.$colors, 'success');
+    color: white;
+    font-weight: 600;
+    font-size: 1.6rem;
+    padding: 1.2rem 3rem;
+
+    &:hover:not(:disabled) {
+      background: color.adjust(map.get(variables.$colors, 'success'), $lightness: -10%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'success'), 0.3);
+    }
+
+    i {
+      margin-left: 0.8rem;
+    }
+  }
+
+  .btn-wizard--tertiary {
+    background: transparent;
+    color: #666;
+    border: 2px solid #ddd;
+
+    &:hover:not(:disabled) {
+      background: map.get(variables.$colors, 'background');
+      border-color: #bbb;
+      color: map.get(variables.$colors, 'text');
+    }
+
+    i {
+      margin-left: 0.5rem;
+    }
+  }
+}
+
+// ============================================================
+// RESUMEN - Paso 6: Resumen final y generación de documentos
+// ============================================================
+
+.resumen-header {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  h2 {
+    font-family: map.get(variables.$fonts, 'title'), sans-serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'secondary');
+    margin: 0 0 1rem 0;
+
+    i {
+      color: map.get(variables.$colors, 'success');
+      margin-right: 1rem;
+    }
+  }
+
+  p {
+    font-family: map.get(variables.$fonts, 'body'), sans-serif;
+    font-size: 1.6rem;
+    color: #666;
+    margin: 0;
+  }
+}
+
+.resumen-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.resumen-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  h3 {
+    font-family: map.get(variables.$fonts, 'title'), sans-serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: map.get(variables.$colors, 'secondary');
+    margin: 0 0 2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    i {
+      color: map.get(variables.$colors, 'primary');
+    }
+  }
+}
+
+// Detail items (key-value pairs)
+.resumen-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #eee;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.detail-label {
+  font-family: map.get(variables.$fonts, 'body'), sans-serif;
+  font-size: 1.4rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-family: map.get(variables.$fonts, 'body'), sans-serif;
+  font-size: 1.5rem;
+  color: map.get(variables.$colors, 'secondary');
+  font-weight: 600;
+}
+
+// Cargos list
+.cargos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cargo-item {
+  padding: 1.5rem;
+  background: map.get(variables.$colors, 'background');
+  border-radius: 8px;
+  border-left: 4px solid map.get(variables.$colors, 'primary');
+}
+
+.cargo-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+
+  strong {
+    font-family: map.get(variables.$fonts, 'title'), sans-serif;
+    font-size: 1.6rem;
+    color: map.get(variables.$colors, 'secondary');
+  }
+}
+
+.cargo-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: map.get(variables.$colors, 'primary');
+  color: white;
+  font-family: map.get(variables.$fonts, 'title'), sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.cargo-stats {
+  display: flex;
+  gap: 2rem;
+  font-family: map.get(variables.$fonts, 'body'), sans-serif;
+  font-size: 1.3rem;
+  color: #666;
+
+  i {
+    margin-right: 0.5rem;
+    color: map.get(variables.$colors, 'primary');
+  }
+}
+
+// Stats grid
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.5rem;
+  background: map.get(variables.$colors, 'background');
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  color: map.get(variables.$colors, 'primary');
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-value {
+  font-family: map.get(variables.$fonts, 'title'), sans-serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: map.get(variables.$colors, 'secondary');
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+
+.stat-label {
+  font-family: map.get(variables.$fonts, 'body'), sans-serif;
+  font-size: 1.2rem;
+  color: #666;
+  line-height: 1;
+}
+
+// Documentos list
+.documentos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.documento-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: map.get(variables.$colors, 'background');
+  border-radius: 8px;
+}
+
+.documento-icon {
+  font-size: 3.2rem;
+  flex-shrink: 0;
+
+  &.excel {
+    color: #217346; // Excel green
+  }
+
+  &.pdf {
+    color: #d93025; // PDF red
+  }
+}
+
+.documento-info {
+  flex: 1;
+
+  strong {
+    display: block;
+    font-family: map.get(variables.$fonts, 'title'), sans-serif;
+    font-size: 1.6rem;
+    color: map.get(variables.$colors, 'secondary');
+    margin-bottom: 0.4rem;
+  }
+
+  span {
+    font-family: map.get(variables.$fonts, 'body'), sans-serif;
+    font-size: 1.3rem;
+    color: #666;
+  }
+}
+
+// Submit section
+.submit-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 3rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+
+    .btn-wizard {
+      width: 100%;
+    }
+  }
+}
+
+.btn-large {
+  font-size: 1.8rem;
+  padding: 1.5rem 4rem;
+
+  i {
+    margin-right: 1rem;
+    font-size: 2rem;
+  }
+}
+
+// Generation status
+.generation-status {
+  margin-top: 3rem;
+}
+
+.status-container {
+  background: white;
+  border-radius: 12px;
+  padding: 3rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.status-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  i {
+    font-size: 6rem;
+  }
+
+  h3 {
+    font-family: map.get(variables.$fonts, 'title'), sans-serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  &.processing {
+    i {
+      color: map.get(variables.$colors, 'primary');
+    }
+
+    h3 {
+      color: map.get(variables.$colors, 'secondary');
+    }
+  }
+
+  &.success {
+    i {
+      color: map.get(variables.$colors, 'success');
+    }
+
+    h3 {
+      color: map.get(variables.$colors, 'success');
+    }
+  }
+
+  &.error {
+    i {
+      color: map.get(variables.$colors, 'danger');
+    }
+
+    h3 {
+      color: map.get(variables.$colors, 'danger');
+    }
+  }
+}
+
+.progress-bar {
+  width: 100%;
+  height: 24px;
+  background: #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: map.get(variables.$colors, 'primary');
+  transition: width 0.5s ease;
+  border-radius: 12px;
+}
+
+.status-message {
+  font-family: map.get(variables.$fonts, 'body'), sans-serif;
+  font-size: 1.6rem;
+  color: map.get(variables.$colors, 'text');
+  margin: 1.5rem 0;
+
+  &.error {
+    color: map.get(variables.$colors, 'danger');
+  }
+}
+
+.status-hint {
+  font-family: map.get(variables.$fonts, 'body'), sans-serif;
+  font-size: 1.4rem;
+  color: #666;
+  font-style: italic;
+}
+
+// Download cards
+.documentos-download {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.download-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  background: map.get(variables.$colors, 'background');
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: map.get(variables.$colors, 'primary');
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  i:first-child {
+    font-size: 3rem;
+    margin-right: 1.5rem;
+  }
+
+  i:last-child {
+    font-size: 2rem;
+    color: map.get(variables.$colors, 'primary');
+  }
+
+  span {
+    flex: 1;
+    font-family: map.get(variables.$fonts, 'body'), sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: map.get(variables.$colors, 'secondary');
+  }
+
+  &.excel i:first-child {
+    color: #217346;
+  }
+
+  &.pdf i:first-child {
+    color: #d93025;
+  }
+}
+
+// =================================================================
+// WIZARD PAGE LAYOUT - Secciones de landing
+// =================================================================
+
+.wizard-page {
+  background: map.get(variables.$colors, 'background');
+  min-height: 100vh;
+}
+
+// Logo Bar (barra superior con logo)
+.wizard-logo-bar {
+  background: white;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  @media (max-width: 768px) {
+    padding: 1rem 1.5rem;
+  }
+}
+
+.wizard-logo-link {
+  display: inline-flex;
+  align-items: center;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.wizard-logo {
+  display: block;
+  width: 120px;
+  height: auto;
+  opacity: 1;
+  visibility: visible;
+
+  @media (max-width: 768px) {
+    width: 100px;
+  }
+}
+
+// Wizard Section (contenedor principal del wizard)
+.wizard-section {
+  background: white;
+  padding: 0; // Sin padding
+
+  &__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0; // Sin padding en el container tampoco
+  }
+}
+
+// Wizard Loading State
+.wizard-loading {
+  text-align: center;
+  padding: 8rem 2rem;
+
+  &__spinner {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 2rem;
+    border: 4px solid map.get(variables.$colors, 'background');
+    border-top-color: map.get(variables.$colors, 'primary');
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  &__text {
+    font-family: map.get(variables.$fonts, 'body'), sans-serif;
+    font-size: 1.6rem;
+    color: map.get(variables.$colors, 'text');
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Benefits Section
+.wizard-benefits {
+  padding: 8rem 2rem;
+  background: map.get(variables.$colors, 'background');
+
+  @include mixins.respond-to('tablet') {
+    padding: 10rem 4rem;
+  }
+
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-family: map.get(variables.$fonts, 'title'), sans-serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'secondary');
+    text-align: center;
+    margin-bottom: 6rem;
+
+    @include mixins.respond-to('tablet') {
+      font-size: 4rem;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+
+    @include mixins.respond-to('tablet') {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4rem;
+    }
+
+    @include mixins.respond-to('desktop') {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}
+
+.wizard-benefit {
+  background: white;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  text-align: center;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  &__icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 40%);
+    border-radius: 50%;
+    color: map.get(variables.$colors, 'primary');
+    font-size: 2.8rem;
+  }
+
+  &__title {
+    font-family: map.get(variables.$fonts, 'title'), sans-serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: map.get(variables.$colors, 'secondary');
+    margin-bottom: 1.5rem;
+  }
+
+  &__description {
+    font-family: map.get(variables.$fonts, 'body'), sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.6;
+    color: map.get(variables.$colors, 'text');
+  }
+}
+
+// FAQ Section
+.wizard-faq {
+  padding: 8rem 2rem;
+  background: white;
+
+  @include mixins.respond-to('tablet') {
+    padding: 10rem 4rem;
+  }
+
+  &__container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-family: map.get(variables.$fonts, 'title'), sans-serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'secondary');
+    text-align: center;
+    margin-bottom: 6rem;
+
+    @include mixins.respond-to('tablet') {
+      font-size: 4rem;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  &__item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: map.get(variables.$colors, 'primary');
+    }
+  }
+
+  &__question {
+    width: 100%;
+    padding: 2rem;
+    background: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-family: map.get(variables.$fonts, 'body'), sans-serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: map.get(variables.$colors, 'secondary');
+    text-align: left;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: map.get(variables.$colors, 'background');
+    }
+
+    &[aria-expanded="true"] {
+      background: map.get(variables.$colors, 'background');
+      border-bottom: 1px solid #e0e0e0;
+
+      i {
+        transform: rotate(180deg);
+      }
+    }
+
+    span {
+      flex: 1;
+      padding-right: 2rem;
+    }
+
+    i {
+      font-size: 2rem;
+      color: map.get(variables.$colors, 'primary');
+      transition: transform 0.3s ease;
+    }
+  }
+
+  &__answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+
+    p {
+      padding: 2rem;
+      font-family: map.get(variables.$fonts, 'body'), sans-serif;
+      font-size: 1.6rem;
+      line-height: 1.7;
+      color: map.get(variables.$colors, 'text');
+      margin: 0;
+    }
+  }
+}
+
+// =================================================================
+// Toggles especiales en formulario de cargo
+// =================================================================
+.wizard-step {
+  // Labels de checkbox que cambien de color cuando estén marcados
+  label:has(input[type="checkbox"]:checked) {
+    background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 45%) !important;
+    border: 2px solid map.get(variables.$colors, 'primary') !important;
+    padding: calc(1.2rem - 2px) !important; // Compensar border
+  }
+
+  label:has(input[type="checkbox"]) {
+    &:hover {
+      background: #f0f0f0 !important;
+    }
+  }
+}
+
+// =================================================================
+// Sprint 2: Preview de paso siguiente y confirmación de guardado
+// =================================================================
+
+// Sprint 2.1: Preview del siguiente paso
+.wizard-step-preview {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+
+  &.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  &.exiting {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  .preview-content {
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 3rem 4rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    min-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .preview-icon {
+    font-size: 4rem;
+    line-height: 1;
+  }
+
+  .preview-text {
+    flex: 1;
+  }
+
+  .preview-title {
+    font-size: 1.4rem;
+    color: #5dc4af;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .preview-step-name {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: white;
+  }
+}
+
+// Sprint 2.2: Confirmación "Guardado"
+.wizard-save-confirmation {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 10001;
+  background: #4caf50;
+  color: white;
+  padding: 1.5rem 2.5rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &.exiting {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  .save-icon {
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1;
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    width: 3.2rem;
+    height: 3.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .save-text {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+}
+
+// Sprint 2.3: Feedback visual al aplicar chips IA
+.suggestion-chip {
+  transition: all 0.3s ease;
+
+  &.applying {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(93, 196, 175, 0.4);
+  }
+
+  &.applied-success {
+    background: linear-gradient(135deg, #4caf50, #81c784) !important;
+    color: white !important;
+    border-color: #4caf50 !important;
+  }
+
+  &.chip-error {
+    animation: shake 0.5s;
+    background: #ffebee !important;
+    border-color: #f44336 !important;
+  }
+}
+
+.chip-feedback {
+  background: #4caf50;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 20px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &.exiting {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+// Sprint 2.4: Pulse animation en barras sin seleccionar
+.barra {
+  &:not(.selected) {
+    animation: pulse-hint 2s infinite;
+  }
+}
+
+@keyframes pulse-hint {
+  0%, 100% {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 2px 8px rgba(93, 196, 175, 0.3);
+  }
+}
+
+// Responsive: Mobile
+@media (max-width: 768px) {
+  .wizard-step-preview {
+    .preview-content {
+      min-width: 300px;
+      padding: 2rem 2.5rem;
+      gap: 1.5rem;
+    }
+
+    .preview-icon {
+      font-size: 3rem;
+    }
+
+    .preview-step-name {
+      font-size: 1.6rem;
+    }
+  }
+
+  .wizard-save-confirmation {
+    top: 1rem;
+    right: 1rem;
+    padding: 1.2rem 2rem;
+
+    .save-icon {
+      width: 2.8rem;
+      height: 2.8rem;
+      font-size: 2rem;
+    }
+
+    .save-text {
+      font-size: 1.4rem;
+    }
+  }
+}
+
+// =================================================================
+// TOAST NOTIFICATIONS
+// =================================================================
+
+.wizard-toast {
+  position: fixed;
+  top: 8rem;
+  right: 2rem;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.4rem 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 4px 8px rgba(0, 0, 0, 0.08);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: map.get(variables.$colors, 'secondary');
+  opacity: 0;
+  transform: translateX(400px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+
+  i {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+
+  span {
+    white-space: nowrap;
+  }
+
+  // Visible state
+  &.wizard-toast--visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  // Success variant
+  &.wizard-toast--success {
+    border-left: 4px solid map.get(variables.$colors, 'primary');
+
+    i {
+      color: map.get(variables.$colors, 'primary');
+    }
+  }
+
+  // Error variant
+  &.wizard-toast--error {
+    border-left: 4px solid map.get(variables.$colors, 'danger');
+
+    i {
+      color: map.get(variables.$colors, 'danger');
+    }
+  }
+
+  // Info variant
+  &.wizard-toast--info {
+    border-left: 4px solid #2196f3;
+
+    i {
+      color: #2196f3;
+    }
+  }
+
+  // Mobile responsive
+  @include mixins.respond-to('mobile') {
+    top: 7rem;
+    right: 1.5rem;
+    left: 1.5rem;
+    padding: 1.2rem 1.6rem;
+    font-size: 1.3rem;
+
+    i {
+      font-size: 1.6rem;
+    }
+  }
+}
+
+// ============================================
+// MICRO-ANIMATIONS (Wave 3 - Polish)
+// ============================================
+
+// Bounce In - For checkmarks and success indicators
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Pulse - For counters and dynamic values
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Fade In - General entrance for elements
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Fade In Scale - For interactive elements
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Success Glow - Subtle glow for completed actions
+@keyframes successGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(map.get(variables.$colors, 'primary'), 0);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(map.get(variables.$colors, 'primary'), 0.4);
+  }
+}
+
+// =================================================================
+// 🆕 TASK 4: COMIC BUBBLE FLOTANTE (Reemplaza context bar)
+// Bocadillo estilo comic book con cola apuntando hacia abajo
+// =================================================================
+
+.wizard-comic-bubble {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 1000;
+
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  @include mixins.rounded("md");
+  @include mixins.box-shadow("lg"); // Sombra suavizada del sistema
+
+  padding: 1.4rem;
+  min-width: 200px;
+  max-width: 240px; // Más pequeño que antes (antes: 320px)
+
+  // 🎭 Entrance animation
+  animation: fadeInBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  // 🎭 Hover effect
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.03); // Menos agresivo (antes: 1.05)
+  }
+
+  // 🎭 Bounce animation al actualizar datos
+  &.bounce-update {
+    animation: bounceUpdate 0.5s ease;
+  }
+
+  // Comic bubble content
+  .comic-bubble-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  // Nombre de empresa (sin header, solo el nombre)
+  .comic-bubble-company {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+
+    i {
+      font-size: 1.4rem;
+      color: map.get(variables.$colors, 'primary');
+    }
+
+    .company-name {
+      font-family: map.get(variables.$fonts, 'title');
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, 'secondary');
+      @include mixins.truncate; // Truncar si es muy largo
+    }
+  }
+
+  // Stats (cargos, trabajadores, riesgos)
+  .comic-bubble-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    i {
+      font-size: 1.6rem;
+      color: map.get(variables.$colors, 'primary');
+      width: 2rem;
+      text-align: center;
+    }
+
+    .stat-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+    }
+
+    .stat-value {
+      font-family: map.get(variables.$fonts, 'title');
+      font-size: 2rem;
+      font-weight: 700;
+      color: map.get(variables.$colors, 'secondary');
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-family: map.get(variables.$fonts, 'body');
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  // Cola SVG triángulo simple apuntando hacia abajo (sin borde superior)
+  .comic-bubble-tail {
+    position: absolute;
+    bottom: -1.5rem;
+    right: 2.5rem;
+    width: 2rem;
+    height: 2rem;
+    z-index: 1;
+    // Sombra suavizada coherente con la caja
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+
+    polygon, line {
+      fill: #ffffff;
+      stroke: #e0e0e0;
+      stroke-width: 2;
+    }
+  }
+
+  // 📱 Responsive: Ocultar en mobile y tablet (pantallas pequeñas)
+  // Solo mostrar en desktop (>955px)
+  @media screen and (max-width: 954px) {
+    display: none;
+  }
+}
+
+// 🎭 Animaciones específicas del comic bubble
+
+@keyframes fadeInBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(10px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounceUpdate {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  75% {
+    transform: scale(0.98);
+  }
+}
+
+// =================================================================
+// 🎠 CAROUSEL LAYOUT PARA GES GROUPS (15 riesgos navegables)
+// Layout: Un riesgo visible a la vez, navegación con flechas
+// =================================================================
+
+.ges-groups-carousel-wrapper {
+  position: relative;
+  width: 100%;
+  padding: 2rem 6rem; // Espacio para flechas
+
+  @include mixins.respond-to('mobile') {
+    padding: 2rem 5rem;
+  }
+}
+
+.ges-groups-carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f9f9f9;
+  padding: 2rem;
+  min-height: 500px;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+
+  // Cada grupo de GES (slide del carousel)
+  .ges-group {
+    flex: 0 0 100%;
+    width: 100%;
+    padding: 0 1rem;
+
+    // Items dentro del grupo (GES individuales)
+    .ges-group__items {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      max-height: 600px;
+      overflow-y: auto;
+      padding-right: 1rem;
+
+      // Scrollbar personalizado
+      scrollbar-width: thin;
+      scrollbar-color: rgba(map.get(variables.$colors, 'primary'), 0.3) transparent;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(map.get(variables.$colors, 'primary'), 0.3);
+        border-radius: 3px;
+      }
+    }
+  }
+}
+
+// Botones de navegación (flechas)
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  i {
+    font-size: 2rem;
+    color: map.get(variables.$colors, 'primary');
+  }
+
+  &:hover:not(:disabled) {
+    background: map.get(variables.$colors, 'primary');
+    transform: translateY(-50%) scale(1.1);
+
+    i {
+      color: white;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  &.carousel-nav-prev {
+    left: 0;
+  }
+
+  &.carousel-nav-next {
+    right: 0;
+  }
+
+  @include mixins.respond-to('mobile') {
+    width: 4rem;
+    height: 4rem;
+
+    i {
+      font-size: 1.6rem;
+    }
+  }
+}
+
+// Indicadores de progreso
+.carousel-indicators {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-counter {
+  font-family: map.get(variables.$fonts, 'title');
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: map.get(variables.$colors, 'primary');
+
+  .current {
+    font-size: 2.4rem;
+  }
+
+  .total {
+    color: #999;
+  }
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 400px;
+}
+
+.carousel-dot {
+  width: 0.8rem;   // ✅ P2 FIX: Reducido de 1rem a 0.8rem (8px)
+  height: 0.8rem;
+  border-radius: 50%;
+  border: none;
+  background: #ddd;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+
+  &:hover {
+    background: rgba(map.get(variables.$colors, 'primary'), 0.5);
+    transform: scale(1.3);
+  }
+
+  &.active {
+    background: map.get(variables.$colors, 'primary');
+    width: 3rem;
+    border-radius: 12px;  // ✅ P2 FIX: Aumentado de 5px a 12px para bordes más redondeados
+  }
+}
+
+// Quick jump (select dropdown)
+.carousel-quick-jump {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  label {
+    font-family: map.get(variables.$fonts, 'body');
+    font-size: 1.3rem;
+    color: #666;
+    white-space: nowrap;
+  }
+
+  select {
+    padding: 0.8rem 1.2rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-family: map.get(variables.$fonts, 'body');
+    font-size: 1.3rem;
+    color: map.get(variables.$colors, 'secondary');
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+
+    &:hover, &:focus {
+      border-color: map.get(variables.$colors, 'primary');
+      outline: none;
+    }
+  }
+}
+
+// Fallback para grid (si no hay carousel JS)
+.ges-groups-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+
+  .ges-group {
+    width: 100%;
+
+    .ges-group__items {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+}
+
+// =================================================================
+// P1-1: CARGO TOOLTIP - Floating UI Tooltip para tabs de cargos
+// Muestra riesgos seleccionados agrupados por categoría
+// =================================================================
+
+.cargo-tooltip {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 1.2rem;
+  max-width: 320px;
+  font-family: map.get(variables.$fonts, 'body');
+  z-index: 9999;
+
+  .tooltip-header {
+    font-family: map.get(variables.$fonts, 'title');
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: map.get(variables.$colors, 'secondary');
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.6rem;
+  }
+
+  .tooltip-body {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(map.get(variables.$colors, 'primary'), 0.3) transparent;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(map.get(variables.$colors, 'primary'), 0.3);
+      border-radius: 2px;
+    }
+  }
+
+  .tooltip-category {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .category-badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tooltip-risks {
+    list-style: none;
+    padding-left: 1rem;
+    margin: 0;
+
+    li {
+      font-size: 1.2rem;
+      color: #555;
+      line-height: 1.6;
+      position: relative;
+      margin-bottom: 0.4rem;
+
+      &::before {
+        content: '•';
+        position: absolute;
+        left: -1rem;
+        color: map.get(variables.$colors, 'primary');
+      }
+
+      &.more {
+        font-style: italic;
+        color: #888;
+      }
+    }
+  }
+}
+
+// ✨ Animación pulse para contadores de riesgos
+@keyframes pulse-update {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+    color: map.get(variables.$colors, 'primary');
+    font-weight: 800;
+  }
+}
+
+.pulse-update {
+  animation: pulse-update 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }

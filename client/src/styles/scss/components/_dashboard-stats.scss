@@ -1,0 +1,635 @@
+// ===========================================
+// DASHBOARD PREMIUM - ESTADÍSTICAS
+// Sprint 6 - Fase B - Tarea 7.A
+// Perfil Sociodemográfico y Estadísticas
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// STATS PAGE HEADER
+// =====================
+.stats-header {
+    @include tokens.flex-between;
+    margin-bottom: tokens.$space-6;
+    flex-wrap: wrap;
+    gap: tokens.$space-4;
+
+    &__title-group {
+        flex: 1;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-1 0;
+    }
+
+    &__subtitle {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__actions {
+        display: flex;
+        gap: tokens.$space-3;
+    }
+}
+
+// =====================
+// MAIN METRICS ROW
+// =====================
+.stats-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: tokens.$space-4;
+    margin-bottom: tokens.$space-8;
+
+    &__card {
+        @include tokens.card-base;
+        padding: tokens.$space-5;
+        @include tokens.flex-between;
+    }
+
+    &__content {
+        flex: 1;
+    }
+
+    &__value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-display;
+        font-weight: tokens.$font-extrabold;
+        color: tokens.$dashboard-secondary;
+        line-height: tokens.$leading-none;
+    }
+
+    &__label {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-2;
+    }
+
+    &__change {
+        display: inline-flex;
+        align-items: center;
+        gap: tokens.$space-1;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        margin-top: tokens.$space-2;
+        padding: tokens.$space-1 tokens.$space-2;
+        border-radius: tokens.$radius-full;
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        &--up {
+            background: rgba(tokens.$dashboard-success, 0.1);
+            color: tokens.$dashboard-success;
+        }
+
+        &--down {
+            background: rgba(tokens.$dashboard-danger, 0.1);
+            color: tokens.$dashboard-danger;
+        }
+    }
+
+    &__icon {
+        width: 56px;
+        height: 56px;
+        border-radius: tokens.$radius-xl;
+        @include tokens.flex-center;
+        flex-shrink: 0;
+
+        svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        &--primary {
+            background: rgba(tokens.$dashboard-primary, 0.1);
+            color: tokens.$dashboard-primary;
+        }
+
+        &--success {
+            background: rgba(tokens.$dashboard-success, 0.1);
+            color: tokens.$dashboard-success;
+        }
+
+        &--warning {
+            background: rgba(tokens.$dashboard-warning, 0.1);
+            color: tokens.$dashboard-warning;
+        }
+
+        &--info {
+            background: rgba(tokens.$dashboard-info, 0.1);
+            color: tokens.$dashboard-info;
+        }
+    }
+}
+
+// =====================
+// DISTRIBUTION SECTION
+// =====================
+.stats-distributions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: tokens.$space-6;
+    margin-bottom: tokens.$space-8;
+}
+
+.distribution-card {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-6;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__chart {
+        @include tokens.flex-center;
+        margin-bottom: tokens.$space-4;
+    }
+
+    // Horizontal Bar Chart
+    &__bars {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-4;
+    }
+
+    &__bar-item {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-2;
+    }
+
+    &__bar-header {
+        @include tokens.flex-between;
+    }
+
+    &__bar-label {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        font-weight: tokens.$font-medium;
+    }
+
+    &__bar-value {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__bar {
+        height: 12px;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-full;
+        overflow: hidden;
+    }
+
+    &__bar-fill {
+        height: 100%;
+        border-radius: tokens.$radius-full;
+        transition: width tokens.$transition-slow ease-out;
+
+        &--primary { background: tokens.$dashboard-primary; }
+        &--secondary { background: tokens.$dashboard-secondary; }
+        &--success { background: tokens.$dashboard-success; }
+        &--warning { background: tokens.$dashboard-warning; }
+        &--danger { background: tokens.$dashboard-danger; }
+        &--info { background: tokens.$dashboard-info; }
+        &--ai { background: tokens.$dashboard-ai-purple; }
+    }
+
+    // Donut Legend
+    &__legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: tokens.$space-4;
+        justify-content: center;
+    }
+
+    &__legend-item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        cursor: pointer;
+        transition: opacity tokens.$transition-normal;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+
+    &__legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: tokens.$radius-sm;
+    }
+
+    &__legend-text {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__legend-value {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+}
+
+// =====================
+// AGE PYRAMID
+// =====================
+.age-pyramid {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+    margin-bottom: tokens.$space-8;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-6;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__legend {
+        display: flex;
+        gap: tokens.$space-4;
+    }
+
+    &__legend-item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: tokens.$radius-sm;
+
+        &--male { background: #3b82f6; }
+        &--female { background: #ec4899; }
+    }
+
+    &__chart {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-2;
+    }
+
+    &__row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: tokens.$space-3;
+        align-items: center;
+    }
+
+    &__bar-left {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &__bar-right {
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    &__bar {
+        height: 24px;
+        border-radius: tokens.$radius-sm;
+        min-width: 4px;
+        transition: width tokens.$transition-slow;
+
+        &--male { background: #3b82f6; }
+        &--female { background: #ec4899; }
+    }
+
+    &__label {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+        min-width: 60px;
+        text-align: center;
+    }
+}
+
+// =====================
+// INSIGHTS CARD
+// =====================
+.stats-insights {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+    background: linear-gradient(135deg, rgba(tokens.$dashboard-ai-purple, 0.05) 0%, rgba(tokens.$dashboard-primary, 0.05) 100%);
+    border: 1px solid rgba(tokens.$dashboard-ai-purple, 0.1);
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-ai-purple;
+        margin: 0;
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    &__badge {
+        background: tokens.$dashboard-ai-gradient;
+        color: white;
+        padding: tokens.$space-1 tokens.$space-3;
+        border-radius: tokens.$radius-full;
+        font-size: tokens.$font-xs;
+        font-weight: tokens.$font-semibold;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-3;
+    }
+
+    &__item {
+        display: flex;
+        align-items: flex-start;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3;
+        background: tokens.$dashboard-white;
+        border-radius: tokens.$radius-md;
+        border-left: 3px solid tokens.$dashboard-ai-purple;
+    }
+
+    &__item-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(tokens.$dashboard-ai-purple, 0.1);
+        @include tokens.flex-center;
+        flex-shrink: 0;
+
+        svg {
+            width: 16px;
+            height: 16px;
+            color: tokens.$dashboard-ai-purple;
+        }
+    }
+
+    &__item-content {
+        flex: 1;
+    }
+
+    &__item-title {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin-bottom: tokens.$space-1;
+    }
+
+    &__item-text {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        line-height: tokens.$leading-relaxed;
+    }
+}
+
+// =====================
+// COMPARISON TABLE
+// =====================
+.comparison-table {
+    @include tokens.card-base;
+    overflow: hidden;
+
+    &__header {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-bottom: 1px solid tokens.$header-border;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th {
+            padding: tokens.$space-3 tokens.$space-4;
+            background: tokens.$dashboard-background;
+            font-size: tokens.$font-small;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-text-light;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: tokens.$space-3 tokens.$space-4;
+            font-size: tokens.$font-body;
+            color: tokens.$dashboard-text;
+            border-bottom: 1px solid tokens.$header-border;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(tokens.$dashboard-primary, 0.02);
+        }
+    }
+
+    &__area {
+        font-weight: tokens.$font-medium;
+    }
+
+    &__value {
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__bar {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+
+        &-track {
+            flex: 1;
+            height: 8px;
+            background: tokens.$dashboard-background;
+            border-radius: tokens.$radius-full;
+            overflow: hidden;
+        }
+
+        &-fill {
+            height: 100%;
+            background: tokens.$dashboard-primary;
+            border-radius: tokens.$radius-full;
+        }
+
+        &-value {
+            font-size: tokens.$font-small;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-secondary;
+            min-width: 40px;
+            text-align: right;
+        }
+    }
+}
+
+// =====================
+// TREND CHART CARD
+// =====================
+.trend-card {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__period {
+        display: flex;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+        padding: 2px;
+    }
+
+    &__period-btn {
+        padding: tokens.$space-2 tokens.$space-3;
+        background: transparent;
+        border: none;
+        border-radius: tokens.$radius-sm;
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        cursor: pointer;
+        transition: all tokens.$transition-fast;
+
+        &.active {
+            background: tokens.$dashboard-white;
+            color: tokens.$dashboard-secondary;
+            font-weight: tokens.$font-medium;
+            box-shadow: tokens.$shadow-xs;
+        }
+
+        &:hover:not(.active) {
+            color: tokens.$dashboard-text;
+        }
+    }
+
+    &__chart {
+        height: 200px;
+        margin: tokens.$space-4 0;
+    }
+
+    &__summary {
+        display: flex;
+        justify-content: space-around;
+        padding-top: tokens.$space-4;
+        border-top: 1px solid tokens.$header-border;
+    }
+
+    &__summary-item {
+        text-align: center;
+    }
+
+    &__summary-value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__summary-label {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('laptop') {
+    .stats-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stats-distributions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@include tokens.respond-to('tablet') {
+    .stats-metrics {
+        grid-template-columns: 1fr;
+
+        &__value {
+            font-size: tokens.$font-h1;
+        }
+    }
+
+    .distribution-card__legend {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .age-pyramid__row {
+        grid-template-columns: 80px auto 80px;
+    }
+
+    .comparison-table {
+        overflow-x: auto;
+
+        table {
+            min-width: 600px;
+        }
+    }
+}
+

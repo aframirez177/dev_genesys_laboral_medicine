@@ -1,0 +1,475 @@
+// ===========================================
+// DASHBOARD PREMIUM - SIDEBAR
+// Sprint 6 - Fase B
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+@use "sass:color";
+
+// =====================
+// SIDEBAR CONTAINER
+// =====================
+.dashboard-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: tokens.$sidebar-width;
+    background: tokens.$sidebar-bg;
+    z-index: tokens.$z-fixed;
+    display: flex;
+    flex-direction: column;
+    transition: width tokens.$sidebar-transition;
+
+    // Estado colapsado
+    &.collapsed {
+        width: tokens.$sidebar-collapsed;
+
+        .sidebar-logo__text,
+        .sidebar-nav__text {
+            opacity: 0;
+            visibility: hidden;
+            width: 0;
+        }
+
+        .sidebar-badge {
+            opacity: 0;
+            visibility: hidden;
+            width: 0;
+            padding: 0;
+            position: absolute;
+        }
+
+        .sidebar-nav__item {
+            justify-content: center;
+            padding-left: tokens.$space-4;
+            padding-right: tokens.$space-4;
+        }
+
+        .sidebar-nav__icon {
+            margin-right: 0;
+        }
+
+        .sidebar-toggle__icon {
+            transform: rotate(180deg);
+        }
+    }
+}
+
+// =====================
+// LOGO SECTION
+// =====================
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-3;
+    padding: tokens.$space-4;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: tokens.$header-height;
+
+    &__icon {
+        width: 36px;
+        height: 36px;
+        background: tokens.$dashboard-primary;
+        border-radius: tokens.$radius-md;
+        @include tokens.flex-center;
+        flex-shrink: 0;
+
+        svg, img {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+    }
+
+    &__text {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: opacity tokens.$transition-normal, width tokens.$transition-normal;
+    }
+
+    &__brand {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-bold;
+        color: tokens.$sidebar-text;
+        line-height: tokens.$leading-tight;
+        white-space: nowrap;
+    }
+
+    &__tagline {
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-xs;
+        color: tokens.$sidebar-text-muted;
+        margin-top: 2px;
+        white-space: nowrap;
+    }
+}
+
+// =====================
+// NAVIGATION
+// =====================
+.sidebar-nav {
+    flex: 1;
+    padding: tokens.$space-4 0;
+    overflow-y: auto;
+    @include tokens.custom-scrollbar;
+
+    &__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__group {
+        margin-bottom: tokens.$space-2;
+
+        &-title {
+            padding: tokens.$space-2 tokens.$space-4;
+            font-size: tokens.$font-xs;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$sidebar-text-muted;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3 tokens.$space-4;
+        color: tokens.$sidebar-text-muted;
+        text-decoration: none;
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        cursor: pointer;
+        transition: all tokens.$transition-normal;
+        position: relative;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+
+        &:hover {
+            background: tokens.$sidebar-hover;
+            color: tokens.$sidebar-text;
+
+            .sidebar-nav__icon {
+                color: tokens.$sidebar-text;
+            }
+        }
+
+        &.active {
+            background: tokens.$sidebar-active;
+            color: tokens.$dashboard-secondary;
+            font-weight: tokens.$font-semibold;
+            border-radius: tokens.$radius-md;
+            margin: 0 tokens.$space-2;
+            width: calc(100% - tokens.$space-4);
+
+            .sidebar-nav__icon {
+                color: tokens.$dashboard-secondary;
+            }
+        }
+
+        &--ai {
+            .sidebar-nav__icon {
+                color: tokens.$dashboard-ai-purple;
+            }
+
+            &:hover {
+                background: rgba(tokens.$dashboard-ai-purple, 0.1);
+            }
+        }
+    }
+
+    &__icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        transition: color tokens.$transition-normal;
+        color: tokens.$sidebar-text-muted; // Gray icons by default (Figma design)
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &__text {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: opacity tokens.$transition-normal, width tokens.$transition-normal;
+    }
+
+    &__separator {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: tokens.$space-4 tokens.$space-4;
+    }
+}
+
+// =====================
+// BADGES
+// =====================
+.sidebar-badge {
+    padding: 2px 8px;
+    border-radius: tokens.$radius-full;
+    font-size: tokens.$font-xs;
+    font-weight: tokens.$font-semibold;
+    transition: opacity tokens.$transition-normal, width tokens.$transition-normal;
+    flex-shrink: 0;
+
+    &--new {
+        background: tokens.$dashboard-badge-new;
+        color: white;
+        animation: badge-pulse 2s ease-in-out infinite;
+    }
+
+    &--count {
+        background: tokens.$dashboard-badge-count;
+        color: white;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    &--ai {
+        background: tokens.$dashboard-ai-purple;
+        color: white;
+    }
+
+    &--warning {
+        background: tokens.$dashboard-warning;
+        color: white;
+    }
+
+    &--danger {
+        background: tokens.$dashboard-danger;
+        color: white;
+    }
+
+    &--soon {
+        background: tokens.$dashboard-text-light;
+        color: white;
+        font-size: 9px;
+        padding: 2px 6px;
+    }
+}
+
+@keyframes badge-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+// =====================
+// COLLAPSE TOGGLE
+// =====================
+.sidebar-toggle {
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    background: tokens.$dashboard-white;
+    border: 1px solid tokens.$header-border;
+    border-radius: 50%;
+    @include tokens.flex-center;
+    cursor: pointer;
+    box-shadow: tokens.$shadow-sm;
+    z-index: 10;
+    transition: background tokens.$transition-normal;
+
+    &__icon {
+        width: 14px;
+        height: 14px;
+        color: tokens.$dashboard-text-light;
+        transition: transform tokens.$transition-normal;
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &:hover {
+        background: tokens.$dashboard-background;
+    }
+}
+
+// =====================
+// FOOTER SECTION
+// =====================
+.sidebar-footer {
+    padding: tokens.$space-4;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: auto;
+
+    &__logout {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        width: 100%;
+        padding: tokens.$space-3 tokens.$space-4;
+        background: rgba(tokens.$dashboard-danger, 0.1);
+        border: 1px solid rgba(tokens.$dashboard-danger, 0.2);
+        border-radius: tokens.$radius-md;
+        color: tokens.$dashboard-danger;
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        cursor: pointer;
+        transition: all tokens.$transition-normal;
+
+        svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        &:hover {
+            background: rgba(tokens.$dashboard-danger, 0.2);
+            border-color: tokens.$dashboard-danger;
+        }
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3 0;
+        color: tokens.$sidebar-text-muted;
+        font-size: tokens.$font-small;
+        cursor: pointer;
+        transition: color tokens.$transition-normal;
+
+        &:hover {
+            color: tokens.$sidebar-text;
+        }
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+}
+
+// =====================
+// MOBILE OVERLAY
+// =====================
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: calc(tokens.$z-fixed - 1);
+    opacity: 0;
+    transition: opacity tokens.$transition-normal;
+
+    &.active {
+        opacity: 1;
+    }
+}
+
+// =====================
+// MOBILE TOGGLE BUTTON
+// =====================
+.sidebar-mobile-toggle {
+    display: none;
+    position: fixed;
+    bottom: tokens.$space-6;
+    left: tokens.$space-6;
+    width: 48px;
+    height: 48px;
+    background: tokens.$dashboard-primary;
+    border-radius: 50%;
+    @include tokens.flex-center;
+    box-shadow: tokens.$shadow-lg;
+    z-index: calc(tokens.$z-fixed + 1);
+    border: none;
+    cursor: pointer;
+    transition: transform tokens.$transition-normal, background tokens.$transition-normal;
+
+    svg {
+        width: 24px;
+        height: 24px;
+        color: white;
+    }
+
+    &:hover {
+        transform: scale(1.05);
+        background: color.adjust(tokens.$dashboard-primary, $lightness: -5%);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('laptop') {
+    .dashboard-sidebar {
+        width: tokens.$sidebar-collapsed;
+
+        .sidebar-logo__text,
+        .sidebar-nav__text {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .sidebar-badge {
+            opacity: 0;
+            visibility: hidden;
+            width: 0;
+            padding: 0;
+            position: absolute;
+        }
+
+        .sidebar-nav__item {
+            justify-content: center;
+        }
+
+        .sidebar-toggle {
+            display: none;
+        }
+    }
+}
+
+@include tokens.respond-to('tablet') {
+    .dashboard-sidebar {
+        transform: translateX(-100%);
+        width: tokens.$sidebar-width;
+        box-shadow: tokens.$shadow-xl;
+
+        &.open {
+            transform: translateX(0);
+
+            .sidebar-logo__text,
+            .sidebar-nav__text,
+            .sidebar-badge {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+    }
+
+    .sidebar-overlay {
+        display: block;
+    }
+
+    .sidebar-mobile-toggle {
+        display: flex;
+    }
+}
+

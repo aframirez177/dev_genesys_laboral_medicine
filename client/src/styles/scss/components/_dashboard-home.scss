@@ -1,0 +1,1337 @@
+// ===========================================
+// DASHBOARD PREMIUM - HOME PAGE STYLES
+// Sprint 6 - Fase B
+// Estilos específicos para la página principal del Dashboard
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// HERO SECTION
+// =====================
+.dashboard-hero {
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-xl;
+    padding: tokens.$space-8;
+    margin-bottom: tokens.$space-8;
+    box-shadow: tokens.$shadow-sm;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-6;
+        flex-wrap: wrap;
+        gap: tokens.$space-4;
+    }
+
+    &__title-group {
+        flex: 1;
+        min-width: 280px;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h1;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-2 0;
+        line-height: tokens.$leading-tight;
+    }
+
+    &__subtitle {
+        font-size: tokens.$font-h4;
+        color: tokens.$dashboard-text-light;
+        margin: 0;
+    }
+
+    &__meta {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-4;
+        flex-wrap: wrap;
+    }
+
+    &__company {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        padding: tokens.$space-2 tokens.$space-4;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+
+        svg {
+            width: 18px;
+            height: 18px;
+            color: tokens.$dashboard-primary;
+        }
+    }
+}
+
+// =====================
+// QUICK STATS ROW
+// =====================
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: tokens.$space-4;
+    margin-bottom: tokens.$space-8;
+
+    &__item {
+        @include tokens.card-base;
+        padding: tokens.$space-4;
+        @include tokens.flex-between;
+        cursor: pointer;
+        @include tokens.card-hover;
+    }
+
+    &__content {
+        @include tokens.flex-column;
+    }
+
+    &__value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        line-height: tokens.$leading-tight;
+    }
+
+    &__label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+
+    &__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: tokens.$radius-md;
+        @include tokens.flex-center;
+        flex-shrink: 0;
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        &--primary {
+            background: rgba(tokens.$dashboard-primary, 0.1);
+            color: tokens.$dashboard-primary;
+        }
+
+        &--success {
+            background: rgba(tokens.$dashboard-success, 0.1);
+            color: tokens.$dashboard-success;
+        }
+
+        &--warning {
+            background: rgba(tokens.$dashboard-warning, 0.1);
+            color: tokens.$dashboard-warning;
+        }
+
+        &--danger {
+            background: rgba(tokens.$dashboard-danger, 0.1);
+            color: tokens.$dashboard-danger;
+        }
+    }
+}
+
+// =====================
+// MAIN CARDS GRID
+// =====================
+.main-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: tokens.$space-6;
+    margin-bottom: tokens.$space-8;
+}
+
+// =====================
+// HEALTH CONDITIONS CARD (Donut)
+// =====================
+.health-conditions-card {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__chart {
+        @include tokens.flex-center;
+        margin: tokens.$space-4 0;
+    }
+
+    &__donut {
+        position: relative;
+        width: 180px;
+        height: 180px;
+
+        &-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        &-value {
+            font-family: tokens.$font-family-title;
+            font-size: tokens.$font-h1;
+            font-weight: tokens.$font-bold;
+            color: tokens.$dashboard-secondary;
+            display: block;
+        }
+
+        &-label {
+            font-size: tokens.$font-small;
+            color: tokens.$dashboard-text-light;
+        }
+    }
+
+    &__legend {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-3;
+    }
+
+    &__legend-item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-2;
+        border-radius: tokens.$radius-md;
+        cursor: pointer;
+        transition: background tokens.$transition-normal;
+
+        &:hover {
+            background: tokens.$dashboard-background;
+        }
+    }
+
+    &__legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: tokens.$radius-sm;
+        flex-shrink: 0;
+    }
+
+    &__legend-info {
+        flex: 1;
+    }
+
+    &__legend-name {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+    }
+
+    &__legend-count {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__legend-percentage {
+        font-family: tokens.$font-family-title;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+}
+
+// =====================
+// WORKERS CARD
+// =====================
+.workers-card {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__metric {
+        text-align: center;
+        padding: tokens.$space-4 0;
+        border-bottom: 1px solid tokens.$header-border;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__metric-value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-display;
+        font-weight: tokens.$font-extrabold;
+        color: tokens.$dashboard-secondary;
+        line-height: tokens.$leading-none;
+    }
+
+    &__metric-label {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-2;
+    }
+
+    &__stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: tokens.$space-4;
+    }
+
+    &__stat {
+        text-align: center;
+        padding: tokens.$space-3;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+    }
+
+    &__stat-value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        line-height: tokens.$leading-tight;
+
+        &--success {
+            color: tokens.$dashboard-success;
+        }
+
+        &--warning {
+            color: tokens.$dashboard-warning;
+        }
+    }
+
+    &__stat-label {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+}
+
+// =====================
+// ALERTS CARD
+// =====================
+.alerts-card {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+        height: 24px;
+        padding: 0 tokens.$space-2;
+        background: tokens.$dashboard-danger;
+        color: white;
+        border-radius: tokens.$radius-full;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-bold;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-3;
+        max-height: 300px;
+        overflow-y: auto;
+        @include tokens.custom-scrollbar;
+    }
+
+    &__item {
+        display: flex;
+        align-items: flex-start;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+        border-left: 3px solid;
+        transition: transform tokens.$transition-normal;
+
+        &:hover {
+            transform: translateX(4px);
+        }
+
+        &--danger {
+            border-left-color: tokens.$dashboard-danger;
+        }
+
+        &--warning {
+            border-left-color: tokens.$dashboard-warning;
+        }
+
+        &--info {
+            border-left-color: tokens.$dashboard-info;
+        }
+    }
+
+    &__item-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        @include tokens.flex-center;
+        flex-shrink: 0;
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        &--danger {
+            background: rgba(tokens.$dashboard-danger, 0.1);
+            color: tokens.$dashboard-danger;
+        }
+
+        &--warning {
+            background: rgba(tokens.$dashboard-warning, 0.1);
+            color: tokens.$dashboard-warning;
+        }
+
+        &--info {
+            background: rgba(tokens.$dashboard-info, 0.1);
+            color: tokens.$dashboard-info;
+        }
+    }
+
+    &__item-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__item-title {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+        margin: 0;
+        @include tokens.text-truncate;
+    }
+
+    &__item-message {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        margin: tokens.$space-1 0 0;
+    }
+
+    &__item-time {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+
+    &__footer {
+        margin-top: tokens.$space-4;
+        text-align: center;
+
+        a {
+            font-size: tokens.$font-small;
+            color: tokens.$dashboard-primary;
+            text-decoration: none;
+            font-weight: tokens.$font-medium;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+// =====================
+// SECONDARY CARDS ROW
+// =====================
+.secondary-cards-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: tokens.$space-6;
+    margin-bottom: tokens.$space-8;
+}
+
+// =====================
+// CRITICAL RISKS CARD
+// =====================
+.critical-risks-card {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-3;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+        cursor: pointer;
+        transition: all tokens.$transition-normal;
+
+        &:hover {
+            background: rgba(tokens.$dashboard-primary, 0.05);
+            transform: translateX(4px);
+        }
+    }
+
+    &__item-level {
+        flex-shrink: 0;
+    }
+
+    &__item-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__item-name {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+        @include tokens.text-truncate;
+    }
+
+    &__item-category {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__item-count {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+}
+
+// =====================
+// UPCOMING EXAMS CARD
+// =====================
+.upcoming-exams-card {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__summary {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: tokens.$space-3;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__summary-item {
+        text-align: center;
+        padding: tokens.$space-3;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+    }
+
+    &__summary-value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+    }
+
+    &__summary-label {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-2;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3;
+        border-radius: tokens.$radius-md;
+        cursor: pointer;
+        transition: background tokens.$transition-normal;
+
+        &:hover {
+            background: tokens.$dashboard-background;
+        }
+    }
+
+    &__item-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: tokens.$radius-md;
+        background: tokens.$dashboard-primary;
+        @include tokens.flex-center;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        font-size: tokens.$font-small;
+        flex-shrink: 0;
+    }
+
+    &__item-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__item-name {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+        @include tokens.text-truncate;
+    }
+
+    &__item-date {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__item-status {
+        flex-shrink: 0;
+    }
+}
+
+// =====================
+// ACTIVITY CARD
+// =====================
+.activity-card {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: tokens.$header-border;
+        }
+    }
+
+    &__item {
+        display: flex;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3 0;
+        position: relative;
+    }
+
+    &__item-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        z-index: 1;
+        margin-top: 4px;
+        margin-left: 9px;
+
+        &--primary {
+            background: tokens.$dashboard-primary;
+        }
+
+        &--success {
+            background: tokens.$dashboard-success;
+        }
+
+        &--warning {
+            background: tokens.$dashboard-warning;
+        }
+
+        &--danger {
+            background: tokens.$dashboard-danger;
+        }
+    }
+
+    &__item-content {
+        flex: 1;
+        padding-left: tokens.$space-2;
+    }
+
+    &__item-text {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+
+        strong {
+            font-weight: tokens.$font-semibold;
+        }
+    }
+
+    &__item-time {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+}
+
+// =====================
+// AI INSIGHTS SECTION
+// =====================
+.ai-insights-section {
+    margin-top: tokens.$space-8;
+}
+
+.ai-insights-banner {
+    background: tokens.$dashboard-ai-gradient;
+    border-radius: tokens.$radius-xl;
+    padding: tokens.$space-8;
+    color: white;
+    position: relative;
+    overflow: hidden;
+
+    // Decorative elements
+    &::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -50px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        left: -30px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    &__content {
+        position: relative;
+        z-index: 1;
+    }
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-6;
+        flex-wrap: wrap;
+        gap: tokens.$space-4;
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        margin: 0;
+
+        svg {
+            width: 28px;
+            height: 28px;
+        }
+    }
+
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        padding: tokens.$space-2 tokens.$space-4;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: tokens.$radius-full;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: tokens.$space-6;
+    }
+
+    &__item {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: tokens.$radius-lg;
+        padding: tokens.$space-5;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    &__item-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: tokens.$radius-md;
+        @include tokens.flex-center;
+        margin-bottom: tokens.$space-4;
+
+        svg {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    &__item-title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        margin: 0 0 tokens.$space-2 0;
+    }
+
+    &__item-description {
+        font-size: tokens.$font-body;
+        opacity: 0.9;
+        line-height: tokens.$leading-relaxed;
+        margin: 0 0 tokens.$space-4 0;
+    }
+
+    &__item-action {
+        display: inline-flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        cursor: pointer;
+        transition: opacity tokens.$transition-normal;
+
+        &:hover {
+            opacity: 0.8;
+        }
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('laptop') {
+    .main-cards-grid,
+    .secondary-cards-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ai-insights-banner__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .quick-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@include tokens.respond-to('tablet') {
+    .dashboard-hero {
+        padding: tokens.$space-6;
+
+        &__title {
+            font-size: tokens.$font-h2;
+        }
+    }
+
+    .main-cards-grid,
+    .secondary-cards-row,
+    .quick-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-insights-banner {
+        padding: tokens.$space-6;
+
+        &__grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .workers-card__metric-value {
+        font-size: tokens.$font-h1;
+    }
+}
+
+// =====================
+// CARD METRIC STYLES (Figma Design)
+// =====================
+.card--metric {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    .card__icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        @include tokens.flex-center;
+        margin-bottom: tokens.$space-4;
+
+        svg, i {
+            width: 28px;
+            height: 28px;
+        }
+    }
+
+    .card__body {
+        width: 100%;
+    }
+}
+
+// Card Trabajadores - Icon verde agua
+#card-trabajadores .card__icon {
+    background: rgba(tokens.$dashboard-primary, 0.1);
+    color: tokens.$dashboard-primary;
+}
+
+// Card Alertas - Icon naranja/warning
+#card-alertas .card__icon {
+    background: rgba(tokens.$dashboard-warning, 0.1);
+    color: tokens.$dashboard-warning;
+}
+
+// =====================
+// METRIC VALUES
+// =====================
+.metric-value {
+    font-family: tokens.$font-family-title;
+    font-size: tokens.$font-display;
+    font-weight: tokens.$font-extrabold;
+    color: tokens.$dashboard-secondary;
+    line-height: tokens.$leading-none;
+    margin-bottom: tokens.$space-2;
+
+    &--danger {
+        color: tokens.$dashboard-warning; // Naranja para alertas (como Figma)
+    }
+
+    &--primary {
+        color: tokens.$dashboard-primary;
+    }
+}
+
+.metric-label {
+    font-family: tokens.$font-family-body;
+    font-size: tokens.$font-body;
+    font-weight: tokens.$font-semibold;
+    color: tokens.$dashboard-secondary;
+    margin-bottom: tokens.$space-1;
+}
+
+.metric-sublabel {
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text-light;
+}
+
+// =====================
+// STAT VALUES (Quick Stats - Verde agua)
+// =====================
+.card--stat {
+    @include tokens.card-base;
+    padding: tokens.$space-5;
+    text-align: center;
+
+    .stat-value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h1;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-primary; // Verde agua como en Figma
+        margin-bottom: tokens.$space-1;
+    }
+
+    .stat-label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        font-weight: tokens.$font-medium;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-sublabel {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+}
+
+// =====================
+// DONUT CHART
+// =====================
+.donut-chart {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto tokens.$space-4;
+    position: relative;
+
+    svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    &__center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    &__value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h1;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-primary;
+        display: block;
+    }
+
+    &__label {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+// =====================
+// CARD LINK STYLES
+// =====================
+.card--link {
+    @include tokens.card-base;
+    padding: tokens.$space-5;
+    cursor: pointer;
+    @include tokens.card-hover;
+
+    .card__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    .card__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    .card__header-icon,
+    .card__link-icon {
+        width: 20px;
+        height: 20px;
+        color: tokens.$dashboard-text-light;
+    }
+
+    .card__action {
+        display: inline-flex;
+        align-items: center;
+        margin-top: tokens.$space-4;
+        padding: tokens.$space-2 tokens.$space-4;
+        border: 1px solid tokens.$dashboard-primary;
+        border-radius: tokens.$radius-md;
+        color: tokens.$dashboard-primary;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-medium;
+        text-decoration: none;
+        transition: all tokens.$transition-normal;
+
+        &:hover {
+            background: tokens.$dashboard-primary;
+            color: tokens.$dashboard-secondary;
+        }
+    }
+}
+
+// =====================
+// CONDITION ITEM
+// =====================
+.condition-item {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    margin-bottom: tokens.$space-3;
+}
+
+.condition-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+
+    &--danger {
+        background: tokens.$dashboard-danger;
+    }
+
+    &--warning {
+        background: tokens.$dashboard-warning;
+    }
+
+    &--success {
+        background: tokens.$dashboard-success;
+    }
+}
+
+.condition-percent {
+    margin-left: auto;
+    font-weight: tokens.$font-semibold;
+    color: tokens.$dashboard-text-light;
+}
+
+.condition-trend {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-success;
+}
+
+.trend-icon {
+    width: 16px;
+    height: 16px;
+
+    &--up {
+        color: tokens.$dashboard-success;
+    }
+
+    &--down {
+        color: tokens.$dashboard-danger;
+    }
+}
+
+// =====================
+// ALERT ITEM
+// =====================
+.alert-item {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    padding: tokens.$space-2;
+    border-radius: tokens.$radius-sm;
+    margin-bottom: tokens.$space-2;
+    font-size: tokens.$font-small;
+
+    svg, i {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+
+    &--warning {
+        background: rgba(tokens.$dashboard-warning, 0.1);
+        color: tokens.$dashboard-warning;
+    }
+
+    &--info {
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+// =====================
+// RISK BADGES
+// =====================
+.risk-badges {
+    display: flex;
+    gap: tokens.$space-2;
+    margin-bottom: tokens.$space-3;
+}
+
+.risk-badge {
+    padding: tokens.$space-1 tokens.$space-3;
+    border-radius: tokens.$radius-full;
+    font-size: tokens.$font-xs;
+    font-weight: tokens.$font-semibold;
+
+    &--level-v {
+        background: rgba(tokens.$risk-level-v, 0.1);
+        color: tokens.$risk-level-v;
+    }
+
+    &--level-iv {
+        background: rgba(tokens.$risk-level-iv, 0.1);
+        color: tokens.$risk-level-iv;
+    }
+}
+
+.risk-summary {
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text-light;
+}
+
+// =====================
+// AI CARD STYLES (Figma: fondo BLANCO, iconos MORADOS)
+// =====================
+.card--ai {
+    @include tokens.card-base;
+    padding: tokens.$space-5;
+    background: tokens.$dashboard-white; // Fondo BLANCO como Figma
+    color: tokens.$dashboard-secondary;
+
+    .card__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    .card__header-left {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+    }
+
+    .card__ai-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(tokens.$dashboard-ai-purple, 0.1); // Fondo morado suave
+        border-radius: tokens.$radius-lg;
+        @include tokens.flex-center;
+        color: tokens.$dashboard-ai-purple; // Icono MORADO
+
+        svg, i {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    .card__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-bold;
+        margin: 0;
+        color: tokens.$dashboard-secondary;
+    }
+
+    .insight-item {
+        display: flex;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3 0;
+
+        &:first-of-type {
+            padding-top: 0;
+        }
+    }
+
+    .insight-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        margin-top: 2px;
+        color: tokens.$dashboard-ai-purple; // Iconos MORADOS
+    }
+
+    .insight-content {
+        font-size: tokens.$font-body;
+        line-height: tokens.$leading-normal;
+        color: tokens.$dashboard-text;
+
+        strong {
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-secondary;
+        }
+    }
+
+    .card__action {
+        display: inline-flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        margin-top: tokens.$space-4;
+        padding: tokens.$space-3 tokens.$space-5;
+        background: tokens.$dashboard-primary; // Botón VERDE como Figma
+        border-radius: tokens.$radius-md;
+        color: tokens.$dashboard-white;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        text-decoration: none;
+        transition: all tokens.$transition-normal;
+
+        svg, i {
+            width: 16px;
+            height: 16px;
+        }
+
+        &:hover {
+            background: tokens.$dashboard-primary-dark;
+            transform: translateX(4px);
+        }
+    }
+}
+
+// =====================
+// BADGE STYLES
+// =====================
+.badge--ai {
+    display: inline-flex;
+    align-items: center;
+    padding: tokens.$space-1 tokens.$space-3;
+    background: tokens.$dashboard-ai-purple; // Badge MORADO como Figma
+    border-radius: tokens.$radius-full;
+    font-size: tokens.$font-xs;
+    font-weight: tokens.$font-semibold;
+    color: tokens.$dashboard-white;
+}
+

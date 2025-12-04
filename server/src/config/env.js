@@ -63,6 +63,27 @@ export function getEnvVars() {
         UPLOAD_DIR: process.env.UPLOAD_DIR || 'uploads',
         DOC_STORAGE_PATH: process.env.DOC_STORAGE_PATH || 'documents',
         FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5500', // Asumiendo 5500 por tu config
-        API_URL: process.env.API_URL || 'http://localhost:3000'
+        API_URL: process.env.API_URL || 'http://localhost:3000',
+
+        // Redis (opcional)
+        REDIS_ENABLED: process.env.REDIS_ENABLED !== 'false' && process.env.REDIS_ENABLED !== false,
+        REDIS_HOST: process.env.REDIS_HOST || 'localhost',
+        REDIS_PORT: parseInt(process.env.REDIS_PORT) || 6379,
+        REDIS_PASSWORD: process.env.REDIS_PASSWORD || undefined,
+        REDIS_DB: parseInt(process.env.REDIS_DB) || 0,
+
+        // Worker
+        WORKER_CONCURRENCY: parseInt(process.env.WORKER_CONCURRENCY) || 2,
+
+        // Sentry (opcional)
+        SENTRY_DSN: process.env.SENTRY_DSN || undefined,
+
+        // DigitalOcean Spaces
+        SPACES_ENDPOINT: process.env.SPACES_ENDPOINT,
+        SPACES_REGION: process.env.SPACES_REGION,
+        SPACES_BUCKET: process.env.SPACES_BUCKET,
+        SPACES_KEY: process.env.SPACES_KEY,
+        SPACES_SECRET: process.env.SPACES_SECRET,
+        SPACES_PUBLIC_URL: process.env.SPACES_PUBLIC_URL
     };
 }

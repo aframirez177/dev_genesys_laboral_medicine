@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- SEO Meta Tags -->
+  <title>Wizard de Riesgos - Genesys Laboral Medicine</title>
+  <meta name="description" content="Crea tu matriz de riesgos profesionales de forma guiada con nuestro asistente interactivo paso a paso.">
+  <meta name="keywords" content="matriz de riesgos, riesgos laborales, seguridad industrial, salud ocupacional, GES, wizard">
+  <meta name="author" content="Genesys Business Intelligence">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Wizard de Riesgos - Genesys Laboral Medicine">
+  <meta property="og:description" content="Crea tu matriz de riesgos profesionales de forma guiada con nuestro asistente interactivo.">
+  <meta property="og:url" content="https://genesyslm.com.co/pages/wizard_riesgos.html">
+
+  <!-- Favicon -->
+  <link
+      rel="icon"
+      type="image/svg+xml"
+      href="../assets/images/logo_icono_color_vectores_fabicon.svg"
+      sizes="16x10 32x20"
+    />
+
+  <!-- Preconnect to external resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Google Fonts: Poppins + Raleway -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://genesyslm.com.co/pages/wizard_riesgos.html">
+</head>
+<body>
+  <div data-beasties-container>
+    <!-- Main Content (header removido para UX enfocada) -->
+    <main class="wizard-page">
+    <!-- Logo simple en progress bar -->
+    <div class="wizard-logo-bar">
+      <a href="../index.html" class="wizard-logo-link" aria-label="Volver al inicio">
+        <img
+          src="../assets/images/logo_negro_vectores.svg"
+          alt="Genesys Laboral Medicine"
+          class="wizard-logo"
+          width="120"
+          height="36"
+        />
+      </a>
+    </div>
+
+    <!-- Wizard Container -->
+    <section class="wizard-section">
+      <div class="wizard-section__container">
+        <!-- Progress Tracker (will be injected by ProgressTracker component) -->
+        <div id="progress-tracker"></div>
+
+        <!-- Wizard Container (will be managed by WizardCore) -->
+        <div id="wizard-container" class="wizard-container">
+          <!-- Wizard steps will be dynamically injected here -->
+          <div class="wizard-loading">
+            <div class="wizard-loading__spinner"></div>
+            <p class="wizard-loading__text">Cargando asistente...</p>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons (will be managed by StepManager) -->
+        <div id="wizard-navigation" class="wizard-navigation">
+          <!-- Navigation buttons will be injected here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="wizard-benefits">
+      <div class="wizard-benefits__container">
+        <h2 class="wizard-benefits__title">¿Por qué usar el asistente?</h2>
+
+        <div class="wizard-benefits__grid">
+          <div class="wizard-benefit">
+            <div class="wizard-benefit__icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="wizard-benefit__title">Guía Paso a Paso</h3>
+            <p class="wizard-benefit__description">
+              No necesitas ser un experto. Te guiamos en cada paso del proceso.
+            </p>
+          </div>
+
+          <div class="wizard-benefit">
+            <div class="wizard-benefit__icon">
+              <i class="fas fa-calculator"></i>
+            </div>
+            <h3 class="wizard-benefit__title">Cálculo Automático</h3>
+            <p class="wizard-benefit__description">
+              Los niveles de riesgo (NP, NR) se calculan automáticamente según tus respuestas.
+            </p>
+          </div>
+
+          <div class="wizard-benefit">
+            <div class="wizard-benefit__icon">
+              <i class="fas fa-lightbulb"></i>
+            </div>
+            <h3 class="wizard-benefit__title">Sugerencias Inteligentes</h3>
+            <p class="wizard-benefit__description">
+              Recibe recomendaciones de controles basadas en los riesgos identificados.
+            </p>
+          </div>
+
+          <div class="wizard-benefit">
+            <div class="wizard-benefit__icon">
+              <i class="fas fa-save"></i>
+            </div>
+            <h3 class="wizard-benefit__title">Guardado Automático</h3>
+            <p class="wizard-benefit__description">
+              Tu progreso se guarda automáticamente. Continúa donde lo dejaste.
+            </p>
+          </div>
+
+          <div class="wizard-benefit">
+            <div class="wizard-benefit__icon">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <h3 class="wizard-benefit__title">Documentos Profesionales</h3>
+            <p class="wizard-benefit__description">
+              Genera profesiogramas, perfiles de cargo y cotización automáticamente.
+            </p>
+          </div>
+
+          <div class="wizard-benefit">
+            <div class="wizard-benefit__icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <h3 class="wizard-benefit__title">Ahorra Tiempo</h3>
+            <p class="wizard-benefit__description">
+              Completa tu matriz en minutos, no en horas o días.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="wizard-faq">
+      <div class="wizard-faq__container">
+        <h2 class="wizard-faq__title">Preguntas Frecuentes</h2>
+
+        <div class="wizard-faq__list">
+          <div class="wizard-faq__item">
+            <button class="wizard-faq__question" aria-expanded="false">
+              <span>¿Qué documentos genera el asistente?</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="wizard-faq__answer">
+              <p>
+                El asistente genera 4 documentos profesionales: Matriz de Riesgos (Excel),
+                Profesiograma por cargo (PDF), Perfil de Cargo (PDF), y Cotización detallada (PDF).
+              </p>
+            </div>
+          </div>
+
+          <div class="wizard-faq__item">
+            <button class="wizard-faq__question" aria-expanded="false">
+              <span>¿Cuánto tiempo toma completar el asistente?</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="wizard-faq__answer">
+              <p>
+                Depende del número de cargos y riesgos, pero en promedio toma entre 15-30 minutos
+                para una empresa pequeña-mediana con 5-10 cargos.
+              </p>
+            </div>
+          </div>
+
+          <div class="wizard-faq__item">
+            <button class="wizard-faq__question" aria-expanded="false">
+              <span>¿Puedo guardar mi progreso y continuar después?</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="wizard-faq__answer">
+              <p>
+                Sí, tu progreso se guarda automáticamente en tu navegador. Puedes cerrar la página
+                y continuar más tarde (dentro de 24 horas).
+              </p>
+            </div>
+          </div>
+
+          <div class="wizard-faq__item">
+            <button class="wizard-faq__question" aria-expanded="false">
+              <span>¿Necesito conocimientos técnicos en seguridad industrial?</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="wizard-faq__answer">
+              <p>
+                No es necesario. El asistente te explica cada concepto y te da ejemplos claros.
+                Si tienes dudas, contacta a nuestro equipo de soporte.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FAQ Toggle Script (inline for simplicity) -->
+  <script>
+    // FAQ accordion functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const faqQuestions = document.querySelectorAll('.wizard-faq__question');
+
+      faqQuestions.forEach(question => {
+        question.addEventListener('click', function() {
+          const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+          // Close all other FAQs
+          faqQuestions.forEach(q => {
+            q.setAttribute('aria-expanded', 'false');
+            q.nextElementSibling.style.maxHeight = null;
+          });
+
+          // Toggle current FAQ
+          if (!isExpanded) {
+            this.setAttribute('aria-expanded', 'true');
+            const answer = this.nextElementSibling;
+            answer.style.maxHeight = answer.scrollHeight + 'px';
+          }
+        });
+      });
+    });
+  </script>
+  </div>
+  <!-- Close data-beasties-container -->
+
+  <!-- Footer will be injected by main.js -->
+</body>
+</html>

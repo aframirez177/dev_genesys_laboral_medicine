@@ -71,3 +71,95 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+// ========================================
+// 🎨 CLASES DE COLOR ACCESIBLES WCAG AA
+// ========================================
+
+// Textos verdes accesibles (reemplazan a .green con mejor contraste)
+.text-primary-accessible {
+    color: map.get(variables.$colors, "text-primary-accessible");
+    font-weight: 600;
+}
+
+.text-secondary-accessible {
+    color: map.get(variables.$colors, "text-secondary-accessible");
+    font-weight: 700;
+}
+
+// Links accesibles
+.link-accessible {
+    color: map.get(variables.$colors, "link-accessible");
+    text-decoration: underline;
+    transition: color map.get(variables.$transitions, "fast");
+    
+    &:hover,
+    &:focus {
+        color: map.get(variables.$colors, "link-hover");
+        text-decoration: none;
+    }
+}
+
+// Clase de texto con fondo (para asegurar contraste)
+// NOTA: 1rem = 10px
+.text-on-background {
+    color: map.get(variables.$colors, "text-dark");
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 0.4rem 0.8rem;  // 4px 8px
+    border-radius: map.get(variables.$radius, "sm");
+}
+
+// ========================================
+// 📏 SISTEMA DE ESPACIADO MODERNO
+// ========================================
+
+@each $key, $value in variables.$spacing {
+    .mb-#{$key} { margin-bottom: $value; }
+    .mt-#{$key} { margin-top: $value; }
+    .ml-#{$key} { margin-left: $value; }
+    .mr-#{$key} { margin-right: $value; }
+    .mx-#{$key} { 
+        margin-left: $value; 
+        margin-right: $value; 
+    }
+    .my-#{$key} { 
+        margin-top: $value; 
+        margin-bottom: $value; 
+    }
+    
+    .pb-#{$key} { padding-bottom: $value; }
+    .pt-#{$key} { padding-top: $value; }
+    .pl-#{$key} { padding-left: $value; }
+    .pr-#{$key} { padding-right: $value; }
+    .px-#{$key} { 
+        padding-left: $value; 
+        padding-right: $value; 
+    }
+    .py-#{$key} { 
+        padding-top: $value; 
+        padding-bottom: $value; 
+    }
+    .p-#{$key} { padding: $value; }
+    
+    .gap-#{$key} { gap: $value; }
+}
+
+// ========================================
+// 🎭 SOMBRAS
+// ========================================
+
+@each $key, $value in variables.$shadows {
+    .shadow-#{$key} {
+        box-shadow: $value;
+    }
+}
+
+// ========================================
+// 📐 BORDER RADIUS
+// ========================================
+
+@each $key, $value in variables.$radius {
+    .rounded-#{$key} {
+        border-radius: $value;
+    }
+}

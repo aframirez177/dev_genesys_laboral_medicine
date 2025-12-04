@@ -1,0 +1,299 @@
+/**
+ * _neumorphism.scss
+ * Soft UI design system - Neumorphic effects
+ *
+ * Neumorphism creates depth through subtle shadows and highlights,
+ * giving UI elements a "soft" 3D appearance as if they're extruded from the background.
+ */
+
+@use "sass:map";
+@use "sass:color";
+@use '../base/variables';
+
+// =================================================================
+// NEUMORPHISM MIXINS
+// =================================================================
+
+/**
+ * Base neumorphic effect
+ * Creates soft shadow and highlight for raised elements
+ */
+@mixin neumorphic($intensity: 'medium', $bg-color: map.get(variables.$colors, 'background')) {
+  $intensities: (
+    'subtle': (
+      'distance': 6px,
+      'blur': 12px,
+      'shadow-opacity': 0.15,
+      'highlight-opacity': 0.6
+    ),
+    'medium': (
+      'distance': 10px,
+      'blur': 20px,
+      'shadow-opacity': 0.2,
+      'highlight-opacity': 0.8
+    ),
+    'strong': (
+      'distance': 15px,
+      'blur': 30px,
+      'shadow-opacity': 0.25,
+      'highlight-opacity': 1
+    )
+  );
+
+  $config: map.get($intensities, $intensity);
+  $distance: map.get($config, 'distance');
+  $blur: map.get($config, 'blur');
+  $shadow-opacity: map.get($config, 'shadow-opacity');
+  $highlight-opacity: map.get($config, 'highlight-opacity');
+
+  // Dark shadow (bottom-right)
+  // Calculate alpha value first (must be between -1 and 0 for transparency)
+  $shadow-alpha: ($shadow-opacity - 1);
+  $shadow-color: color.adjust($bg-color, $lightness: -10%, $alpha: $shadow-alpha);
+
+  // Light highlight (top-left)
+  $highlight-alpha: ($highlight-opacity - 1);
+  $highlight-color: color.adjust($bg-color, $lightness: 5%, $alpha: $highlight-alpha);
+
+  box-shadow:
+    #{$distance} #{$distance} #{$blur} $shadow-color,
+    #{-$distance} #{-$distance} #{$blur} $highlight-color;
+}
+
+/**
+ * Inset neumorphic effect (pressed/concave)
+ * Creates appearance of element pushed into the surface
+ */
+@mixin neumorphic-inset($intensity: 'medium', $bg-color: map.get(variables.$colors, 'background')) {
+  $intensities: (
+    'subtle': (
+      'distance': 4px,
+      'blur': 8px,
+      'shadow-opacity': 0.2,
+      'highlight-opacity': 0.4
+    ),
+    'medium': (
+      'distance': 6px,
+      'blur': 12px,
+      'shadow-opacity': 0.25,
+      'highlight-opacity': 0.5
+    ),
+    'strong': (
+      'distance': 8px,
+      'blur': 16px,
+      'shadow-opacity': 0.3,
+      'highlight-opacity': 0.6
+    )
+  );
+
+  $config: map.get($intensities, $intensity);
+  $distance: map.get($config, 'distance');
+  $blur: map.get($config, 'blur');
+  $shadow-opacity: map.get($config, 'shadow-opacity');
+  $highlight-opacity: map.get($config, 'highlight-opacity');
+
+  $shadow-alpha: ($shadow-opacity - 1);
+  $shadow-color: color.adjust($bg-color, $lightness: -10%, $alpha: $shadow-alpha);
+  $highlight-alpha: ($highlight-opacity - 1);
+  $highlight-color: color.adjust($bg-color, $lightness: 5%, $alpha: $highlight-alpha);
+
+  box-shadow:
+    inset #{$distance} #{$distance} #{$blur} $shadow-color,
+    inset #{-$distance} #{-$distance} #{$blur} $highlight-color;
+}
+
+/**
+ * Flat neumorphic effect (minimal depth)
+ * Subtle effect for secondary elements
+ */
+@mixin neumorphic-flat($bg-color: map.get(variables.$colors, 'background')) {
+  $shadow-color: color.adjust($bg-color, $lightness: -8%, $alpha: -0.85);
+  $highlight-color: color.adjust($bg-color, $lightness: 4%, $alpha: -0.4);
+
+  box-shadow:
+    5px 5px 10px $shadow-color,
+    -5px -5px 10px $highlight-color;
+}
+
+/**
+ * Interactive neumorphic button states
+ */
+@mixin neumorphic-button($bg-color: map.get(variables.$colors, 'background')) {
+  @include neumorphic('medium', $bg-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    @include neumorphic('strong', $bg-color);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    @include neumorphic-inset('subtle', $bg-color);
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    @include neumorphic-flat($bg-color);
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// =================================================================
+// NEUMORPHIC COMPONENT CLASSES
+// =================================================================
+
+.neumorph {
+  @include neumorphic('medium');
+}
+
+.neumorph--subtle {
+  @include neumorphic('subtle');
+}
+
+.neumorph--strong {
+  @include neumorphic('strong');
+}
+
+.neumorph--inset {
+  @include neumorphic-inset('medium');
+}
+
+.neumorph--flat {
+  @include neumorphic-flat();
+}
+
+// =================================================================
+// FAB (Floating Action Button) WITH NEUMORPHISM
+// =================================================================
+
+.fab {
+  position: absolute; // Changed from fixed to absolute for Floating UI
+  width: 6.5rem;    // 65px círculo compacto
+  height: 6.5rem;   // 65px
+  border-radius: 50%;
+  background: map.get(variables.$colors, 'primary');
+  border: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Continuous floating animation
+  animation: fab-float 3s ease-in-out infinite;
+
+  // SVG icon container
+  svg {
+    width: 2.8rem;  // 28px
+    height: 2.8rem; // 28px
+    fill: white;
+    transition: transform 0.3s ease;
+  }
+
+  // Estado hover: solo cambia color y escala ligeramente
+  &:hover {
+    transform: scale(1.05);
+    background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -5%);
+    box-shadow: 0 12px 50px rgba(map.get(variables.$colors, 'primary'), 0.4);
+
+    // Mostrar tooltip
+    + .fab-tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 3px solid map.get(variables.$colors, 'text-primary-accessible');
+    outline-offset: 4px;
+  }
+}
+
+// Speech bubble tooltip for FAB (comic book style with tail)
+.fab-tooltip {
+  position: absolute;
+  background: white;
+  color: map.get(variables.$colors, 'secondary');
+  padding: 1.2rem 1.6rem;
+  border-radius: 12px;
+  font-family: map.get(variables.$fonts, 'title'), sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border: 3px solid map.get(variables.$colors, 'primary');
+  z-index: 1001; // Above FAB
+
+  // Comic book style triangular tail (pointing right towards FAB)
+  &::after {
+    content: '';
+    position: absolute;
+    right: -18px; // Position outside tooltip
+    top: 50%;
+    transform: translateY(-50%) rotate(-15deg); // Centered and diagonal
+    width: 0;
+    height: 0;
+    border-left: 15px solid map.get(variables.$colors, 'primary');
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+  }
+
+  // Inner white triangle (creates the filled interior)
+  &::before {
+    content: '';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-15deg);
+    width: 0;
+    height: 0;
+    border-left: 12px solid white;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    z-index: 1;
+  }
+}
+
+// Floating animation for FAB
+@keyframes fab-float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+// Mobile adjustments for FAB
+@media screen and (max-width: 768px) {
+  .fab {
+    width: 5.6rem;  // 56px
+    height: 5.6rem; // 56px
+    bottom: 2rem;   // 20px
+    right: 2rem;    // 20px
+
+    svg {
+      width: 2.4rem; // 24px
+      height: 2.4rem; // 24px
+    }
+  }
+
+  .fab-tooltip {
+    display: none; // Hide tooltip on mobile to save space
+  }
+}

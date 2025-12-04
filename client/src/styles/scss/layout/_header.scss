@@ -28,23 +28,32 @@ header {
         transform: scale(120%);
         transition: 0.2s;
     }
-    a {
-        top: 17px;
-    }
-    
     .screen-menu {
         display: none;
         @include mixins.respond-to("tablet") {
         display: flex;
         gap: 2rem;
+        align-items: center;
         }
         .main-nav-links{
             display: flex;
             gap: 2rem;
+            align-items: center;
+            
+            a {
+                position: relative;
+                top: 4px;
+            }
         }
         .cta-buttons{
             display: flex;
             gap: 2rem;
+            align-items: center;
+            
+            button {
+                position: relative;
+                top: 0px;
+            }
         }
     }
     }
@@ -118,6 +127,8 @@ header {
         display: flex;
         align-items: center;
         transition: 0.2s;
+        position: relative;
+        top: 0px;
         
 
         &::after {
@@ -141,81 +152,82 @@ header {
         }
     }
     }
-    // Menú desplegable
+    // Menú desplegable - DESKTOP
     .dropdown-menu {
     display: none;
     position: absolute;
     left: 0;
     right: 0;
     top: 11rem;
-    background-color: rgb(243, 240, 240, .50) ;
-    box-shadow: 3px 4px 6px rgba(56, 61, 71, 0.5);
+    background-color: rgba(243, 240, 240, 0.85);
+    box-shadow: 0 8px 32px rgba(56, 61, 71, 0.2);
     z-index: 1000;
-    padding: 2rem 2rem;
-    backdrop-filter: blur(8px);
+    padding: 2rem;
+    backdrop-filter: blur(12px);
+    // Animación de entrada
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
     
 
     &[aria-hidden="false"] {
         display: block;
+        opacity: 1;
+        transform: translateY(0);
     }
 
     .dropdown-menu-content {
-        max-width: 1080px;
-        margin: 0 1.5rem;
+        max-width: 1100px;
+        margin: 0 auto;
         padding: 0 2rem;
-        max-height: 45rem;
     }
 
     ul {
         display: flex;
-        flex-direction: row;
         flex-wrap: wrap;
-        max-width: 15rem;
-        justify-content: space-between;
+        justify-content: flex-start;
+        gap: 0.5rem 1rem;
         list-style-type: none;
         padding: 0;
-        margin: 1rem 4rem;
-        max-height: 40rem;
+        margin: 0;
     }
 
     li {
-        flex: 0 0 calc(25% - 1rem);
-        margin: 3rem 3rem;
-        min-width: 300px;
-        height: 2rem;
+        flex: 0 0 calc(33.333% - 1rem);
+        min-width: 280px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 8px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover {
+            background-color: rgba(93, 196, 175, 0.15);
+            transform: translateX(4px);
+            
+            svg {
+                transform: scale(1.1);
+            }
+        }
+
+        svg {
+            flex-shrink: 0;
+            width: 24px;
+            height: 28px;
+            transition: transform 0.2s ease;
+        }
 
         a {
-        color: map.get(variables.$colors,"secondary" );
+        color: map.get(variables.$colors,"secondary");
         text-decoration: none;
-        display: block;
-        padding: 0.5rem 1rem;
-        transition: 0.2s;
-        border-radius: 4px;
+        font-size: 1.4rem;
+        transition: color 0.2s ease;
 
         &:hover {
             color: map.get(variables.$colors,"primary");
-            font-weight: 800;
-            background-color: map.get(variables.$colors,"primary", 0.1);
+            font-weight: 600;
         }
-        }
-    }
-    }
-
-    @include mixins.respond-to ("mobile") {
-    .dropdown-menu {
-        box-shadow: none;
-        padding: 1rem 0;
-
-        .dropdown-menu-content {
-        padding: 0 1rem;
-        }
-
-        ul {
-        flex-direction: column;
-        }
-
-        li {
-        flex: 0 0 100%;
         }
     }
     }

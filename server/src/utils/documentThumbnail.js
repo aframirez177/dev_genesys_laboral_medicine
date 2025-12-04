@@ -282,6 +282,58 @@ function getCellDisplayValue(cell) {
 }
 
 /**
+ * Genera thumbnail de alta fidelidad desde HTML renderizado
+ * @param {string} htmlContent - Contenido HTML completo
+ * @param {Object} options - Opciones
+ * @returns {Promise<Buffer>} Buffer JPEG del thumbnail
+ */
+export async function generateHTMLThumbnail(htmlContent, options = {}) {
+    const { width = 800, quality = 95, cropHeader = true } = options;
+
+    let page = null;
+
+    try {
+        console.log('🖼️ Generando thumbnail desde HTML con Puppeteer...');
+
+        const browser = await getBrowser();
+        page = await browser.newPage();
+
+        // Configurar viewport para calidad óptima (similar a profesiograma A4)
+        await page.setViewport({
+            width: 1200,
+            height: 1697, // A4 aspect ratio
+            deviceScaleFactor: 2 // Retina quality
+        });
+
+        // Cargar HTML
+        await page.setContent(htmlContent, {
+            waitUntil: 'networkidle0',
+            timeout: 15000
+        });
+
+        // Esperar a que se renderice completamente
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        // Capturar screenshot de alta calidad
+        const screenshot = await page.screenshot({
+            type: 'jpeg',
+            quality,
+            fullPage: false, // Solo viewport (primera página)
+            encoding: 'binary'
+        });
+
+        console.log(`✅ Thumbnail HTML generado: ${(screenshot.length / 1024).toFixed(2)} KB`);
+        return screenshot;
+
+    } catch (error) {
+        console.error('❌ Error generando thumbnail HTML:', error);
+        throw new Error(`Error generando thumbnail HTML: ${error.message}`);
+    } finally {
+        if (page) await page.close();
+    }
+}
+
+/**
  * Cierra el navegador Puppeteer
  */
 export async function closeBrowser() {

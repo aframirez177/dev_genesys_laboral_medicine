@@ -1,0 +1,514 @@
+/**
+ * _floating-ui.scss
+ * Estilos para tooltips y popovers usando Floating UI
+ */
+
+@use "sass:color";
+@use "sass:map";
+@use '../base/variables';
+@use '../base/mixins';
+
+// =================================================================
+// FLOATING TOOLTIP
+// =================================================================
+
+.floating-tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: map.get(variables.$colors, 'secondary');
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  font-family: map.get(variables.$fonts, 'body'), sans-serif;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  max-width: 300px;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  overflow: visible; // Placement-specific arrow positioning is handled by JS
+
+  &--visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  // Arrow
+  &__arrow {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: inherit;
+    transform: rotate(45deg);
+  }
+
+  // Ajustar padding cuando hay arrow
+  &[data-placement^="top"] {
+    margin-bottom: 8px;
+  }
+
+  &[data-placement^="bottom"] {
+    margin-top: 8px;
+  }
+
+  &[data-placement^="left"] {
+    margin-right: 8px;
+  }
+
+  &[data-placement^="right"] {
+    margin-left: 8px;
+  }
+}
+
+// =================================================================
+// FLOATING POPOVER
+// =================================================================
+
+.floating-popover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 9998;
+  opacity: 0;
+  transform: scale(0.95) translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  overflow: auto;
+
+  &--visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  // Header
+  &__header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h3 {
+      font-family: map.get(variables.$fonts, 'title'), sans-serif;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, 'secondary');
+      margin: 0;
+    }
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: map.get(variables.$colors, 'text');
+    font-size: 2rem;
+    line-height: 1;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: map.get(variables.$colors, 'primary');
+    }
+  }
+
+  // Body
+  &__body {
+    padding: 2rem;
+    font-family: map.get(variables.$fonts, 'body'), sans-serif;
+    font-size: 1.5rem;
+    line-height: 1.6;
+    color: map.get(variables.$colors, 'text');
+  }
+
+  // Footer
+  &__footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+}
+
+// =================================================================
+// TOOLTIP VARIANTS - Para casos de uso específicos
+// =================================================================
+
+// Tooltip para GES (info detallada de riesgos)
+.floating-tooltip--ges {
+  max-width: 400px;
+  padding: 1.5rem;
+
+  .ges-tooltip {
+    &__header {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+      h4 {
+        font-family: map.get(variables.$fonts, 'title'), sans-serif;
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+    }
+
+    &__section {
+      margin-bottom: 1rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      strong {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      ul {
+        margin: 0.5rem 0 0 0;
+        padding-left: 1.5rem;
+
+        li {
+          margin-bottom: 0.3rem;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Tooltip para ayuda contextual
+.floating-tooltip--help {
+  max-width: 250px;
+  background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -5%);
+
+  i {
+    margin-right: 0.5rem;
+  }
+}
+
+// Tooltip de error/warning
+.floating-tooltip--error {
+  background: map.get(variables.$colors, 'danger');
+}
+
+.floating-tooltip--warning {
+  background: map.get(variables.$colors, 'atention');
+  color: map.get(variables.$colors, 'secondary');
+}
+
+.floating-tooltip--success {
+  background: map.get(variables.$colors, 'success');
+}
+
+// =================================================================
+// POPOVER VARIANTS
+// =================================================================
+
+// Popover para selección de controles
+.floating-popover--controls {
+  min-width: 400px;
+
+  @include mixins.respond-to('mobile') {
+    min-width: 300px;
+  }
+
+  .control-option {
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: map.get(variables.$colors, 'background');
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &__title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: map.get(variables.$colors, 'secondary');
+    }
+
+    &__description {
+      font-size: 1.4rem;
+      color: map.get(variables.$colors, 'text');
+    }
+  }
+}
+
+// Popover para info de niveles de riesgo
+.floating-popover--risk-info {
+  max-width: 500px;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 0.8rem;
+      text-align: left;
+      border: 1px solid #e0e0e0;
+    }
+
+    th {
+      background: map.get(variables.$colors, 'background');
+      font-weight: 600;
+      color: map.get(variables.$colors, 'secondary');
+    }
+
+    td {
+      font-size: 1.4rem;
+    }
+  }
+}
+
+// Popover para edición de cargos - CON 2 COLUMNAS
+.floating-popover--cargo-edit {
+  min-width: 780px; // 87% de 900px ≈ 780px
+  max-width: 780px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+
+  @media screen and (max-width: 768px) {
+    min-width: 300px;
+    max-width: 95vw;
+    max-height: 90vh;
+  }
+
+  // Header con acciones (botón Guardar + X)
+  .floating-popover__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .floating-popover__header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  // Body
+  .floating-popover__body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .floating-popover__col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 0;
+  }
+
+  // Botón compacto en header
+  .btn--compact {
+    padding: 0.8rem 1.6rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    &.btn--primary {
+      background: map.get(variables.$colors, 'primary');
+      color: white;
+      border: none;
+      box-shadow: 0 2px 8px rgba(map.get(variables.$colors, 'primary'), 0.3);
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.4);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // Form con grid de 2 columnas
+  .cargo-edit-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 0; // El padding ya está en el body
+
+    @media screen and (max-width: 768px) {
+      grid-template-columns: 1fr; // Mobile: 1 columna
+      gap: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 2rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 1.4rem;
+      color: map.get(variables.$colors, 'secondary');
+      margin-bottom: 0.5rem;
+
+      .required {
+        color: map.get(variables.$colors, 'danger');
+      }
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      font-size: 1.5rem;
+      font-family: map.get(variables.$fonts, 'body'), sans-serif;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: map.get(variables.$colors, 'primary');
+        box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'primary'), 0.1);
+      }
+
+      &.input-error {
+        border-color: map.get(variables.$colors, 'danger');
+
+        &:focus {
+          box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'danger'), 0.1);
+        }
+      }
+
+      &::placeholder {
+        color: #999;
+      }
+    }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .error-message {
+      display: none;
+      color: map.get(variables.$colors, 'danger');
+      font-size: 1.3rem;
+      margin-top: 0.5rem;
+    }
+
+    .form-hint {
+      display: block;
+      color: #777;
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    .form-label-section {
+      display: block;
+      font-weight: 600;
+      font-size: 1.6rem;
+      color: map.get(variables.$colors, 'secondary');
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid map.get(variables.$colors, 'primary');
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+
+      i {
+        font-size: 1.8rem;
+        color: map.get(variables.$colors, 'primary');
+      }
+    }
+
+    // Toggles modernos usan wizard-switches.scss
+  }
+
+  .floating-popover__footer {
+    gap: 1rem;
+    display: flex;
+    justify-content: flex-end; // Botones a la derecha
+
+    .btn {
+      padding: 1rem 2rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      &--primary {
+        background: map.get(variables.$colors, 'primary');
+        color: white;
+
+        &:hover:not(:disabled) {
+          background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%);
+        }
+
+        &.btn--success {
+          background: map.get(variables.$colors, 'success');
+        }
+      }
+
+      &--secondary {
+        background: #e0e0e0;
+        color: map.get(variables.$colors, 'secondary');
+
+        &:hover:not(:disabled) {
+          background: #d0d0d0;
+        }
+      }
+    }
+  }
+}

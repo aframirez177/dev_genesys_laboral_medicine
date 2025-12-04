@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profesiograma - {{companyName}}</title>
+    <style>
+        /* ====================================
+           PROFESIOGRAMA PRINT STYLES
+           Basado en design tokens existentes
+           ==================================== */
+
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Variables de diseño (del design system existente) */
+        :root {
+            --color-primary: #5dc4af;
+            --color-secondary: #383d47;
+            --color-text: #2d3238;
+            --color-highlight: #566E8F;
+            --color-background: #f3f0f0;
+            --font-title: 'Poppins', sans-serif;
+            --font-body: 'Raleway', sans-serif;
+        }
+
+        /* Estilos base */
+        html {
+            font-size: 62.5%; /* 1rem = 10px */
+        }
+
+        body {
+            font-family: var(--font-body);
+            font-size: 1.4rem; /* 14px */
+            line-height: 1.6;
+            color: var(--color-text);
+            background: white;
+        }
+
+        /* Contenedor principal */
+        .profesiograma-container {
+            max-width: 210mm; /* A4 width */
+            margin: 0 auto;
+            padding: 15mm;
+        }
+
+        /* Cargo page */
+        .cargo-page {
+            page-break-after: always;
+            position: relative;
+            padding-bottom: 30mm; /* Espacio para footer */
+        }
+
+        .cargo-page:last-child {
+            page-break-after: auto;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 20mm;
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 5mm;
+        }
+
+        .page-header h1 {
+            font-family: var(--font-title);
+            font-size: 2rem; /* 20px */
+            font-weight: 700;
+            color: var(--color-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Título del cargo */
+        .cargo-title {
+            font-family: var(--font-title);
+            font-size: 1.8rem; /* 18px */
+            font-weight: 700;
+            color: var(--color-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .cargo-area {
+            font-family: var(--font-body);
+            font-size: 1.4rem; /* 14px */
+            color: var(--color-highlight);
+            margin-bottom: 2rem;
+        }
+
+        /* Secciones */
+        .section {
+            margin-bottom: 2rem;
+            page-break-inside: avoid;
+        }
+
+        .section-header {
+            background-color: var(--color-primary);
+            color: white;
+            font-family: var(--font-title);
+            font-size: 1.4rem; /* 14px */
+            font-weight: 700;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        .section-content {
+            font-family: var(--font-body);
+            font-size: 1.2rem; /* 12px */
+            line-height: 1.6;
+            color: var(--color-text);
+        }
+
+        /* Listas */
+        .section-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .section-content li {
+            padding-left: 2rem;
+            position: relative;
+            margin-bottom: 0.8rem;
+        }
+
+        .section-content li:before {
+            content: "•";
+            position: absolute;
+            left: 0.8rem;
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        .section-content .empty-text {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Tabla de exámenes */
+        .examenes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-family: var(--font-body);
+            font-size: 1.2rem; /* 12px */
+        }
+
+        .examenes-table thead {
+            background-color: var(--color-secondary);
+            color: white;
+        }
+
+        .examenes-table th {
+            font-family: var(--font-title);
+            font-weight: 700;
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .examenes-table td {
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        /* Evitar que las filas de la tabla se corten entre páginas */
+        .examenes-table tbody tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        .examenes-table tbody tr:nth-child(even) {
+            background-color: var(--color-background);
+        }
+
+        /* Nota de embarazo */
+        .embarazo-note {
+            margin-top: 1rem;
+            font-size: 1.1rem; /* 11px */
+            color: var(--color-highlight);
+            font-style: italic;
+        }
+
+        /* Firma */
+        .firma-section {
+            margin-top: 3rem;
+            page-break-inside: avoid;
+        }
+
+        .firma-line {
+            width: 80mm;
+            border-top: 1px solid var(--color-secondary);
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .firma-label {
+            font-family: var(--font-title);
+            font-weight: 700;
+            font-size: 1.3rem; /* 13px */
+            color: var(--color-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .firma-sublabel {
+            font-family: var(--font-body);
+            font-size: 1.2rem; /* 12px */
+            color: var(--color-text);
+        }
+
+        /* Footer */
+        .page-footer {
+            position: fixed;
+            bottom: 10mm;
+            left: 15mm;
+            right: 15mm;
+            text-align: center;
+            font-size: 1.1rem; /* 11px */
+            color: var(--color-secondary);
+            border-top: 1px solid #ddd;
+            padding-top: 0.5rem;
+        }
+
+        /* Print styles */
+        @media print {
+            @page {
+                size: A4;
+                margin: 15mm;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            .profesiograma-container {
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .cargo-page {
+                margin: 0;
+                padding: 0;
+                padding-bottom: 15mm; /* Espacio para footer */
+                page-break-after: always;
+            }
+
+            .cargo-page:last-child {
+                page-break-after: auto;
+            }
+
+            .page-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 5mm 15mm;
+            }
+
+            /* Evitar saltos de página dentro de secciones pequeñas */
+            .section-header {
+                page-break-after: avoid;
+            }
+
+            .section {
+                page-break-inside: auto; /* Permitir que secciones largas se dividan */
+            }
+
+            /* Secciones pequeñas que deben permanecer juntas */
+            .firma-section,
+            .page-header,
+            .cargo-title,
+            .cargo-area {
+                page-break-inside: avoid;
+            }
+
+            /* Tablas: permitir división, pero no dividir filas */
+            .examenes-table {
+                page-break-inside: auto; /* Permitir que tabla larga se divida entre páginas */
+            }
+
+            .examenes-table thead {
+                display: table-header-group; /* Repetir header en cada página */
+            }
+
+            .examenes-table tbody tr {
+                page-break-inside: avoid; /* No dividir filas individuales */
+                page-break-after: auto;
+            }
+
+            /* Listas largas: permitir división */
+            .section-content ul {
+                page-break-inside: auto;
+            }
+
+            .section-content li {
+                page-break-inside: avoid; /* No dividir items individuales */
+            }
+
+            /* No imprimir el botón */
+            .print-button {
+                display: none !important;
+            }
+        }
+
+        /* Botón de impresión (solo visible en pantalla) */
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1.2rem 2.4rem;
+            background-color: var(--color-primary);
+            color: var(--color-secondary);
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background-color: #4db39f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        @media print {
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de impresión -->
+    <button class="print-button" onclick="window.print()">
+        🖨️ Imprimir Profesiograma
+    </button>
+
+    <div class="profesiograma-container">
+        {{#each cargos}}
+        <div class="cargo-page">
+            <!-- Header -->
+            <div class="page-header">
+                <h1>PROFESIOGRAMA DE CARGO</h1>
+            </div>
+
+            <!-- Título del cargo -->
+            <div class="cargo-title">
+                Perfil del Cargo: {{cargoName}} - {{../companyName}}
+            </div>
+            <div class="cargo-area">
+                Área/Proceso: {{area}}
+            </div>
+
+            <!-- Sección: Resumen del Cargo y Riesgos -->
+            <div class="section">
+                <div class="section-header">Resumen del Cargo y Riesgos</div>
+                <div class="section-content">
+                    <ul>
+                        <li><strong>Descripción Tareas:</strong> {{descripcionTareas}}</li>
+                        <li><strong>Riesgos (GES) Identificados:</strong></li>
+                        {{#if gesSeleccionados.length}}
+                            {{#each gesSeleccionados}}
+                            <li style="padding-left: 3rem;">{{riesgo}} - {{ges}} (NR={{nr}})</li>
+                            {{/each}}
+                        {{else}}
+                            <li style="padding-left: 3rem;" class="empty-text">Ninguno</li>
+                        {{/if}}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Sección: Características Específicas -->
+            {{#if hasCaracteristicasEspeciales}}
+            <div class="section">
+                <div class="section-header">Características Específicas (Justificación Exámenes)</div>
+                <div class="section-content">
+                    <ul>
+                        {{#if trabajaAlturas}}
+                        <li>Realiza trabajo seguro en alturas (Res. 1409/2012 y 4272/2021).</li>
+                        {{/if}}
+                        {{#if manipulaAlimentos}}
+                        <li>Realiza manipulación de alimentos (Res. 2674/2013).</li>
+                        {{/if}}
+                        {{#if conduceVehiculo}}
+                        <li>Conduce vehículos motorizados (Res. 1565/2014 - PESV).</li>
+                        {{/if}}
+                    </ul>
+                </div>
+            </div>
+            {{/if}}
+
+            <!-- Sección: Aptitudes y Requerimientos -->
+            <div class="section">
+                <div class="section-header">Aptitudes y Requerimientos para el Cargo</div>
+                <div class="section-content">
+                    {{#if controlesConsolidados.consolidado.aptitudes.length}}
+                    <ul>
+                        {{#each controlesConsolidados.consolidado.aptitudes}}
+                        <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                    {{else}}
+                    <p class="empty-text">No se especificaron elementos.</p>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Sección: Condiciones Médicas Incompatibles -->
+            <div class="section">
+                <div class="section-header">Condiciones Médicas Incompatibles</div>
+                <div class="section-content">
+                    {{#if controlesConsolidados.consolidado.condicionesIncompatibles.length}}
+                    <ul>
+                        {{#each controlesConsolidados.consolidado.condicionesIncompatibles}}
+                        <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                    {{else}}
+                    <p class="empty-text">No se especificaron elementos.</p>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Sección: EPP Requeridos -->
+            <div class="section">
+                <div class="section-header">Elementos de Protección Personal (EPP) Requeridos</div>
+                <div class="section-content">
+                    {{#if controlesConsolidados.consolidado.epp.length}}
+                    <ul>
+                        {{#each controlesConsolidados.consolidado.epp}}
+                        <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                    {{else}}
+                    <p class="empty-text">No se especificaron elementos.</p>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Sección: Protocolo de Exámenes -->
+            <div class="section">
+                <div class="section-header">Protocolo de Exámenes Médicos Ocupacionales</div>
+                <div class="section-content">
+                    <table class="examenes-table">
+                        <thead>
+                            <tr>
+                                <th>Examen de Ingreso</th>
+                                <th>Examen Periódico</th>
+                                <th>Examen de Egreso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each examenesRows}}
+                            <tr>
+                                <td>{{ingreso}}</td>
+                                <td>{{periodico}}</td>
+                                <td>{{#if @first}}{{../examenEgreso}}{{/if}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+
+                    {{#if tienePruebaEmbarazo}}
+                    <div class="embarazo-note">
+                        (*) Prueba de embarazo aplica únicamente bajo consentimiento informado.
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Firma del Médico -->
+            <div class="firma-section">
+                <div class="firma-line"></div>
+                <div class="firma-label">Firma Médico Especialista en SST</div>
+                <div class="firma-sublabel">Licencia No.</div>
+            </div>
+
+            <!-- Footer -->
+            <div class="page-footer">
+                <div>Generado por Genesys LM | Página {{@index}} de {{../totalPages}}</div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+
+    <script>
+        // Auto-print al cargar (opcional - comentar si no se desea)
+        // window.onload = () => window.print();
+    </script>
+</body>
+</html>

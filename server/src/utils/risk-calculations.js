@@ -3,10 +3,24 @@
 /**
  * Calcula el nivel de probabilidad según GTC 45
  * NP = ND x NE
+ *
+ * ✅ Sprint 6 Bug Fix A.3: ND=0 tratado como "No Aplica"
+ * Cuando ND=0, se usa multiplicador=1 en lugar de 0
  */
 export function calcularNivelProbabilidad(nivelDeficiencia, nivelExposicion) {
+    // ✅ Bug Fix A.3: Tratar ND=0 como "No Aplica"
+    if (nivelDeficiencia === 0) {
+        return {
+            valor: nivelExposicion, // NP = NE * 1 (multiplicador implícito)
+            nivel: 'No Aplica',
+            interpretacion: 'No existe deficiencia - Solo exposición',
+            esNoAplica: true,
+            ndOriginal: 0
+        };
+    }
+
     const np = nivelDeficiencia * nivelExposicion;
-    
+
     if (np >= 24) return {
         valor: np,
         nivel: 'Muy Alto',

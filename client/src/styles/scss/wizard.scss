@@ -16,3 +16,43 @@
 
 // 4. Componentes del wizard (usan todo lo anterior)
 @use 'components/wizard';
+@use 'components/modals';
+@use 'components/wizard-improvements';
+@use 'components/wizard-neumorphism'; // Neumorphic enhancements
+@use 'components/plantillas-niveles'; // Sistema de plantillas GTC-45
+@use 'components/niveles-vista-hibrida'; // Vista híbrida con tabla de sugerencias
+@use 'components/niveles-barras-wizard'; // Barras semaforizadas para NivelesRiesgoForm
+@use 'components/niveles-controles'; // Medidas de control (fuente, medio, individuo) - LEGACY
+@use 'components/wizard-controles'; // Sistema completo de controles - Paso 5 del wizard (UX optimizado)
+
+// Components
+@use 'components/buttons';
+@use 'components/wizard-buttons'; // Sistema unificado de botones del wizard
+@use 'components/wizard-desktop-optimizations'; // Quick wins desktop-first (2025-11-24)
+@use 'components/dropdown';
+@use 'components/whatsapp';
+@use 'components/contact-form';
+@use 'components/floating-ui';
+@use 'components/wizard-switches'; // Switches modernos para toggles
+
+// Layout
+@use 'layout/header';
+@use 'layout/footer';
+
+// Sections
+@use 'sections/hero';
+@use 'sections/program-description';
+@use 'sections/program-description-service';
+@use 'sections/steps';
+@use 'sections/women-leaders';
+@use 'sections/sst-services';
+@use 'sections/faq-specific-services.scss';
+@use 'sections/faqs-specific-services.scss';
+@use 'sections/clients';
+@use 'sections/faqs';
+@use 'sections/location';
+
+// Utilities
+@use 'utilities/helpers';
+@use 'utilities/animations';
+@use 'utilities/neumorphism'; // Soft UI design system

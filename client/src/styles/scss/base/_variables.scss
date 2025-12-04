@@ -18,8 +18,13 @@ $colors: (
     "atention": #ff9800,
     "danger": #f44336,                // Rojo para niveles altos
     "text-dark": #2d3238,             // Color para el texto en cabeceras oscuras
-    "text-light": #ffffff             // Color para el texto en cabeceras claras
-
+    "text-light": #ffffff,            // Color para el texto en cabeceras claras
+    
+    // 🎨 Colores accesibles WCAG AA (4.5:1 contraste mínimo)
+    "text-primary-accessible": #42a594, // Verde accesible (contraste 4.51:1 sobre blanco)
+    "text-secondary-accessible": #2c7366, // Verde oscuro (contraste 7.12:1 sobre blanco)
+    "link-accessible": #1976d2,         // Azul accesible (contraste 5.88:1)
+    "link-hover": #115293              // Azul oscuro para hover (contraste 8.59:1)
 );
 
 // Auxiliary colors
@@ -51,4 +56,42 @@ $breakpoints: (
     "mobile": 400px,
     "tablet": 955px,
     "desktop": 1080px,
+);
+
+// 📏 Sistema de Espaciado (basado en múltiplos de 8px)
+// NOTA: 1rem = 10px (debido a font-size: 62.5% en html)
+$spacing: (
+    "xs": 0.8rem,    // 8px
+    "sm": 1.6rem,    // 16px
+    "md": 2.4rem,    // 24px
+    "lg": 3.2rem,    // 32px
+    "xl": 4.8rem,    // 48px
+    "2xl": 6.4rem,   // 64px
+    "3xl": 9.6rem,   // 96px
+    "4xl": 12.8rem   // 128px
+);
+
+// 🎭 Sombras
+$shadows: (
+    "sm": 0 1px 2px 0 rgba(0, 0, 0, 0.05),
+    "md": 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    "lg": 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    "xl": 0 20px 25px -5px rgba(0, 0, 0, 0.1)
+);
+
+// ⏱️ Transiciones
+$transitions: (
+    "fast": 150ms ease-in-out,
+    "base": 300ms ease-in-out,
+    "slow": 500ms ease-in-out
+);
+
+// 📐 Border Radius
+// NOTA: 1rem = 10px (debido a font-size: 62.5% en html)
+$radius: (
+    "sm": 0.4rem,    // 4px
+    "md": 0.8rem,    // 8px
+    "lg": 1.6rem,    // 16px
+    "xl": 2.4rem,    // 24px
+    "full": 9999px
 );

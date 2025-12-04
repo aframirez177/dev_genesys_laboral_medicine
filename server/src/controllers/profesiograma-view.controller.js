@@ -54,6 +54,16 @@ async function getProfesiogramaData(req, res) {
                     .select('*');
 
                 console.log(`  Cargo "${cargoDB.nombre_cargo}": ${riesgosDB.length} riesgos`);
+                console.log(`  📋 Toggles del cargo: trabajaAlturas=${cargoDB.trabaja_alturas}, manipulaAlimentos=${cargoDB.manipula_alimentos}, conduceVehiculo=${cargoDB.conduce_vehiculo}`);
+
+                // Debug: mostrar los riesgos cargados
+                if (riesgosDB.length > 0) {
+                    riesgosDB.forEach((r, i) => {
+                        console.log(`    GES[${i}]: "${r.descripcion_riesgo}" - ND:${r.nivel_deficiencia} NE:${r.nivel_exposicion} NC:${r.nivel_consecuencia}`);
+                    });
+                } else {
+                    console.log(`    ⚠️ No hay riesgos guardados para este cargo`);
+                }
 
                 // Reconstruir estructura de cargo para el servicio de riesgos
                 const cargoParaServicio = {
@@ -66,6 +76,7 @@ async function getProfesiogramaData(req, res) {
                     trabajaAlturas: cargoDB.trabaja_alturas,
                     manipulaAlimentos: cargoDB.manipula_alimentos,
                     conduceVehiculo: cargoDB.conduce_vehiculo,
+                    trabajaEspaciosConfinados: cargoDB.trabaja_espacios_confinados,
                     gesSeleccionados: riesgosDB.map(riesgo => ({
                         riesgo: riesgo.tipo_riesgo,
                         ges: riesgo.descripcion_riesgo,
@@ -80,7 +91,10 @@ async function getProfesiogramaData(req, res) {
                 // Usar servicio de riesgos para consolidar controles
                 const controles = riesgosService.consolidarControlesCargo(cargoParaServicio);
 
-                // Formatear factores de riesgo con NR calculado
+                // Debug: mostrar resultado de controles
+                console.log(`  📊 Resultado controles: ${controles.porGES.length} GES procesados, EPP: ${controles.consolidado.epp.length}, Aptitudes: ${controles.consolidado.aptitudes.length}`);
+
+                // Formatear factores de riesgo con NR calculado y justificaciones
                 const factoresRiesgo = controles.porGES
                     .filter(ges => ges.controlesAplicados) // Solo mostrar los que requieren controles
                     .map(ges => ({
@@ -89,8 +103,31 @@ async function getProfesiogramaData(req, res) {
                         nivelExposicion: mapearNivelExposicion(ges.niveles.ne),
                         valoracion: ges.niveles.nrInterpretacion,
                         nr: ges.niveles.nr,
-                        nrNivel: ges.niveles.nrNivel
+                        nrNivel: ges.niveles.nrNivel,
+                        // ✅ NUEVOS CAMPOS: Justificación y efectos del GES
+                        justificacion: ges.justificacion || '',
+                        efectosPosibles: ges.efectosPosibles || '',
+                        peorConsecuencia: ges.peorConsecuencia || ''
                     }));
+
+                // ✅ NUEVO: Lista completa de GES identificados (todos, no solo los que requieren controles)
+                const gesIdentificados = controles.porGES.map(ges => ({
+                    riesgo: ges.tipoRiesgo,
+                    ges: ges.gesNombre,
+                    niveles: {
+                        nd: ges.niveles.nd,
+                        ne: ges.niveles.ne,
+                        nc: ges.niveles.nc,
+                        np: ges.niveles.np,
+                        nr: ges.niveles.nr
+                    },
+                    interpretacionNR: ges.niveles.nrInterpretacion,
+                    nivelNR: ges.niveles.nrNivel,
+                    controlesAplicados: ges.controlesAplicados,
+                    justificacion: ges.justificacion || '',
+                    efectosPosibles: ges.efectosPosibles || '',
+                    peorConsecuencia: ges.peorConsecuencia || ''
+                }));
 
                 // Formatear exámenes con periodicidad
                 const examenes = controles.consolidado.examenes.map(codigoExamen => {
@@ -111,14 +148,29 @@ async function getProfesiogramaData(req, res) {
                 return {
                     nombre: cargoDB.nombre_cargo,
                     area: cargoDB.area || 'No especificada',
+                    zona: cargoDB.zona || 'No especificada',
                     numTrabajadores: cargoDB.num_trabajadores || 1,
                     nivelRiesgoARL,
                     descripcion: cargoDB.descripcion_tareas || 'Descripción no disponible',
                     factoresRiesgo,
                     examenes,
+                    // ✅ Campos existentes
                     epp: controles.consolidado.epp,
                     aptitudes: controles.consolidado.aptitudes,
-                    condicionesIncompatibles: controles.consolidado.condicionesIncompatibles
+                    condicionesIncompatibles: controles.consolidado.condicionesIncompatibles,
+                    // ✅ NUEVOS CAMPOS: GES identificados completos con riesgos
+                    gesIdentificados,
+                    // ✅ Metadata adicional
+                    nrMaximo: controles.metadata.nrMaximo,
+                    periodicidadMinima: controles.consolidado.periodicidadMinima,
+                    // ✅ Toggles especiales (trabajo en alturas, conducción, etc.)
+                    togglesEspeciales: {
+                        trabajaAlturas: cargoDB.trabaja_alturas,
+                        manipulaAlimentos: cargoDB.manipula_alimentos,
+                        conduceVehiculo: cargoDB.conduce_vehiculo,
+                        trabajaEspaciosConfinados: cargoDB.trabaja_espacios_confinados,
+                        tareasRutinarias: cargoDB.tareas_rutinarias
+                    }
                 };
             })
         );
@@ -234,12 +286,14 @@ async function exportPDF(req, res) {
 
         console.log(`📄 Generando PDF para profesiograma ID: ${id}`);
 
-        // Build the URL to the profesiograma view page
-        // IMPORTANTE: Puppeteer corre dentro del contenedor Docker, debe usar localhost
-        // para acceder al servidor Express que está en el mismo contenedor
-        const viewUrl = `http://localhost:3000/pages/profesiograma_view.html?id=${id}`;
+        // Detectar puerto según entorno
+        // En desarrollo: webpack-dev-server corre en puerto 8080
+        // En producción: todo está en puerto 3000
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        const frontendPort = isDevelopment ? 8080 : 3000;
+        const viewUrl = `http://localhost:${frontendPort}/pages/profesiograma_view.html?id=${id}`;
 
-        console.log(`🌐 URL de vista: ${viewUrl}`);
+        console.log(`🌐 URL de vista (${isDevelopment ? 'DEV' : 'PROD'}): ${viewUrl}`);
 
         // Generate PDF using Puppeteer
         const pdfBuffer = await generatePDFFromView(viewUrl, id);

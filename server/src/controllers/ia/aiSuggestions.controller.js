@@ -29,8 +29,14 @@ export const suggestGES = async (req, res) => {
 
     res.json({
       success: true,
-      suggestions,
-      cargoName
+      data: suggestions,
+      metadata: {
+        cargoName,
+        count: suggestions.length,
+        avgConfidence: suggestions.length > 0
+          ? (suggestions.reduce((sum, s) => sum + s.confidence, 0) / suggestions.length).toFixed(1)
+          : 0
+      }
     });
   } catch (error) {
     console.error('Error in suggestGES:', error);

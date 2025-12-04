@@ -2,6 +2,9 @@
 // Este archivo leerá las variables de entorno (process.env)
 // que son INYECTADAS por docker-compose desde server/.env
 
+// Cargar variables de entorno cuando se ejecuta fuera de Docker
+require('dotenv').config({ path: './server/.env' });
+
 const config = {
   development: {
     client: 'pg',

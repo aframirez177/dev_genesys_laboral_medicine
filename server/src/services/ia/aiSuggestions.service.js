@@ -6,520 +6,326 @@
  */
 
 // Base de conocimiento de GES por cargo (datos de dominio)
+// IMPORTANTE: Los nombres de riesgos deben coincidir EXACTAMENTE con la BD
+// Ver: /api/catalogo/riesgos para nombres actuales
 const GES_BY_CARGO = {
   // Operarios y producción
-  'operario': ['Riesgo Mecánico', 'Riesgo Físico - Ruido', 'Riesgo Biomecánico', 'Riesgo de Seguridad'],
-  'operario de producción': ['Riesgo Mecánico', 'Riesgo Físico - Ruido', 'Riesgo Biomecánico', 'Riesgo Químico'],
-  'operario de máquina': ['Riesgo Mecánico', 'Riesgo Físico - Ruido', 'Riesgo Físico - Vibración', 'Riesgo de Seguridad'],
-  'soldador': ['Riesgo de Radiación', 'Riesgo Químico', 'Riesgo de Temperatura', 'Riesgo Mecánico'],
-  'mec ánico': ['Riesgo Mecánico', 'Riesgo Químico', 'Riesgo Biomecánico', 'Riesgo de Seguridad'],
+  'operario': ['Mecánico', 'Físico', 'Biomecánico', 'Seguridad'],
+  'operario de producción': ['Mecánico', 'Físico', 'Biomecánico', 'Químico'],
+  'operario de máquina': ['Mecánico', 'Físico', 'Seguridad'],
+  'soldador': ['Físico', 'Químico', 'Mecánico'],
+  'mecánico': ['Mecánico', 'Químico', 'Biomecánico', 'Seguridad'],
 
   // Administrativos
-  'gerente': ['Riesgo Psicosocial', 'Riesgo Biomecánico', 'Riesgo de Fenómenos Naturales'],
-  'administrativo': ['Riesgo Psicosocial', 'Riesgo Biomecánico', 'Riesgo de Fenómenos Naturales'],
-  'secretaria': ['Riesgo Psicosocial', 'Riesgo Biomecánico'],
-  'digitador': ['Riesgo Biomecánico', 'Riesgo Psicosocial'],
-  'contador': ['Riesgo Psicosocial', 'Riesgo Biomecánico'],
+  'gerente': ['Psicosocial', 'Biomecánico', 'Natural'],
+  'administrativo': ['Psicosocial', 'Biomecánico', 'Natural'],
+  'secretaria': ['Psicosocial', 'Biomecánico'],
+  'digitador': ['Biomecánico', 'Psicosocial'],
+  'contador': ['Psicosocial', 'Biomecánico'],
 
   // Logística y almacén
-  'almacenista': ['Riesgo Biomecánico', 'Riesgo Mecánico', 'Riesgo de Seguridad'],
-  'conductor': ['Riesgo de Seguridad', 'Riesgo Biomecánico', 'Riesgo Psicosocial'],
-  'montacarguista': ['Riesgo Mecánico', 'Riesgo de Seguridad', 'Riesgo Físico - Ruido'],
+  'almacenista': ['Biomecánico', 'Mecánico', 'Seguridad'],
+  'conductor': ['Seguridad', 'Biomecánico', 'Psicosocial'],
+  'montacarguista': ['Mecánico', 'Seguridad', 'Físico'],
 
   // Construcción
-  'albañil': ['Riesgo de Seguridad', 'Riesgo Biomecánico', 'Riesgo de Trabajo en Alturas', 'Riesgo Químico'],
-  'electricista': ['Riesgo Eléctrico', 'Riesgo de Trabajo en Alturas', 'Riesgo de Seguridad'],
-  'plomero': ['Riesgo Biomecánico', 'Riesgo Químico', 'Riesgo de Espacios Confinados'],
+  'albañil': ['Seguridad', 'Biomecánico', 'Locativo', 'Químico'],
+  'electricista': ['Eléctrico', 'Locativo', 'Seguridad'],
+  'plomero': ['Biomecánico', 'Químico', 'Locativo'],
 
   // Servicios
-  'personal de limpieza': ['Riesgo Químico', 'Riesgo Biomecánico', 'Riesgo Biológico'],
-  'cocinero': ['Riesgo de Temperatura', 'Riesgo Biomecánico', 'Riesgo Químico', 'Riesgo de Seguridad'],
-  'mesero': ['Riesgo Biomecánico', 'Riesgo de Temperatura', 'Riesgo Psicosocial']
+  'personal de limpieza': ['Químico', 'Biomecánico', 'Biológico'],
+  'cocinero': ['Físico', 'Biomecánico', 'Químico', 'Seguridad'],
+  'mesero': ['Biomecánico', 'Físico', 'Psicosocial'],
+
+  // Ventas y comercial
+  'vendedor': ['Psicosocial', 'Biomecánico', 'Seguridad'],
+  'asesor comercial': ['Psicosocial', 'Biomecánico', 'Seguridad'],
+  'cajero': ['Psicosocial', 'Biomecánico', 'Seguridad'],
+  'supervisor': ['Psicosocial', 'Biomecánico', 'Natural'],
+  'jefe': ['Psicosocial', 'Biomecánico', 'Natural']
 };
 
 // Controles recomendados por tipo de riesgo
 const CONTROLS_BY_RISK = {
-  'Riesgo Mecánico': {
+  'Mecánico': {
     fuente: 'Guardas de seguridad en máquinas, mantenimiento preventivo de equipos, señalización de zonas peligrosas',
     medio: 'Barreras físicas, sistemas de parada de emergencia, iluminación adecuada',
     individuo: 'EPP: guantes de seguridad, calzado de seguridad con puntera de acero, capacitación en uso seguro de máquinas'
   },
-  'Riesgo Biomecánico': {
+  'Biomecánico': {
     fuente: 'Diseño ergonómico de puestos de trabajo, sillas y escritorios ajustables, herramientas ergonómicas',
     medio: 'Pausas activas cada 2 horas, rotación de tareas, ayudas mecánicas para levantamiento de cargas',
     individuo: 'Capacitación en higiene postural, ejercicios de estiramiento, uso correcto de ayudas mecánicas'
   },
-  'Riesgo Psicosocial': {
+  'Psicosocial': {
     fuente: 'Cargas de trabajo balanceadas, definición clara de roles, canales de comunicación efectivos',
     medio: 'Espacios de descanso, programas de bienestar, clima organizacional positivo',
     individuo: 'Capacitación en manejo del estrés, apoyo psicológico, actividades recreativas'
   },
-  'Riesgo Químico': {
+  'Químico': {
     fuente: 'Sustitución de químicos peligrosos, sistemas cerrados de manipulación, etiquetado adecuado',
     medio: 'Ventilación local exhaustiva, duchas y lavaojos de emergencia, almacenamiento seguro',
     individuo: 'EPP: guantes químicos, máscaras con filtros, gafas de seguridad, capacitación en manipulación de químicos'
   },
-  'Riesgo Físico - Ruido': {
-    fuente: 'Equipos con menor emisión de ruido, mantenimiento de máquinas, encerramiento de fuentes',
-    medio: 'Paneles absorbentes de ruido, aislamiento acústico, rotación de personal',
-    individuo: 'EPP: protectores auditivos (tapones o copas), audiometrías periódicas, capacitación'
+  'Físico': {
+    fuente: 'Equipos con menor emisión de ruido/vibración, mantenimiento de máquinas, encerramiento de fuentes',
+    medio: 'Paneles absorbentes de ruido, aislamiento acústico/térmico, rotación de personal',
+    individuo: 'EPP: protectores auditivos, tapones, capacitación, exámenes médicos periódicos'
   },
-  'Riesgo de Seguridad': {
+  'Seguridad': {
     fuente: 'Protocolos de seguridad claros, señalización visible, equipo en buen estado',
     medio: 'Rutas de evacuación, extintores accesibles, iluminación de emergencia',
     individuo: 'EPP adecuado según tarea, capacitación en evacuación, simulacros periódicos'
   },
-  'Riesgo de Trabajo en Alturas': {
+  'Locativo': {
     fuente: 'Superficies de trabajo estables, barandas perimetrales, andamios certificados',
     medio: 'Líneas de vida, puntos de anclaje certificados, mallas de seguridad',
     individuo: 'EPP: arnés de seguridad, casco, capacitación en trabajo en alturas (certificada)'
   },
-  'Riesgo Eléctrico': {
+  'Eléctrico': {
     fuente: 'Instalaciones eléctricas certificadas, mantenimiento preventivo, señalización',
     medio: 'Interruptores diferenciales, puestas a tierra, aislamiento de circuitos',
     individuo: 'EPP: guantes dieléctricos, calzado dieléctrico, capacitación en riesgo eléctrico'
   },
-  'Riesgo Biológico': {
+  'Biológico': {
     fuente: 'Protocolos de bioseguridad, limpieza y desinfección regular, control de plagas',
     medio: 'Ventilación adecuada, disposición segura de desechos, esterilización de equipos',
     individuo: 'EPP: guantes, mascarillas, batas, vacunación, capacitación en bioseguridad'
+  },
+  'Natural': {
+    fuente: 'Planes de emergencia para fenómenos naturales, sistemas de alerta temprana',
+    medio: 'Rutas de evacuación señalizadas, puntos de encuentro, suministros de emergencia',
+    individuo: 'Capacitación en evacuación, simulacros, botiquines personales'
   }
 };
 
 // Inconsistencias comunes por cargo
 const CARGO_INCONSISTENCIES = {
   'gerente': {
-    unusual_risks: ['Riesgo Mecánico', 'Riesgo de Trabajo en Alturas', 'Riesgo Químico'],
+    unusual_risks: ['Mecánico', 'Locativo', 'Químico'],
     message: 'Estos riesgos son inusuales para un cargo administrativo'
   },
   'administrativo': {
-    unusual_risks: ['Riesgo Mecánico', 'Riesgo de Trabajo en Alturas', 'Riesgo Químico'],
-    message: 'Estos riesgos son inusuales para un cargo administrativo'
+    unusual_risks: ['Mecánico', 'Químico'],
+    message: 'Riesgos físicos/químicos no son típicos en roles administrativos'
   },
   'operario': {
-    unusual_risks: ['Riesgo Psicosocial'],
-    message: 'Aunque puede existir, el riesgo psicosocial es más común en cargos administrativos'
+    unusual_risks: ['Psicosocial'],
+    message: 'Aunque presente, el riesgo psicosocial es secundario en operarios vs. riesgos físicos'
   }
 };
 
-class AISuggestionsService {
-  /**
-   * Sugerir GES para un cargo
-   */
-  async suggestGESForCargo(cargoName, options = {}) {
-    const normalized = this.normalizeCargoName(cargoName);
+/**
+ * Sugerir GES (Grupos de Exposición Similar) para un cargo
+ */
+export async function suggestGESForCargo(cargoName, options = {}) {
+  const { sector, historicalData } = options;
 
-    // Buscar coincidencias exactas
-    let suggestions = GES_BY_CARGO[normalized] || [];
+  // Normalizar nombre del cargo (lowercase, sin acentos)
+  const normalizedCargo = cargoName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-    // Si no hay coincidencias exactas, buscar coincidencias parciales
-    if (suggestions.length === 0) {
-      suggestions = this.findPartialMatches(normalized);
-    }
+  // Buscar coincidencia exacta o parcial en la base de conocimiento
+  let suggestedRisks = [];
 
-    // Agregar información de confianza
-    const suggestionsWithConfidence = suggestions.map(ges => ({
-      riesgo: ges,
-      confidence: this.calculateConfidence(cargoName, ges),
-      commonInSector: options.sector ? this.isCommonInSector(ges, options.sector) : null
-    }));
-
-    // Ordenar por confianza
-    suggestionsWithConfidence.sort((a, b) => b.confidence - a.confidence);
-
-    return suggestionsWithConfidence;
-  }
-
-  /**
-   * Sugerir controles para un riesgo
-   */
-  async suggestControls(riesgo, ges, cargoName) {
-    const controls = CONTROLS_BY_RISK[riesgo] || {
-      fuente: 'Eliminar o sustituir la fuente del peligro',
-      medio: 'Implementar barreras o controles ingenieriles',
-      individuo: 'Proporcionar EPP adecuado y capacitación'
-    };
-
-    return {
-      ...controls,
-      source: 'knowledge_base',
-      applicableTo: cargoName
-    };
-  }
-
-  /**
-   * Validar consistencia de un cargo
-   */
-  async validateCargoConsistency(cargo) {
-    const warnings = [];
-    const normalized = this.normalizeCargoName(cargo.cargoName);
-
-    // Buscar inconsistencias conocidas
-    const inconsistency = CARGO_INCONSISTENCIES[normalized];
-    if (inconsistency) {
-      cargo.gesSeleccionados.forEach(ges => {
-        if (inconsistency.unusual_risks.includes(ges.riesgo)) {
-          warnings.push({
-            type: 'unusual_risk',
-            riesgo: ges.riesgo,
-            message: inconsistency.message,
-            severity: 'medium'
-          });
-        }
-      });
-    }
-
-    // Validar número de trabajadores vs. número de riesgos
-    if (cargo.numTrabajadores > 10 && cargo.gesSeleccionados.length < 2) {
-      warnings.push({
-        type: 'insufficient_risks',
-        message: `Para un cargo con ${cargo.numTrabajadores} trabajadores, es recomendable evaluar más riesgos`,
-        severity: 'low'
-      });
-    }
-
-    // Validar controles vacíos
-    cargo.gesSeleccionados.forEach(ges => {
-      if (!ges.controles || !ges.controles.fuente || !ges.controles.medio || !ges.controles.individuo) {
-        warnings.push({
-          type: 'missing_controls',
-          riesgo: ges.riesgo,
-          message: 'Faltan controles para este riesgo',
-          severity: 'high'
-        });
-      }
-    });
-
-    return {
-      isValid: warnings.length === 0,
-      warnings,
-      suggestions: this.generateSuggestions(cargo, warnings)
-    };
-  }
-
-  /**
-   * Obtener benchmarks por sector
-   */
-  async getBenchmarksBySector(sector, filters = {}) {
-    // V1: Datos simulados
-    // V2: Consultar base de datos real de diagnósticos anónimos
-
-    const mockBenchmarks = {
-      'manufactura': {
-        promedioRiesgo: 7.2,
-        numEmpresas: 45,
-        riesgosPrincipales: ['Riesgo Mecánico', 'Riesgo Físico - Ruido', 'Riesgo Biomecánico']
-      },
-      'servicios': {
-        promedioRiesgo: 5.8,
-        numEmpresas: 32,
-        riesgosPrincipales: ['Riesgo Psicosocial', 'Riesgo Biomecánico']
-      },
-      'construccion': {
-        promedioRiesgo: 8.5,
-        numEmpresas: 28,
-        riesgosPrincipales: ['Riesgo de Trabajo en Alturas', 'Riesgo Mecánico', 'Riesgo de Seguridad']
-      },
-      'default': {
-        promedioRiesgo: 6.5,
-        numEmpresas: 20,
-        riesgosPrincipales: ['Riesgo Biomecánico', 'Riesgo Psicosocial']
-      }
-    };
-
-    return mockBenchmarks[sector.toLowerCase()] || mockBenchmarks.default;
-  }
-
-  /**
-   * Autocompletar cargo
-   */
-  async autocompleteCargo(query) {
-    const normalized = query.toLowerCase();
-    const matches = [];
-
-    // Buscar en base de conocimiento
-    for (const cargo in GES_BY_CARGO) {
-      if (cargo.includes(normalized)) {
-        matches.push({
-          cargo,
-          numRiesgos: GES_BY_CARGO[cargo].length,
-          frequency: this.getCargoFrequency(cargo)
-        });
+  // 1. Buscar coincidencia exacta
+  if (GES_BY_CARGO[normalizedCargo]) {
+    suggestedRisks = GES_BY_CARGO[normalizedCargo];
+  } else {
+    // 2. Buscar coincidencia parcial (ej: "operario de produccion" contiene "operario")
+    for (const [cargo, risks] of Object.entries(GES_BY_CARGO)) {
+      if (normalizedCargo.includes(cargo) || cargo.includes(normalizedCargo)) {
+        suggestedRisks = risks;
+        break;
       }
     }
-
-    // Ordenar por frecuencia
-    matches.sort((a, b) => b.frequency - a.frequency);
-
-    return matches.slice(0, 5);
   }
 
-  /**
-   * Calcular nivel de riesgo global
-   */
-  async calculateRiskScore(cargos) {
-    let totalRiesgo = 0;
-    let countRiesgos = 0;
-    const riesgosPorTipo = {};
-
-    cargos.forEach(cargo => {
-      cargo.gesSeleccionados.forEach(ges => {
-        if (ges.niveles && ges.niveles.nivelRiesgo) {
-          totalRiesgo += ges.niveles.nivelRiesgo;
-          countRiesgos++;
-
-          // Agrupar por tipo de riesgo
-          if (!riesgosPorTipo[ges.riesgo]) {
-            riesgosPorTipo[ges.riesgo] = [];
-          }
-          riesgosPorTipo[ges.riesgo].push(ges.niveles.nivelRiesgo);
-        }
-      });
-    });
-
-    const promedioGlobal = countRiesgos > 0 ? totalRiesgo / countRiesgos : 0;
-
-    // Calcular promedio por tipo de riesgo
-    const promediosPorTipo = {};
-    for (const tipo in riesgosPorTipo) {
-      const valores = riesgosPorTipo[tipo];
-      promediosPorTipo[tipo] = valores.reduce((a, b) => a + b, 0) / valores.length;
-    }
-
-    // Determinar nivel
-    let nivel = 'Bajo';
-    if (promedioGlobal >= 8) nivel = 'Muy Alto';
-    else if (promedioGlobal >= 6) nivel = 'Alto';
-    else if (promedioGlobal >= 4) nivel = 'Medio';
-
-    return {
-      promedioGlobal: promedioGlobal.toFixed(1),
-      nivel,
-      totalRiesgos: countRiesgos,
-      promediosPorTipo,
-      interpretacion: this.getInterpretacion(promedioGlobal)
-    };
+  // 3. Si no hay coincidencia, sugerir riesgos comunes genéricos
+  if (suggestedRisks.length === 0) {
+    suggestedRisks = ['Biomecánico', 'Psicosocial', 'Natural'];
   }
 
-  // ==================== Utilidades ====================
+  // Construir respuesta con nivel de confianza
+  const suggestions = suggestedRisks.map((riesgo, index) => ({
+    riesgo,
+    confidence: 95 - (index * 5), // Decreciente confidence
+    reason: `Común para el cargo: ${cargoName}`
+  }));
 
-  normalizeCargoName(name) {
-    return name
-      .toLowerCase()
-      .trim()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, ''); // Eliminar acentos
-  }
-
-  findPartialMatches(normalizedCargo) {
-    const matches = [];
-
-    for (const cargo in GES_BY_CARGO) {
-      // Buscar palabras clave
-      const cargoWords = cargo.split(' ');
-      const searchWords = normalizedCargo.split(' ');
-
-      const commonWords = cargoWords.filter(word =>
-        searchWords.some(searchWord => searchWord.includes(word) || word.includes(searchWord))
-      );
-
-      if (commonWords.length > 0) {
-        matches.push(...GES_BY_CARGO[cargo]);
-      }
-    }
-
-    // Eliminar duplicados
-    return [...new Set(matches)];
-  }
-
-  calculateConfidence(cargoName, ges) {
-    // V1: Basado en frecuencia
-    // V2: Basado en embeddings y similitud
-
-    const normalized = this.normalizeCargoName(cargoName);
-    const exactMatch = GES_BY_CARGO[normalized];
-
-    if (exactMatch && exactMatch.includes(ges)) {
-      return 95; // Alta confianza para coincidencia exacta
-    }
-
-    // Coincidencia parcial
-    return 70;
-  }
-
-  isCommonInSector(ges, sector) {
-    // Placeholder - en V2 consultar datos reales
-    return Math.random() > 0.5;
-  }
-
-  generateSuggestions(cargo, warnings) {
-    const suggestions = [];
-
-    warnings.forEach(warning => {
-      if (warning.type === 'missing_controls') {
-        suggestions.push(`Completar los controles para ${warning.riesgo}`);
-      } else if (warning.type === 'insufficient_risks') {
-        suggestions.push('Considere evaluar riesgos adicionales para este cargo');
-      }
-    });
-
-    return suggestions;
-  }
-
-  getCargoFrequency(cargo) {
-    // V1: Datos hardcoded
-    // V2: Consultar base de datos
-    const frequencies = {
-      'operario': 100,
-      'operario de producción': 85,
-      'gerente': 75,
-      'administrativo': 70,
-      'conductor': 65
-    };
-
-    return frequencies[cargo] || 50;
-  }
-
-  getInterpretacion(promedio) {
-    if (promedio >= 8) {
-      return 'Nivel de riesgo muy alto. Se requieren acciones correctivas inmediatas.';
-    } else if (promedio >= 6) {
-      return 'Nivel de riesgo alto. Se deben implementar controles prioritariamente.';
-    } else if (promedio >= 4) {
-      return 'Nivel de riesgo medio. Mejorar controles existentes.';
-    } else {
-      return 'Nivel de riesgo bajo. Mantener controles actuales.';
-    }
-  }
-
-  /**
-   * Detectar cargos similares y sugerir copiar datos
-   * @param {string} cargoName - Nombre del nuevo cargo
-   * @param {Array} existingCargos - Cargos ya completados en el wizard
-   * @returns {Object} - { hasSimilar, suggestions: [{ cargoIndex, cargoName, similarity, reason }] }
-   */
-  async detectSimilarCargo(cargoName, existingCargos) {
-    const normalizedNew = this.normalizeCargoName(cargoName);
-    const suggestions = [];
-
-    existingCargos.forEach((cargo, index) => {
-      const normalizedExisting = this.normalizeCargoName(cargo.cargoName);
-
-      // Calcular similaridad
-      const similarity = this.calculateCargoSimilarity(normalizedNew, normalizedExisting);
-
-      if (similarity >= 60) {
-        // Similar enough to suggest
-        suggestions.push({
-          cargoIndex: index,
-          cargoName: cargo.cargoName,
-          similarity,
-          reason: this.getSimilarityReason(normalizedNew, normalizedExisting, similarity),
-          cargoData: cargo // Incluir todos los datos del cargo similar
-        });
-      }
-    });
-
-    // Ordenar por similaridad descendente
-    suggestions.sort((a, b) => b.similarity - a.similarity);
-
-    return {
-      hasSimilar: suggestions.length > 0,
-      suggestions: suggestions.slice(0, 3) // Máximo 3 sugerencias
-    };
-  }
-
-  /**
-   * Calcular similaridad entre dos nombres de cargo
-   * @param {string} cargo1 - Primer cargo (normalizado)
-   * @param {string} cargo2 - Segundo cargo (normalizado)
-   * @returns {number} - Porcentaje de similaridad (0-100)
-   */
-  calculateCargoSimilarity(cargo1, cargo2) {
-    // Estrategia 1: Coincidencia exacta
-    if (cargo1 === cargo2) {
-      return 100;
-    }
-
-    // Estrategia 2: Uno contiene al otro
-    if (cargo1.includes(cargo2) || cargo2.includes(cargo1)) {
-      return 95;
-    }
-
-    // Estrategia 3: Coincidencia de palabras clave
-    const words1 = cargo1.split(' ').filter(w => w.length > 3); // Ignorar palabras cortas
-    const words2 = cargo2.split(' ').filter(w => w.length > 3);
-
-    const commonWords = words1.filter(word => words2.includes(word));
-    const totalWords = Math.max(words1.length, words2.length);
-
-    if (commonWords.length > 0 && totalWords > 0) {
-      const wordSimilarity = (commonWords.length / totalWords) * 100;
-
-      // Boost si comparten palabra principal (primera palabra)
-      if (words1[0] === words2[0]) {
-        return Math.min(wordSimilarity + 20, 90);
-      }
-
-      return wordSimilarity;
-    }
-
-    // Estrategia 4: Distancia de Levenshtein (similaridad de cadenas)
-    const distance = this.levenshteinDistance(cargo1, cargo2);
-    const maxLength = Math.max(cargo1.length, cargo2.length);
-    const similarity = ((maxLength - distance) / maxLength) * 100;
-
-    // Solo considerar si hay al menos 60% de similaridad por Levenshtein
-    return similarity >= 60 ? similarity : 0;
-  }
-
-  /**
-   * Calcular distancia de Levenshtein entre dos strings
-   */
-  levenshteinDistance(str1, str2) {
-    const matrix = [];
-
-    for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i];
-    }
-
-    for (let j = 0; j <= str1.length; j++) {
-      matrix[0][j] = j;
-    }
-
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
-          );
-        }
-      }
-    }
-
-    return matrix[str2.length][str1.length];
-  }
-
-  /**
-   * Generar razón de similaridad para mostrar al usuario
-   */
-  getSimilarityReason(_cargo1, _cargo2, similarity) {
-    if (similarity === 100) {
-      return 'Nombre idéntico';
-    } else if (similarity >= 95) {
-      return 'Nombre muy similar';
-    } else if (similarity >= 80) {
-      return 'Comparten palabras clave principales';
-    } else if (similarity >= 70) {
-      return 'Tienen funciones similares';
-    } else {
-      return 'Podrían compartir características';
-    }
-  }
+  return suggestions;
 }
 
-export const aiSuggestionsService = new AISuggestionsService();
+/**
+ * Sugerir controles para un riesgo específico
+ */
+export async function suggestControls(riesgo, ges, cargoName) {
+  // Normalizar nombre del riesgo (quitar "Riesgo " si existe)
+  const normalizedRisk = riesgo.replace(/^Riesgo\s+/, '');
+
+  const controls = CONTROLS_BY_RISK[normalizedRisk] || {
+    fuente: 'Eliminar o controlar la fuente del riesgo',
+    medio: 'Implementar barreras o controles en el medio',
+    individuo: 'EPP adecuado y capacitación específica'
+  };
+
+  return {
+    riesgo,
+    ges,
+    cargoName,
+    controles: [
+      { nivel: 'Fuente', medidas: controls.fuente },
+      { nivel: 'Medio', medidas: controls.medio },
+      { nivel: 'Individuo', medidas: controls.individuo }
+    ]
+  };
+}
+
+/**
+ * Validar consistencia de un cargo (detectar GES inusuales)
+ */
+export async function validateCargoConsistency(cargo) {
+  const { nombre, gesSeleccionados } = cargo;
+  const normalizedCargo = nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  // Buscar inconsistencias conocidas
+  const inconsistency = CARGO_INCONSISTENCIES[normalizedCargo];
+
+  if (!inconsistency) {
+    return {
+      isValid: true,
+      warnings: []
+    };
+  }
+
+  // Detectar si hay GES inusuales seleccionados
+  const warnings = [];
+  for (const ges of gesSeleccionados) {
+    if (inconsistency.unusual_risks.some(risk => ges.includes(risk))) {
+      warnings.push({
+        ges,
+        message: inconsistency.message,
+        severity: 'warning'
+      });
+    }
+  }
+
+  return {
+    isValid: warnings.length === 0,
+    warnings
+  };
+}
+
+/**
+ * Obtener benchmarks por sector
+ */
+export async function getBenchmarksBySector(sector, filters = {}) {
+  // TODO: Implementar con datos reales de BD
+  // Por ahora retornar datos mock
+  return {
+    sector,
+    avgGESPerCargo: 4.5,
+    mostCommonRisks: ['Biomecánico', 'Psicosocial', 'Natural'],
+    avgEmployeesPerCargo: 12,
+    filters
+  };
+}
+
+/**
+ * Autocompletar cargo mientras el usuario escribe
+ */
+export async function autocompleteCargo(query) {
+  const normalizedQuery = query.toLowerCase();
+
+  // Buscar cargos que empiecen con o contengan el query
+  const matches = Object.keys(GES_BY_CARGO)
+    .filter(cargo => cargo.includes(normalizedQuery))
+    .slice(0, 5); // Limitar a 5 sugerencias
+
+  return matches.map(cargo => ({
+    value: cargo,
+    label: cargo.charAt(0).toUpperCase() + cargo.slice(1)
+  }));
+}
+
+/**
+ * Calcular nivel de riesgo global de un diagnóstico
+ */
+export async function calculateRiskScore(cargos) {
+  // Cálculo simplificado: promedio de GES por cargo
+  const totalGES = cargos.reduce((sum, cargo) => sum + (cargo.gesSeleccionados?.length || 0), 0);
+  const avgGES = cargos.length > 0 ? totalGES / cargos.length : 0;
+
+  // Clasificar riesgo
+  let riskLevel = 'Bajo';
+  if (avgGES > 6) riskLevel = 'Alto';
+  else if (avgGES > 3) riskLevel = 'Medio';
+
+  return {
+    totalCargos: cargos.length,
+    totalGES,
+    avgGES: avgGES.toFixed(1),
+    riskLevel,
+    recommendations: [
+      'Implementar controles en fuente, medio e individuo',
+      'Capacitar al personal en los riesgos identificados',
+      'Realizar seguimiento y monitoreo periódico'
+    ]
+  };
+}
+
+/**
+ * Detectar cargos similares y sugerir copiar datos
+ */
+export async function detectSimilarCargo(cargoName, existingCargos) {
+  const normalizedNew = cargoName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const similarities = existingCargos.map(cargo => {
+    const normalizedExisting = cargo.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    // Calcular similitud simple (Jaccard)
+    const words1 = normalizedNew.split(' ');
+    const words2 = normalizedExisting.split(' ');
+    const intersection = words1.filter(w => words2.includes(w)).length;
+    const union = new Set([...words1, ...words2]).size;
+    const similarity = union > 0 ? (intersection / union) * 100 : 0;
+
+    return {
+      cargo,
+      similarity: Math.round(similarity)
+    };
+  });
+
+  // Filtrar solo cargos con similitud > 50%
+  const similar = similarities.filter(s => s.similarity > 50);
+
+  if (similar.length === 0) {
+    return {
+      hasSimilar: false,
+      suggestions: []
+    };
+  }
+
+  // Ordenar por similitud descendente
+  similar.sort((a, b) => b.similarity - a.similarity);
+
+  return {
+    hasSimilar: true,
+    suggestions: similar.slice(0, 3).map(s => ({
+      cargoId: s.cargo.id,
+      cargoName: s.cargo.nombre,
+      similarity: s.similarity,
+      gesCount: s.cargo.gesSeleccionados?.length || 0
+    }))
+  };
+}
+
+export const aiSuggestionsService = {
+  suggestGESForCargo,
+  suggestControls,
+  validateCargoConsistency,
+  getBenchmarksBySector,
+  autocompleteCargo,
+  calculateRiskScore,
+  detectSimilarCargo
+};

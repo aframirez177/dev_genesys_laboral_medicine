@@ -1,6 +1,82 @@
 // server/src/controllers/documentos.controller.js
 import db from '../config/database.js';
 
+/**
+ * Obtener documentos por empresa_id (para dashboard)
+ * GET /api/documentos/empresa/:empresaId
+ */
+export const getDocumentsByEmpresa = async (req, res) => {
+    const { empresaId } = req.params;
+
+    if (!empresaId) {
+        return res.status(400).json({
+            success: false,
+            message: 'empresa_id es requerido'
+        });
+    }
+
+    try {
+        const documentos = await db('documentos_generados')
+            .select(
+                'documentos_generados.*',
+                'empresas.nombre_legal as nombreEmpresa',
+                'empresas.nit as nitEmpresa'
+            )
+            .leftJoin('empresas', 'documentos_generados.empresa_id', 'empresas.id')
+            .where('documentos_generados.empresa_id', empresaId)
+            .orderBy('documentos_generados.created_at', 'desc')
+            .limit(50);
+
+        // Parsear preview_urls y metadata para cada documento
+        const parsedDocuments = documentos.map(doc => {
+            let preview_urls = {};
+            let metadata = {};
+
+            if (doc.preview_urls) {
+                try {
+                    preview_urls = typeof doc.preview_urls === 'string'
+                        ? JSON.parse(doc.preview_urls)
+                        : doc.preview_urls;
+                } catch (e) {
+                    console.error('Error parseando preview_urls:', e);
+                }
+            }
+
+            // Construir metadata desde campos del documento
+            metadata = {
+                nombreEmpresa: doc.nombreEmpresa || 'N/A',
+                nitEmpresa: doc.nitEmpresa || 'N/A',
+                numCargos: doc.num_cargos || 0,
+                nombreResponsable: doc.nombre_responsable || 'N/A',
+                fechaGeneracion: doc.created_at,
+                pricing: doc.pricing || {}
+            };
+
+            return {
+                id: doc.id,
+                token_acceso: doc.token,
+                estado: doc.estado,
+                preview_urls,
+                metadata,
+                created_at: doc.created_at
+            };
+        });
+
+        res.json({
+            success: true,
+            documents: parsedDocuments,
+            count: parsedDocuments.length
+        });
+
+    } catch (error) {
+        console.error('Error obteniendo documentos por empresa:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor'
+        });
+    }
+};
+
 export const getDocumentStatus = async (req, res) => {
     const { token } = req.params;
 

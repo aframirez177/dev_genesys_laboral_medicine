@@ -1,0 +1,588 @@
+// ===========================================
+// DASHBOARD PREMIUM - BATERÍA PSICOSOCIAL
+// Sprint 6 - Fase B - Tarea 8.A
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// PSICOSOCIAL PAGE HEADER
+// =====================
+.psico-header {
+    @include tokens.flex-between;
+    margin-bottom: tokens.$space-6;
+    flex-wrap: wrap;
+    gap: tokens.$space-4;
+
+    &__title-group {
+        flex: 1;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-1 0;
+    }
+
+    &__subtitle {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__actions {
+        display: flex;
+        gap: tokens.$space-3;
+    }
+}
+
+// =====================
+// RISK LEVEL SUMMARY
+// =====================
+.psico-summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: tokens.$space-4;
+    margin-bottom: tokens.$space-8;
+
+    &__card {
+        @include tokens.card-base;
+        padding: tokens.$space-5;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        &--sin-riesgo::before { background: #10b981; }
+        &--bajo::before { background: #84cc16; }
+        &--medio::before { background: #f59e0b; }
+        &--alto::before { background: #f97316; }
+        &--muy-alto::before { background: #ef4444; }
+    }
+
+    &__value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h1;
+        font-weight: tokens.$font-bold;
+        line-height: tokens.$leading-tight;
+
+        &--sin-riesgo { color: #10b981; }
+        &--bajo { color: #84cc16; }
+        &--medio { color: #f59e0b; }
+        &--alto { color: #f97316; }
+        &--muy-alto { color: #ef4444; }
+    }
+
+    &__label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+
+    &__percentage {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-2;
+    }
+}
+
+// =====================
+// DIMENSION CARDS
+// =====================
+.psico-dimensions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: tokens.$space-6;
+    margin-bottom: tokens.$space-8;
+}
+
+.dimension-card {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__score {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+    }
+
+    &__score-value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+    }
+
+    &__domains {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-4;
+    }
+}
+
+.domain-item {
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__name {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+    }
+
+    &__value {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+    }
+
+    &__bar {
+        height: 10px;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-full;
+        overflow: hidden;
+        display: flex;
+    }
+
+    &__segment {
+        height: 100%;
+        transition: width tokens.$transition-slow;
+
+        &--sin-riesgo { background: #10b981; }
+        &--bajo { background: #84cc16; }
+        &--medio { background: #f59e0b; }
+        &--alto { background: #f97316; }
+        &--muy-alto { background: #ef4444; }
+    }
+
+    &__legend {
+        display: flex;
+        justify-content: space-between;
+        margin-top: tokens.$space-2;
+    }
+
+    &__legend-item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-1;
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+
+        &--sin-riesgo { background: #10b981; }
+        &--bajo { background: #84cc16; }
+        &--medio { background: #f59e0b; }
+        &--alto { background: #f97316; }
+        &--muy-alto { background: #ef4444; }
+    }
+}
+
+// =====================
+// STRESS FACTORS
+// =====================
+.stress-factors {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+    margin-bottom: tokens.$space-8;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-6;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: tokens.$space-4;
+    }
+}
+
+.factor-card {
+    padding: tokens.$space-4;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-lg;
+    border-left: 4px solid;
+
+    &--bajo { border-left-color: #10b981; }
+    &--medio { border-left-color: #f59e0b; }
+    &--alto { border-left-color: #ef4444; }
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__name {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__description {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        margin-bottom: tokens.$space-3;
+        line-height: tokens.$leading-relaxed;
+    }
+
+    &__meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+// =====================
+// INTERVENTION PLANS
+// =====================
+.intervention-section {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+    margin-bottom: tokens.$space-8;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-6;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-4;
+    }
+}
+
+.intervention-item {
+    display: flex;
+    gap: tokens.$space-4;
+    padding: tokens.$space-4;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-lg;
+
+    &__priority {
+        width: 48px;
+        height: 48px;
+        border-radius: tokens.$radius-lg;
+        @include tokens.flex-center;
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-bold;
+        flex-shrink: 0;
+
+        &--high {
+            background: rgba(tokens.$dashboard-danger, 0.1);
+            color: tokens.$dashboard-danger;
+        }
+
+        &--medium {
+            background: rgba(tokens.$dashboard-warning, 0.1);
+            color: tokens.$dashboard-warning;
+        }
+
+        &--low {
+            background: rgba(tokens.$dashboard-success, 0.1);
+            color: tokens.$dashboard-success;
+        }
+    }
+
+    &__content {
+        flex: 1;
+    }
+
+    &__title {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin-bottom: tokens.$space-1;
+    }
+
+    &__description {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        margin-bottom: tokens.$space-3;
+    }
+
+    &__meta {
+        display: flex;
+        gap: tokens.$space-4;
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__progress {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        margin-top: tokens.$space-2;
+
+        &-bar {
+            flex: 1;
+            height: 6px;
+            background: tokens.$dashboard-white;
+            border-radius: tokens.$radius-full;
+            overflow: hidden;
+        }
+
+        &-fill {
+            height: 100%;
+            background: tokens.$dashboard-primary;
+            border-radius: tokens.$radius-full;
+        }
+
+        &-value {
+            font-size: tokens.$font-xs;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-primary;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-2;
+        flex-shrink: 0;
+    }
+}
+
+// =====================
+// EVALUATION HISTORY
+// =====================
+.evaluation-history {
+    @include tokens.card-base;
+    padding: 0;
+    overflow: hidden;
+
+    &__header {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-bottom: 1px solid tokens.$header-border;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th {
+            padding: tokens.$space-3 tokens.$space-4;
+            background: tokens.$dashboard-background;
+            font-size: tokens.$font-small;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-text-light;
+            text-align: left;
+        }
+
+        td {
+            padding: tokens.$space-3 tokens.$space-4;
+            font-size: tokens.$font-body;
+            color: tokens.$dashboard-text;
+            border-bottom: 1px solid tokens.$header-border;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(tokens.$dashboard-primary, 0.02);
+        }
+    }
+
+    &__trend {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-1;
+        font-size: tokens.$font-small;
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        &--up {
+            color: tokens.$dashboard-danger;
+        }
+
+        &--down {
+            color: tokens.$dashboard-success;
+        }
+
+        &--stable {
+            color: tokens.$dashboard-text-light;
+        }
+    }
+}
+
+// =====================
+// RECOMMENDATIONS AI
+// =====================
+.psico-recommendations {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+    background: linear-gradient(135deg, rgba(tokens.$dashboard-ai-purple, 0.05) 0%, rgba(tokens.$dashboard-primary, 0.05) 100%);
+    border: 1px solid rgba(tokens.$dashboard-ai-purple, 0.1);
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-ai-purple;
+        margin: 0;
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-3;
+    }
+
+    &__item {
+        display: flex;
+        gap: tokens.$space-3;
+        padding: tokens.$space-4;
+        background: tokens.$dashboard-white;
+        border-radius: tokens.$radius-md;
+        border-left: 3px solid tokens.$dashboard-ai-purple;
+    }
+
+    &__item-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(tokens.$dashboard-ai-purple, 0.1);
+        @include tokens.flex-center;
+        flex-shrink: 0;
+
+        svg {
+            width: 18px;
+            height: 18px;
+            color: tokens.$dashboard-ai-purple;
+        }
+    }
+
+    &__item-content {
+        flex: 1;
+    }
+
+    &__item-title {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin-bottom: tokens.$space-1;
+    }
+
+    &__item-text {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        line-height: tokens.$leading-relaxed;
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('laptop') {
+    .psico-summary {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .psico-dimensions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@include tokens.respond-to('tablet') {
+    .psico-summary {
+        grid-template-columns: repeat(2, 1fr);
+
+        &__value {
+            font-size: tokens.$font-h2;
+        }
+    }
+
+    .stress-factors__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .intervention-item {
+        flex-direction: column;
+
+        &__actions {
+            flex-direction: row;
+            width: 100%;
+        }
+    }
+
+    .evaluation-history {
+        overflow-x: auto;
+
+        &__table {
+            min-width: 600px;
+        }
+    }
+}
+

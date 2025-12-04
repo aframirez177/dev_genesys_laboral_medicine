@@ -1,0 +1,708 @@
+// ===========================================
+// DASHBOARD PREMIUM - PANEL MÉDICO
+// Sprint 6 - Fase B - Tarea 10.A
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// MEDICAL PANEL HEADER
+// =====================
+.medical-header {
+    @include tokens.flex-between;
+    margin-bottom: tokens.$space-6;
+    flex-wrap: wrap;
+    gap: tokens.$space-4;
+
+    &__title-group {
+        flex: 1;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-1 0;
+    }
+
+    &__subtitle {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__actions {
+        display: flex;
+        gap: tokens.$space-3;
+    }
+}
+
+// =====================
+// QUEUE SUMMARY
+// =====================
+.queue-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: tokens.$space-4;
+    margin-bottom: tokens.$space-8;
+
+    &__card {
+        @include tokens.card-base;
+        padding: tokens.$space-5;
+        cursor: pointer;
+        @include tokens.card-hover;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+
+        &--pending::before { background: tokens.$dashboard-warning; }
+        &--in-progress::before { background: tokens.$dashboard-info; }
+        &--completed::before { background: tokens.$dashboard-success; }
+        &--cancelled::before { background: tokens.$dashboard-text-light; }
+
+        &.active {
+            box-shadow: tokens.$shadow-lg;
+        }
+    }
+
+    &__icon {
+        width: 48px;
+        height: 48px;
+        border-radius: tokens.$radius-lg;
+        @include tokens.flex-center;
+        margin-bottom: tokens.$space-3;
+
+        svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        &--pending {
+            background: rgba(tokens.$dashboard-warning, 0.1);
+            color: tokens.$dashboard-warning;
+        }
+
+        &--in-progress {
+            background: rgba(tokens.$dashboard-info, 0.1);
+            color: tokens.$dashboard-info;
+        }
+
+        &--completed {
+            background: rgba(tokens.$dashboard-success, 0.1);
+            color: tokens.$dashboard-success;
+        }
+
+        &--cancelled {
+            background: rgba(tokens.$dashboard-text-light, 0.1);
+            color: tokens.$dashboard-text-light;
+        }
+    }
+
+    &__value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h1;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        line-height: tokens.$leading-tight;
+    }
+
+    &__label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+}
+
+// =====================
+// PATIENT QUEUE
+// =====================
+.patient-queue {
+    @include tokens.card-base;
+    overflow: hidden;
+    margin-bottom: tokens.$space-8;
+
+    &__header {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-bottom: 1px solid tokens.$header-border;
+        background: tokens.$dashboard-background;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__filters {
+        display: flex;
+        gap: tokens.$space-2;
+    }
+
+    &__list {
+        max-height: 500px;
+        overflow-y: auto;
+        @include tokens.custom-scrollbar;
+    }
+}
+
+.patient-item {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-4;
+    padding: tokens.$space-4 tokens.$space-6;
+    border-bottom: 1px solid tokens.$header-border;
+    transition: background tokens.$transition-fast;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        background: rgba(tokens.$dashboard-primary, 0.02);
+    }
+
+    &--urgent {
+        background: rgba(tokens.$dashboard-danger, 0.03);
+        border-left: 3px solid tokens.$dashboard-danger;
+    }
+
+    &__number {
+        width: 40px;
+        height: 40px;
+        border-radius: tokens.$radius-md;
+        background: tokens.$dashboard-background;
+        @include tokens.flex-center;
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        flex-shrink: 0;
+    }
+
+    &__avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: tokens.$radius-lg;
+        background: tokens.$dashboard-primary;
+        @include tokens.flex-center;
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        flex-shrink: 0;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-text;
+        @include tokens.text-truncate;
+    }
+
+    &__meta {
+        display: flex;
+        gap: tokens.$space-3;
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+
+    &__exam {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text;
+
+        &-type {
+            font-weight: tokens.$font-medium;
+        }
+    }
+
+    &__time {
+        text-align: right;
+        flex-shrink: 0;
+
+        &-value {
+            font-family: tokens.$font-family-title;
+            font-size: tokens.$font-body;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-secondary;
+        }
+
+        &-label {
+            font-size: tokens.$font-xs;
+            color: tokens.$dashboard-text-light;
+        }
+    }
+
+    &__status {
+        flex-shrink: 0;
+    }
+
+    &__actions {
+        display: flex;
+        gap: tokens.$space-2;
+        flex-shrink: 0;
+    }
+}
+
+// =====================
+// EXAM FORM PANEL
+// =====================
+.exam-form-panel {
+    @include tokens.card-base;
+    padding: 0;
+    overflow: hidden;
+
+    &__header {
+        @include tokens.flex-between;
+        padding: tokens.$space-6;
+        border-bottom: 1px solid tokens.$header-border;
+        background: tokens.$dashboard-primary;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__patient-info {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-4;
+    }
+
+    &__patient-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: tokens.$radius-lg;
+        background: rgba(0, 0, 0, 0.1);
+        @include tokens.flex-center;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+    }
+
+    &__patient-details {
+        h3 {
+            margin: 0 0 tokens.$space-1 0;
+            font-family: tokens.$font-family-title;
+            font-size: tokens.$font-h3;
+            font-weight: tokens.$font-bold;
+        }
+
+        p {
+            margin: 0;
+            font-size: tokens.$font-body;
+            opacity: 0.9;
+        }
+    }
+
+    &__tabs {
+        display: flex;
+        border-bottom: 1px solid tokens.$header-border;
+        background: tokens.$dashboard-background;
+    }
+
+    &__tab {
+        padding: tokens.$space-4 tokens.$space-6;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text-light;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        transition: all tokens.$transition-normal;
+
+        &:hover {
+            color: tokens.$dashboard-text;
+        }
+
+        &.active {
+            color: tokens.$dashboard-primary;
+            border-bottom-color: tokens.$dashboard-primary;
+            background: tokens.$dashboard-white;
+        }
+    }
+
+    &__body {
+        padding: tokens.$space-6;
+        max-height: 60vh;
+        overflow-y: auto;
+        @include tokens.custom-scrollbar;
+    }
+
+    &__section {
+        margin-bottom: tokens.$space-6;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__section-title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-4 0;
+        padding-bottom: tokens.$space-2;
+        border-bottom: 1px solid tokens.$header-border;
+    }
+
+    &__footer {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-top: 1px solid tokens.$header-border;
+        background: tokens.$dashboard-background;
+    }
+}
+
+// =====================
+// VITALS GRID
+// =====================
+.vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: tokens.$space-4;
+}
+
+.vital-input {
+    &__label {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text-light;
+        margin-bottom: tokens.$space-2;
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    &__field {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+    }
+
+    &__input {
+        flex: 1;
+        height: 40px;
+        padding: 0 tokens.$space-3;
+        background: tokens.$dashboard-background;
+        border: 1px solid tokens.$header-border;
+        border-radius: tokens.$radius-md;
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        text-align: center;
+        font-weight: tokens.$font-semibold;
+
+        &:focus {
+            outline: none;
+            border-color: tokens.$dashboard-primary;
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.1);
+        }
+    }
+
+    &__unit {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        min-width: 40px;
+    }
+
+    &__status {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+
+        &--normal { background: tokens.$dashboard-success; }
+        &--warning { background: tokens.$dashboard-warning; }
+        &--danger { background: tokens.$dashboard-danger; }
+    }
+}
+
+// =====================
+// MEDICAL HISTORY
+// =====================
+.medical-history {
+    &__timeline {
+        position: relative;
+        padding-left: tokens.$space-8;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: tokens.$header-border;
+        }
+    }
+
+    &__item {
+        position: relative;
+        padding-bottom: tokens.$space-4;
+
+        &:last-child {
+            padding-bottom: 0;
+        }
+    }
+
+    &__dot {
+        position: absolute;
+        left: -29px;
+        top: 4px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: tokens.$dashboard-primary;
+        border: 2px solid tokens.$dashboard-white;
+    }
+
+    &__date {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-bottom: tokens.$space-1;
+    }
+
+    &__content {
+        background: tokens.$dashboard-background;
+        padding: tokens.$space-3;
+        border-radius: tokens.$radius-md;
+    }
+
+    &__title {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+        margin-bottom: tokens.$space-1;
+    }
+
+    &__description {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: tokens.$space-2;
+        margin-top: tokens.$space-2;
+    }
+}
+
+// =====================
+// RECOMMENDATIONS
+// =====================
+.recommendations-section {
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-3;
+    }
+}
+
+.recommendation-item {
+    display: flex;
+    gap: tokens.$space-3;
+    padding: tokens.$space-4;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-lg;
+
+    &__checkbox {
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    &__content {
+        flex: 1;
+    }
+
+    &__title {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+        margin-bottom: tokens.$space-1;
+    }
+
+    &__description {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__category {
+        flex-shrink: 0;
+    }
+}
+
+// =====================
+// EXAM CERTIFICATE
+// =====================
+.certificate-preview {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+    background: tokens.$dashboard-white;
+    border: 1px solid tokens.$header-border;
+
+    &__header {
+        text-align: center;
+        padding-bottom: tokens.$space-4;
+        border-bottom: 2px solid tokens.$dashboard-secondary;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__logo {
+        max-height: 60px;
+        margin-bottom: tokens.$space-3;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        text-transform: uppercase;
+    }
+
+    &__body {
+        line-height: tokens.$leading-relaxed;
+    }
+
+    &__field {
+        margin-bottom: tokens.$space-3;
+
+        &-label {
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-secondary;
+        }
+
+        &-value {
+            color: tokens.$dashboard-text;
+        }
+    }
+
+    &__result {
+        text-align: center;
+        padding: tokens.$space-6;
+        margin: tokens.$space-4 0;
+        border: 2px solid;
+        border-radius: tokens.$radius-lg;
+
+        &--apto {
+            border-color: tokens.$dashboard-success;
+            background: rgba(tokens.$dashboard-success, 0.05);
+        }
+
+        &--no-apto {
+            border-color: tokens.$dashboard-danger;
+            background: rgba(tokens.$dashboard-danger, 0.05);
+        }
+
+        &--restricciones {
+            border-color: tokens.$dashboard-warning;
+            background: rgba(tokens.$dashboard-warning, 0.05);
+        }
+
+        &-text {
+            font-family: tokens.$font-family-title;
+            font-size: tokens.$font-h2;
+            font-weight: tokens.$font-bold;
+            text-transform: uppercase;
+        }
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: space-between;
+        padding-top: tokens.$space-6;
+        margin-top: tokens.$space-6;
+        border-top: 1px solid tokens.$header-border;
+    }
+
+    &__signature {
+        text-align: center;
+
+        &-line {
+            width: 200px;
+            height: 1px;
+            background: tokens.$dashboard-secondary;
+            margin-bottom: tokens.$space-2;
+        }
+
+        &-name {
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-secondary;
+        }
+
+        &-title {
+            font-size: tokens.$font-small;
+            color: tokens.$dashboard-text-light;
+        }
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('laptop') {
+    .queue-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .exam-form-panel__tabs {
+        overflow-x: auto;
+        @include tokens.hide-scrollbar;
+    }
+}
+
+@include tokens.respond-to('tablet') {
+    .queue-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .patient-item {
+        flex-wrap: wrap;
+
+        &__exam {
+            width: 100%;
+            margin-top: tokens.$space-2;
+        }
+
+        &__time {
+            text-align: left;
+        }
+    }
+
+    .vitals-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .certificate-preview__footer {
+        flex-direction: column;
+        gap: tokens.$space-6;
+        align-items: center;
+    }
+}
+

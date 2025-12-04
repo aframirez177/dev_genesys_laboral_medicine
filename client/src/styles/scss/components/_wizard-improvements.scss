@@ -1,0 +1,495 @@
+/**
+ * _wizard-improvements.scss - Mejoras UX del Wizard de Riesgos
+ *
+ * FASE 1-3 Implementaciones:
+ * - Logo simple en lugar de header completo
+ * - Layout 2 columnas para desktop (info básica)
+ * - Tamaños más compactos en desktop
+ * - Sistema de tooltips con Floating-UI
+ *
+ * Sigue design system Genesys: sin gradientes, colores sólidos, iconos FontAwesome
+ */
+
+@use "sass:map";
+@use "sass:color";
+@use "../base/variables";
+@use "../base/mixins";
+
+// ============================================================================
+// FASE 1: LOGO SIMPLE EN BARRA (Reemplaza header completo)
+// ============================================================================
+
+.wizard-logo-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: linear-gradient(135deg, #f3f0f0, #f8f6f6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: map.get(variables.$spacing, 'sm') map.get(variables.$spacing, 'md'); // 16px 24px
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  @include mixins.respond-to('mobile') {
+    padding: map.get(variables.$spacing, 'xs') map.get(variables.$spacing, 'sm'); // 8px 16px
+  }
+}
+
+.wizard-logo-link {
+  display: inline-flex;
+  align-items: center;
+  transition: opacity map.get(variables.$transitions, 'base');
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid map.get(variables.$colors, 'primary');
+    outline-offset: 4px;
+    border-radius: map.get(variables.$radius, 'sm');
+  }
+}
+
+.wizard-logo {
+  height: 36px;
+  width: auto;
+
+  @include mixins.respond-to('mobile') {
+    height: 28px;
+  }
+}
+
+// Ajustar padding-top del wizard-page para compensar logo fijo
+/* .wizard-page {
+  padding-top: calc(36px + map.get(variables.$spacing, 'md') * 2); // Logo height + padding vertical
+
+  @include mixins.respond-to('mobile') {
+    padding-top: calc(28px + map.get(variables.$spacing, 'xs') * 2);
+  }
+} */
+
+// ============================================================================
+// FASE 2: LAYOUT 2 COLUMNAS DESKTOP + TAMAÑOS COMPACTOS
+// ============================================================================
+
+// Variables de tamaño desktop (más compactos)
+$desktop-adjustments: (
+  'font-base': 1.4rem,      // was 1.6rem
+  'heading-1': 2.8rem,      // was 3.2rem
+  'heading-2': 2.2rem,      // was 2.6rem
+  'heading-3': 1.8rem,      // was 2rem
+  'spacing-compact': 1.6rem,    // was 2rem
+  'gap-compact': 2rem,          // was 2.4rem
+  'padding-compact': 2.4rem,    // was 3.2rem
+  'input-padding': 1rem 1.4rem, // was 1.2rem 1.6rem
+);
+
+// Grid 2 columnas para info básica en desktop
+.wizard-form-grid {
+  display: grid;
+  grid-template-columns: 1fr; // Mobile first
+  gap: map.get(variables.$spacing, 'md'); // 24px
+  padding: 3rem;
+
+  @include mixins.respond-to('mobile') {
+    gap: map.get(variables.$spacing, 'sm'); // 16px en mobile
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: map.get($desktop-adjustments, 'gap-compact'); // 20px en desktop
+  }
+}
+
+// Elementos que ocupan ancho completo (nombre, descripción larga)
+.form-group--full-width {
+  grid-column: 1 / -1;
+}
+
+// Ajustes de tamaño en desktop
+@media (min-width: 1024px) {
+  .wizard-step {
+    font-size: map.get($desktop-adjustments, 'font-base');
+    padding: map.get($desktop-adjustments, 'padding-compact');
+
+    h1, h2 {
+      font-size: map.get($desktop-adjustments, 'heading-1');
+      margin-bottom: map.get($desktop-adjustments, 'spacing-compact');
+    }
+
+    h3 {
+      font-size: map.get($desktop-adjustments, 'heading-2');
+      margin-bottom: 1.2rem;
+    }
+
+    h4 {
+      font-size: map.get($desktop-adjustments, 'heading-3');
+    }
+
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      padding: 1rem 1.4rem; // Más compacto
+      font-size: map.get($desktop-adjustments, 'font-base');
+    }
+
+    label {
+      font-size: map.get($desktop-adjustments, 'font-base');
+      margin-bottom: 0.8rem;
+    }
+
+    button {
+      padding: 1rem 1rem; // Más compacto
+      font-size: 1.5rem;
+    }
+  }
+
+  // Progress bar también más compacto
+  .wizard-progress .wizard-progress-steps {
+    padding: 1.2rem 2rem; // was 1.5rem 2rem
+    gap: 1.6rem; // was 2rem
+  }
+
+  .wizard-progress-step {
+    width: 32px;   // was 36px
+    height: 32px;  // was 36px
+    font-size: 1.3rem;
+  }
+
+  // Modales también más compactos en desktop
+  .wizard-resume-modal .modal-content,
+  .wizard-confirm-modal .modal-content {
+    padding: 2.8rem; // was 3.2rem
+  }
+}
+
+// ============================================================================
+// FASE 3: SISTEMA DE TOOLTIPS CON FLOATING-UI
+// ============================================================================
+
+.wizard-help-tooltip {
+  position: absolute;
+  background: color.adjust(map.get(variables.$colors, 'secondary'), $lightness: -5%);
+  color: white;
+  padding: 1.2rem 1.6rem; // Más padding
+  border-radius: map.get(variables.$radius, 'lg'); // Más redondeado
+  font-size: 1.4rem; // Texto más grande
+  font-weight: 500; // Más peso
+  line-height: 1.6; // Más espaciado entre líneas
+  max-width: 300px;
+  z-index: 10002;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15); // Sombra dramática
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(0.95); // Efecto de entrada
+
+  &[data-show] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+  }
+
+  // Arrow (creado con Floating-UI) - más grande
+  &::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent; // Más grande
+  }
+
+  &[data-popper-placement^='top']::before {
+    bottom: -16px;
+    border-top-color: color.adjust(map.get(variables.$colors, 'secondary'), $lightness: -5%);
+  }
+
+  &[data-popper-placement^='bottom']::before {
+    top: -16px;
+    border-bottom-color: color.adjust(map.get(variables.$colors, 'secondary'), $lightness: -5%);
+  }
+
+  &[data-popper-placement^='left']::before {
+    right: -16px;
+    border-left-color: color.adjust(map.get(variables.$colors, 'secondary'), $lightness: -5%);
+  }
+
+  &[data-popper-placement^='right']::before {
+    left: -16px;
+    border-right-color: color.adjust(map.get(variables.$colors, 'secondary'), $lightness: -5%);
+  }
+}
+
+// Botón de ayuda con icono - REDISEÑADO
+.wizard-help-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px; // Más grande (was 20px)
+  height: 24px; // Más grande (was 20px)
+  border-radius: 50%;
+  background: rgba(map.get(variables.$colors, 'primary'), 0.1); // Fondo sutil colorido
+  border: none; // Sin borde para look más moderno
+  color: map.get(variables.$colors, 'primary');
+  cursor: help;
+  margin-left: 0.8rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); // Transición suave
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); // Sombra sutil
+
+  i {
+    font-size: 1.4rem; // Icono más grande (was 1.1rem)
+  }
+
+  &:hover {
+    background: map.get(variables.$colors, 'primary');
+    color: white;
+    transform: scale(1.15); // Más zoom (was 1.1)
+    box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.35); // Sombra colorida en hover
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(map.get(variables.$colors, 'primary'), 0.3); // Outline más grueso y translúcido
+    outline-offset: 3px;
+  }
+
+  &:active {
+    transform: scale(1.05); // Efecto de click
+  }
+}
+
+// Labels con help icon
+.form-label-with-help {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem; // Más espacio para el nuevo tamaño de icono
+}
+
+// ============================================================================
+// FASE 3: DROPDOWN MEJORADO CON FLOATING-UI
+// ============================================================================
+
+.wizard-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.wizard-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.6rem;
+  background: white;
+  border: 2px solid map.get(variables.$colors, 'input-border');
+  border-radius: map.get(variables.$radius, 'md');
+  font-size: 1.4rem;
+  color: map.get(variables.$colors, 'text');
+  cursor: pointer;
+  transition: all map.get(variables.$transitions, 'base');
+  width: 100%;
+  justify-content: space-between;
+
+  &:hover {
+    border-color: map.get(variables.$colors, 'primary');
+    background: color.adjust(map.get(variables.$colors, 'background'), $lightness: 2%);
+  }
+
+  &[aria-expanded="true"] {
+    border-color: map.get(variables.$colors, 'primary');
+    box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'primary'), 0.1);
+  }
+
+  i.chevron {
+    transition: transform map.get(variables.$transitions, 'fast');
+    font-size: 1.2rem;
+    color: #999;
+  }
+
+  &[aria-expanded="true"] i.chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.wizard-dropdown-panel {
+  position: absolute;
+  background: white;
+  border: 2px solid map.get(variables.$colors, 'primary');
+  border-radius: map.get(variables.$radius, 'md');
+  box-shadow: map.get(variables.$shadows, 'xl');
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10003;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity map.get(variables.$transitions, 'fast');
+  min-width: 100%;
+
+  &[data-show] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  // Scroll personalizado
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: map.get(variables.$colors, 'background');
+    border-radius: map.get(variables.$radius, 'sm');
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: map.get(variables.$radius, 'sm');
+
+    &:hover {
+      background: #aaa;
+    }
+  }
+}
+
+.wizard-dropdown-search {
+  padding: 1rem;
+  border-bottom: 1px solid map.get(variables.$colors, 'border-color');
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+
+  input {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    border: 1px solid map.get(variables.$colors, 'input-border');
+    border-radius: map.get(variables.$radius, 'sm');
+    font-size: 1.3rem;
+
+    &:focus {
+      outline: 2px solid map.get(variables.$colors, 'primary');
+      outline-offset: -2px;
+      border-color: map.get(variables.$colors, 'primary');
+    }
+  }
+}
+
+.wizard-dropdown-options {
+  list-style: none;
+  padding: 0.4rem;
+  margin: 0;
+}
+
+.wizard-dropdown-option {
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  border-radius: map.get(variables.$radius, 'sm');
+  font-size: 1.4rem;
+  color: map.get(variables.$colors, 'text');
+  transition: all map.get(variables.$transitions, 'fast');
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  &:hover {
+    background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 45%);
+  }
+
+  &[aria-selected="true"] {
+    background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: 40%);
+    color: map.get(variables.$colors, 'text-primary-accessible');
+    font-weight: 600;
+
+    &::before {
+      content: '\f00c'; // FontAwesome check
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      color: map.get(variables.$colors, 'primary');
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid map.get(variables.$colors, 'primary');
+    outline-offset: -2px;
+  }
+}
+
+.wizard-dropdown-empty {
+  padding: 2rem;
+  text-align: center;
+  color: #999;
+  font-size: 1.3rem;
+  font-style: italic;
+}
+
+// ============================================================================
+// HELPER: ICONOS EN LUGAR DE EMOJIS (FontAwesome)
+// ============================================================================
+
+.wizard-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; // Más grande (was 24px)
+  height: 28px; // Más grande (was 24px)
+  font-size: 2rem; // Icono más grande (was 1.6rem)
+
+  &--primary {
+    color: map.get(variables.$colors, 'primary');
+  }
+
+  &--success {
+    color: map.get(variables.$colors, 'success');
+  }
+
+  &--warning {
+    color: map.get(variables.$colors, 'atention');
+  }
+
+  &--danger {
+    color: map.get(variables.$colors, 'danger');
+  }
+
+  &--large {
+    width: 36px; // Más grande (was 32px)
+    height: 36px; // Más grande (was 32px)
+    font-size: 2.8rem; // Más grande (was 2.4rem)
+  }
+
+  &--small {
+    width: 16px;
+    height: 16px;
+    font-size: 1.2rem;
+  }
+}
+
+// ============================================================================
+// RESPONSIVE ADJUSTMENTS
+// ============================================================================
+
+// Tablet (768px - 1023px)
+@media (min-width: 768px) and (max-width: 1023px) {
+  .wizard-step {
+    padding: 2.8rem; // Intermedio entre mobile y desktop
+  }
+
+  .wizard-form-grid {
+    gap: 2.2rem;
+  }
+}
+
+// Mobile landscape
+@media (max-width: 767px) and (orientation: landscape) {
+  .wizard-logo-bar {
+    padding: 0.6rem 1.2rem; // Extra compacto en landscape
+  }
+
+  .wizard-logo {
+    height: 24px;
+  }
+
+  .wizard-page {
+    padding-top: calc(24px + 0.6rem * 2);
+  }
+}

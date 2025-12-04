@@ -1,0 +1,580 @@
+@use "sass:map";
+@use "../base/variables";
+@use "../base/mixins";
+
+// ========================================
+// 🖥️ OPTIMIZACIONES DESKTOP-FIRST
+// ========================================
+// Quick Wins de auditoría UX (2025-11-24)
+// Desktop-first approach para wizard GTC-45
+
+// ========================================
+// QUICK WIN #2: EXPANDIR VIEWPORT DESKTOP
+// ========================================
+// ROI: +40% eficiencia, 90% contenido visible sin scroll
+
+@media (min-width: 1024px) {
+  .wizard-container {
+    // Layout desktop sin grid por defecto
+    max-width: 1400px; // Aumentar para desktop
+    margin: 0 auto;
+    padding: 32px 48px;
+
+    // SOLO activar grid si existe el sidebar
+    &:has(.wizard-summary-bubble) {
+      display: grid;
+      grid-template-columns: 1fr 320px; // Main content + sidebar
+      gap: 32px;
+    }
+  }
+
+  .wizard-step {
+    max-width: 100%; // Era 700px - ahora usa todo el espacio disponible
+    min-height: calc(100vh - 300px); // Usar altura completa
+    padding: 0; // Remover padding extra
+  }
+
+  // Contenido de cada paso usa más ancho
+  .wizard-step-content {
+    max-width: 900px; // Contenido más ancho pero legible
+    margin: 0 auto;
+  }
+}
+
+// ========================================
+// QUICK WIN #3: FIX SOMBRA CORTADA CARDS
+// ========================================
+.wizard-step[data-step="2"], // Paso de cargos
+.wizard-step[data-step="cargos"] {
+  .cargo-cards-container,
+  .cards-container {
+    padding: 24px 16px; // Add padding para las sombras
+    overflow: visible !important; // NO cortar sombras
+    margin: 0 -16px; // Compensar padding
+  }
+
+  .cargo-card {
+    margin: 16px 0; // Espacio vertical para sombras
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    &:active {
+      transform: translateY(-2px);
+    }
+  }
+
+  // Empty state mejorado
+  .empty-state {
+    text-align: center;
+    padding: 64px 32px;
+
+    @media (min-width: 1024px) {
+      padding: 80px 48px;
+    }
+
+    &__icon {
+      font-size: 64px;
+      color: rgba(map.get(variables.$colors, "primary"), 0.3);
+      margin-bottom: 24px;
+      animation: float-gentle 4s ease-in-out infinite;
+
+      @media (min-width: 1024px) {
+        font-size: 80px;
+      }
+    }
+
+    &__title {
+      font-size: 2rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, "secondary");
+      margin-bottom: 12px;
+
+      @media (min-width: 1024px) {
+        font-size: 2.4rem;
+      }
+    }
+
+    &__message {
+      font-size: 1.6rem;
+      color: rgba(map.get(variables.$colors, "text-dark"), 0.7);
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+  }
+
+  @keyframes float-gentle {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+}
+
+// ========================================
+// SIDEBAR FLOTANTE CON FLOATING EFFECT
+// ========================================
+.wizard-summary-bubble {
+  position: sticky;
+  top: 120px; // Debajo del header
+  height: fit-content;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  animation: float 6s ease-in-out infinite;
+  transition: all 0.3s ease;
+
+  // Efecto de flotabilidad
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+  }
+
+  @media (max-width: 1023px) {
+    // En mobile/tablet, mostrar sticky al top
+    position: fixed;
+    top: 60px;
+    right: 16px;
+    padding: 12px 16px;
+    border-radius: 24px;
+    animation: none;
+    z-index: 999;
+
+    // Compacto en mobile
+    .summary-content {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// Mejorar visibilidad del contenido del sidebar
+.wizard-summary-bubble {
+  .summary-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    i {
+      font-size: 20px;
+      color: map.get(variables.$colors, "primary");
+      flex-shrink: 0;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      color: rgba(map.get(variables.$colors, "text-dark"), 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .summary-value {
+      font-size: 28px;
+      font-family: map.get(variables.$fonts, "title");
+      font-weight: 700;
+      color: map.get(variables.$colors, "secondary");
+      line-height: 1;
+    }
+  }
+}
+
+// ========================================
+// OPTIMIZAR BOTONES DE NAVEGACIÓN
+// ========================================
+.wizard-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0;
+  margin-top: 32px;
+  border-top: 2px solid rgba(0, 0, 0, 0.06);
+
+  // En desktop, sticky bottom para siempre visible
+  @media (min-width: 1024px) {
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(
+      to top,
+      map.get(variables.$colors, "background") 80%,
+      transparent 100%
+    );
+    padding: 24px 0 32px 0;
+    z-index: 10;
+  }
+}
+
+// ========================================
+// PASO 3: OPTIMIZAR LISTA DE GES
+// ========================================
+.wizard-step[data-step="3"],
+.wizard-step[data-step="riesgos"] {
+  // Contenedor principal de GES
+  .ges-list-container {
+    @media (min-width: 1024px) {
+      padding: 0 16px;
+    }
+  }
+
+  .ges-category {
+    margin-bottom: 24px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    // Header de categoría
+    .category-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(map.get(variables.$colors, "primary"), 0.1);
+
+      h3 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: map.get(variables.$colors, "secondary");
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        i {
+          color: map.get(variables.$colors, "primary");
+        }
+      }
+
+      .category-count {
+        font-size: 1.4rem;
+        color: rgba(map.get(variables.$colors, "text-dark"), 0.6);
+        font-weight: 500;
+      }
+    }
+
+    // Grid para items de GES (cuando hay muchos)
+    .ges-items-list {
+      @media (min-width: 1024px) {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+
+        // Si hay más de 8 items, activar scroll con altura máxima
+        &[data-item-count]:has(> :nth-child(9)) {
+          max-height: 480px;
+          overflow-y: auto;
+          padding-right: 8px;
+
+          // Custom scrollbar
+          &::-webkit-scrollbar {
+            width: 6px;
+          }
+
+          &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background: map.get(variables.$colors, "primary");
+            border-radius: 10px;
+
+            &:hover {
+              background: #4db09c;
+            }
+          }
+        }
+      }
+    }
+
+    // Items individuales de GES
+    .ges-item {
+      @media (min-width: 1024px) {
+        margin-bottom: 0 !important; // Reset mobile spacing
+      }
+    }
+  }
+
+  // Mejoras para los checkboxes de GES
+  .ges-checkbox-wrapper {
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateX(4px);
+    }
+
+    input[type="checkbox"]:checked + label {
+      .ges-item-card {
+        border-color: map.get(variables.$colors, "primary");
+        background: linear-gradient(135deg,
+          rgba(map.get(variables.$colors, "primary"), 0.05) 0%,
+          rgba(map.get(variables.$colors, "primary"), 0.02) 100%);
+      }
+    }
+  }
+}
+
+// ========================================
+// PASO 4: VISUAL AFFORDANCES NIVELES
+// ========================================
+.wizard-step[data-step="4"],
+.wizard-step[data-step="niveles"] {
+  // Hacer obvio que es un formulario interactivo
+  .niveles-form-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+    border: 2px dashed map.get(variables.$colors, "primary");
+    border-radius: 16px;
+    padding: 32px;
+    position: relative;
+    margin: 24px 0;
+
+    // Instrucción flotante
+    &::before {
+      content: "👆 SELECCIONA LOS NIVELES PARA CADA CATEGORÍA";
+      position: absolute;
+      top: -14px;
+      left: 32px;
+      background: white;
+      padding: 6px 16px;
+      color: map.get(variables.$colors, "primary");
+      font-weight: 600;
+      font-size: 13px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      letter-spacing: 0.05em;
+    }
+  }
+
+  // Mejorar botones de nivel
+  .nivel-option,
+  .nivel-btn {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+
+    &:not([data-selected="true"]):hover {
+      transform: scale(1.05);
+      border-color: map.get(variables.$colors, "primary");
+      box-shadow: 0 4px 12px rgba(map.get(variables.$colors, "primary"), 0.3);
+
+      // Tooltip on hover
+      &::after {
+        content: "Click para seleccionar";
+        position: absolute;
+        bottom: -32px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 11px;
+        white-space: nowrap;
+        background: #333;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        z-index: 1000;
+        pointer-events: none;
+      }
+    }
+
+    &[data-selected="true"] {
+      background: map.get(variables.$colors, "primary") !important;
+      color: white !important;
+      border-color: map.get(variables.$colors, "primary") !important;
+      box-shadow: 0 4px 12px rgba(map.get(variables.$colors, "primary"), 0.4);
+      animation: pulse 0.5s;
+
+      // Checkmark
+      &::before {
+        content: "✓";
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: map.get(variables.$colors, "success");
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// ========================================
+// FAB NAVIGATION - Navegación flotante entre riesgos
+// ========================================
+// Usada en Paso 4 (Niveles) y Paso 5 (Controles)
+.wizard-fab-nav {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  display: flex;
+  gap: 12px;
+  z-index: 1000;
+
+  @media (max-width: 1023px) {
+    bottom: 80px; // Más arriba en mobile para no chocar con navegación
+    right: 16px;
+    gap: 8px;
+  }
+}
+
+.wizard-fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: map.get(variables.$colors, "primary");
+  color: white;
+  border: none;
+  box-shadow: 0 4px 16px rgba(map.get(variables.$colors, "primary"), 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  // Tooltip
+  &::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: calc(100% + 12px);
+    background: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    font-family: map.get(variables.$fonts, "body");
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 24px rgba(map.get(variables.$colors, "primary"), 0.5);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  i {
+    font-size: 20px;
+  }
+
+  // Variante secundaria (Anterior)
+  &--secondary {
+    background: map.get(variables.$colors, "secondary");
+    box-shadow: 0 4px 16px rgba(map.get(variables.$colors, "secondary"), 0.4);
+
+    &:hover {
+      box-shadow: 0 8px 24px rgba(map.get(variables.$colors, "secondary"), 0.5);
+    }
+  }
+
+  @media (max-width: 1023px) {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+
+    i {
+      font-size: 18px;
+    }
+
+    // Ocultar tooltip en mobile
+    &::before {
+      display: none;
+    }
+  }
+}
+
+// Contador de progreso en el FAB
+.wizard-fab__badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: map.get(variables.$colors, "success");
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+// ========================================
+// RESPONSIVE: MANTENER MOBILE
+// ========================================
+@media (max-width: 1023px) {
+  .wizard-container {
+    grid-template-columns: 1fr; // Solo columna principal en mobile
+    padding: 16px;
+  }
+
+  .wizard-step {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+}

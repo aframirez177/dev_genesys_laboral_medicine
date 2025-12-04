@@ -62,11 +62,10 @@ export function initFooter() {
         ],
         companyInfo: [
             { text: "Nosotros", href: "pages/Nosotros.html" },
-        /*     { text: "Novedades", href: "pages/Blog.html" },
-            { text: "Blog", href: "pages/Blog.html" }, */
             { text: "Trabaja con nosotros", href: "pages/Contacto.html" },
-            { text: "informacion financiera", href: "assets/pdf/estados_financieros_2023_2024.pdf", target: "_blank"},
-            { text: "Legales", href: "pages/Informacion_legal.html" }
+            { text: "Informacion financiera", href: "assets/pdf/estados_financieros_2023_2024.pdf", target: "_blank"},
+            { text: "Legales", href: "pages/Informacion_legal.html" },
+            { text: "Genesys Insights", href: "https://sites.google.com/view/intranet-genesys-laboral-medic/p%C3%A1gina-principal?authuser=0", target: "_blank" }
         ],
         contact: {
             address: "Calle 86a # 23-12, Bogotá, Colombia",

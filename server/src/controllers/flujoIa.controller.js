@@ -8,12 +8,16 @@ import { generarProfesiogramaPDF } from './profesiograma.controller.js';
 import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
 // Importar generador de cotización
 import { generarCotizacionPDF } from './cotizacion.controller.js';
+// 🆕 Sprint 6 - Profesiograma HTML para thumbnails
+import { generarProfesiogramaHTML } from './profesiograma-html.controller.js';
 import { uploadToSpaces } from '../utils/spaces.js'; // Asegúrate que esta ruta sea correcta
 // Estrategia optimizada: pdf-to-png para PDFs (rápido) + Puppeteer solo para Excel
 import { generatePDFThumbnail as generatePDFThumbnailFast } from '../utils/pdfThumbnail.js';
-import { generateExcelThumbnail } from '../utils/documentThumbnail.js';
+import { generateExcelThumbnail, generateHTMLThumbnail } from '../utils/documentThumbnail.js';
 // 🆕 Importar service de riesgos (FASE 1)
 import riesgosService from '../services/riesgos.service.js';
+// 🆕 Importar service de catálogo para enriquecer GES con datos de BD
+import catalogoService from '../services/CatalogoService.js';
 
 // Función principal que maneja el registro y guardado de datos
 export const registrarYGenerar = async (req, res) => {
@@ -111,11 +115,29 @@ export const registrarYGenerar = async (req, res) => {
         }).returning('*');
         console.log(`Documento ${documento.id} creado con estado pendiente_pago.`);
 
-        // 🆕 NUEVO (FASE 1): Enriquecer formData con cálculos de NR ANTES de guardar y generar
+        // 🆕 PASO 1 (FASE 1): Enriquecer formData con datos del catálogo desde BD
+        console.log("📚 Enriqueciendo GES con datos del catálogo de riesgos...");
+        const formDataConCatalogo = await catalogoService.enriquecerFormData(formData);
+        console.log("✅ Enriquecimiento del catálogo completado");
+
+        // 🐛 DEBUG: Ver estructura de GES después del enriquecimiento
+        if (formDataConCatalogo.cargos?.[0]?.gesSeleccionados?.[0]) {
+            const primeraGes = formDataConCatalogo.cargos[0].gesSeleccionados[0];
+            console.log("🐛 DEBUG - Estructura de GES enriquecido:", JSON.stringify({
+                riesgo: primeraGes.riesgo,
+                ges: primeraGes.ges,
+                efectosPosibles: primeraGes.efectosPosibles,
+                peorConsecuencia: primeraGes.peorConsecuencia,
+                medidasIntervencion: primeraGes.medidasIntervencion,
+                controles: primeraGes.controles
+            }, null, 2));
+        }
+
+        // 🆕 PASO 2 (FASE 1): Calcular NP/NR y consolidar controles
         console.log("🔄 Calculando NP/NR y consolidando controles para cada cargo...");
         const formDataEnriquecido = {
-            ...formData,
-            cargos: formData.cargos.map((cargo, index) => {
+            ...formDataConCatalogo,
+            cargos: formDataConCatalogo.cargos.map((cargo) => {
                 try {
                     // Consolidar controles para el cargo
                     const controlesConsolidados = riesgosService.consolidarControlesCargo(cargo);
@@ -151,15 +173,22 @@ export const registrarYGenerar = async (req, res) => {
 
         // 5. Crear los Cargos y Riesgos (AHORA CON NP/NR PERSISTIDO)
         for (const cargo of formDataEnriquecido.cargos) {
+            // Debug: Log toggles recibidos del frontend
+            console.log(`📋 Cargo "${cargo.cargoName}" - Toggles: alturas=${cargo.trabajaAlturas}, alimentos=${cargo.manipulaAlimentos}, vehículo=${cargo.conduceVehiculo}, espaciosConf=${cargo.trabajaEspaciosConfinados}, rutinarias=${cargo.tareasRutinarias}`);
+
             const [cargoDB] = await trx('cargos_documento').insert({
                 documento_id: documento.id,
                 nombre_cargo: cargo.cargoName,
                 area: cargo.area,
                 descripcion_tareas: cargo.descripcionTareas,
-                zona: cargo.zona, // Asegúrate que estos campos existan en tu form y BD
+                zona: cargo.zona,
                 num_trabajadores: cargo.numTrabajadores,
-                tareas_rutinarias: cargo.tareasRutinarias || false // Añade valor por defecto si es necesario
-                // Añade aquí los otros campos del cargo si los necesitas
+                tareas_rutinarias: cargo.tareasRutinarias || false,
+                // ✅ Toggles especiales - requeridos para exámenes específicos
+                trabaja_alturas: cargo.trabajaAlturas || false,
+                manipula_alimentos: cargo.manipulaAlimentos || false,
+                conduce_vehiculo: cargo.conduceVehiculo || false,
+                trabaja_espacios_confinados: cargo.trabajaEspaciosConfinados || false
             }).returning('*');
 
             if (cargo.gesSeleccionados && Array.isArray(cargo.gesSeleccionados)) {
@@ -223,15 +252,22 @@ export const registrarYGenerar = async (req, res) => {
 
         // 7. Generar Thumbnails: Estrategia selectiva según renderizado
         console.log("Generando thumbnails de documentos...");
+
+        // 🆕 Sprint 6: Profesiograma usa HTML viewer para thumbnail (no PDF)
+        const profesiogramaHTML = await generarProfesiogramaHTML(formDataEnriquecido, { companyName: companyName });
+
+        // ⚠️ TEMPORAL: Excel thumbnail deshabilitado (Puppeteer timeout)
+        // TODO: Re-habilitar cuando se resuelva el problema de Puppeteer
         const thumbnailPromises = [
-            generateExcelThumbnail(matrizBuffer, { width: 800, quality: 95, maxRows: 12, maxCols: 8 }), // Puppeteer - zoom esquina superior izquierda
-            generatePDFThumbnailFast(profesiogramaBuffer, { width: 600, cropHeader: true, quality: 95, viewportScale: 3.5 }), // pdf-to-png optimizado
+            // generateExcelThumbnail(matrizBuffer, { width: 800, quality: 95, maxRows: 12, maxCols: 8 }), // ❌ DESHABILITADO - Puppeteer timeout
+            Promise.resolve(null), // Placeholder para matrizThumbnail
+            generateHTMLThumbnail(profesiogramaHTML, { width: 800, quality: 95 }), // 🆕 Thumbnail desde HTML viewer
             generatePDFThumbnailFast(perfilBuffer, { width: 600, cropHeader: true, quality: 95, viewportScale: 4.0 }), // pdf-to-png - crop header como los demás
             generatePDFThumbnailFast(cotizacionBuffer, { width: 600, cropHeader: true, quality: 95, viewportScale: 4.0 }) // pdf-to-png - viewport MUY alto
         ];
 
         const [matrizThumbnail, profesiogramaThumbnail, perfilThumbnail, cotizacionThumbnail] = await Promise.all(thumbnailPromises);
-        console.log("Thumbnails generados exitosamente (Excel + PDFs).");
+        console.log("Thumbnails generados exitosamente (Profesiograma desde HTML, Excel deshabilitado temporalmente).");
 
         // 8. Subir Documentos Finales y Thumbnails a Spaces
         console.log("Subiendo documentos finales y thumbnails a Spaces...");
@@ -266,8 +302,8 @@ export const registrarYGenerar = async (req, res) => {
                 'application/pdf'
             ),
             uploadToSpaces(cotizacionBuffer, `cotizacion-${empresaNormalizada}-${fechaActual}-${documentToken}.pdf`, 'application/pdf'),
-            // Thumbnails (TODOS los documentos ahora tienen thumbnail)
-            uploadToSpaces(matrizThumbnail, `matriz-riesgos-profesional-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg'),
+            // Thumbnails (solo PDFs por ahora, matriz deshabilitada)
+            matrizThumbnail ? uploadToSpaces(matrizThumbnail, `matriz-riesgos-profesional-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg') : Promise.resolve(null),
             uploadToSpaces(profesiogramaThumbnail, `profesiograma-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg'),
             uploadToSpaces(perfilThumbnail, `perfil-cargo-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg'),
             uploadToSpaces(cotizacionThumbnail, `cotizacion-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg')
@@ -281,8 +317,10 @@ export const registrarYGenerar = async (req, res) => {
         finalUrls.perfil = perfilUrl;
         finalUrls.cotizacion = cotizacionUrl;
 
-        // Guardamos las URLs de thumbnails (TODOS los documentos)
-        thumbnailUrls.matriz = matrizThumbnailUrl; // 🆕 Ahora la matriz también tiene thumbnail
+        // Guardamos las URLs de thumbnails (solo los que existen)
+        if (matrizThumbnailUrl) {
+            thumbnailUrls.matriz = matrizThumbnailUrl; // Solo si se generó
+        }
         thumbnailUrls.profesiograma = profesiogramaThumbnailUrl;
         thumbnailUrls.perfil = perfilThumbnailUrl;
         thumbnailUrls.cotizacion = cotizacionThumbnailUrl;

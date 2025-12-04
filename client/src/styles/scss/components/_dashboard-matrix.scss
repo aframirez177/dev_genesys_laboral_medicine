@@ -1,0 +1,680 @@
+// ===========================================
+// DASHBOARD PREMIUM - MATRIZ GTC-45
+// Sprint 6 - Fase B - Tarea 6.A
+// Visualización de matriz de riesgos ocupacionales
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+@use "sass:color";
+
+// =====================
+// MATRIX PAGE HEADER
+// =====================
+.matrix-header {
+    @include tokens.flex-between;
+    margin-bottom: tokens.$space-6;
+    flex-wrap: wrap;
+    gap: tokens.$space-4;
+
+    &__title-group {
+        flex: 1;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-1 0;
+    }
+
+    &__subtitle {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__actions {
+        display: flex;
+        gap: tokens.$space-3;
+    }
+}
+
+// =====================
+// SUMMARY METRICS ROW
+// =====================
+.matrix-summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: tokens.$space-4;
+    margin-bottom: tokens.$space-8;
+
+    &__card {
+        @include tokens.card-base;
+        padding: tokens.$space-4;
+        text-align: center;
+        cursor: pointer;
+        @include tokens.card-hover;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        &--total::before { background: tokens.$dashboard-secondary; }
+        &--level-i::before { background: tokens.$risk-level-i; }
+        &--level-ii::before { background: tokens.$risk-level-ii; }
+        &--level-iii::before { background: tokens.$risk-level-iii; }
+        &--level-iv::before { background: tokens.$risk-level-iv; }
+        &--level-v::before { background: tokens.$risk-level-v; }
+
+        &.active {
+            box-shadow: tokens.$shadow-lg;
+            transform: translateY(-2px);
+        }
+    }
+
+    &__value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h1;
+        font-weight: tokens.$font-bold;
+        line-height: tokens.$leading-tight;
+    }
+
+    &__label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+
+    &__percentage {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-2;
+    }
+}
+
+// =====================
+// CRITICAL DANGERS BANNER
+// =====================
+.critical-banner {
+    background: linear-gradient(135deg, tokens.$dashboard-danger 0%, color.adjust(tokens.$dashboard-danger, $lightness: -10%) 100%);
+    border-radius: tokens.$radius-xl;
+    padding: tokens.$space-6;
+    color: white;
+    margin-bottom: tokens.$space-8;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        margin: 0;
+
+        svg {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    &__count {
+        background: rgba(255, 255, 255, 0.2);
+        padding: tokens.$space-2 tokens.$space-4;
+        border-radius: tokens.$radius-full;
+        font-weight: tokens.$font-bold;
+    }
+
+    &__list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: tokens.$space-4;
+    }
+
+    &__item {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: tokens.$radius-md;
+        padding: tokens.$space-4;
+        backdrop-filter: blur(10px);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+    }
+
+    &__item-header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__item-name {
+        font-weight: tokens.$font-semibold;
+        font-size: tokens.$font-body;
+    }
+
+    &__item-level {
+        background: rgba(255, 255, 255, 0.3);
+        padding: tokens.$space-1 tokens.$space-2;
+        border-radius: tokens.$radius-sm;
+        font-size: tokens.$font-xs;
+        font-weight: tokens.$font-bold;
+    }
+
+    &__item-details {
+        font-size: tokens.$font-small;
+        opacity: 0.9;
+    }
+
+    &__item-meta {
+        display: flex;
+        gap: tokens.$space-4;
+        margin-top: tokens.$space-2;
+        font-size: tokens.$font-xs;
+        opacity: 0.8;
+    }
+}
+
+// =====================
+// CATEGORIES GRID
+// =====================
+.matrix-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: tokens.$space-6;
+    margin-bottom: tokens.$space-8;
+}
+
+.category-card {
+    @include tokens.card-base;
+    padding: tokens.$space-5;
+    cursor: pointer;
+    @include tokens.card-hover;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__icon {
+        width: 48px;
+        height: 48px;
+        border-radius: tokens.$radius-lg;
+        @include tokens.flex-center;
+
+        svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        &--biologico {
+            background: rgba(#10b981, 0.1);
+            color: #10b981;
+        }
+
+        &--fisico {
+            background: rgba(#3b82f6, 0.1);
+            color: #3b82f6;
+        }
+
+        &--quimico {
+            background: rgba(#f59e0b, 0.1);
+            color: #f59e0b;
+        }
+
+        &--psicosocial {
+            background: rgba(#8b5cf6, 0.1);
+            color: #8b5cf6;
+        }
+
+        &--biomecanico {
+            background: rgba(#ec4899, 0.1);
+            color: #ec4899;
+        }
+
+        &--seguridad {
+            background: rgba(#ef4444, 0.1);
+            color: #ef4444;
+        }
+
+        &--natural {
+            background: rgba(#64748b, 0.1);
+            color: #64748b;
+        }
+    }
+
+    &__count {
+        text-align: right;
+    }
+
+    &__count-value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__count-label {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-3 0;
+    }
+
+    &__progress {
+        height: 8px;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-full;
+        overflow: hidden;
+        display: flex;
+        margin-bottom: tokens.$space-3;
+    }
+
+    &__progress-segment {
+        height: 100%;
+        transition: width tokens.$transition-slow;
+
+        &:first-child {
+            border-radius: tokens.$radius-full 0 0 tokens.$radius-full;
+        }
+
+        &:last-child {
+            border-radius: 0 tokens.$radius-full tokens.$radius-full 0;
+        }
+
+        &--i { background: tokens.$risk-level-i; }
+        &--ii { background: tokens.$risk-level-ii; }
+        &--iii { background: tokens.$risk-level-iii; }
+        &--iv { background: tokens.$risk-level-iv; }
+        &--v { background: tokens.$risk-level-v; }
+    }
+
+    &__levels {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__level {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-1;
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__level-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+
+        &--i { background: tokens.$risk-level-i; }
+        &--ii { background: tokens.$risk-level-ii; }
+        &--iii { background: tokens.$risk-level-iii; }
+        &--iv { background: tokens.$risk-level-iv; }
+        &--v { background: tokens.$risk-level-v; }
+    }
+
+    &__footer {
+        margin-top: tokens.$space-4;
+        padding-top: tokens.$space-3;
+        border-top: 1px solid tokens.$header-border;
+        @include tokens.flex-between;
+    }
+
+    &__workers {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+
+        strong {
+            color: tokens.$dashboard-secondary;
+        }
+    }
+
+    &__link {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-primary;
+        font-weight: tokens.$font-medium;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+// =====================
+// DANGER DETAILS CARD
+// =====================
+.danger-card {
+    @include tokens.card-base;
+    overflow: hidden;
+
+    &__header {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-5;
+        background: tokens.$dashboard-background;
+        cursor: pointer;
+        transition: background tokens.$transition-fast;
+
+        &:hover {
+            background: color.adjust(tokens.$dashboard-background, $lightness: -2%);
+        }
+    }
+
+    &__title-group {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+    }
+
+    &__expand-icon {
+        width: 24px;
+        height: 24px;
+        @include tokens.flex-center;
+        transition: transform tokens.$transition-normal;
+
+        svg {
+            width: 18px;
+            height: 18px;
+            color: tokens.$dashboard-text-light;
+        }
+    }
+
+    &.expanded &__expand-icon {
+        transform: rotate(180deg);
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__meta {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+    }
+
+    &__body {
+        display: none;
+        padding: tokens.$space-5;
+        border-top: 1px solid tokens.$header-border;
+    }
+
+    &.expanded &__body {
+        display: block;
+        animation: slideDown tokens.$transition-normal;
+    }
+
+    &__section {
+        margin-bottom: tokens.$space-4;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__section-title {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-text-light;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__description {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        line-height: tokens.$leading-relaxed;
+    }
+
+    &__effects {
+        display: flex;
+        flex-wrap: wrap;
+        gap: tokens.$space-2;
+    }
+
+    &__effect {
+        padding: tokens.$space-1 tokens.$space-3;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-full;
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text;
+    }
+
+    &__controls {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-2;
+    }
+
+    &__control {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        padding: tokens.$space-2 tokens.$space-3;
+        background: rgba(tokens.$dashboard-success, 0.05);
+        border-radius: tokens.$radius-md;
+        border-left: 3px solid tokens.$dashboard-success;
+
+        svg {
+            width: 16px;
+            height: 16px;
+            color: tokens.$dashboard-success;
+        }
+
+        span {
+            font-size: tokens.$font-small;
+            color: tokens.$dashboard-text;
+        }
+    }
+
+    &__positions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: tokens.$space-2;
+    }
+
+    &__position {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        padding: tokens.$space-2 tokens.$space-3;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+        font-size: tokens.$font-small;
+
+        &-name {
+            color: tokens.$dashboard-text;
+        }
+
+        &-count {
+            background: tokens.$dashboard-white;
+            padding: 2px 6px;
+            border-radius: tokens.$radius-sm;
+            font-size: tokens.$font-xs;
+            color: tokens.$dashboard-text-light;
+        }
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// =====================
+// CONTROLS SECTION
+// =====================
+.controls-section {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+    margin-top: tokens.$space-8;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-6;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__stats {
+        display: flex;
+        gap: tokens.$space-4;
+    }
+
+    &__stat {
+        text-align: center;
+        padding: tokens.$space-3 tokens.$space-4;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+
+        &-value {
+            font-family: tokens.$font-family-title;
+            font-size: tokens.$font-h3;
+            font-weight: tokens.$font-bold;
+            color: tokens.$dashboard-success;
+        }
+
+        &-label {
+            font-size: tokens.$font-xs;
+            color: tokens.$dashboard-text-light;
+            margin-top: tokens.$space-1;
+        }
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: tokens.$space-4;
+    }
+}
+
+.control-item {
+    display: flex;
+    align-items: flex-start;
+    gap: tokens.$space-3;
+    padding: tokens.$space-4;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-md;
+
+    &__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: tokens.$dashboard-success;
+        @include tokens.flex-center;
+        flex-shrink: 0;
+
+        svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+    }
+
+    &__content {
+        flex: 1;
+    }
+
+    &__name {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+        margin-bottom: tokens.$space-1;
+    }
+
+    &__type {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__coverage {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        margin-top: tokens.$space-2;
+
+        &-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(tokens.$dashboard-success, 0.2);
+            border-radius: tokens.$radius-full;
+            overflow: hidden;
+        }
+
+        &-fill {
+            height: 100%;
+            background: tokens.$dashboard-success;
+            border-radius: tokens.$radius-full;
+        }
+
+        &-value {
+            font-size: tokens.$font-xs;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-success;
+        }
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('laptop') {
+    .matrix-summary {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@include tokens.respond-to('tablet') {
+    .matrix-summary {
+        grid-template-columns: repeat(2, 1fr);
+
+        &__value {
+            font-size: tokens.$font-h2;
+        }
+    }
+
+    .matrix-categories {
+        grid-template-columns: 1fr;
+    }
+
+    .critical-banner {
+        padding: tokens.$space-4;
+
+        &__list {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+

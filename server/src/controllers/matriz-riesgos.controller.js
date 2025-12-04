@@ -7,7 +7,7 @@ import {
     calcularNivelProbabilidad,
     calcularNivelRiesgo,
 } from "../utils/risk-calculations.js";
-import { GES_DATOS_PREDEFINIDOS } from "../config/ges-config.js";
+import { GES_DATOS_PREDEFINIDOS, buscarConfigGES } from "../config/ges-config.js";
 
 // Para obtener __dirname en ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -308,7 +308,22 @@ async function generarMatrizExcel(
                 const startRowForClasificacion = currentRowIndex;
 
                 gesDeMismaClasificacion.forEach((ges) => {
-                    const datosGesPredefinidos = GES_DATOS_PREDEFINIDOS[ges.ges] || {};
+                    // 🆕 Usar datos del catálogo enriquecidos, con fallback a GES_DATOS_PREDEFINIDOS (con alias)
+                    const datosGesPredefinidos = buscarConfigGES(ges.ges) || {};
+
+                    // ✅ EFECTOS Y CONSECUENCIAS (desde catálogo enriquecido)
+                    const efectosPosibles = ges.efectosPosibles || datosGesPredefinidos.consecuencias || "No especificado";
+                    const peorConsecuencia = ges.peorConsecuencia || datosGesPredefinidos.peorConsecuencia || "No especificado";
+
+                    // ✅ MEDIDAS DE INTERVENCIÓN (5 campos - desde BD)
+                    const medidasIntervencion = ges.medidasIntervencion || datosGesPredefinidos.medidasIntervencion || {};
+
+                    // EPP viene dentro de medidasIntervencion.epp (string) O ges.eppSugeridos (array)
+                    const eppSugeridos = medidasIntervencion.epp ||
+                                       (Array.isArray(ges.eppSugeridos) ? ges.eppSugeridos.join(", ") : '') ||
+                                       (Array.isArray(datosGesPredefinidos.eppSugeridos) ? datosGesPredefinidos.eppSugeridos.join(", ") : '') ||
+                                       "";
+
                     let nivelProb = { valor: 0, interpretacion: "N/A", nivel: "N/A" };
                     let nivelRiesgo = { valor: 0, interpretacion: "N/A", nivel: "N/A", aceptabilidad: "N/A", color: "FFFFFFFF" };
 
@@ -333,11 +348,14 @@ async function generarMatrizExcel(
                         tareas: cargo.descripcionTareas || "No especificado",
                         rutinario: cargo.tareasRutinarias ? "Si" : "No",
                         peligro_descripcion: ges.ges || "N/A",
-                        peligro_clasificacion: ges.riesgo || "N/A",
-                        efectos_posibles: datosGesPredefinidos.consecuencias || "No especificado",
+                        peligro_clasificacion: ges.riesgo || "N/A", // ✅ Este campo debe venir del fix anterior (RiesgoSelector)
+                        efectos_posibles: efectosPosibles,
+
+                        // ✅ CONTROLES EXISTENTES (3 campos - lo que YA tiene la empresa)
                         control_fuente: ges.controles?.fuente || "Ninguno",
                         control_medio: ges.controles?.medio || "Ninguno",
                         control_individuo: ges.controles?.individuo || "Ninguno",
+
                         nd: ges.niveles?.deficiencia?.value ?? 0,
                         ne: ges.niveles?.exposicion?.value ?? 0,
                         np_valor: nivelProb.valor,
@@ -349,13 +367,17 @@ async function generarMatrizExcel(
                         nr_interpretacion_texto: nivelRiesgo.interpretacion,
                         aceptabilidad_riesgo: nivelRiesgo.aceptabilidad,
                         nro_expuestos: cargo.numTrabajadores || 1,
-                        peor_consecuencia: datosGesPredefinidos.peorConsecuencia || "No especificado",
-                        requisito_legal: "Si", // Asumiendo 'Si', ajustar si es variable
-                        medida_eliminacion: datosGesPredefinidos.medidasIntervencion?.eliminacion || "",
-                        medida_sustitucion: datosGesPredefinidos.medidasIntervencion?.sustitucion || "",
-                        medida_ctrl_ingenieria: datosGesPredefinidos.medidasIntervencion?.controlesIngenieria || "",
-                        medida_ctrl_admin: datosGesPredefinidos.medidasIntervencion?.controlesAdministrativos || "",
-                        epp: (datosGesPredefinidos.eppSugeridos || []).join(", "),
+                        peor_consecuencia: peorConsecuencia,
+                        requisito_legal: "Si",
+
+                        // ✅ MEDIDAS DE INTERVENCIÓN (5 campos - sugerencias desde BD)
+                        medida_eliminacion: medidasIntervencion.eliminacion || "",
+                        medida_sustitucion: medidasIntervencion.sustitucion || "",
+                        medida_ctrl_ingenieria: medidasIntervencion.controlesIngenieria ||
+                                               medidasIntervencion.controles_ingenieria || "",
+                        medida_ctrl_admin: medidasIntervencion.controlesAdministrativos ||
+                                          medidasIntervencion.controles_administrativos || "",
+                        epp: eppSugeridos,
                     };
                     const addedRow = worksheet.addRow(rowData);
 

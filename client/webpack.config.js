@@ -29,6 +29,8 @@ const paths = [
   "/pages/examen_medico_escolar.html",
   "/pages/resultados.html",
   "/pages/wizard_example.html",
+  "/pages/wizard_riesgos.html",
+  "/pages/dashboard.html",
   // Añade CUALQUIER OTRA PÁGINA que quieras incluir
 ];
 
@@ -52,6 +54,8 @@ module.exports = {
     diagnosticointeractivo: "./src/main_diagnostico_interactivo.js",
     resultados: "./src/main_resultados.js",
     wizardExample: "./src/js/main_wizard_example.js",
+    wizardRiesgos: "./src/main_wizard_riesgos.js",
+    dashboard: "./src/main_dashboard.js",
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
@@ -85,6 +89,7 @@ module.exports = {
         target: 'http://localhost:3000', // Tu servidor backend
         changeOrigin: true,
         secure: false,
+        timeout: 120000, // 2 minutos (para operaciones pesadas como generación de PDFs)
       }
     ],
     client: {
@@ -260,6 +265,18 @@ module.exports = {
       template: "./public/pages/wizard_example.html",
       filename: "./pages/wizard_example.html",
     }),
+    new HtmlWebpackPlugin({
+      chunks: ["main", "wizardRiesgos"],
+      inject: true,
+      template: "./public/pages/wizard_riesgos.html",
+      filename: "./pages/wizard_riesgos.html",
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ["dashboard"],
+      inject: true,
+      template: "./public/pages/dashboard.html",
+      filename: "./pages/dashboard.html",
+    }),
     /* new PreloadWebpackPlugin({
       rel: "preload",
       // En lugar de 'include: "font"', prueba incluyendo los chunks que
@@ -330,5 +347,8 @@ module.exports = {
   optimization: {
     minimize: true,
     minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
+  },
+  performance: {
+    hints: false, // Deshabilita los warnings de tamaño de assets
   },
 };

@@ -1,0 +1,331 @@
+/**
+ * _wizard-neumorphism.scss
+ * Neumorphic enhancements for wizard components
+ *
+ * This file applies soft UI (neumorphism) design to wizard elements
+ * for a more modern, tactile interface
+ */
+
+@use "sass:map";
+@use "sass:color";
+@use "sass:string";
+@use '../base/variables';
+@use '../base/mixins';
+@use '../utilities/neumorphism' as neumorph;
+
+// =================================================================
+// WIZARD BUTTONS WITH NEUMORPHISM
+// =================================================================
+
+.wizard-btn-primary {
+  @include neumorph.neumorphic-button(map.get(variables.$colors, 'primary'));
+
+  // Override existing box-shadow with neumorphic
+  box-shadow:
+    10px 10px 20px rgba(color.adjust(map.get(variables.$colors, 'primary'), $lightness: -15%), 0.3),
+    -10px -10px 20px rgba(color.adjust(map.get(variables.$colors, 'primary'), $lightness: 5%), 0.8) !important;
+
+  &:hover:not(:disabled) {
+    box-shadow:
+      15px 15px 30px rgba(color.adjust(map.get(variables.$colors, 'primary'), $lightness: -15%), 0.35),
+      -15px -15px 30px rgba(color.adjust(map.get(variables.$colors, 'primary'), $lightness: 5%), 0.9) !important;
+  }
+
+  &:active:not(:disabled) {
+    box-shadow:
+      inset 6px 6px 12px rgba(color.adjust(map.get(variables.$colors, 'primary'), $lightness: -15%), 0.3),
+      inset -6px -6px 12px rgba(color.adjust(map.get(variables.$colors, 'primary'), $lightness: 5%), 0.5) !important;
+  }
+}
+
+.wizard-btn-back {
+  @include neumorph.neumorphic-flat(map.get(variables.$colors, 'background'));
+
+  &:hover:not(:disabled) {
+    @include neumorph.neumorphic('subtle', map.get(variables.$colors, 'background'));
+  }
+}
+
+// =================================================================
+// WIZARD MODAL WITH NEUMORPHISM
+// =================================================================
+
+.wizard-modal-content {
+  background: map.get(variables.$colors, 'background');
+  @include neumorph.neumorphic('strong', map.get(variables.$colors, 'background'));
+  border: none;
+
+  // Header
+  .wizard-modal-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(map.get(variables.$colors, 'secondary'), 0.1);
+  }
+}
+
+// =================================================================
+// WIZARD HINT/INFO BOX WITH NEUMORPHISM
+// =================================================================
+
+.wizard-hint {
+  background: map.get(variables.$colors, 'background');
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  @include neumorph.neumorphic-flat(map.get(variables.$colors, 'background'));
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: map.get(variables.$colors, 'text');
+  font-size: 1.4rem;
+  line-height: 1.6;
+
+  i {
+    color: map.get(variables.$colors, 'primary');
+    font-size: 1.8rem;
+  }
+}
+
+// =================================================================
+// FORM INPUTS WITH NEUMORPHISM
+// =================================================================
+
+.wizard-form {
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  select,
+  textarea {
+    background: map.get(variables.$colors, 'background');
+    border: none;
+    @include neumorph.neumorphic-inset('subtle', map.get(variables.$colors, 'background'));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 1.2rem 1.6rem;
+    font-size: 1.5rem;
+    border-radius: 12px;
+
+    &:focus {
+      @include neumorph.neumorphic-inset('medium', map.get(variables.$colors, 'background'));
+      outline: 2px solid map.get(variables.$colors, 'primary');
+      outline-offset: 2px;
+    }
+
+    &::placeholder {
+      color: color.adjust(map.get(variables.$colors, 'text'), $alpha: -0.6);
+    }
+  }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23#{string.slice('#{map.get(variables.$colors, 'primary')}', 2)}' d='M6 8L0 2l1.5-1.5L6 5 10.5.5 12 2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.2rem center;
+    padding-right: 3.5rem;
+  }
+}
+
+// =================================================================
+// TOGGLE GROUPS WITH NEUMORPHISM
+// =================================================================
+
+.toggle-group {
+  background: map.get(variables.$colors, 'background');
+  border-radius: 12px;
+  padding: 1.2rem;
+  @include neumorph.neumorphic-flat(map.get(variables.$colors, 'background'));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+
+  &:hover {
+    @include neumorph.neumorphic('subtle', map.get(variables.$colors, 'background'));
+  }
+}
+
+// =================================================================
+// WIZARD SECTION WITH NEUMORPHISM
+// =================================================================
+
+.wizard-section {
+  background: map.get(variables.$colors, 'background');
+}
+
+// =================================================================
+// NAVIGATION BUTTONS WITH NEUMORPHISM
+// =================================================================
+
+.wizard-navigation {
+  .wizard-btn {
+    @include neumorph.neumorphic('medium', map.get(variables.$colors, 'background'));
+    background: map.get(variables.$colors, 'background');
+    border: none;
+
+    &:hover:not(:disabled) {
+      @include neumorph.neumorphic('strong', map.get(variables.$colors, 'background'));
+      transform: translateY(-2px);
+    }
+
+    &:active:not(:disabled) {
+      @include neumorph.neumorphic-inset('subtle', map.get(variables.$colors, 'background'));
+      transform: translateY(0);
+    }
+
+    // Botón "Siguiente" con color primario para visibilidad
+    &.wizard-btn-next {
+      background: map.get(variables.$colors, 'primary') !important;
+      color: white !important;
+      box-shadow:
+        0 6px 16px rgba(map.get(variables.$colors, 'primary'), 0.5),
+        0 10px 30px rgba(0, 0, 0, 0.2);
+
+      &:hover:not(:disabled) {
+        background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -10%) !important;
+        box-shadow:
+          0 8px 20px rgba(map.get(variables.$colors, 'primary'), 0.6),
+          0 12px 35px rgba(0, 0, 0, 0.25);
+      }
+
+      &:active:not(:disabled) {
+        background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -15%) !important;
+      }
+    }
+  }
+}
+
+// =================================================================
+// STEP INDICATOR WITH NEUMORPHISM
+// =================================================================
+
+.wizard-progress {
+  .step {
+    background: map.get(variables.$colors, 'background');
+    @include neumorph.neumorphic('subtle', map.get(variables.$colors, 'background'));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &.active {
+      @include neumorph.neumorphic('medium', map.get(variables.$colors, 'primary'));
+      background: map.get(variables.$colors, 'primary');
+      color: white;
+      transform: scale(1.1);
+    }
+
+    &.completed {
+      @include neumorph.neumorphic-flat(map.get(variables.$colors, 'success'));
+      background: map.get(variables.$colors, 'success');
+      color: white;
+    }
+  }
+}
+
+// =================================================================
+// ACCORDION/EXPANDABLE SECTIONS WITH NEUMORPHISM
+// =================================================================
+
+.accordion-header {
+  background: map.get(variables.$colors, 'background');
+  @include neumorph.neumorphic('medium', map.get(variables.$colors, 'background'));
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    @include neumorph.neumorphic('strong', map.get(variables.$colors, 'background'));
+  }
+
+  &.active {
+    @include neumorph.neumorphic-inset('subtle', map.get(variables.$colors, 'background'));
+  }
+}
+
+.accordion-body {
+  background: color.adjust(map.get(variables.$colors, 'background'), $lightness: 3%);
+  border-radius: 0 0 12px 12px;
+}
+
+// =================================================================
+// CARGO EDITOR POPOVER WITH ENHANCED NEUMORPHISM
+// =================================================================
+
+.floating-popover--cargo-edit {
+  @include neumorph.neumorphic('strong', white);
+  border: none;
+
+  .form-input {
+    background: map.get(variables.$colors, 'background');
+    @include neumorph.neumorphic-inset('subtle', map.get(variables.$colors, 'background'));
+    border: none;
+
+    &:focus {
+      @include neumorph.neumorphic-inset('medium', map.get(variables.$colors, 'background'));
+    }
+  }
+
+  .btn--compact {
+    @include neumorph.neumorphic-button(map.get(variables.$colors, 'primary'));
+  }
+}
+
+// =================================================================
+// RIESGO SELECTOR CARDS WITH NEUMORPHISM
+// =================================================================
+
+.riesgo-card {
+  background: map.get(variables.$colors, 'background');
+  @include neumorph.neumorphic('medium', map.get(variables.$colors, 'background'));
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    @include neumorph.neumorphic('strong', map.get(variables.$colors, 'background'));
+    transform: translateY(-4px);
+  }
+
+  &.selected {
+    @include neumorph.neumorphic-inset('subtle', map.get(variables.$colors, 'background'));
+    border-left: 4px solid map.get(variables.$colors, 'primary');
+  }
+}
+
+// =================================================================
+// NIVEL RIESGO BADGES WITH NEUMORPHISM
+// =================================================================
+
+.nivel-badge {
+  @include neumorph.neumorphic-flat(map.get(variables.$colors, 'background'));
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  font-weight: 600;
+  border: none;
+
+  &--bajo {
+    background: map.get(variables.$colors, 'success');
+    color: white;
+    @include neumorph.neumorphic-flat(map.get(variables.$colors, 'success'));
+  }
+
+  &--medio {
+    background: map.get(variables.$colors, 'atention');
+    color: white;
+    @include neumorph.neumorphic-flat(map.get(variables.$colors, 'atention'));
+  }
+
+  &--alto {
+    background: map.get(variables.$colors, 'danger');
+    color: white;
+    @include neumorph.neumorphic-flat(map.get(variables.$colors, 'danger'));
+  }
+}
+
+// =================================================================
+// MOBILE ADJUSTMENTS
+// =================================================================
+
+@media screen and (max-width: 768px) {
+  // Reduce neumorphic intensity on mobile for performance
+  .cargo-card,
+  .wizard-btn,
+  .toggle-group {
+    @include neumorph.neumorphic-flat(map.get(variables.$colors, 'background'));
+
+    &:hover {
+      @include neumorph.neumorphic('subtle', map.get(variables.$colors, 'background'));
+    }
+  }
+}

@@ -7,6 +7,60 @@
 // Importar estilos del wizard (incluye variables, mixins, reset, y componentes)
 import '../styles/scss/wizard.scss';
 
+// Suppress ResizeObserver error (known false positive with Floating UI)
+// This error occurs when ResizeObserver callbacks take longer than a single animation frame
+// It's harmless and can be safely ignored in development
+if (typeof window !== 'undefined') {
+  // Method 1: Intercept window.error events
+  const resizeObserverErrHandler = (event) => {
+    if (
+      event.message &&
+      (event.message.includes('ResizeObserver loop') ||
+       event.message === 'ResizeObserver loop completed with undelivered notifications.' ||
+       event.message === 'ResizeObserver loop limit exceeded')
+    ) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      return false;
+    }
+  };
+
+  window.addEventListener('error', resizeObserverErrHandler, { capture: true });
+
+  // Method 2: Override console.error to filter ResizeObserver errors
+  const originalConsoleError = console.error;
+  console.error = function (...args) {
+    const errorMsg = args[0]?.toString() || '';
+    if (errorMsg.includes('ResizeObserver loop')) {
+      // Silently ignore ResizeObserver errors
+      return;
+    }
+    originalConsoleError.apply(console, args);
+  };
+
+  // Method 3: Patch ResizeObserver to debounce notifications
+  if (window.ResizeObserver) {
+    const OriginalResizeObserver = window.ResizeObserver;
+    window.ResizeObserver = class extends OriginalResizeObserver {
+      constructor(callback) {
+        let timeoutId = null;
+        super((entries, observer) => {
+          if (timeoutId) clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => {
+            try {
+              callback(entries, observer);
+            } catch (e) {
+              if (!e.message?.includes('ResizeObserver loop')) {
+                throw e;
+              }
+            }
+          }, 0);
+        });
+      }
+    };
+  }
+}
+
 import { Wizard } from '../components/wizard/Wizard.js';
 import {
   welcomeStep,
@@ -128,14 +182,14 @@ class DiagnosticoWizard {
       // Paso 8: Notificar cambio
       this.wizard.options.onStepChange(this.wizard.currentStep, this.wizard.steps[this.wizard.currentStep]);
 
-      // Paso 9: Ejecutar onEnter del nuevo paso
+      // Paso 9: Re-render con animación PRIMERO
+      await this.wizard.renderWithAnimation('forward');
+
+      // Paso 10: DESPUÉS del render, ejecutar onEnter del nuevo paso
       const nextStep = this.wizard.steps[this.wizard.currentStep];
       if (nextStep.onEnter) {
         await nextStep.onEnter.call(this.wizard, this.wizard.data);
       }
-
-      // Paso 10: Re-render con animación
-      await this.wizard.renderWithAnimation('forward');
     };
   }
 
@@ -285,14 +339,27 @@ class DiagnosticoWizard {
     const currentStepIndex = this.wizard.steps.findIndex(s => s.id === currentStepId);
 
     if (currentStepIndex !== -1) {
-      // Eliminar pasos antiguos de controles si existen (para permitir re-selección de GES)
+      // FIX BUG #1: Solo borrar datos de pasos que YA NO EXISTEN
+      // (cuando el usuario cambió los GES seleccionados)
       const oldSteps = this.wizard.steps.filter(s =>
         s.id.startsWith(`controles-${cargoIndex}-`)
       );
+
+      // IDs de los nuevos pasos que se van a crear
+      const newStepIds = gesSteps.map(s => s.id);
+
       oldSteps.forEach(step => {
         const idx = this.wizard.steps.findIndex(s => s.id === step.id);
         if (idx !== -1) {
           this.wizard.steps.splice(idx, 1);
+
+          // Solo borrar datos si el paso YA NO EXISTE en los nuevos pasos
+          if (!newStepIds.includes(step.id)) {
+            delete this.wizard.data[step.id];
+            console.log(`🗑️ Deleted data for removed step: ${step.id}`);
+          } else {
+            console.log(`💾 Keeping data for existing step: ${step.id}`);
+          }
         }
       });
 
@@ -347,14 +414,17 @@ class DiagnosticoWizard {
           });
 
           // Agregar cargo al state con todos los campos
+          // Toggles pueden venir de:
+          // 1. cargoInfo directamente (si se agregaron en cargo-info paso)
+          // 2. togglesData del paso separado toggles-especiales (legacy)
           cargoState.addCargo({
             ...cargoInfo,
-            // Incluir toggles especiales
-            tareasRutinarias: togglesData.tareasRutinarias || false,
-            manipulaAlimentos: togglesData.manipulaAlimentos || false,
-            trabajaAlturas: togglesData.trabajaAlturas || false,
-            trabajaEspaciosConfinados: togglesData.trabajaEspaciosConfinados || false,
-            conduceVehiculo: togglesData.conduceVehiculo || false,
+            // Incluir toggles especiales (priorizar cargoInfo sobre togglesData)
+            tareasRutinarias: cargoInfo.tareasRutinarias ?? togglesData.tareasRutinarias ?? false,
+            manipulaAlimentos: cargoInfo.manipulaAlimentos ?? togglesData.manipulaAlimentos ?? false,
+            trabajaAlturas: cargoInfo.trabajaAlturas ?? togglesData.trabajaAlturas ?? false,
+            trabajaEspaciosConfinados: cargoInfo.trabajaEspaciosConfinados ?? togglesData.trabajaEspaciosConfinados ?? false,
+            conduceVehiculo: cargoInfo.conduceVehiculo ?? togglesData.conduceVehiculo ?? false,
             // GES con controles
             gesSeleccionados: gesConControles
           });

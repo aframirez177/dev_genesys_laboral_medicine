@@ -231,6 +231,56 @@ export const empresaStep = {
     if (stateData.empresa && stateData.empresa.nombre) {
       // Ya hay datos, no hacer nada (el render usará estos datos)
     }
+  },
+
+  afterRender: async function(wizardData) {
+    // 🔧 FIX: Asegurar que el dropdown de sectores se pueble correctamente
+    // Problema: En la primera carga, SECTORES_ECONOMICOS puede no estar disponible
+    console.log('[empresaStep] afterRender: Verificando dropdown de sectores');
+
+    const sectorSelect = document.getElementById('empresa-sector');
+    if (!sectorSelect) {
+      console.warn('[empresaStep] No se encontró el select de sectores');
+      return;
+    }
+
+    // Verificar si el dropdown está vacío (solo tiene la opción placeholder)
+    const currentOptions = sectorSelect.querySelectorAll('option');
+    console.log(`[empresaStep] Opciones actuales en dropdown: ${currentOptions.length}`);
+
+    if (currentOptions.length <= 1) {
+      // El dropdown está vacío, poblarlo manualmente
+      console.log('[empresaStep] Dropdown vacío, poblando manualmente con SECTORES_ECONOMICOS');
+
+      // Verificar que SECTORES_ECONOMICOS esté disponible
+      if (!SECTORES_ECONOMICOS || SECTORES_ECONOMICOS.length === 0) {
+        console.error('[empresaStep] SECTORES_ECONOMICOS no está disponible');
+        return;
+      }
+
+      const stateData = cargoState.getState();
+      const selectedSector = stateData.empresa?.sector || wizardData.empresa?.sector || '';
+
+      // Limpiar opciones existentes excepto la primera (placeholder)
+      while (sectorSelect.options.length > 1) {
+        sectorSelect.remove(1);
+      }
+
+      // Agregar opciones manualmente
+      SECTORES_ECONOMICOS.forEach(sector => {
+        const option = document.createElement('option');
+        option.value = sector.value;
+        option.textContent = sector.label;
+        if (sector.value === selectedSector) {
+          option.selected = true;
+        }
+        sectorSelect.appendChild(option);
+      });
+
+      console.log(`[empresaStep] ✓ Dropdown poblado con ${SECTORES_ECONOMICOS.length} sectores`);
+    } else {
+      console.log('[empresaStep] ✓ Dropdown ya tiene opciones, no es necesario poblar');
+    }
   }
 };
 

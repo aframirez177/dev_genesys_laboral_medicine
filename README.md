@@ -128,7 +128,7 @@ cp server/.env.example server/.env
 3. Editar `server/.env` con tus credenciales:
 ```env
 # Configuración de Base de Datos
-DB_HOST=localhost
+DB_HOST=db
 DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=tu_password

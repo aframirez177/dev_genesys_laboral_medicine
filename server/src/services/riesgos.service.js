@@ -1,6 +1,6 @@
 // server/src/services/riesgos.service.js
 import { calcularNivelProbabilidad, calcularNivelRiesgo } from '../utils/risk-calculations.js';
-import { GES_DATOS_PREDEFINIDOS } from '../config/ges-config.js';
+import { GES_DATOS_PREDEFINIDOS, buscarConfigGES } from '../config/ges-config.js';
 
 /**
  * PAQUETE MÍNIMO UNIVERSAL
@@ -91,6 +91,35 @@ const CONTROLES_TOGGLES = {
       'Trastornos del equilibrio severos',
       'Consumo de sustancias psicoactivas'
     ]
+  },
+
+  trabajaEspaciosConfinados: {
+    fundamento: 'Resolución 0491/2020 y NTC 4116 - Trabajo en espacios confinados',
+    examenes: ['EMO', 'ESP', 'ECG', 'GLI', 'PL', 'PSM'],
+    periodicidad: 12, // Anual obligatorio
+    epp: [
+      'Arnés de rescate con punto de anclaje dorsal',
+      'Equipo de respiración autónomo (ERA) o línea de aire',
+      'Detector de gases portátil (O₂, LEL, CO, H₂S)',
+      'Casco con barbuquejo y linterna',
+      'Sistema de comunicación',
+      'Trípode de rescate con winch'
+    ],
+    aptitudes: [
+      'Ausencia de claustrofobia',
+      'Buena función respiratoria',
+      'Capacidad cardiovascular adecuada',
+      'Capacidad para usar equipos de protección respiratoria',
+      'Coordinación motriz para maniobras de rescate'
+    ],
+    condicionesIncompatibles: [
+      'Claustrofobia',
+      'Enfermedades respiratorias severas (asma no controlada, EPOC)',
+      'Arritmias cardíacas o cardiopatías severas',
+      'Epilepsia no controlada',
+      'Obesidad mórbida (dificulta maniobras de rescate)',
+      'Trastornos de ansiedad severos no controlados'
+    ]
   }
 };
 
@@ -110,7 +139,12 @@ class RiesgosService {
     const ne = ges.niveles?.exposicion?.value;
     const nc = ges.niveles?.consecuencia?.value;
 
-    if (!nd || !ne || !nc) {
+    // Validar que los niveles sean números válidos (0 es válido, null/undefined no)
+    const ndValido = nd !== null && nd !== undefined && !isNaN(Number(nd));
+    const neValido = ne !== null && ne !== undefined && !isNaN(Number(ne));
+    const ncValido = nc !== null && nc !== undefined && !isNaN(Number(nc));
+
+    if (!ndValido || !neValido || !ncValido) {
       console.warn(`⚠️ GES "${ges.ges}" no tiene niveles completos (nd=${nd}, ne=${ne}, nc=${nc})`);
       throw new Error(`GES "${ges.ges}" requiere niveles completos (ND, NE, NC)`);
     }
@@ -248,7 +282,8 @@ class RiesgosService {
     const toggles = {
       trabajaAlturas: cargo.trabajaAlturas || false,
       manipulaAlimentos: cargo.manipulaAlimentos || false,
-      conduceVehiculo: cargo.conduceVehiculo || false
+      conduceVehiculo: cargo.conduceVehiculo || false,
+      trabajaEspaciosConfinados: cargo.trabajaEspaciosConfinados || false
     };
 
     controles.porToggle = this.aplicarControlesDeToggles(toggles);
@@ -272,53 +307,116 @@ class RiesgosService {
       try {
         controles.metadata.numGESAnalizados++;
 
-        // Calcular NP y NR
-        const niveles = this.calcularNivelesRiesgo(ges);
+        // ✅ PRIORIZAR DATOS ENRIQUECIDOS DESDE BD (ges tiene los datos del catálogo)
+        // Si no hay datos enriquecidos, usar fallback a GES_DATOS_PREDEFINIDOS
+        let gesConfig;
 
-        // Actualizar metadata
-        if (niveles.nr > controles.metadata.nrMaximo) {
-          controles.metadata.nrMaximo = niveles.nr;
-        }
-        if (niveles.nr < controles.metadata.nrMinimo) {
-          controles.metadata.nrMinimo = niveles.nr;
-        }
-
-        // Obtener config del GES
-        const gesConfig = GES_DATOS_PREDEFINIDOS[ges.ges];
-        if (!gesConfig) {
-          console.warn(`⚠️ GES "${ges.ges}" no encontrado en GES_DATOS_PREDEFINIDOS`);
-          // Continuar con el siguiente GES
-          return;
-        }
-
-        // Determinar controles según NR
-        const controlesGes = this.determinarControlesPorNR(niveles.nr, gesConfig, umbrales);
-
-        // Clasificar GES por nivel
-        if (niveles.nr >= 121) { // NR ≥ III (Alto o Crítico)
-          controles.metadata.gesConNRAlto.push({
-            ges: ges.ges,
-            nr: niveles.nr,
-            nivel: niveles.nrNivel,
-            interpretacion: niveles.nrInterpretacion
-          });
-        } else if (niveles.nr < 41) { // NR I (Bajo)
-          controles.metadata.gesConNRBajo.push({
-            ges: ges.ges,
-            nr: niveles.nr,
-            nivel: niveles.nrNivel,
-            interpretacion: niveles.nrInterpretacion
-          });
+        if (ges.eppSugeridos || ges.aptitudesRequeridas || ges.examenesMedicos) {
+          // ✅ Usar datos enriquecidos desde BD
+          gesConfig = {
+            consecuencias: ges.efectosPosibles,
+            peorConsecuencia: ges.peorConsecuencia,
+            examenesMedicos: ges.examenesMedicos || {},
+            aptitudesRequeridas: ges.aptitudesRequeridas || [],
+            condicionesIncompatibles: ges.condicionesIncompatibles || [],
+            eppSugeridos: ges.eppSugeridos || [],
+            medidasIntervencion: ges.medidasIntervencion || {}
+          };
+        } else {
+          // Fallback a datos predefinidos (con soporte para alias)
+          gesConfig = buscarConfigGES(ges.ges);
+          if (!gesConfig) {
+            console.warn(`⚠️ GES "${ges.ges}" no encontrado en BD ni en GES_DATOS_PREDEFINIDOS (tampoco por alias)`);
+            // Aún así registrar el GES como identificado pero sin controles
+            controles.porGES.push({
+              gesNombre: ges.ges,
+              tipoRiesgo: ges.riesgo,
+              niveles: { nd: null, ne: null, nc: null, np: null, nr: null, nrNivel: 'N/A', nrInterpretacion: 'Sin datos de configuración' },
+              controlesAplicados: false,
+              controles: { epp: [], examenes: [], aptitudes: [], condicionesIncompatibles: [] },
+              justificacion: 'GES no encontrado en catálogo',
+              efectosPosibles: 'No especificado',
+              peorConsecuencia: 'No especificado'
+            });
+            return;
+          }
         }
 
-        // Guardar detalle del GES procesado
+        // Intentar calcular NP y NR
+        let niveles;
+        let nivelesValidos = true;
+        try {
+          niveles = this.calcularNivelesRiesgo(ges);
+        } catch (nivelesError) {
+          // GES identificado pero sin niveles completos - aún lo registramos
+          nivelesValidos = false;
+          niveles = {
+            nd: ges.niveles?.deficiencia?.value ?? null,
+            ne: ges.niveles?.exposicion?.value ?? null,
+            nc: ges.niveles?.consecuencia?.value ?? null,
+            np: null,
+            nr: null,
+            nrNivel: 'N/A',
+            nrInterpretacion: 'Niveles incompletos'
+          };
+          console.warn(`⚠️ GES "${ges.ges}" registrado sin NR calculado: ${nivelesError.message}`);
+        }
+
+        // Actualizar metadata solo si hay niveles válidos
+        if (nivelesValidos && niveles.nr !== null) {
+          if (niveles.nr > controles.metadata.nrMaximo) {
+            controles.metadata.nrMaximo = niveles.nr;
+          }
+          if (niveles.nr < controles.metadata.nrMinimo) {
+            controles.metadata.nrMinimo = niveles.nr;
+          }
+        }
+
+        // Determinar controles según NR (solo si hay NR válido)
+        let controlesGes;
+        if (nivelesValidos && niveles.nr !== null) {
+          controlesGes = this.determinarControlesPorNR(niveles.nr, gesConfig, umbrales);
+
+          // Clasificar GES por nivel
+          if (niveles.nr >= 121) { // NR ≥ III (Alto o Crítico)
+            controles.metadata.gesConNRAlto.push({
+              ges: ges.ges,
+              nr: niveles.nr,
+              nivel: niveles.nrNivel,
+              interpretacion: niveles.nrInterpretacion
+            });
+          } else if (niveles.nr < 41) { // NR I (Bajo)
+            controles.metadata.gesConNRBajo.push({
+              ges: ges.ges,
+              nr: niveles.nr,
+              nivel: niveles.nrNivel,
+              interpretacion: niveles.nrInterpretacion
+            });
+          }
+        } else {
+          // Sin niveles válidos, no aplicar controles específicos
+          controlesGes = {
+            aplicaControles: false,
+            epp: [],
+            examenes: [],
+            aptitudes: [],
+            condicionesIncompatibles: [],
+            periodicidad: 36,
+            justificacion: 'Niveles de riesgo no configurados'
+          };
+        }
+
+        // Guardar detalle del GES procesado (SIEMPRE, con o sin niveles)
         controles.porGES.push({
           gesNombre: ges.ges,
           tipoRiesgo: ges.riesgo,
           niveles,
           controlesAplicados: controlesGes.aplicaControles,
           controles: controlesGes,
-          justificacion: controlesGes.justificacion
+          justificacion: controlesGes.justificacion,
+          // ✅ Agregar efectos y consecuencias del config
+          efectosPosibles: gesConfig.consecuencias || 'No especificado',
+          peorConsecuencia: gesConfig.peorConsecuencia || 'No especificado'
         });
 
         // Merge a consolidado (solo si aplica controles)
@@ -340,7 +438,17 @@ class RiesgosService {
 
       } catch (error) {
         console.error(`❌ Error procesando GES "${ges.ges}" (índice ${index}):`, error.message);
-        // Continuar con el siguiente GES
+        // Aún registrar el GES como identificado
+        controles.porGES.push({
+          gesNombre: ges.ges,
+          tipoRiesgo: ges.riesgo,
+          niveles: { nd: null, ne: null, nc: null, np: null, nr: null, nrNivel: 'Error', nrInterpretacion: error.message },
+          controlesAplicados: false,
+          controles: { epp: [], examenes: [], aptitudes: [], condicionesIncompatibles: [] },
+          justificacion: `Error: ${error.message}`,
+          efectosPosibles: 'Error en procesamiento',
+          peorConsecuencia: 'Error en procesamiento'
+        });
       }
     });
 

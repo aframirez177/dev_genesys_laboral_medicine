@@ -1,0 +1,298 @@
+// ==========================================
+// BARRAS SEMAFORIZADAS PARA WIZARD
+// Sistema de teclas hundidas horizontal (4 colores)
+// ==========================================
+
+@use 'sass:map';
+@use 'sass:color';
+@use '../base/variables';
+
+// ==========================================
+// CONTENEDOR DE LA SECCIÓN
+// ==========================================
+
+.niveles-form__section {
+  margin-bottom: 3rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 2.4rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.nivel-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.nivel-section__title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: map.get(variables.$colors, 'text');
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+}
+
+.nivel-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  background: map.get(variables.$colors, 'primary');
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+.nivel-section__help {
+  background: none;
+  border: none;
+  color: map.get(variables.$colors, 'primary');
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.15);
+    color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -15%);
+  }
+}
+
+// ==========================================
+// BARRA HORIZONTAL (TECLAS PEGADAS)
+// Efecto de teclas hundidas con inner-shadow
+// ==========================================
+
+.nivel-bar {
+  display: flex;
+  width: 100%;
+  gap: 0; // ✅ Fix: Sin gap entre opciones
+  background: linear-gradient(180deg, #d8d8d8 0%, #e8e8e8 100%);
+  border-radius: 20px; // ✅ Fix: Radio más grande (14px → 20px)
+  padding: 0;
+  box-shadow:
+    inset 0 3px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+// ==========================================
+// OPCIÓN INDIVIDUAL (TECLA)
+// ==========================================
+
+.nivel-option {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: #f0f0f0;
+  border: none; // ✅ Fix: Sin bordes
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 110px;
+  font-family: map.get(variables.$fonts, 'body');
+
+  // Inner shadow para efecto hundido
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(0, 0, 0, 0.1);
+
+  // Bordes redondeados solo en extremos (actualizados a 20px)
+  &:first-child {
+    border-radius: 20px 0 0 20px; // ✅ Fix: 14px → 20px
+  }
+
+  &:last-child {
+    border-radius: 0 20px 20px 0; // ✅ Fix: 14px → 20px
+  }
+
+  // Overlay de color sutil
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--nivel-color, #999);
+    opacity: 0.18;
+    transition: opacity 0.25s ease;
+  }
+
+  // Hover effect - sube un poco la tecla
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 4px rgba(0, 0, 0, 0.1),
+      0 2px 8px rgba(0, 0, 0, 0.15);
+
+    &::before {
+      opacity: 0.3;
+    }
+  }
+
+  // Selected state - tecla presionada
+  &--selected {
+    background: var(--nivel-color, #999);
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 3px 8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 4px rgba(0, 0, 0, 0.2);
+
+    &::before {
+      opacity: 0;
+    }
+
+    .nivel-option__label,
+    .nivel-option__value {
+      color: #fff;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .nivel-option__check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    // Caso especial: amarillo - texto oscuro para contraste
+    &[data-value="2"],
+    &[data-value="25"] {
+      .nivel-option__label,
+      .nivel-option__value {
+        color: #2d3238;
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+      }
+
+      .nivel-option__check {
+        color: #2d3238;
+
+        i {
+          filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.8));
+        }
+      }
+    }
+  }
+
+  // Active/Click effect - presiona más
+  &:active {
+    transform: translateY(3px);
+    box-shadow:
+      inset 0 4px 10px rgba(0, 0, 0, 0.35),
+      inset 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+
+  // En móvil: quitar bordes laterales
+  @media (max-width: 768px) {
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    &:first-child {
+      border-radius: 14px 14px 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 14px 14px;
+      border-bottom: none;
+    }
+  }
+}
+
+// ==========================================
+// ELEMENTOS INTERNOS
+// ==========================================
+
+.nivel-option__label {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: map.get(variables.$colors, 'text');
+  text-align: center;
+  margin-bottom: 0.6rem;
+  transition: all 0.25s ease;
+  line-height: 1.3;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    font-size: 1.05rem;
+  }
+}
+
+.nivel-option__value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: map.get(variables.$colors, 'text');
+  transition: all 0.25s ease;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    font-size: 1.9rem;
+  }
+}
+
+.nivel-option__check {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  font-size: 1.6rem;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 2;
+
+  i {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+}
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+
+@media (max-width: 768px) {
+  .niveles-form__section {
+    padding: 1.8rem;
+  }
+
+  .nivel-section__title {
+    font-size: 1.6rem;
+  }
+
+  .nivel-badge {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.2rem;
+  }
+
+  .nivel-option {
+    min-height: 90px;
+    padding: 1.6rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .niveles-form__section {
+    padding: 1.5rem;
+  }
+
+  .nivel-section__title {
+    font-size: 1.5rem;
+  }
+
+  .nivel-option {
+    min-height: 80px;
+    padding: 1.4rem 0.8rem;
+  }
+}

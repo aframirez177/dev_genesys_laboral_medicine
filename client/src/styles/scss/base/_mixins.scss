@@ -6,8 +6,16 @@
     $value: map.get(vars.$breakpoints, $breakpoint);
 
     @if $value != null {
-        @media screen and (min-width: $value) {
-        @content;
+        // Mobile usa max-width (hasta ese tamaño)
+        // Desktop/tablet usa min-width (desde ese tamaño)
+        @if $breakpoint == 'mobile' {
+            @media screen and (max-width: $value) {
+                @content;
+            }
+        } @else {
+            @media screen and (min-width: $value) {
+                @content;
+            }
         }
     } @else {
         @warn "Unknown breakpoint: #{$breakpoint}.";
@@ -75,3 +83,188 @@
         @mixin smooth-weight-transition($duration: 0.3s) {
             transition: transform $duration ease;
         }
+
+// ========================================
+// 📏 MIXINS DE ESPACIADO MODERNO
+// ========================================
+
+// Espaciado de secciones (padding vertical)
+@mixin section-padding($size: "lg") {
+    $padding-value: map.get(vars.$spacing, $size);
+    
+    @if $padding-value {
+        padding-top: $padding-value;
+        padding-bottom: $padding-value;
+    } @else {
+        @warn "Unknown spacing size: #{$size}. Using default 'lg'.";
+        padding-top: map.get(vars.$spacing, "lg");
+        padding-bottom: map.get(vars.$spacing, "lg");
+    }
+}
+
+// Espaciado de contenedor (padding horizontal)
+@mixin container-padding($size: "md") {
+    $padding-value: map.get(vars.$spacing, $size);
+    
+    @if $padding-value {
+        padding-left: $padding-value;
+        padding-right: $padding-value;
+    } @else {
+        padding-left: map.get(vars.$spacing, "md");
+        padding-right: map.get(vars.$spacing, "md");
+    }
+}
+
+// Margin bottom responsive
+@mixin margin-bottom($size: "md") {
+    $margin-value: map.get(vars.$spacing, $size);
+    
+    @if $margin-value {
+        margin-bottom: $margin-value;
+    } @else {
+        margin-bottom: map.get(vars.$spacing, "md");
+    }
+}
+
+// Gap para flexbox/grid
+@mixin gap($size: "md") {
+    $gap-value: map.get(vars.$spacing, $size);
+    
+    @if $gap-value {
+        gap: $gap-value;
+    } @else {
+        gap: map.get(vars.$spacing, "md");
+    }
+}
+
+// ========================================
+// 🎭 MIXINS DE EFECTOS VISUALES
+// ========================================
+
+// Sombra de caja
+@mixin box-shadow($size: "md") {
+    $shadow-value: map.get(vars.$shadows, $size);
+    
+    @if $shadow-value {
+        box-shadow: $shadow-value;
+    } @else {
+        box-shadow: map.get(vars.$shadows, "md");
+    }
+}
+
+// Border radius
+@mixin rounded($size: "md") {
+    $radius-value: map.get(vars.$radius, $size);
+    
+    @if $radius-value {
+        border-radius: $radius-value;
+    } @else {
+        border-radius: map.get(vars.$radius, "md");
+    }
+}
+
+// Transición suave
+@mixin transition($speed: "base") {
+    $transition-value: map.get(vars.$transitions, $speed);
+    
+    @if $transition-value {
+        transition: all $transition-value;
+    } @else {
+        transition: all map.get(vars.$transitions, "base");
+    }
+}
+
+// ========================================
+// 🎯 MIXINS DE LAYOUT
+// ========================================
+
+// Grid responsive
+@mixin grid-responsive($min-col-width: 250px, $gap: "md") {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax($min-col-width, 1fr));
+    gap: map.get(vars.$spacing, $gap);
+}
+
+// Contenedor centrado
+@mixin container($max-width: 1200px) {
+    max-width: $max-width;
+    margin-left: auto;
+    margin-right: auto;
+    @include container-padding();
+}
+
+// Aspect ratio
+@mixin aspect-ratio($width, $height) {
+    aspect-ratio: #{$width} / #{$height};
+    
+    // Fallback para navegadores antiguos
+    @supports not (aspect-ratio: 1 / 1) {
+        position: relative;
+        &::before {
+            content: "";
+            display: block;
+            padding-bottom: calc(#{$height} / #{$width} * 100%);
+        }
+    }
+}
+
+// ========================================
+// ♿ MIXINS DE ACCESIBILIDAD
+// ========================================
+
+// Focus visible accesible
+@mixin focus-visible {
+    &:focus-visible {
+        outline: 3px solid map.get(vars.$colors, "text-primary-accessible");
+        outline-offset: 2px;
+        border-radius: map.get(vars.$radius, "sm");
+    }
+}
+
+// Texto accesible sobre fondo
+// NOTA: 1rem = 10px
+@mixin text-on-background($bg-opacity: 0.9) {
+    background-color: rgba(255, 255, 255, $bg-opacity);
+    padding: 0.4rem 0.8rem;  // 4px 8px
+    border-radius: map.get(vars.$radius, "sm");
+}
+
+// Truncar texto con ellipsis
+@mixin truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Truncar texto multilínea
+@mixin line-clamp($lines: 2) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// ========================================
+// 🎨 MIXINS DE IMAGEN
+// ========================================
+
+// Imagen responsive con object-fit
+@mixin img-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+// Imagen con lazy loading
+@mixin img-lazy {
+    @include img-cover;
+    &[loading="lazy"] {
+        opacity: 0;
+        transition: opacity 0.3s ease-in;
+        
+        &.loaded {
+            opacity: 1;
+        }
+    }
+}

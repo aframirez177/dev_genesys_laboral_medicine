@@ -1,0 +1,549 @@
+// ===========================================
+// DASHBOARD PREMIUM - BADGES
+// Sprint 6 - Fase B
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+@use "sass:color";
+
+// =====================
+// BASE BADGE
+// =====================
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: tokens.$space-1 tokens.$space-2;
+    border-radius: tokens.$radius-full;
+    font-family: tokens.$font-family-body;
+    font-size: tokens.$font-xs;
+    font-weight: tokens.$font-semibold;
+    line-height: 1;
+    white-space: nowrap;
+    vertical-align: middle;
+
+    // Tamaños
+    &--sm {
+        padding: 2px tokens.$space-1;
+        font-size: 10px;
+    }
+
+    &--lg {
+        padding: tokens.$space-2 tokens.$space-3;
+        font-size: tokens.$font-small;
+    }
+
+    // Con icono
+    svg {
+        width: 12px;
+        height: 12px;
+        margin-right: tokens.$space-1;
+    }
+
+    &--icon-only {
+        padding: tokens.$space-1;
+        
+        svg {
+            margin-right: 0;
+        }
+    }
+}
+
+// =====================
+// ESTADO BADGES
+// =====================
+.badge--primary {
+    background: tokens.$dashboard-primary;
+    color: tokens.$dashboard-secondary;
+}
+
+.badge--secondary {
+    background: tokens.$dashboard-secondary;
+    color: tokens.$dashboard-white;
+}
+
+.badge--success {
+    background: tokens.$dashboard-success;
+    color: tokens.$dashboard-white;
+}
+
+.badge--warning {
+    background: tokens.$dashboard-warning;
+    color: tokens.$dashboard-secondary;
+}
+
+.badge--danger {
+    background: tokens.$dashboard-danger;
+    color: tokens.$dashboard-white;
+}
+
+.badge--info {
+    background: tokens.$dashboard-info;
+    color: tokens.$dashboard-white;
+}
+
+// Variantes light/outline
+.badge--primary-light {
+    background: rgba(tokens.$dashboard-primary, 0.1);
+    color: tokens.$dashboard-primary;
+}
+
+.badge--success-light {
+    background: rgba(tokens.$dashboard-success, 0.1);
+    color: tokens.$dashboard-success;
+}
+
+.badge--warning-light {
+    background: rgba(tokens.$dashboard-warning, 0.1);
+    color: color.adjust(tokens.$dashboard-warning, $lightness: -15%);
+}
+
+.badge--danger-light {
+    background: rgba(tokens.$dashboard-danger, 0.1);
+    color: tokens.$dashboard-danger;
+}
+
+.badge--info-light {
+    background: rgba(tokens.$dashboard-info, 0.1);
+    color: tokens.$dashboard-info;
+}
+
+// =====================
+// AI BADGE
+// =====================
+.badge--ai {
+    background: tokens.$dashboard-ai-gradient;
+    color: tokens.$dashboard-white;
+    animation: ai-glow 3s ease-in-out infinite;
+
+    svg {
+        animation: sparkle 2s ease-in-out infinite;
+    }
+}
+
+@keyframes ai-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(tokens.$dashboard-ai-purple, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(tokens.$dashboard-ai-purple, 0.5);
+    }
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+// =====================
+// NEW BADGE
+// =====================
+.badge--new {
+    background: tokens.$dashboard-badge-new;
+    color: tokens.$dashboard-white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+// =====================
+// COUNT BADGE
+// =====================
+.badge--count {
+    background: tokens.$dashboard-badge-count;
+    color: tokens.$dashboard-white;
+    min-width: 20px;
+    text-align: center;
+    padding: tokens.$space-1;
+    border-radius: 50%;
+
+    &.badge--lg {
+        min-width: 24px;
+        border-radius: tokens.$radius-full;
+    }
+}
+
+// =====================
+// RISK LEVEL BADGES (GTC-45)
+// =====================
+.risk-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 24px;
+    padding: 0 tokens.$space-2;
+    border-radius: tokens.$radius-sm;
+    font-family: tokens.$font-family-title;
+    font-size: tokens.$font-small;
+    font-weight: tokens.$font-bold;
+    color: tokens.$dashboard-white;
+    text-transform: uppercase;
+
+    // Nivel I - Aceptable
+    &--i, &--level-1 {
+        background: tokens.$risk-level-i;
+    }
+
+    // Nivel II - Aceptable con control
+    &--ii, &--level-2 {
+        background: tokens.$risk-level-ii;
+    }
+
+    // Nivel III - Moderado
+    &--iii, &--level-3 {
+        background: tokens.$risk-level-iii;
+        color: tokens.$dashboard-secondary;
+    }
+
+    // Nivel IV - Importante
+    &--iv, &--level-4 {
+        background: tokens.$risk-level-iv;
+    }
+
+    // Nivel V - Intolerable
+    &--v, &--level-5 {
+        background: tokens.$risk-level-v;
+    }
+
+    // Con descripción
+    &--descriptive {
+        min-width: auto;
+        padding: tokens.$space-1 tokens.$space-3;
+    }
+}
+
+// =====================
+// STATUS BADGES (Exámenes médicos)
+// =====================
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: tokens.$space-1;
+    padding: tokens.$space-1 tokens.$space-3;
+    border-radius: tokens.$radius-full;
+    font-size: tokens.$font-small;
+    font-weight: tokens.$font-semibold;
+
+    // Dot indicator
+    &__dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+
+    // Al día
+    &--al-dia, &--on-track {
+        background: rgba(tokens.$dashboard-success, 0.1);
+        color: tokens.$dashboard-success;
+
+        .status-badge__dot {
+            background: tokens.$dashboard-success;
+        }
+    }
+
+    // Próximo a vencer
+    &--proximo, &--upcoming {
+        background: rgba(tokens.$dashboard-warning, 0.1);
+        color: color.adjust(tokens.$dashboard-warning, $lightness: -15%);
+
+        .status-badge__dot {
+            background: tokens.$dashboard-warning;
+        }
+    }
+
+    // Vencido
+    &--vencido, &--expired {
+        background: rgba(tokens.$dashboard-danger, 0.1);
+        color: tokens.$dashboard-danger;
+
+        .status-badge__dot {
+            background: tokens.$dashboard-danger;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+    }
+
+    // Por agendar
+    &--agendar, &--schedule {
+        background: rgba(tokens.$dashboard-info, 0.1);
+        color: tokens.$dashboard-info;
+
+        .status-badge__dot {
+            background: tokens.$dashboard-info;
+        }
+    }
+
+    // En proceso
+    &--en-proceso, &--in-progress {
+        background: rgba(tokens.$dashboard-ai-purple, 0.1);
+        color: tokens.$dashboard-ai-purple;
+
+        .status-badge__dot {
+            background: tokens.$dashboard-ai-purple;
+        }
+    }
+
+    // Completado
+    &--completado, &--completed {
+        background: rgba(tokens.$dashboard-success, 0.1);
+        color: tokens.$dashboard-success;
+
+        .status-badge__dot {
+            background: tokens.$dashboard-success;
+        }
+    }
+
+    // Cancelado
+    &--cancelado, &--cancelled {
+        background: rgba(tokens.$dashboard-text-light, 0.1);
+        color: tokens.$dashboard-text-light;
+
+        .status-badge__dot {
+            background: tokens.$dashboard-text-light;
+        }
+    }
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.3);
+    }
+}
+
+// =====================
+// CATEGORY BADGES
+// =====================
+.category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    padding: tokens.$space-2 tokens.$space-3;
+    border-radius: tokens.$radius-md;
+    font-size: tokens.$font-small;
+    font-weight: tokens.$font-medium;
+    background: tokens.$dashboard-background;
+    color: tokens.$dashboard-text;
+    border: 1px solid tokens.$header-border;
+
+    &__icon {
+        width: 16px;
+        height: 16px;
+        color: tokens.$dashboard-text-light;
+    }
+
+    // Variantes por tipo de peligro GTC-45
+    &--biologico {
+        background: rgba(#10b981, 0.1);
+        border-color: #10b981;
+        color: #10b981;
+    }
+
+    &--fisico {
+        background: rgba(#3b82f6, 0.1);
+        border-color: #3b82f6;
+        color: #3b82f6;
+    }
+
+    &--quimico {
+        background: rgba(#f59e0b, 0.1);
+        border-color: #f59e0b;
+        color: #f59e0b;
+    }
+
+    &--psicosocial {
+        background: rgba(#8b5cf6, 0.1);
+        border-color: #8b5cf6;
+        color: #8b5cf6;
+    }
+
+    &--biomecanico {
+        background: rgba(#ec4899, 0.1);
+        border-color: #ec4899;
+        color: #ec4899;
+    }
+
+    &--condiciones-seguridad {
+        background: rgba(#ef4444, 0.1);
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+
+    &--fenomenos-naturales {
+        background: rgba(#64748b, 0.1);
+        border-color: #64748b;
+        color: #64748b;
+    }
+}
+
+// =====================
+// NOTIFICATION DOT
+// =====================
+.notification-dot {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 8px;
+        height: 8px;
+        background: tokens.$dashboard-danger;
+        border-radius: 50%;
+        border: 2px solid tokens.$dashboard-white;
+    }
+
+    &--success::after {
+        background: tokens.$dashboard-success;
+    }
+
+    &--warning::after {
+        background: tokens.$dashboard-warning;
+    }
+
+    &--info::after {
+        background: tokens.$dashboard-info;
+    }
+}
+
+// =====================
+// LIVE BADGE
+// =====================
+.badge--live {
+    background: tokens.$dashboard-live-green;
+    color: tokens.$dashboard-white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        background: tokens.$dashboard-white;
+        border-radius: 50%;
+        margin-right: tokens.$space-2;
+        animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+}
+
+// =====================
+// PERCENTAGE BADGE
+// =====================
+.badge--percentage {
+    font-family: tokens.$font-family-title;
+    font-weight: tokens.$font-bold;
+    padding: tokens.$space-2 tokens.$space-3;
+
+    &.high {
+        background: rgba(tokens.$dashboard-success, 0.1);
+        color: tokens.$dashboard-success;
+    }
+
+    &.medium {
+        background: rgba(tokens.$dashboard-warning, 0.1);
+        color: color.adjust(tokens.$dashboard-warning, $lightness: -10%);
+    }
+
+    &.low {
+        background: rgba(tokens.$dashboard-danger, 0.1);
+        color: tokens.$dashboard-danger;
+    }
+}
+
+// =====================
+// TAG BADGE (Removable)
+// =====================
+.tag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: tokens.$space-1;
+    padding: tokens.$space-1 tokens.$space-2;
+    background: tokens.$dashboard-background;
+    border: 1px solid tokens.$header-border;
+    border-radius: tokens.$radius-md;
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text;
+
+    &__remove {
+        width: 14px;
+        height: 14px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        @include tokens.flex-center;
+        cursor: pointer;
+        border-radius: 50%;
+        transition: background tokens.$transition-fast;
+
+        svg {
+            width: 10px;
+            height: 10px;
+            color: tokens.$dashboard-text-light;
+            margin: 0;
+        }
+
+        &:hover {
+            background: rgba(tokens.$dashboard-danger, 0.1);
+
+            svg {
+                color: tokens.$dashboard-danger;
+            }
+        }
+    }
+}
+
+// =====================
+// PRIORITY BADGE
+// =====================
+.priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: tokens.$space-1;
+    padding: tokens.$space-1 tokens.$space-2;
+    border-radius: tokens.$radius-sm;
+    font-size: tokens.$font-xs;
+    font-weight: tokens.$font-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+
+    &--critical {
+        background: tokens.$dashboard-danger;
+        color: tokens.$dashboard-white;
+    }
+
+    &--high {
+        background: tokens.$risk-level-iv;
+        color: tokens.$dashboard-white;
+    }
+
+    &--medium {
+        background: tokens.$dashboard-warning;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &--low {
+        background: tokens.$dashboard-success;
+        color: tokens.$dashboard-white;
+    }
+}
+

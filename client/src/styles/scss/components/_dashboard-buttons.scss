@@ -1,0 +1,802 @@
+// ===========================================
+// DASHBOARD PREMIUM - BUTTONS & FORMS
+// Sprint 6 - Fase B
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+@use "sass:color";
+
+// =====================
+// BASE BUTTON
+// =====================
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: tokens.$space-2;
+    padding: tokens.$space-2 tokens.$space-4;
+    font-family: tokens.$font-family-body;
+    font-size: tokens.$font-body;
+    font-weight: tokens.$font-semibold;
+    line-height: tokens.$leading-normal;
+    text-decoration: none;
+    border-radius: tokens.$radius-md;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all tokens.$transition-normal;
+    @include tokens.focus-ring;
+
+    svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    // Tamaños
+    &--sm {
+        padding: tokens.$space-1 tokens.$space-3;
+        font-size: tokens.$font-small;
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    &--lg {
+        padding: tokens.$space-3 tokens.$space-6;
+        font-size: tokens.$font-h4;
+    }
+
+    // Full width
+    &--block {
+        width: 100%;
+    }
+
+    // Icon only
+    &--icon {
+        padding: tokens.$space-2;
+        min-width: 40px;
+        min-height: 40px;
+
+        &.btn--sm {
+            min-width: 32px;
+            min-height: 32px;
+            padding: tokens.$space-1;
+        }
+
+        &.btn--lg {
+            min-width: 48px;
+            min-height: 48px;
+        }
+    }
+
+    // Loading state
+    &--loading {
+        position: relative;
+        color: transparent;
+
+        &::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// =====================
+// BUTTON VARIANTS
+// =====================
+.btn--primary {
+    background: tokens.$dashboard-primary;
+    color: tokens.$dashboard-secondary;
+
+    &:hover:not(:disabled) {
+        background: color.adjust(tokens.$dashboard-primary, $lightness: -8%);
+        transform: translateY(-1px);
+        box-shadow: tokens.$shadow-md;
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+}
+
+.btn--secondary {
+    background: tokens.$dashboard-secondary;
+    color: tokens.$dashboard-white;
+
+    &:hover:not(:disabled) {
+        background: color.adjust(tokens.$dashboard-secondary, $lightness: 8%);
+        transform: translateY(-1px);
+        box-shadow: tokens.$shadow-md;
+    }
+}
+
+.btn--success {
+    background: tokens.$dashboard-success;
+    color: tokens.$dashboard-white;
+
+    &:hover:not(:disabled) {
+        background: color.adjust(tokens.$dashboard-success, $lightness: -8%);
+    }
+}
+
+.btn--warning {
+    background: tokens.$dashboard-warning;
+    color: tokens.$dashboard-secondary;
+
+    &:hover:not(:disabled) {
+        background: color.adjust(tokens.$dashboard-warning, $lightness: -8%);
+    }
+}
+
+.btn--danger {
+    background: tokens.$dashboard-danger;
+    color: tokens.$dashboard-white;
+
+    &:hover:not(:disabled) {
+        background: color.adjust(tokens.$dashboard-danger, $lightness: -8%);
+    }
+}
+
+.btn--ai {
+    background: tokens.$dashboard-ai-gradient;
+    color: tokens.$dashboard-white;
+    border: none;
+
+    &:hover:not(:disabled) {
+        box-shadow: tokens.$shadow-ai-glow;
+        transform: translateY(-1px);
+    }
+}
+
+// Outline variants
+.btn--outline {
+    background: transparent;
+    border: 1px solid tokens.$header-border;
+    color: tokens.$dashboard-text;
+
+    &:hover:not(:disabled) {
+        background: tokens.$dashboard-background;
+        border-color: tokens.$dashboard-text-light;
+    }
+}
+
+.btn--outline-primary {
+    background: transparent;
+    border: 1px solid tokens.$dashboard-primary;
+    color: tokens.$dashboard-primary;
+
+    &:hover:not(:disabled) {
+        background: rgba(tokens.$dashboard-primary, 0.1);
+    }
+}
+
+.btn--outline-danger {
+    background: transparent;
+    border: 1px solid tokens.$dashboard-danger;
+    color: tokens.$dashboard-danger;
+
+    &:hover:not(:disabled) {
+        background: rgba(tokens.$dashboard-danger, 0.1);
+    }
+}
+
+// Ghost variant
+.btn--ghost {
+    background: transparent;
+    color: tokens.$dashboard-text-light;
+
+    &:hover:not(:disabled) {
+        background: tokens.$dashboard-background;
+        color: tokens.$dashboard-text;
+    }
+}
+
+.btn--ghost-primary {
+    background: transparent;
+    color: tokens.$dashboard-primary;
+
+    &:hover:not(:disabled) {
+        background: rgba(tokens.$dashboard-primary, 0.1);
+    }
+}
+
+// =====================
+// BUTTON GROUPS
+// =====================
+.btn-group {
+    display: inline-flex;
+
+    .btn {
+        border-radius: 0;
+
+        &:first-child {
+            border-radius: tokens.$radius-md 0 0 tokens.$radius-md;
+        }
+
+        &:last-child {
+            border-radius: 0 tokens.$radius-md tokens.$radius-md 0;
+        }
+
+        &:not(:last-child) {
+            border-right: none;
+        }
+    }
+
+    &--vertical {
+        flex-direction: column;
+
+        .btn {
+            &:first-child {
+                border-radius: tokens.$radius-md tokens.$radius-md 0 0;
+            }
+
+            &:last-child {
+                border-radius: 0 0 tokens.$radius-md tokens.$radius-md;
+            }
+
+            &:not(:last-child) {
+                border-right: 1px solid;
+                border-bottom: none;
+            }
+        }
+    }
+}
+
+// =====================
+// FORM ELEMENTS
+// =====================
+.form-group {
+    margin-bottom: tokens.$space-4;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.form-label {
+    display: block;
+    font-size: tokens.$font-body;
+    font-weight: tokens.$font-medium;
+    color: tokens.$dashboard-text;
+    margin-bottom: tokens.$space-2;
+
+    &--required::after {
+        content: '*';
+        color: tokens.$dashboard-danger;
+        margin-left: tokens.$space-1;
+    }
+}
+
+.form-input {
+    width: 100%;
+    height: 40px;
+    padding: 0 tokens.$space-4;
+    background: tokens.$dashboard-white;
+    border: 1px solid tokens.$header-border;
+    border-radius: tokens.$radius-md;
+    font-family: tokens.$font-family-body;
+    font-size: tokens.$font-body;
+    color: tokens.$dashboard-text;
+    transition: all tokens.$transition-normal;
+
+    &::placeholder {
+        color: tokens.$dashboard-text-light;
+    }
+
+    &:hover {
+        border-color: tokens.$dashboard-text-light;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: tokens.$dashboard-primary;
+        box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.1);
+    }
+
+    &:disabled {
+        background: tokens.$dashboard-background;
+        cursor: not-allowed;
+    }
+
+    &--error {
+        border-color: tokens.$dashboard-danger;
+
+        &:focus {
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-danger, 0.1);
+        }
+    }
+
+    &--sm {
+        height: 32px;
+        padding: 0 tokens.$space-3;
+        font-size: tokens.$font-small;
+    }
+
+    &--lg {
+        height: 48px;
+        font-size: tokens.$font-h4;
+    }
+}
+
+.form-textarea {
+    @extend .form-input;
+    height: auto;
+    min-height: 100px;
+    padding: tokens.$space-3 tokens.$space-4;
+    resize: vertical;
+}
+
+.form-select {
+    @extend .form-input;
+    appearance: none;
+    padding-right: tokens.$space-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right tokens.$space-3 center;
+    cursor: pointer;
+}
+
+.form-help {
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text-light;
+    margin-top: tokens.$space-1;
+}
+
+.form-error {
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-danger;
+    margin-top: tokens.$space-1;
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-1;
+
+    svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+// =====================
+// CHECKBOX & RADIO
+// =====================
+.form-checkbox,
+.form-radio {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    cursor: pointer;
+
+    input {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        appearance: none;
+        border: 2px solid tokens.$header-border;
+        background: tokens.$dashboard-white;
+        cursor: pointer;
+        transition: all tokens.$transition-fast;
+
+        &:hover {
+            border-color: tokens.$dashboard-primary;
+        }
+
+        &:checked {
+            background: tokens.$dashboard-primary;
+            border-color: tokens.$dashboard-primary;
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.1);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &__label {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        user-select: none;
+    }
+}
+
+.form-checkbox input {
+    border-radius: tokens.$radius-sm;
+
+    &:checked {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23383d47' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+}
+
+.form-radio input {
+    border-radius: 50%;
+
+    &:checked {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Ccircle cx='4' cy='4' r='4' fill='%23383d47'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+}
+
+// =====================
+// SWITCH/TOGGLE
+// =====================
+.form-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: tokens.$space-3;
+    cursor: pointer;
+
+    input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+
+        &:checked + .form-switch__track {
+            background: tokens.$dashboard-primary;
+
+            .form-switch__thumb {
+                transform: translateX(20px);
+            }
+        }
+
+        &:focus + .form-switch__track {
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.1);
+        }
+
+        &:disabled + .form-switch__track {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &__track {
+        width: 44px;
+        height: 24px;
+        background: tokens.$header-border;
+        border-radius: tokens.$radius-full;
+        transition: background tokens.$transition-normal;
+        position: relative;
+    }
+
+    &__thumb {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: tokens.$dashboard-white;
+        border-radius: 50%;
+        box-shadow: tokens.$shadow-sm;
+        transition: transform tokens.$transition-normal;
+    }
+
+    &__label {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+    }
+}
+
+// =====================
+// INPUT WITH ICON
+// =====================
+.input-group {
+    position: relative;
+    display: flex;
+
+    .form-input {
+        flex: 1;
+    }
+
+    &--icon-left {
+        .form-input {
+            padding-left: tokens.$space-10;
+        }
+
+        .input-group__icon {
+            position: absolute;
+            left: tokens.$space-3;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: tokens.$dashboard-text-light;
+            pointer-events: none;
+        }
+    }
+
+    &--icon-right {
+        .form-input {
+            padding-right: tokens.$space-10;
+        }
+
+        .input-group__icon {
+            position: absolute;
+            right: tokens.$space-3;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: tokens.$dashboard-text-light;
+        }
+    }
+
+    &__btn {
+        margin-left: tokens.$space-2;
+    }
+}
+
+// =====================
+// TABS
+// =====================
+.tabs {
+    display: flex;
+    gap: tokens.$space-1;
+    border-bottom: 1px solid tokens.$header-border;
+    margin-bottom: tokens.$space-6;
+
+    &__item {
+        padding: tokens.$space-3 tokens.$space-4;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text-light;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        transition: all tokens.$transition-normal;
+        margin-bottom: -1px;
+
+        &:hover {
+            color: tokens.$dashboard-text;
+        }
+
+        &.active {
+            color: tokens.$dashboard-primary;
+            border-bottom-color: tokens.$dashboard-primary;
+        }
+    }
+
+    &--pills {
+        border-bottom: none;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-lg;
+        padding: tokens.$space-1;
+
+        .tabs__item {
+            border-radius: tokens.$radius-md;
+            border-bottom: none;
+            margin-bottom: 0;
+
+            &.active {
+                background: tokens.$dashboard-white;
+                box-shadow: tokens.$shadow-sm;
+            }
+        }
+    }
+}
+
+// =====================
+// DROPDOWN
+// =====================
+.dropdown {
+    position: relative;
+    display: inline-block;
+
+    &__trigger {
+        cursor: pointer;
+    }
+
+    &__menu {
+        position: absolute;
+        top: calc(100% + tokens.$space-1);
+        left: 0;
+        min-width: 180px;
+        background: tokens.$dashboard-white;
+        border: 1px solid tokens.$header-border;
+        border-radius: tokens.$radius-lg;
+        box-shadow: tokens.$shadow-lg;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        transition: all tokens.$transition-normal;
+        z-index: tokens.$z-dropdown;
+
+        &.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        &--right {
+            left: auto;
+            right: 0;
+        }
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        width: 100%;
+        padding: tokens.$space-3 tokens.$space-4;
+        background: transparent;
+        border: none;
+        text-align: left;
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        cursor: pointer;
+        transition: background tokens.$transition-fast;
+
+        svg {
+            width: 18px;
+            height: 18px;
+            color: tokens.$dashboard-text-light;
+        }
+
+        &:hover {
+            background: tokens.$dashboard-background;
+        }
+
+        &--danger {
+            color: tokens.$dashboard-danger;
+
+            svg {
+                color: tokens.$dashboard-danger;
+            }
+        }
+    }
+
+    &__divider {
+        height: 1px;
+        background: tokens.$header-border;
+        margin: tokens.$space-2 0;
+    }
+}
+
+// =====================
+// MODAL
+// =====================
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: tokens.$z-modal-backdrop;
+    opacity: 0;
+    visibility: hidden;
+    transition: all tokens.$transition-normal;
+
+    &.open {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-xl;
+    box-shadow: tokens.$shadow-xl;
+    z-index: tokens.$z-modal;
+    opacity: 0;
+    visibility: hidden;
+    transition: all tokens.$transition-normal;
+    overflow: hidden;
+
+    &.open {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    &--sm {
+        max-width: 360px;
+    }
+
+    &--lg {
+        max-width: 640px;
+    }
+
+    &--xl {
+        max-width: 900px;
+    }
+
+    &__header {
+        @include tokens.flex-between;
+        padding: tokens.$space-6;
+        border-bottom: 1px solid tokens.$header-border;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__close {
+        @extend .btn--ghost;
+        padding: tokens.$space-2;
+        margin: -#{tokens.$space-2};
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    &__body {
+        padding: tokens.$space-6;
+        overflow-y: auto;
+        max-height: calc(90vh - 140px);
+        @include tokens.custom-scrollbar;
+    }
+
+    &__footer {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-top: 1px solid tokens.$header-border;
+        gap: tokens.$space-3;
+
+        &--right {
+            justify-content: flex-end;
+        }
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('tablet') {
+    .modal {
+        max-width: calc(100% - tokens.$space-8);
+        margin: tokens.$space-4;
+
+        &__body {
+            max-height: calc(100vh - 200px);
+        }
+    }
+
+    .tabs {
+        overflow-x: auto;
+        @include tokens.hide-scrollbar;
+
+        &__item {
+            white-space: nowrap;
+        }
+    }
+}
+

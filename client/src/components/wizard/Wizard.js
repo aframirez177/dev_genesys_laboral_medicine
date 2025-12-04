@@ -106,6 +106,17 @@ export class Wizard {
       return;
     }
 
+    // CRÍTICO: Guardar datos del paso actual ANTES de navegar hacia atrás
+    // Esto permite que el usuario vaya atrás sin perder su progreso
+    const currentStepConfig = this.steps[this.currentStep];
+    const stepData = await this.getCurrentStepData();
+    console.log('💾 Saving current step data before going back:', currentStepConfig.id, stepData);
+
+    // Solo guardar si hay datos (evita sobreescribir con vacío)
+    if (Object.keys(stepData).length > 0) {
+      this.data[currentStepConfig.id] = stepData;
+    }
+
     // Restaurar paso anterior del historial
     this.currentStep = this.history.pop();
     console.log('Going back to step:', this.currentStep);
@@ -347,6 +358,7 @@ export class Wizard {
 
   /**
    * Renderizar con animación
+   * Sprint 2.1: Ahora incluye preview del siguiente paso
    */
   async renderWithAnimation(direction) {
     console.log('Starting animation:', direction);
@@ -366,6 +378,11 @@ export class Wizard {
     content.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
     console.log('Cleaned previous animation classes');
 
+    // Sprint 2.1: Mostrar preview del siguiente paso (solo hacia adelante)
+    if (direction === 'forward' && this.currentStep < this.steps.length) {
+      await this.showStepPreview();
+    }
+
     // Animación de salida
     const exitClass = direction === 'forward' ? 'slide-out-left' : 'slide-out-right';
     content.classList.add(exitClass);
@@ -373,9 +390,19 @@ export class Wizard {
 
     await new Promise(resolve => setTimeout(resolve, this.options.animationDuration / 2));
 
+    // Sprint 2.2: Mostrar confirmación "Guardado"
+    this.showSaveConfirmation();
+
     // Render nuevo contenido
     console.log('Rendering new content');
     this.render();
+
+    // CRÍTICO: Ejecutar afterRender hook INMEDIATAMENTE después del render
+    // Esto permite limpiar/modificar el DOM ANTES de que el usuario lo vea
+    const currentStep = this.steps[this.currentStep];
+    if (currentStep.afterRender) {
+      await currentStep.afterRender.call(this, this.data);
+    }
 
     // Animación de entrada
     const newContent = container.querySelector('.wizard-content');
@@ -492,6 +519,85 @@ export class Wizard {
     };
 
     document.addEventListener('keydown', this.keyboardHandler);
+  }
+
+  /**
+   * Sprint 2.1: Mostrar preview del siguiente paso
+   */
+  async showStepPreview() {
+    const nextStep = this.steps[this.currentStep];
+    if (!nextStep) return;
+
+    const container = this.options.container;
+
+    // Crear elemento de preview
+    const preview = document.createElement('div');
+    preview.className = 'wizard-step-preview';
+    preview.innerHTML = `
+      <div class="preview-content">
+        <div class="preview-icon">📋</div>
+        <div class="preview-text">
+          <div class="preview-title">A continuación:</div>
+          <div class="preview-step-name">${nextStep.title}</div>
+        </div>
+      </div>
+    `;
+
+    // Agregar al container
+    container.appendChild(preview);
+
+    // Animar entrada
+    requestAnimationFrame(() => {
+      preview.classList.add('visible');
+    });
+
+    // Esperar 800ms para que el usuario lo vea
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // Animar salida
+    preview.classList.remove('visible');
+    preview.classList.add('exiting');
+
+    // Remover del DOM
+    await new Promise(resolve => setTimeout(resolve, 200));
+    if (preview.parentNode) {
+      preview.parentNode.removeChild(preview);
+    }
+  }
+
+  /**
+   * Sprint 2.2: Mostrar confirmación "Guardado"
+   */
+  showSaveConfirmation() {
+    const container = this.options.container;
+
+    // Crear elemento de confirmación
+    const confirmation = document.createElement('div');
+    confirmation.className = 'wizard-save-confirmation';
+    confirmation.innerHTML = `
+      <div class="save-icon">✓</div>
+      <div class="save-text">Guardado</div>
+    `;
+
+    // Agregar al container
+    container.appendChild(confirmation);
+
+    // Animar entrada
+    requestAnimationFrame(() => {
+      confirmation.classList.add('visible');
+    });
+
+    // Auto-ocultar después de 1.5s
+    setTimeout(() => {
+      confirmation.classList.remove('visible');
+      confirmation.classList.add('exiting');
+
+      setTimeout(() => {
+        if (confirmation.parentNode) {
+          confirmation.parentNode.removeChild(confirmation);
+        }
+      }, 300);
+    }, 1500);
   }
 
   /**

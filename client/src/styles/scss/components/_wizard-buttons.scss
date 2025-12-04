@@ -1,0 +1,555 @@
+@use "sass:map";
+@use "sass:color";
+@use "../base/mixins";
+@use "../base/variables";
+
+// ========================================
+// 🧙‍♂️ SISTEMA UNIFICADO DE BOTONES DEL WIZARD
+// ========================================
+// Diseño coherente para todos los botones del wizard GTC-45
+// Sigue principios WCAG 2.1 AA, grid de 8px, y paleta de colores del proyecto
+
+// ========================================
+// BASE COMÚN PARA TODOS LOS BOTONES DEL WIZARD
+// ========================================
+%wizard-button-base {
+  // Estructura y layout
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem; // 8px
+
+  // Espaciado (múltiplos de 8px)
+  padding: 1.2rem 2.4rem; // 12px 24px
+  min-height: 4.4rem; // 44px - Tamaño mínimo táctil WCAG
+
+  // Tipografía
+  font-family: map.get(variables.$fonts, "body");
+  font-size: 1.6rem; // 16px
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+
+  // Visual
+  border-radius: 1.6rem; // 16px
+  border: 2px solid transparent;
+  cursor: pointer;
+  user-select: none;
+
+  // Transiciones suaves (300ms según design system)
+  transition: all 0.3s ease;
+
+  // Iconos
+  i {
+    font-size: 1.6rem; // 16px
+    transition: transform 0.3s ease;
+  }
+
+  // Estados de hover
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    transform: translateY(-2px);
+    box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.12); // 4px 8px
+
+    i {
+      transform: scale(1.1);
+    }
+  }
+
+  // Estados de active
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    transform: translateY(0);
+    box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.08); // 2px 4px
+  }
+
+  // 🎯 Accesibilidad: Foco visible (WCAG 2.1 AA)
+  &:focus-visible {
+    outline: 3px solid map.get(variables.$colors, "text-primary-accessible");
+    outline-offset: 2px;
+  }
+
+  // Estado deshabilitado
+  &:disabled,
+  &[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// ========================================
+// 🟢 BOTÓN PRIMARY - Acciones principales
+// ========================================
+// Uso: "Siguiente", "Continuar", "Agregar Cargo"
+.wizard-btn-primary {
+  @extend %wizard-button-base;
+  background-color: map.get(variables.$colors, "primary"); // #5dc4af
+  color: #ffffff;
+  border-color: map.get(variables.$colors, "primary");
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #4db09c; // -10% lightness
+    border-color: #4db09c;
+  }
+
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #3d9c88; // -15% lightness
+  }
+}
+
+// ========================================
+// ⚪ BOTÓN SECONDARY - Acciones secundarias
+// ========================================
+// Uso: "Anterior", "Cancelar", "Volver"
+.wizard-btn-secondary {
+  @extend %wizard-button-base;
+  background-color: transparent;
+  color: map.get(variables.$colors, "secondary"); // #383d47
+  border-color: map.get(variables.$colors, "secondary");
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: map.get(variables.$colors, "secondary");
+    color: #ffffff;
+  }
+
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #2c3038; // -10% lightness
+  }
+}
+
+// ========================================
+// 🔵 BOTÓN TERTIARY - Acciones terciarias
+// ========================================
+// Uso: "Cargar Sugerencias", "Saltar", "Limpiar Filtros"
+.wizard-btn-tertiary {
+  @extend %wizard-button-base;
+  background-color: #ffffff;
+  color: map.get(variables.$colors, "text-primary-accessible"); // #5dc4af
+  border-color: map.get(variables.$colors, "text-primary-accessible");
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.06);
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #f7fdfc; // Tono muy claro de primary
+    border-color: #4db09c;
+    color: #4db09c;
+  }
+
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #e8f9f6;
+  }
+}
+
+// ========================================
+// 🟢 BOTÓN SUCCESS - Completar/Finalizar
+// ========================================
+// Uso: "Finalizar", "Guardar", "Completar"
+.wizard-btn-success {
+  @extend %wizard-button-base;
+  background-color: map.get(variables.$colors, "success"); // #4caf50
+  color: #ffffff;
+  border-color: map.get(variables.$colors, "success");
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #43a047; // -10% lightness
+    border-color: #43a047;
+  }
+
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #388e3c; // -15% lightness
+  }
+}
+
+// ========================================
+// 🔴 BOTÓN DANGER - Acciones destructivas
+// ========================================
+// Uso: "Eliminar", "Descartar"
+.wizard-btn-danger {
+  @extend %wizard-button-base;
+  background-color: map.get(variables.$colors, "danger"); // #f44336
+  color: #ffffff;
+  border-color: map.get(variables.$colors, "danger");
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #e53935; // -10% lightness
+    border-color: #e53935;
+  }
+
+  &:active:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #d32f2f; // -15% lightness
+  }
+}
+
+// ========================================
+// 📐 VARIACIONES DE TAMAÑO
+// ========================================
+.wizard-btn-sm {
+  padding: 0.8rem 1.6rem; // 8px 16px
+  min-height: 3.6rem; // 36px
+  font-size: 1.4rem; // 14px
+  border-radius: 1.2rem; // 12px
+
+  i {
+    font-size: 1.4rem;
+  }
+}
+
+.wizard-btn-lg {
+  padding: 1.6rem 3.2rem; // 16px 32px
+  min-height: 5.6rem; // 56px
+  font-size: 1.8rem; // 18px
+  border-radius: 2rem; // 20px
+
+  i {
+    font-size: 1.8rem;
+  }
+}
+
+.wizard-btn-compact {
+  padding: 0.8rem 1.6rem; // 8px 16px
+  min-height: 3.6rem; // 36px
+  font-size: 1.4rem; // 14px
+}
+
+// Botón de ancho completo
+.wizard-btn-full {
+  width: 100%;
+}
+
+// ========================================
+// ⏳ ESTADO DE LOADING
+// ========================================
+.wizard-btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+
+  // Ocultar iconos cuando está loading
+  i {
+    opacity: 0;
+  }
+
+  // Spinner animado
+  &::after {
+    content: "";
+    position: absolute;
+    width: 1.6rem; // 16px
+    height: 1.6rem; // 16px
+    top: 50%;
+    left: 50%;
+    margin-left: -0.8rem; // -8px
+    margin-top: -0.8rem; // -8px
+    border: 3px solid currentColor;
+    border-radius: 50%;
+    border-right-color: transparent;
+    animation: wizard-btn-spin 0.6s linear infinite;
+  }
+}
+
+@keyframes wizard-btn-spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// ========================================
+// 🎯 BOTONES DE ICONOS
+// ========================================
+// Uso: Editar, eliminar, acciones rápidas
+.wizard-btn-icon {
+  @extend %wizard-button-base;
+  padding: 0.8rem; // 8px
+  min-width: 3.6rem; // 36px
+  min-height: 3.6rem; // 36px
+  border-radius: 0.8rem; // 8px
+  background-color: transparent;
+  color: map.get(variables.$colors, "text-dark");
+  border-color: transparent;
+
+  i {
+    font-size: 1.6rem;
+    margin: 0;
+  }
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: rgba(map.get(variables.$colors, "primary"), 0.1);
+    color: map.get(variables.$colors, "primary");
+  }
+
+  &--danger {
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: rgba(map.get(variables.$colors, "danger"), 0.1);
+      color: map.get(variables.$colors, "danger");
+    }
+  }
+
+  &--success {
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: rgba(map.get(variables.$colors, "success"), 0.1);
+      color: map.get(variables.$colors, "success");
+    }
+  }
+}
+
+// ========================================
+// 🔄 BOTONES DE TOGGLE/SWITCH
+// ========================================
+// Uso: Vista Comunes/Todas, filtros activos
+.wizard-btn-toggle {
+  @extend %wizard-button-base;
+  padding: 0.8rem 1.6rem; // 8px 16px
+  min-height: 3.6rem; // 36px
+  font-size: 1.4rem; // 14px
+  background-color: #f3f0f0;
+  color: map.get(variables.$colors, "text-dark");
+  border-color: transparent;
+  border-radius: 1.2rem; // 12px
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #e8e5e5;
+  }
+
+  &.active {
+    background-color: map.get(variables.$colors, "primary");
+    color: #ffffff;
+    border-color: map.get(variables.$colors, "primary");
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: #4db09c;
+      border-color: #4db09c;
+    }
+  }
+}
+
+// ========================================
+// 🧩 GRUPOS DE BOTONES
+// ========================================
+.wizard-btn-group {
+  display: flex;
+  gap: 1.6rem; // 16px
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+// ========================================
+// 📱 RESPONSIVE
+// ========================================
+@include mixins.respond-to("mobile") {
+  %wizard-button-base {
+    padding: 0.8rem 1.6rem; // 8px 16px
+    font-size: 1.4rem; // 14px
+    min-height: 4.4rem; // Mantener 44px para táctil
+  }
+
+  .wizard-btn-lg {
+    padding: 1.2rem 2.4rem; // 12px 24px
+    font-size: 1.6rem; // 16px
+  }
+
+  .wizard-btn-group {
+    gap: 0.8rem; // 8px en móvil
+  }
+}
+
+// ========================================
+// 🔙 COMPATIBILIDAD CON CLASES ANTIGUAS
+// ========================================
+// Mapeo de clases antiguas a nuevas para migración gradual
+
+// Sistema 1: .btn-wizard (usado en ControlesManager)
+.btn-wizard {
+  @extend %wizard-button-base;
+
+  &--primary {
+    @extend .wizard-btn-primary;
+  }
+
+  &--secondary {
+    @extend .wizard-btn-secondary;
+  }
+
+  &--tertiary {
+    @extend .wizard-btn-tertiary;
+  }
+
+  &--success {
+    @extend .wizard-btn-success;
+  }
+
+  &--danger {
+    @extend .wizard-btn-danger;
+  }
+}
+
+// Sistema 2: .wizard-btn (usado en WizardCore, NivelesRiesgoForm)
+.wizard-btn {
+  @extend %wizard-button-base;
+
+  &-back {
+    @extend .wizard-btn-secondary;
+  }
+
+  &-next {
+    @extend .wizard-btn-primary;
+  }
+
+  &-primary {
+    @extend .wizard-btn-primary;
+  }
+
+  &-secondary {
+    @extend .wizard-btn-secondary;
+  }
+
+  &-success {
+    @extend .wizard-btn-success;
+  }
+
+  &-danger {
+    @extend .wizard-btn-danger;
+  }
+
+  &-compact {
+    @extend .wizard-btn-compact;
+  }
+
+  &-add-first {
+    @extend .wizard-btn-lg;
+  }
+}
+
+// Sistema 3: .btn (usado en PlantillasManager, CargoEditor)
+.btn {
+  @extend %wizard-button-base;
+
+  &-primary {
+    @extend .wizard-btn-primary;
+  }
+
+  &-secondary {
+    @extend .wizard-btn-secondary;
+  }
+
+  &-success {
+    @extend .wizard-btn-success;
+  }
+
+  &-danger {
+    @extend .wizard-btn-danger;
+  }
+
+  &-sm {
+    @extend .wizard-btn-sm;
+  }
+
+  &-lg {
+    @extend .wizard-btn-lg;
+  }
+
+  &--primary {
+    @extend .wizard-btn-primary;
+  }
+
+  &--secondary {
+    @extend .wizard-btn-secondary;
+  }
+
+  &--compact {
+    @extend .wizard-btn-compact;
+  }
+}
+
+// .btn-icon (usado en WizardCore)
+.btn-icon {
+  @extend .wizard-btn-icon;
+
+  &--danger {
+    @extend .wizard-btn-icon--danger;
+  }
+
+  &--success {
+    @extend .wizard-btn-icon--success;
+  }
+}
+
+// .btn-close (usado en WizardCore para cerrar modales)
+.btn-close {
+  @extend .wizard-btn-icon;
+  color: map.get(variables.$colors, "text-dark");
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: rgba(map.get(variables.$colors, "danger"), 0.1);
+    color: map.get(variables.$colors, "danger");
+  }
+}
+
+// .btn-accion (usado en NivelesRiesgoForm)
+.btn-accion {
+  @extend .wizard-btn-icon;
+
+  &--edit {
+    color: map.get(variables.$colors, "text-primary-accessible");
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: rgba(map.get(variables.$colors, "primary"), 0.1);
+      color: map.get(variables.$colors, "primary");
+    }
+  }
+
+  &--check {
+    color: map.get(variables.$colors, "success");
+
+    &:hover:not(:disabled):not([aria-disabled="true"]) {
+      background-color: rgba(map.get(variables.$colors, "success"), 0.1);
+      color: map.get(variables.$colors, "success");
+    }
+
+    &.validada {
+      background-color: rgba(map.get(variables.$colors, "success"), 0.15);
+    }
+  }
+}
+
+// .btn-sugerencias (usado en ControlesManager y NivelesRiesgoForm)
+.btn-sugerencias {
+  @extend .wizard-btn-tertiary;
+  gap: 1.2rem; // 12px para el icono de bombilla
+
+  i.fa-lightbulb {
+    color: #ff9800; // Color atención/warning para bombilla
+  }
+}
+
+// .view-toggle-btn (usado en RiesgoSelector)
+.view-toggle-btn {
+  @extend .wizard-btn-toggle;
+}
+
+// .tooltip-btn (usado en diagnosticoSteps.js)
+.tooltip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem; // 24px
+  height: 2.4rem; // 24px
+  border-radius: 50%;
+  border: none;
+  background-color: map.get(variables.$colors, "primary");
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.2rem; // 12px
+  cursor: help;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #4db09c;
+    transform: scale(1.15);
+    box-shadow: 0 0.2rem 0.4rem rgba(93, 196, 175, 0.4);
+  }
+
+  &:focus-visible {
+    outline: 2px solid map.get(variables.$colors, "text-primary-accessible");
+    outline-offset: 2px;
+  }
+}

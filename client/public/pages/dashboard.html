@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="../assets/fonts/poppins-v21-latin-700.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+      fetchpriority="high"
+    />
+    <link href="../dashboard.css" rel="stylesheet" />
+    <title>Genesys: Dashboard | Panel de Control SST Premium</title>
+
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="../assets/images/logo_icono_color_vectores_fabicon.svg"
+      sizes="16x10 32x20"
+    />
+
+    <meta
+      name="description"
+      content="Panel de control inteligente de Genesys Laboral Medicine. Gestiona la salud ocupacional, matriz de riesgos GTC-45, exámenes médicos y vigilancia epidemiológica."
+    />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  </head>
+  <body>
+    <div class="dashboard-wrapper">
+      <!-- ============================================ -->
+      <!-- SIDEBAR                                      -->
+      <!-- ============================================ -->
+      <aside class="dashboard-sidebar" id="sidebar">
+        <!-- Logo -->
+        <div class="sidebar-logo">
+          <div class="sidebar-logo__icon">
+            <img src="../assets/images/logo_icono_color_vectores_fabicon.svg" alt="Genesys Logo" />
+          </div>
+          <div class="sidebar-logo__text">
+            <span class="sidebar-logo__text-brand">Genesys</span>
+            <span class="sidebar-logo__text-tagline">Health Intelligence</span>
+          </div>
+        </div>
+
+        <!-- Toggle Button -->
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+          <i data-lucide="chevron-left"></i>
+        </button>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+          <ul class="sidebar-nav__list">
+            <!-- Dashboard Home -->
+            <li>
+              <a href="#" class="sidebar-nav__item active" data-page="home">
+                <span class="sidebar-nav__icon"><i data-lucide="home"></i></span>
+                <span class="sidebar-nav__text">Dashboard</span>
+              </a>
+            </li>
+
+            <!-- Inteligencia de Salud -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="inteligencia">
+                <span class="sidebar-nav__icon"><i data-lucide="brain"></i></span>
+                <span class="sidebar-nav__text">Inteligencia de Salud</span>
+                <span class="sidebar-badge sidebar-badge--new">NEW</span>
+              </a>
+            </li>
+
+            <!-- Mapa Organizacional -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="mapa-org">
+                <span class="sidebar-nav__icon"><i data-lucide="network"></i></span>
+                <span class="sidebar-nav__text">Mapa Organizacional</span>
+              </a>
+            </li>
+
+            <!-- Cargos -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="cargos">
+                <span class="sidebar-nav__icon"><i data-lucide="users"></i></span>
+                <span class="sidebar-nav__text">Cargos</span>
+              </a>
+            </li>
+
+            <!-- Exámenes Médicos -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="examenes">
+                <span class="sidebar-nav__icon"><i data-lucide="clipboard-list"></i></span>
+                <span class="sidebar-nav__text">Exámenes Médicos</span>
+              </a>
+            </li>
+
+            <!-- Matriz GTC-45 -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="matriz">
+                <span class="sidebar-nav__icon"><i data-lucide="layout-grid"></i></span>
+                <span class="sidebar-nav__text">Matriz GTC-45</span>
+              </a>
+            </li>
+
+            <!-- Estadísticas -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="estadisticas">
+                <span class="sidebar-nav__icon"><i data-lucide="bar-chart-3"></i></span>
+                <span class="sidebar-nav__text">Estadísticas</span>
+              </a>
+            </li>
+
+            <!-- SVE -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="sve">
+                <span class="sidebar-nav__icon"><i data-lucide="activity"></i></span>
+                <span class="sidebar-nav__text">SVE</span>
+              </a>
+            </li>
+
+            <!-- Batería Psicosocial -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="psicosocial">
+                <span class="sidebar-nav__icon"><i data-lucide="flask-conical"></i></span>
+                <span class="sidebar-nav__text">Batería Psicosocial</span>
+                <span class="sidebar-badge sidebar-badge--soon">Próximamente</span>
+              </a>
+            </li>
+
+            <!-- Documentos -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="documentos">
+                <span class="sidebar-nav__icon"><i data-lucide="folder-open"></i></span>
+                <span class="sidebar-nav__text">Documentos</span>
+              </a>
+            </li>
+
+            <!-- Profesiograma -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="profesiograma">
+                <span class="sidebar-nav__icon"><i data-lucide="file-text"></i></span>
+                <span class="sidebar-nav__text">Profesiograma</span>
+              </a>
+            </li>
+
+            <!-- Configuración -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="config">
+                <span class="sidebar-nav__icon"><i data-lucide="settings"></i></span>
+                <span class="sidebar-nav__text">Configuración</span>
+              </a>
+            </li>
+
+            <li class="sidebar-nav__separator"></li>
+
+            <!-- Panel Médico -->
+            <li>
+              <a href="#" class="sidebar-nav__item" data-page="panel-medico">
+                <span class="sidebar-nav__icon"><i data-lucide="stethoscope"></i></span>
+                <span class="sidebar-nav__text">Panel Médico</span>
+                <span class="sidebar-badge sidebar-badge--count" id="pending-count">0</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Sidebar Footer - Cerrar Sesión -->
+        <div class="sidebar-footer">
+          <button class="sidebar-footer__logout" id="sidebar-logout">
+            <i data-lucide="log-out"></i>
+            <span class="sidebar-nav__text">Cerrar Sesión</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- ============================================ -->
+      <!-- MAIN CONTENT                                 -->
+      <!-- ============================================ -->
+      <main class="dashboard-main" id="dashboard-main">
+        <!-- Header -->
+        <header class="dashboard-header" id="dashboard-header">
+          <div class="header-left">
+            <!-- Mobile Menu Toggle -->
+            <button class="header-mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+              <i data-lucide="menu"></i>
+            </button>
+
+            <!-- Company Selector -->
+            <div class="header-company-selector" id="company-selector">
+              <span class="header-company-selector__label">EMPRESA:</span>
+              <span class="header-company-selector__value" id="company-name">Cargando...</span>
+              <i data-lucide="chevron-down" class="header-company-selector__icon"></i>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="header-search">
+              <i data-lucide="search" class="header-search__icon"></i>
+              <input
+                type="text"
+                class="header-search__input"
+                placeholder="Buscar..."
+                id="global-search"
+              />
+              <span class="header-search__shortcut">⌘K</span>
+            </div>
+          </div>
+
+          <div class="header-right">
+            <!-- Notifications -->
+            <button class="header-notifications" id="notifications-btn" aria-label="Notificaciones">
+              <i data-lucide="bell" class="header-notifications__icon"></i>
+              <span class="header-notifications__indicator" id="notification-indicator"></span>
+            </button>
+
+            <!-- User Menu -->
+            <div class="header-user" id="user-menu">
+              <div class="header-user__avatar" id="user-avatar">--</div>
+              <i data-lucide="chevron-down" class="header-user__chevron"></i>
+              <!-- User Dropdown -->
+              <div class="header-user__dropdown" id="user-dropdown">
+                <div class="header-user__dropdown-header">
+                  <span class="header-user__dropdown-name" id="user-name">Usuario</span>
+                  <span class="header-user__dropdown-email" id="user-email">usuario@empresa.com</span>
+                </div>
+                <div class="header-user__dropdown-divider"></div>
+                <a href="#" class="header-user__dropdown-item" data-page="config">
+                  <i data-lucide="settings"></i>
+                  <span>Configuración</span>
+                </a>
+                <a href="#" class="header-user__dropdown-item" id="btn-logout">
+                  <i data-lucide="log-out"></i>
+                  <span>Cerrar Sesión</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="dashboard-content" id="dashboard-content">
+          <!-- ============================================ -->
+          <!-- PAGE: DASHBOARD HOME                         -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-home" data-page="home">
+            <!-- Page Header -->
+            <div class="page-header">
+              <h1 class="page-header__title">Inteligencia de Salud en Tiempo Real</h1>
+              <div class="page-header__meta">
+                <div class="live-indicator">
+                  <span class="live-indicator__dot"></span>
+                  <span>Última actualización: <span id="last-update">--</span></span>
+                </div>
+                <span>Próxima actualización: <span id="next-update">--</span></span>
+              </div>
+            </div>
+
+            <!-- Main Metrics Grid (3 columns) -->
+            <div class="dashboard-grid dashboard-grid--cols-3" id="home-main-metrics">
+              <!-- Card 1: Donut Chart - Cumplimiento -->
+              <div class="card card--metric" id="card-cumplimiento">
+                <div class="card__body">
+                  <div class="donut-chart" id="donut-cumplimiento">
+                    <!-- SVG Donut Chart goes here -->
+                  </div>
+                  <div class="metric-label">Cumplimiento SG-SST</div>
+                  <div class="metric-sublabel"><span id="cumplimiento-value">--</span>% completado</div>
+                </div>
+              </div>
+
+              <!-- Card 2: Trabajadores -->
+              <div class="card card--metric" id="card-trabajadores">
+                <div class="card__icon">
+                  <i data-lucide="users"></i>
+                </div>
+                <div class="card__body">
+                  <div class="metric-value" id="total-trabajadores">--</div>
+                  <div class="metric-label">Trabajadores activos</div>
+                  <div class="metric-sublabel">
+                    <span id="trabajadores-aldia">--</span> al día |
+                    <span id="trabajadores-alertas">--</span> alertas
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Alertas Críticas -->
+              <div class="card card--metric card--danger" id="card-alertas">
+                <div class="card__icon">
+                  <i data-lucide="alert-triangle"></i>
+                </div>
+                <div class="card__body">
+                  <div class="metric-value metric-value--danger" id="total-alertas">--</div>
+                  <div class="metric-label">Alertas críticas</div>
+                  <div class="metric-sublabel">
+                    <span id="alertas-vencidos">--</span> vencidos |
+                    <span id="alertas-proximos">--</span> próximos
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Secondary Cards Grid (3 columns) -->
+            <div class="dashboard-grid dashboard-grid--cols-3" id="home-secondary-cards">
+              <!-- Card: Condiciones de Salud -->
+              <div class="card card--link" data-link="inteligencia">
+                <div class="card__header">
+                  <h3 class="card__title">Condiciones de Salud</h3>
+                  <i data-lucide="external-link" class="card__link-icon"></i>
+                </div>
+                <div class="card__body">
+                  <div class="condition-item">
+                    <span class="condition-dot condition-dot--danger"></span>
+                    <span>Hipoacusia</span>
+                    <span class="condition-percent" id="hipoacusia-percent">--%</span>
+                  </div>
+                  <div class="condition-trend">
+                    <i data-lucide="trending-up" class="trend-icon trend-icon--up"></i>
+                    <span id="condition-trend-text">+--% vs trimestre</span>
+                  </div>
+                  <a href="#" class="card__action" data-navigate="sve">Ver SVE →</a>
+                </div>
+              </div>
+
+              <!-- Card: Exámenes Médicos -->
+              <div class="card card--link" data-link="examenes">
+                <div class="card__header">
+                  <h3 class="card__title">Exámenes Médicos</h3>
+                  <i data-lucide="clipboard-list" class="card__header-icon"></i>
+                </div>
+                <div class="card__body">
+                  <div class="alert-item alert-item--warning">
+                    <i data-lucide="alert-circle"></i>
+                    <span><span id="examenes-vencidos">--</span> exámenes vencidos</span>
+                  </div>
+                  <div class="alert-item alert-item--info">
+                    <span><span id="examenes-proximos">--</span> próximos (15 días)</span>
+                  </div>
+                  <a href="#" class="card__action" data-navigate="examenes">Ver lista completa →</a>
+                </div>
+              </div>
+
+              <!-- Card: Riesgos Críticos -->
+              <div class="card card--link" data-link="matriz">
+                <div class="card__header">
+                  <h3 class="card__title">Riesgos Críticos</h3>
+                  <i data-lucide="layout-grid" class="card__header-icon"></i>
+                </div>
+                <div class="card__body">
+                  <div class="risk-badges">
+                    <span class="risk-badge risk-badge--level-v"><span id="riesgos-v">--</span> Nivel V</span>
+                    <span class="risk-badge risk-badge--level-iv"><span id="riesgos-iv">--</span> Nivel IV</span>
+                  </div>
+                  <div class="risk-summary">
+                    <span id="riesgos-total">--</span> riesgos mod. o superior
+                  </div>
+                  <a href="#" class="card__action" data-navigate="matriz">Ver matriz completa →</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Insights Card -->
+            <div class="card card--ai" id="card-ai-insights">
+              <div class="card__header">
+                <div class="card__header-left">
+                  <i data-lucide="bot" class="card__ai-icon"></i>
+                  <h3 class="card__title">Insights Inteligentes</h3>
+                </div>
+                <span class="badge badge--ai">AI-Powered</span>
+              </div>
+              <div class="card__body">
+                <div class="insight-item" id="insight-pattern">
+                  <i data-lucide="home" class="insight-icon"></i>
+                  <div class="insight-content">
+                    <strong>Patrón detectado:</strong>
+                    <span id="insight-pattern-text">Cargando análisis...</span>
+                  </div>
+                </div>
+                <div class="insight-item" id="insight-recommendation">
+                  <i data-lucide="lightbulb" class="insight-icon"></i>
+                  <div class="insight-content">
+                    <strong>Recomendación:</strong>
+                    <span id="insight-recommendation-text">--</span>
+                  </div>
+                </div>
+                <a href="#" class="card__action" data-navigate="inteligencia">Ver análisis completo →</a>
+              </div>
+            </div>
+
+            <!-- Quick Stats Row (4 columns) -->
+            <div class="dashboard-grid dashboard-grid--cols-4" id="home-quick-stats">
+              <div class="card card--stat">
+                <div class="stat-value" id="stat-cumplimiento">--%</div>
+                <div class="stat-label">Cumplimiento SG-SST</div>
+              </div>
+              <div class="card card--stat">
+                <div class="stat-value" id="stat-examenes-dia">--</div>
+                <div class="stat-label">Exámenes al día</div>
+                <div class="stat-sublabel">de <span id="stat-total-trabajadores">--</span> trabajadores</div>
+              </div>
+              <div class="card card--stat">
+                <div class="stat-value" id="stat-sve-activos">--</div>
+                <div class="stat-label">SVE Activos</div>
+                <div class="stat-sublabel">En seguimiento</div>
+              </div>
+              <div class="card card--stat">
+                <div class="stat-value" id="stat-peligros">--</div>
+                <div class="stat-label">Peligros GTC-45</div>
+                <div class="stat-sublabel">Identificados</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: INTELIGENCIA DE SALUD                  -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-inteligencia" data-page="inteligencia" style="display: none;">
+            <div class="page-header">
+              <div class="page-header__left">
+                <h1 class="page-header__title">Inteligencia de Salud</h1>
+                <p class="page-header__subtitle">Live Data - Actualización en Tiempo Real</p>
+              </div>
+              <div class="page-header__actions">
+                <button class="btn btn--outline" id="btn-filter-inteligencia">
+                  <i data-lucide="filter"></i>
+                  Filtros
+                </button>
+                <button class="btn btn--primary" id="btn-export-inteligencia">
+                  <i data-lucide="download"></i>
+                  Exportar reporte
+                </button>
+              </div>
+            </div>
+
+            <!-- Live Status Bar -->
+            <div class="status-bar status-bar--live" id="inteligencia-status">
+              <div class="status-bar__left">
+                <span class="live-indicator__dot"></span>
+                <span>LIVE - Actualizado: <span id="inteligencia-last-update">--</span></span>
+              </div>
+              <div class="status-bar__right">
+                <i data-lucide="refresh-cw"></i>
+                <span>Próxima actualización: <span id="inteligencia-next-update">--</span></span>
+              </div>
+            </div>
+
+            <!-- Content will be loaded dynamically -->
+            <div id="inteligencia-content">
+              <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando análisis de salud...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: MAPA ORGANIZACIONAL                    -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-mapa-org" data-page="mapa-org" style="display: none;">
+            <div class="page-header">
+              <div class="page-header__left">
+                <h1 class="page-header__title">Mapa Organizacional</h1>
+              </div>
+              <div class="page-header__actions">
+                <button class="btn btn--primary" id="btn-add-cargo">
+                  <i data-lucide="plus"></i>
+                  Agregar cargo
+                </button>
+                <div class="header-search header-search--inline">
+                  <i data-lucide="search" class="header-search__icon"></i>
+                  <input type="text" placeholder="Buscar cargo..." id="search-cargo" />
+                </div>
+                <select class="select" id="vista-mapa">
+                  <option value="arbol">Vista: Árbol</option>
+                  <option value="lista">Vista: Lista</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Risk Legend -->
+            <div class="legend-bar" id="mapa-legend">
+              <span class="legend-item">
+                <span class="legend-dot" style="background: #10b981;"></span> Nivel I
+              </span>
+              <span class="legend-item">
+                <span class="legend-dot" style="background: #84cc16;"></span> Nivel II
+              </span>
+              <span class="legend-item">
+                <span class="legend-dot" style="background: #f59e0b;"></span> Nivel III
+              </span>
+              <span class="legend-item">
+                <span class="legend-dot" style="background: #f97316;"></span> Nivel IV
+              </span>
+              <span class="legend-item">
+                <span class="legend-dot" style="background: #ef4444;"></span> Nivel V
+              </span>
+            </div>
+
+            <!-- Org Chart Canvas -->
+            <div class="org-chart-container" id="org-chart-container">
+              <div class="org-chart-canvas" id="org-chart-canvas">
+                <!-- Org chart nodes will be rendered here -->
+                <div class="loading-container">
+                  <div class="loading-spinner"></div>
+                  <p>Cargando mapa organizacional...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="dashboard-grid dashboard-grid--cols-4" id="mapa-summary">
+              <div class="card card--stat">
+                <div class="stat-value" id="mapa-total-cargos">--</div>
+                <div class="stat-label">Cargos totales</div>
+              </div>
+              <div class="card card--stat">
+                <div class="stat-value" id="mapa-doc-completa">--</div>
+                <div class="stat-label">Doc. completa</div>
+              </div>
+              <div class="card card--stat">
+                <div class="stat-value" id="mapa-pendientes">--</div>
+                <div class="stat-label">Pendientes</div>
+              </div>
+              <div class="card card--stat card--danger">
+                <div class="stat-value stat-value--danger" id="mapa-criticos">--</div>
+                <div class="stat-label">Críticos</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: CARGOS                                 -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-cargos" data-page="cargos" style="display: none;">
+            <div class="page-header">
+              <h1 class="page-header__title">Gestión de Cargos</h1>
+              <div class="page-header__actions">
+                <button class="btn btn--primary" id="btn-nuevo-cargo">
+                  <i data-lucide="plus"></i>
+                  Nuevo Cargo
+                </button>
+              </div>
+            </div>
+            <div id="cargos-content">
+              <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando cargos...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: EXÁMENES MÉDICOS                       -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-examenes" data-page="examenes" style="display: none;">
+            <div class="page-header">
+              <h1 class="page-header__title">Gestión de Exámenes Médicos</h1>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-bar" id="examenes-filters">
+              <select class="select" id="filter-estado">
+                <option value="">Estado: Todos</option>
+                <option value="vencido">Vencidos</option>
+                <option value="proximo">Próximos</option>
+                <option value="aldia">Al día</option>
+              </select>
+              <select class="select" id="filter-cargo">
+                <option value="">Cargo: Todos</option>
+              </select>
+              <select class="select" id="filter-area">
+                <option value="">Área: Todas</option>
+              </select>
+              <select class="select" id="filter-mes">
+                <option value="">Mes: Todos</option>
+              </select>
+              <button class="btn btn--icon" id="btn-reset-filters" title="Limpiar filtros">
+                <i data-lucide="refresh-cw"></i>
+              </button>
+              <button class="btn btn--outline" id="btn-export-examenes">
+                <i data-lucide="download"></i>
+                Exportar
+              </button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="dashboard-grid dashboard-grid--cols-4" id="examenes-summary">
+              <div class="card card--stat card--danger">
+                <div class="card__icon-small">
+                  <i data-lucide="alert-circle"></i>
+                </div>
+                <div class="stat-value stat-value--danger" id="examenes-stat-vencidos">--</div>
+                <div class="stat-label">Vencidos</div>
+              </div>
+              <div class="card card--stat card--warning">
+                <div class="card__icon-small">
+                  <i data-lucide="clock"></i>
+                </div>
+                <div class="stat-value stat-value--warning" id="examenes-stat-proximos">--</div>
+                <div class="stat-label">Próximos</div>
+              </div>
+              <div class="card card--stat card--success">
+                <div class="card__icon-small">
+                  <i data-lucide="check-circle"></i>
+                </div>
+                <div class="stat-value stat-value--success" id="examenes-stat-aldia">--</div>
+                <div class="stat-label">Al día</div>
+              </div>
+              <div class="card card--stat">
+                <div class="card__icon-small">
+                  <i data-lucide="calendar-plus"></i>
+                </div>
+                <div class="stat-value" id="examenes-stat-agendar">--</div>
+                <div class="stat-label">Por agendar</div>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container" id="examenes-table-container">
+              <table class="data-table" id="examenes-table">
+                <thead>
+                  <tr>
+                    <th><input type="checkbox" id="select-all-examenes" /></th>
+                    <th>Trabajador</th>
+                    <th>Cargo</th>
+                    <th>Examen</th>
+                    <th>Vencimiento</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="examenes-table-body">
+                  <!-- Rows will be loaded dynamically -->
+                </tbody>
+              </table>
+              <div class="table-footer">
+                <span id="examenes-showing">Mostrando -- de --</span>
+                <div class="pagination" id="examenes-pagination">
+                  <!-- Pagination will be rendered here -->
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: MATRIZ GTC-45                          -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-matriz" data-page="matriz" style="display: none;">
+            <div class="page-header">
+              <div class="page-header__left">
+                <h1 class="page-header__title">Matriz de Identificación de Peligros y Valoración de Riesgos GTC-45</h1>
+                <p class="page-header__subtitle">Metodología: Guía Técnica Colombiana 45 (2012)</p>
+                <p class="page-header__meta-info">
+                  Última actualización: <span id="matriz-fecha">--</span> |
+                  Responsable: <span id="matriz-responsable">--</span>
+                </p>
+              </div>
+              <div class="page-header__actions">
+                <button class="btn btn--primary" id="btn-export-matriz-excel">
+                  <i data-lucide="file-spreadsheet"></i>
+                  Exportar Excel
+                </button>
+              </div>
+            </div>
+
+            <!-- Summary Metrics -->
+            <div class="dashboard-grid dashboard-grid--cols-5" id="matriz-summary">
+              <div class="card card--stat">
+                <div class="stat-value" id="matriz-total">--</div>
+                <div class="stat-label">Total Peligros</div>
+              </div>
+              <div class="card card--stat card--level-v">
+                <div class="stat-value stat-value--danger" id="matriz-nivel-v">--</div>
+                <div class="stat-label">Nivel V - Intolerable</div>
+              </div>
+              <div class="card card--stat card--level-iv">
+                <div class="stat-value stat-value--warning" id="matriz-nivel-iv">--</div>
+                <div class="stat-label">Nivel IV - Importante</div>
+              </div>
+              <div class="card card--stat card--level-iii">
+                <div class="stat-value" id="matriz-nivel-iii">--</div>
+                <div class="stat-label">Nivel III - Moderado</div>
+              </div>
+              <div class="card card--stat card--level-i-ii">
+                <div class="stat-value stat-value--success" id="matriz-nivel-i-ii">--</div>
+                <div class="stat-label">Nivel I-II - Aceptable</div>
+              </div>
+            </div>
+
+            <!-- Categories Grid -->
+            <div class="dashboard-section" id="matriz-categories-section">
+              <h2 class="dashboard-section__title">Distribución por Categoría</h2>
+              <div class="dashboard-grid dashboard-grid--cols-3" id="matriz-categories">
+                <!-- Category cards will be loaded dynamically -->
+              </div>
+            </div>
+
+            <!-- Critical Hazards Banner -->
+            <div class="alert-banner alert-banner--danger" id="matriz-critical-banner">
+              <i data-lucide="alert-triangle"></i>
+              <span>PELIGROS CRÍTICOS (Nivel V y IV) - Requieren acción inmediata</span>
+            </div>
+
+            <!-- Critical Hazards List -->
+            <div id="matriz-critical-content">
+              <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando matriz de riesgos...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: ESTADÍSTICAS                           -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-estadisticas" data-page="estadisticas" style="display: none;">
+            <div class="page-header">
+              <div class="page-header__left">
+                <h1 class="page-header__title">Perfil Sociodemográfico</h1>
+                <span class="badge badge--ai">
+                  <i data-lucide="bot"></i>
+                  Generado automáticamente
+                </span>
+              </div>
+              <div class="page-header__actions">
+                <button class="btn btn--outline" id="btn-export-stats-pdf">
+                  <i data-lucide="file-text"></i>
+                  Exportar PDF
+                </button>
+                <button class="btn btn--primary" id="btn-export-stats-excel">
+                  <i data-lucide="file-spreadsheet"></i>
+                  Exportar Excel
+                </button>
+              </div>
+            </div>
+            <div id="estadisticas-content">
+              <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando estadísticas...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: SVE                                    -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-sve" data-page="sve" style="display: none;">
+            <div class="page-header">
+              <div class="page-header__left">
+                <h1 class="page-header__title">Sistema de Vigilancia Epidemiológica (SVE)</h1>
+                <span class="badge badge--ai">
+                  <i data-lucide="bot"></i>
+                  Análisis automático
+                </span>
+              </div>
+            </div>
+            <div id="sve-content">
+              <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando SVE...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: BATERÍA PSICOSOCIAL                    -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-psicosocial" data-page="psicosocial" style="display: none;">
+            <div class="page-header">
+              <div class="page-header__left">
+                <h1 class="page-header__title">Batería de Riesgo Psicosocial</h1>
+                <p class="page-header__subtitle">Resolución 2646/2008 y Resolución 2404/2019</p>
+              </div>
+              <div class="page-header__actions">
+                <button class="btn btn--primary" id="btn-nueva-bateria">
+                  <i data-lucide="plus"></i>
+                  Aplicar nueva batería
+                </button>
+                <button class="btn btn--outline" id="btn-export-psicosocial">
+                  <i data-lucide="download"></i>
+                  Exportar resultados
+                </button>
+              </div>
+            </div>
+            <div id="psicosocial-content">
+              <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando batería psicosocial...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: DOCUMENTOS                             -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-documentos" data-page="documentos" style="display: none;">
+            <div class="page-header">
+              <div class="page-header__left">
+                <h1 class="page-header__title">Documentos y Reportes</h1>
+                <p class="page-header__subtitle">Centro de documentación del SG-SST</p>
+              </div>
+            </div>
+            <div id="documentos-content">
+              <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando documentos...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: PROFESIOGRAMA                          -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-profesiograma" data-page="profesiograma" style="display: none;">
+            <div class="page-header">
+              <div class="page-header__left">
+                <h1 class="page-header__title">Profesiograma</h1>
+                <p class="page-header__subtitle">Protocolo de Vigilancia de la Salud Ocupacional por Cargo</p>
+              </div>
+            </div>
+
+            <!-- Profesiograma Content (will be populated by JS) -->
+            <div id="profesiograma-content">
+              <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando profesiograma...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: CONFIGURACIÓN                          -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-config" data-page="config" style="display: none;">
+            <div class="page-header">
+              <h1 class="page-header__title">Configuración</h1>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs" id="config-tabs">
+              <button class="tab active" data-tab="empresa">Empresa</button>
+              <button class="tab" data-tab="usuarios">Usuarios</button>
+              <button class="tab" data-tab="notificaciones">Notificaciones</button>
+              <button class="tab" data-tab="integraciones">Integraciones</button>
+            </div>
+
+            <div id="config-content">
+              <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando configuración...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PAGE: PANEL MÉDICO                           -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-panel-medico" data-page="panel-medico" style="display: none;">
+            <div class="page-header page-header--purple">
+              <div class="page-header__left">
+                <h1 class="page-header__title">Panel Médico Ocupacional</h1>
+                <p class="page-header__subtitle" id="medico-info">Dr. -- · Licencia SST: --</p>
+              </div>
+              <div class="page-header__actions">
+                <select class="select" id="filter-empresa-medico">
+                  <option value="">Todas las empresas</option>
+                </select>
+              </div>
+            </div>
+            <div id="panel-medico-content">
+              <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Cargando panel médico...</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <!-- Mobile Overlay -->
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    </div>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+      });
+    </script>
+  </body>
+</html>

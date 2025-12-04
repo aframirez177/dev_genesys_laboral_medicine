@@ -1087,6 +1087,12 @@ body {
 // ==========================================
 
 @media print {
+    // Configure A4 page
+    @page {
+        size: A4;
+        margin: 2cm 1.5cm;
+    }
+
     // Reset layout for vertical printing
     html, body {
         font-size: 62.5%;
@@ -1109,14 +1115,62 @@ body {
         min-width: 100% !important;
         width: 100% !important;
         height: auto !important;
-        min-height: 100vh;
-        page-break-after: always;
-        page-break-inside: avoid;
+        min-height: auto; // ✅ Cambiado de 100vh a auto para permitir flujo natural
+        page-break-after: auto; // ✅ Cambiado de always - dejar que el contenido fluya
+        page-break-inside: auto; // ✅ Cambiado de avoid - permitir división de páginas largas
         scroll-snap-align: none;
-        padding: 2cm;
+        padding: 0; // ✅ Eliminar padding (se maneja con @page margin)
+    }
+
+    // Solo forzar page break en la portada y secciones especiales
+    .page-portada,
+    .page-info-medico,
+    .page-marco-normativo {
+        page-break-after: always;
     }
 
     .page:last-child {
+        page-break-after: auto;
+    }
+
+    // Evitar que headers se separen de su contenido
+    .page-title,
+    .section-title,
+    h2, h3 {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+
+    // Evitar que listas y párrafos se corten en lugares extraños
+    p, ul, ol {
+        orphans: 3; // Mínimo 3 líneas al final de página
+        widows: 3;  // Mínimo 3 líneas al inicio de nueva página
+    }
+
+    li {
+        page-break-inside: avoid; // No dividir items individuales
+    }
+
+    // Evitar que bloques importantes se dividan
+    .portada-info,
+    .signature-block,
+    .form-field,
+    .definicion-card,
+    .normativa-item {
+        page-break-inside: avoid;
+    }
+
+    // Tablas: permitir división pero mantener headers
+    table {
+        page-break-inside: auto;
+    }
+
+    thead {
+        display: table-header-group; // Repetir header en cada página
+    }
+
+    tbody tr {
+        page-break-inside: avoid; // No dividir filas
         page-break-after: auto;
     }
 
@@ -1414,6 +1468,203 @@ body {
     font-size: 1.3rem;
     color: rgba($text, 0.7);
     margin: $spacing-xs 0 0 0;
+
+    strong {
+        color: $secondary;
+        font-weight: 600;
+    }
+}
+
+.factor-justificacion {
+    font-size: 1.3rem;
+    color: rgba($text, 0.8);
+    margin: $spacing-sm 0 0 0;
+    padding: $spacing-sm;
+    background-color: rgba($primary, 0.05);
+    border-left: 3px solid $primary;
+    border-radius: $border-radius-sm;
+
+    strong {
+        color: $secondary;
+        font-weight: 600;
+    }
+}
+
+// Section subtitle
+.section-subtitle {
+    font-size: 1.3rem;
+    color: rgba($text, 0.6);
+    margin: -$spacing-sm 0 $spacing-md 0;
+    font-style: italic;
+}
+
+// ==========================================
+// CARACTERÍSTICAS ESPECIALES DEL CARGO
+// ==========================================
+
+.caracteristicas-especiales-section {
+    background-color: rgba(#ff9800, 0.05);
+    border: 2px solid rgba(#ff9800, 0.3);
+    border-radius: $border-radius-lg;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-xl;
+
+    .cargo-section-title {
+        color: #e65100;
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+
+        i {
+            color: #ff9800;
+        }
+    }
+}
+
+.caracteristicas-especiales-list {
+    display: grid;
+    gap: $spacing-md;
+}
+
+.caracteristica-especial-item {
+    background-color: white;
+    border: 1px solid rgba(#ff9800, 0.2);
+    border-radius: $border-radius-md;
+    padding: $spacing-md;
+    border-left: 4px solid #ff9800;
+}
+
+.caracteristica-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-sm;
+
+    i {
+        font-size: 2rem;
+        color: #ff9800;
+        width: 2.5rem;
+        text-align: center;
+    }
+}
+
+.caracteristica-titulo {
+    font-family: $font-title;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #e65100;
+    margin: 0;
+}
+
+.caracteristica-descripcion {
+    font-size: 1.4rem;
+    color: $text;
+    margin: 0 0 $spacing-sm 0;
+    padding-left: 3.5rem;
+    line-height: 1.6;
+}
+
+.caracteristica-detalles {
+    background-color: rgba($secondary, 0.03);
+    border-radius: $border-radius-sm;
+    padding: $spacing-sm $spacing-md;
+    margin-left: 3.5rem;
+
+    p {
+        font-size: 1.3rem;
+        color: rgba($text, 0.8);
+        margin: $spacing-xs 0;
+        line-height: 1.5;
+
+        strong {
+            color: $secondary;
+            font-weight: 600;
+        }
+    }
+}
+
+// GES Identificados List
+.ges-identificados-list {
+    display: grid;
+    gap: $spacing-md;
+}
+
+.ges-item {
+    background-color: white;
+    border: 1px solid rgba($secondary, 0.1);
+    border-radius: $border-radius-md;
+    padding: $spacing-md;
+    transition: $transition;
+
+    &:hover {
+        box-shadow: $shadow-sm;
+    }
+}
+
+.ges-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: $spacing-md;
+    margin-bottom: $spacing-sm;
+    flex-wrap: wrap;
+}
+
+.ges-info {
+    flex: 1;
+}
+
+.ges-riesgo-tipo {
+    display: inline-block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: $primary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: $spacing-xs;
+}
+
+.ges-nombre {
+    font-family: $font-title;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $secondary;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.ges-badge {
+    padding: $spacing-xs $spacing-sm;
+    color: white;
+    font-family: $font-title;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-radius: $border-radius-sm;
+    white-space: nowrap;
+}
+
+.ges-niveles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-sm;
+}
+
+.nivel-tag {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: rgba($text, 0.7);
+    background-color: rgba($secondary, 0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.ges-efectos,
+.ges-justificacion {
+    font-size: 1.3rem;
+    color: rgba($text, 0.8);
+    margin: $spacing-xs 0 0 0;
+    line-height: 1.5;
 
     strong {
         color: $secondary;

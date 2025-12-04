@@ -1,0 +1,49 @@
+# =================================================
+# Prometheus Configuration
+# =================================================
+
+global:
+  scrape_interval: 15s      # Scrape every 15 seconds
+  evaluation_interval: 15s  # Evaluate rules every 15 seconds
+  external_labels:
+    monitor: 'genesys-monitor'
+    environment: 'development'
+
+# Scrape configurations
+scrape_configs:
+  # API Server metrics
+  - job_name: 'genesys-api'
+    static_configs:
+      - targets: ['api:3000']
+        labels:
+          service: 'api'
+          env: 'dev'
+
+  # Worker metrics
+  - job_name: 'genesys-worker'
+    static_configs:
+      - targets: ['worker:3001']
+        labels:
+          service: 'worker'
+          env: 'dev'
+
+  # Redis exporter (optional)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+        labels:
+          service: 'redis'
+          env: 'dev'
+
+  # PostgreSQL exporter (optional)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['db:5432']
+        labels:
+          service: 'postgres'
+          env: 'dev'
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

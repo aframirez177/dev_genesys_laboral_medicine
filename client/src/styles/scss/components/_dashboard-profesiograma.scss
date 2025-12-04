@@ -1,0 +1,586 @@
+// ===========================================
+// DASHBOARD PREMIUM - PROFESIOGRAMA PAGE
+// Sprint 6 - Fase B
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// PROFESIOGRAMA CONTAINER
+// =====================
+.profesiograma-dashboard-container {
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-lg;
+    box-shadow: tokens.$shadow-sm;
+    padding: tokens.$space-6;
+    min-height: 600px;
+}
+
+// =====================
+// INLINE NAVIGATION
+// =====================
+.profesiograma-nav-inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: tokens.$space-4;
+    padding: tokens.$space-4;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-md;
+    margin-bottom: tokens.$space-6;
+}
+
+.profesiograma-nav-btn {
+    @include tokens.flex-center;
+    width: 40px;
+    height: 40px;
+    background: tokens.$dashboard-white;
+    border: 1px solid tokens.$dashboard-border;
+    border-radius: tokens.$radius-md;
+    cursor: pointer;
+    transition: all tokens.$transition-normal;
+    color: tokens.$dashboard-text;
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    &:hover:not(:disabled) {
+        border-color: tokens.$dashboard-primary;
+        color: tokens.$dashboard-primary;
+        background: rgba(tokens.$dashboard-primary, 0.05);
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+}
+
+.profesiograma-page-indicator {
+    font-family: tokens.$font-family-body;
+    font-size: tokens.$font-body;
+    font-weight: tokens.$font-medium;
+    color: tokens.$dashboard-text;
+
+    span {
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-primary;
+    }
+}
+
+// =====================
+// EMBEDDED VIEWER
+// =====================
+.profesiograma-embedded-viewer {
+    min-height: 500px;
+    overflow: hidden;
+    border-radius: tokens.$radius-md;
+    background: tokens.$dashboard-white;
+    border: 1px solid tokens.$dashboard-border;
+
+    // Single page display (no horizontal scroll)
+    .profesiograma-page {
+        padding: tokens.$space-6;
+        animation: fadeInPage 0.3s ease;
+    }
+}
+
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+// =====================
+// PAGE CONTENT STYLES
+// =====================
+.profesiograma-embedded-viewer {
+    // Page Title
+    .page-title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-4 0;
+        padding-bottom: tokens.$space-3;
+        border-bottom: 2px solid tokens.$dashboard-primary;
+    }
+
+    // Page Text
+    .page-text {
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        line-height: tokens.$leading-relaxed;
+        margin-bottom: tokens.$space-4;
+    }
+
+    // Bullet Lists
+    .bullet-list {
+        list-style: none;
+        padding: 0;
+        margin: tokens.$space-4 0;
+
+        li {
+            position: relative;
+            padding-left: tokens.$space-6;
+            margin-bottom: tokens.$space-2;
+            font-size: tokens.$font-body;
+            color: tokens.$dashboard-text;
+            line-height: tokens.$leading-normal;
+
+            &::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 8px;
+                width: 8px;
+                height: 8px;
+                background: tokens.$dashboard-primary;
+                border-radius: 50%;
+            }
+        }
+    }
+
+    // Form Grid
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: tokens.$space-4;
+        margin-bottom: tokens.$space-6;
+    }
+
+    .form-field {
+        label {
+            display: block;
+            font-size: tokens.$font-small;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-text-light;
+            margin-bottom: tokens.$space-1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .field-value {
+            font-size: tokens.$font-body;
+            font-weight: tokens.$font-medium;
+            color: tokens.$dashboard-text;
+            padding: tokens.$space-3;
+            background: tokens.$dashboard-background;
+            border-radius: tokens.$radius-sm;
+            border: 1px solid tokens.$dashboard-border;
+        }
+    }
+
+    // Tables
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: tokens.$space-4 0;
+        font-size: tokens.$font-body;
+
+        th, td {
+            padding: tokens.$space-3;
+            text-align: left;
+            border-bottom: 1px solid tokens.$dashboard-border;
+        }
+
+        th {
+            background: tokens.$dashboard-background;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-text;
+            font-size: tokens.$font-small;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            color: tokens.$dashboard-text;
+        }
+
+        tr:hover td {
+            background: rgba(tokens.$dashboard-primary, 0.03);
+        }
+    }
+
+    // Risk Levels
+    .risk-badge {
+        display: inline-block;
+        padding: tokens.$space-1 tokens.$space-3;
+        border-radius: tokens.$radius-full;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+
+        &--i { background: rgba(tokens.$risk-level-i, 0.15); color: tokens.$risk-level-i; }
+        &--ii { background: rgba(tokens.$risk-level-ii, 0.15); color: tokens.$risk-level-ii; }
+        &--iii { background: rgba(tokens.$risk-level-iii, 0.15); color: tokens.$risk-level-iii; }
+        &--iv { background: rgba(tokens.$risk-level-iv, 0.15); color: tokens.$risk-level-iv; }
+        &--v { background: rgba(tokens.$risk-level-v, 0.15); color: tokens.$risk-level-v; }
+    }
+
+    // Section Cards
+    .section-card {
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+        padding: tokens.$space-4;
+        margin-bottom: tokens.$space-4;
+
+        &__title {
+            font-size: tokens.$font-h4;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-secondary;
+            margin: 0 0 tokens.$space-3 0;
+        }
+    }
+
+    // Normativa List
+    .normativa-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            padding: tokens.$space-3;
+            border-bottom: 1px solid tokens.$dashboard-border;
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+
+        .normativa-item {
+            display: flex;
+            flex-direction: column;
+            gap: tokens.$space-1;
+
+            strong {
+                font-weight: tokens.$font-semibold;
+                color: tokens.$dashboard-secondary;
+            }
+
+            span {
+                font-size: tokens.$font-small;
+                color: tokens.$dashboard-text-light;
+            }
+        }
+    }
+
+    // Signature Block
+    .signature-block {
+        display: flex;
+        gap: tokens.$space-8;
+        margin-top: tokens.$space-8;
+        padding-top: tokens.$space-6;
+        border-top: 1px solid tokens.$dashboard-border;
+    }
+
+    .signature-line {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-2;
+    }
+
+    .signature-label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    .signature-space {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        min-width: 150px;
+    }
+}
+
+// =====================
+// CARGO CARDS (for Profesiograma)
+// =====================
+.cargo-profesiograma-card {
+    @include tokens.card-base;
+    padding: tokens.$space-5;
+    margin-bottom: tokens.$space-4;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+        padding-bottom: tokens.$space-3;
+        border-bottom: 1px solid tokens.$dashboard-border;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__meta {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__section {
+        margin-bottom: tokens.$space-4;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__section-title {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-text-light;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__risks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: tokens.$space-2;
+    }
+
+    &__exams {
+        display: flex;
+        flex-wrap: wrap;
+        gap: tokens.$space-2;
+    }
+}
+
+.exam-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: tokens.$space-1;
+    padding: tokens.$space-1 tokens.$space-2;
+    background: rgba(tokens.$dashboard-info, 0.1);
+    color: tokens.$dashboard-info;
+    border-radius: tokens.$radius-sm;
+    font-size: tokens.$font-small;
+    font-weight: tokens.$font-medium;
+
+    svg {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+// =====================
+// DASHBOARD PROFESIOGRAMA SECTIONS (New)
+// =====================
+.profesiograma-section {
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin-bottom: tokens.$space-3;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+.profesiograma-list {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-2;
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-2 tokens.$space-3;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-sm;
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text;
+
+        .badge {
+            flex-shrink: 0;
+        }
+    }
+}
+
+// Company Card
+.card--company {
+    background: linear-gradient(135deg, tokens.$dashboard-white 0%, tokens.$dashboard-background 100%);
+    border-left: 4px solid tokens.$dashboard-primary;
+}
+
+// Highlight Card
+.card--highlight {
+    background: tokens.$dashboard-primary;
+
+    .stat-value,
+    .stat-label {
+        color: tokens.$dashboard-white !important;
+    }
+}
+
+// Document Card
+.card--document {
+    .card__body {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-4;
+    }
+}
+
+.document-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+
+    i, svg {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+.document-info {
+    flex: 1;
+
+    h4 {
+        margin: 0 0 tokens.$space-1;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+}
+
+// =====================
+// UTILITY CLASSES
+// =====================
+.mb-4 { margin-bottom: tokens.$space-4; }
+.mb-6 { margin-bottom: tokens.$space-6; }
+.mt-6 { margin-top: tokens.$space-6; }
+.mr-3 { margin-right: tokens.$space-3; }
+.text-center { text-align: center; }
+.text-sm { font-size: tokens.$font-small; }
+.text-xs { font-size: tokens.$font-xs; }
+.text-muted { color: tokens.$dashboard-text-light; }
+.font-semibold { font-weight: tokens.$font-semibold; }
+.flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.gap-2 { gap: tokens.$space-2; }
+
+// Badge variants
+.badge--outline {
+    background: transparent;
+    border: 1px solid tokens.$dashboard-border;
+    color: tokens.$dashboard-secondary;
+}
+
+.badge--sm {
+    padding: tokens.$space-1;
+    font-size: tokens.$font-xs;
+}
+
+.badge--muted {
+    background: tokens.$dashboard-border;
+    color: tokens.$dashboard-text-light;
+}
+
+// Alert banner info
+.alert-banner--info {
+    background: rgba(tokens.$dashboard-primary, 0.1);
+    border: 1px solid rgba(tokens.$dashboard-primary, 0.2);
+    color: tokens.$dashboard-primary;
+}
+
+// Empty state
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: tokens.$space-8;
+    text-align: center;
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-lg;
+    box-shadow: tokens.$shadow-sm;
+
+    &__icon {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: tokens.$dashboard-background;
+        border-radius: 50%;
+        margin-bottom: tokens.$space-6;
+
+        i, svg {
+            width: 40px;
+            height: 40px;
+            color: tokens.$dashboard-text-light;
+        }
+    }
+
+    &__title {
+        margin: 0 0 tokens.$space-2;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__description {
+        margin: 0 0 tokens.$space-6;
+        color: tokens.$dashboard-text-light;
+        max-width: 400px;
+    }
+}
+
+// Stat value primary
+.stat-value--primary {
+    color: tokens.$dashboard-primary !important;
+}
+
+// Large button
+.btn--lg {
+    padding: tokens.$space-3 tokens.$space-6;
+    font-size: tokens.$font-body;
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('tablet') {
+    .profesiograma-dashboard-container {
+        padding: tokens.$space-4;
+    }
+
+    .profesiograma-nav-inline {
+        padding: tokens.$space-3;
+    }
+
+    .profesiograma-embedded-viewer {
+        min-height: 400px;
+
+        .profesiograma-page {
+            padding: tokens.$space-4;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .signature-block {
+            flex-direction: column;
+            gap: tokens.$space-4;
+        }
+    }
+}

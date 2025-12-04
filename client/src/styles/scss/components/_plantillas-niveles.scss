@@ -1,0 +1,566 @@
+// ==========================================
+// PLANTILLAS DE NIVELES GTC-45
+// Sistema de barras semaforizadas (4 colores)
+// ==========================================
+
+@use 'sass:map';
+@use 'sass:color';
+@use '../base/variables';
+
+// Convenience variables (extracted from $colors map)
+$text-color: map.get(variables.$colors, 'text');
+$primary-color: map.get(variables.$colors, 'primary');
+
+// Variables de colores GTC-45
+$color-nivel-iv:  #4caf50;  // 🟢 Verde - Aceptable
+$color-nivel-iii: #ffeb3b;  // 🟡 Amarillo - Mejorable
+$color-nivel-ii:  #ff9800;  // 🟠 Naranja - No aceptable con control
+$color-nivel-i:   #f44336;  // 🔴 Rojo - No aceptable / Crítico
+
+$bg-nivel-iv:  rgba(76, 175, 80, 0.12);
+$bg-nivel-iii: rgba(255, 235, 59, 0.12);
+$bg-nivel-ii:  rgba(255, 152, 0, 0.12);
+$bg-nivel-i:   rgba(244, 67, 54, 0.12);
+
+// ==========================================
+// CONTENEDOR PRINCIPAL
+// ==========================================
+
+.plantillas-config-inicial {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.plantillas-header {
+  text-align: center;
+  margin-bottom: 4rem;
+
+  h2 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'text');
+    margin-bottom: 1rem;
+  }
+
+  .plantillas-subtitle {
+    font-size: 1.6rem;
+    color: #666;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+}
+
+// ==========================================
+// GRID DE PLANTILLAS
+// ==========================================
+
+.plantillas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.4rem;
+  margin-bottom: 4rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ==========================================
+// CARD DE PLANTILLA
+// ==========================================
+
+.plantilla-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2.4rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 1.2rem;
+
+    i {
+      font-size: 2.4rem;
+      color: map.get(variables.$colors, 'primary');
+    }
+
+    h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: map.get(variables.$colors, 'text');
+      margin: 0;
+    }
+  }
+
+  &__descripcion {
+    font-size: 1.4rem;
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+}
+
+// ==========================================
+// BARRAS DE NIVELES (4 COLORES)
+// ==========================================
+
+.plantilla-niveles {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.nivel-selector {
+  &__label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: map.get(variables.$colors, 'text');
+    margin-bottom: 1rem;
+  }
+
+  &__help {
+    background: none;
+    border: none;
+    color: map.get(variables.$colors, 'primary');
+    cursor: pointer;
+    font-size: 1.6rem;
+    padding: 0;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+// ==========================================
+// BARRA HORIZONTAL (4 OPCIONES)
+// ==========================================
+
+.nivel-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+}
+
+// ==========================================
+// NIVEL OPTION (solo para plantillas-config-inicial)
+// ==========================================
+// ⚠️ IMPORTANTE: Estos estilos solo se aplican dentro de .plantillas-config-inicial
+// Para el wizard de niveles, se usan los estilos de _niveles-barras-wizard.scss
+
+.plantillas-config-inicial .nivel-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem 0.8rem;
+  background: #f5f5f5;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 90px;
+
+  // Hover effect
+  &:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    background: rgba(var(--nivel-color-rgb), 0.1);
+  }
+
+  // Selected state
+  &--selected {
+    background: var(--nivel-color);
+    color: #fff;
+    border-color: var(--nivel-color);
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+
+    .nivel-option__emoji {
+      transform: scale(1.2);
+    }
+
+    .nivel-option__label,
+    .nivel-option__value {
+      color: #fff;
+      font-weight: 700;
+    }
+  }
+
+  &__emoji {
+    font-size: 2.4rem;
+    margin-bottom: 0.4rem;
+    transition: transform 0.3s ease;
+  }
+
+  &__label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: map.get(variables.$colors, 'text');
+    text-align: center;
+    margin-bottom: 0.4rem;
+    transition: color 0.3s ease;
+  }
+
+  &__value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: map.get(variables.$colors, 'text');
+    transition: color 0.3s ease;
+  }
+
+  &__check {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+    font-size: 1.4rem;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.2);
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // Colores específicos por nivel (fallback sin CSS variables)
+  // ⚠️ Estos colores son para NC (donde 10=verde, 100=rojo)
+  &[data-value="0"],
+  &[data-value="1"],
+  &[data-value="10"] {
+    &:hover {
+      background: $bg-nivel-iv;
+    }
+
+    &.nivel-option--selected {
+      background: $color-nivel-iv;
+      border-color: $color-nivel-iv;
+    }
+  }
+
+  &[data-value="2"],
+  &[data-value="25"] {
+    &:hover {
+      background: $bg-nivel-iii;
+    }
+
+    &.nivel-option--selected {
+      background: $color-nivel-iii;
+      border-color: $color-nivel-iii;
+      color: map.get(variables.$colors, 'text'); // Texto oscuro en amarillo
+    }
+  }
+
+  &[data-value="3"],
+  &[data-value="6"],
+  &[data-value="60"] {
+    &:hover {
+      background: $bg-nivel-ii;
+    }
+
+    &.nivel-option--selected {
+      background: $color-nivel-ii;
+      border-color: $color-nivel-ii;
+    }
+  }
+
+  &[data-value="4"],
+  &[data-value="100"] {
+    &:hover {
+      background: $bg-nivel-i;
+    }
+
+    &.nivel-option--selected {
+      background: $color-nivel-i;
+      border-color: $color-nivel-i;
+    }
+  }
+}
+
+// ==========================================
+// RESULTADO AUTOMÁTICO
+// ==========================================
+
+.plantilla-resultado {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 1.6rem;
+  border-left: 4px solid #ccc;
+
+  &.nivel-i {
+    background: $bg-nivel-i;
+    border-left-color: $color-nivel-i;
+  }
+
+  &.nivel-ii {
+    background: $bg-nivel-ii;
+    border-left-color: $color-nivel-ii;
+  }
+
+  &.nivel-iii {
+    background: $bg-nivel-iii;
+    border-left-color: $color-nivel-iii;
+  }
+
+  &.nivel-iv {
+    background: $bg-nivel-iv;
+    border-left-color: $color-nivel-iv;
+  }
+
+  &__calculo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 0.8rem;
+
+    strong {
+      color: map.get(variables.$colors, 'text');
+      font-weight: 700;
+    }
+  }
+
+  &__nivel {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.nivel-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+
+  &--nivel-i {
+    background: $color-nivel-i;
+  }
+
+  &--nivel-ii {
+    background: $color-nivel-ii;
+  }
+
+  &--nivel-iii {
+    background: $color-nivel-iii;
+    color: map.get(variables.$colors, 'text'); // Texto oscuro
+  }
+
+  &--nivel-iv {
+    background: $color-nivel-iv;
+  }
+}
+
+// ==========================================
+// ACCIONES
+// ==========================================
+
+.plantillas-actions {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+
+  .btn {
+    padding: 1.4rem 3rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+
+    i {
+      font-size: 1.8rem;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .btn-primary {
+    background: $primary-color;
+    color: #fff;
+    border: none;
+
+    &:hover {
+      background: color.adjust($primary-color, $lightness: -10%);
+    }
+  }
+
+  .btn-secondary {
+    background: #f5f5f5;
+    color: map.get(variables.$colors, 'text');
+    border: 2px solid #ddd;
+
+    &:hover {
+      background: #e0e0e0;
+    }
+  }
+}
+
+// ==========================================
+// AYUDA
+// ==========================================
+
+.plantillas-help {
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  padding: 1.6rem 2rem;
+  border-radius: 8px;
+  max-width: 700px;
+  margin: 0 auto;
+
+  p {
+    margin: 0;
+    font-size: 1.4rem;
+    line-height: 1.6;
+    color: #333;
+
+    i {
+      color: #2196f3;
+      margin-right: 0.8rem;
+    }
+
+    strong {
+      font-weight: 600;
+    }
+  }
+}
+
+// ==========================================
+// RESUMEN DE PLANTILLAS EXISTENTES
+// ==========================================
+
+.plantillas-resumen {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+
+  h2 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  > p {
+    text-align: center;
+    font-size: 1.6rem;
+    color: #666;
+    margin-bottom: 3rem;
+  }
+}
+
+.plantillas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  margin-bottom: 3rem;
+}
+
+.plantilla-item {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  h4 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+  }
+
+  p {
+    font-size: 1.4rem;
+    color: #666;
+    margin-bottom: 0.4rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// ==========================================
+// ANIMACIONES
+// ==========================================
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.plantilla-card {
+  animation: fadeInUp 0.4s ease-out;
+  animation-fill-mode: both;
+
+  @for $i from 1 through 8 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+}
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+
+@media (max-width: 768px) {
+  .plantillas-header h2 {
+    font-size: 2.2rem;
+  }
+
+  .plantillas-header .plantillas-subtitle {
+    font-size: 1.4rem;
+  }
+
+  .plantilla-card {
+    padding: 1.8rem;
+  }
+
+  .plantillas-actions {
+    flex-direction: column;
+    gap: 1.2rem;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

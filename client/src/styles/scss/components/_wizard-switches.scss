@@ -1,0 +1,297 @@
+/**
+ * _wizard-switches.scss
+ * Switches modernos estilo iOS/Material Design para toggles de cargo
+ *
+ * Reemplaza checkboxes feos con switches profesionales
+ * Incluye variantes de color para warning y danger
+ */
+
+@use "sass:map";
+@use "sass:color";
+@use '../base/variables';
+@use '../base/mixins';
+
+// ============================================================================
+// WIZARD SWITCH - Estilo iOS/Material Design
+// ============================================================================
+
+.wizard-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+
+  input {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    margin: 0;
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e0; // Gris neutral
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 26px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    &:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  // Estado CHECKED - Default (Primary color)
+  input:checked + .slider {
+    background-color: map.get(variables.$colors, 'primary'); // #5dc4af
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(22px);
+  }
+
+  // Hover states
+  input:not(:disabled):not(:checked) + .slider:hover {
+    background-color: #a0aec0; // Gris más oscuro
+  }
+
+  input:not(:disabled):checked + .slider:hover {
+    background-color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -8%);
+  }
+
+  // Focus visible (accesibilidad)
+  input:focus-visible + .slider {
+    outline: 3px solid rgba(map.get(variables.$colors, 'primary'), 0.3);
+    outline-offset: 2px;
+  }
+
+  // Disabled state
+  input:disabled + .slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ============================================================================
+// VARIANTES DE COLOR (Warning, Danger)
+// ============================================================================
+
+// Warning variant (amarillo/naranja para tareas rutinarias, conduce vehículo)
+.wizard-switch--warning {
+  input:checked + .slider {
+    background: linear-gradient(135deg, #FFB74D 0%, #FFA726 100%);
+  }
+
+  input:checked + .slider:hover {
+    background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  }
+
+  input:focus-visible + .slider {
+    outline-color: rgba(#FFB74D, 0.4);
+  }
+}
+
+// Danger variant (rojo para alturas, espacios confinados, alimentos)
+.wizard-switch--danger {
+  input:checked + .slider {
+    background: linear-gradient(135deg, #EF5350 0%, #E53935 100%);
+  }
+
+  input:checked + .slider:hover {
+    background: linear-gradient(135deg, #E53935 0%, #D32F2F 100%);
+  }
+
+  input:focus-visible + .slider {
+    outline-color: rgba(#EF5350, 0.4);
+  }
+}
+
+// ============================================================================
+// TOGGLE GROUP - Container del switch con label e iconos
+// ============================================================================
+
+.toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.4rem;
+  background: #f8f9fa;
+  border-radius: map.get(variables.$radius, 'md');
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f1f3f5;
+  }
+
+  // Warning border
+  &--warning {
+    border-color: transparent;
+
+    &:has(input:checked) {
+      background: rgba(#FFB74D, 0.08);
+      border-color: #FFB74D;
+    }
+  }
+
+  // Danger border
+  &--danger {
+    border-color: transparent;
+
+    &:has(input:checked) {
+      background: rgba(#EF5350, 0.08);
+      border-color: #EF5350;
+    }
+  }
+}
+
+.toggle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.toggle-label-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+
+  &--warning {
+    color: #FF9800; // Naranja
+  }
+
+  &--danger {
+    color: #E53935; // Rojo
+  }
+
+  &--info {
+    color: map.get(variables.$colors, 'primary');
+  }
+}
+
+.toggle-label {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: map.get(variables.$colors, 'secondary');
+  line-height: 1.4;
+}
+
+.toggle-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 1.2rem;
+  color: #64748b;
+  line-height: 1.4;
+  padding-left: 3.4rem; // Align with label text
+
+  i {
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+    color: #94a3b8;
+  }
+}
+
+// ============================================================================
+// BADGES (CRÍTICO, ATENCIÓN)
+// ============================================================================
+
+.toggle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+
+  &--warning {
+    background: #FFB74D;
+    color: #fff;
+  }
+
+  &--danger {
+    background: #EF5350;
+    color: #fff;
+  }
+
+  &--info {
+    background: map.get(variables.$colors, 'primary');
+    color: #fff;
+  }
+}
+
+// ============================================================================
+// GRID LAYOUT PARA TOGGLES
+// ============================================================================
+
+.toggles-grid-modern {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+
+  // En desktop, 1 columna para mejor legibilidad (toggles son complejos)
+  // No usar 2 columnas para evitar que hints se vean cortados
+}
+
+// ============================================================================
+// RESPONSIVE
+// ============================================================================
+
+@include mixins.respond-to('mobile') {
+  .wizard-switch {
+    width: 44px; // Slightly smaller on mobile
+    height: 24px;
+
+    .slider:before {
+      height: 18px;
+      width: 18px;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+  }
+
+  .toggle-label {
+    font-size: 1.4rem;
+  }
+
+  .toggle-hint {
+    font-size: 1.1rem;
+    padding-left: 2.4rem;
+  }
+}

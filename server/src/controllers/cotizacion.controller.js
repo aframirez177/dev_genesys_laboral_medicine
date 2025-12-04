@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import { EXAM_CONFIG, DISCOUNT_RANGES } from '../config/exam-prices-config.js';
-import { GES_DATOS_PREDEFINIDOS } from '../config/ges-config.js';
+import { GES_DATOS_PREDEFINIDOS, buscarConfigGES } from '../config/ges-config.js';
 import { EXAM_DETAILS } from '../config/exam-details-config.js';
 import { addPoppinsFont } from "../utils/poppins-font-definitions.js";
 
@@ -49,7 +49,7 @@ export async function generarCotizacionPDF(datosFormulario) {
         totalWorkers += Number(cargo.numTrabajadores) || 1;
 
         cargo.gesSeleccionados.forEach(ges => {
-            const gesConfig = GES_DATOS_PREDEFINIDOS[ges.ges];
+            const gesConfig = buscarConfigGES(ges.ges);
             if (!gesConfig || !gesConfig.examenesMedicos) return;
 
             Object.entries(gesConfig.examenesMedicos).forEach(([code, aplica]) => {
@@ -79,7 +79,12 @@ export async function generarCotizacionPDF(datosFormulario) {
 
     const volumeDiscount = calculateVolumeDiscount(totalWorkers);
     // Nota: El descuento por tiempo no se aplica en el backend por ahora.
-    const finalPrice = overallSubtotal * (1 - volumeDiscount);
+    const discountedPrice = overallSubtotal * (1 - volumeDiscount);
+    
+    // Cálculo de IVA 19%
+    const IVA_RATE = 0.19;
+    const ivaAmount = Math.round(discountedPrice * IVA_RATE);
+    const finalPrice = discountedPrice + ivaAmount;
 
     // --- Maquetación del PDF (Replicando el diseño de calculator.js) ---
     const companyName = datosFormulario.contact?.companyName || 'Nombre de la Empresa';
@@ -129,20 +134,65 @@ export async function generarCotizacionPDF(datosFormulario) {
 
     y = doc.autoTable.previous.finalY + 10;
     
-    // Resumen de totales
+    // Resumen de totales con IVA
+    const labelX = pageWidth - margin - 55;
+    const valueX = pageWidth - margin;
+    
+    doc.setFontSize(10);
+    doc.setFont('Poppins', 'normal');
+    
+    // Subtotal General
+    doc.text('Subtotal General:', labelX, y, { align: 'right' });
+    doc.text(formatCurrency(overallSubtotal), valueX, y, { align: 'right' });
+    y += 6;
+
+    // Descuento por Volumen (solo si aplica)
+    if (volumeDiscount > 0) {
+        doc.setTextColor(46, 125, 50); // Verde para descuento
+        doc.text(`Descuento por Volumen (${(volumeDiscount * 100).toFixed(0)}%):`, labelX, y, { align: 'right' });
+        doc.text(`-${formatCurrency(overallSubtotal * volumeDiscount)}`, valueX, y, { align: 'right' });
+        doc.setTextColor(45, 50, 56); // Volver a color normal
+        y += 6;
+        
+        // Subtotal con descuento
+        doc.text('Subtotal con Descuento:', labelX, y, { align: 'right' });
+        doc.text(formatCurrency(discountedPrice), valueX, y, { align: 'right' });
+        y += 6;
+    }
+
+    // Línea separadora
+    doc.setDrawColor(200, 200, 200);
+    doc.line(pageWidth - margin - 90, y, pageWidth - margin, y);
+    y += 5;
+    
+    // IVA 19%
     doc.setFontSize(11);
-    doc.text('Subtotal General:', pageWidth - margin - 50, y, { align: 'right' });
-    doc.text(formatCurrency(overallSubtotal), pageWidth - margin, y, { align: 'right' });
-    y += 7;
+    doc.text('IVA (19%):', labelX, y, { align: 'right' });
+    doc.text(formatCurrency(ivaAmount), valueX, y, { align: 'right' });
+    y += 8;
 
-    doc.text(`Descuento por Volumen (${(volumeDiscount * 100).toFixed(0)}%):`, pageWidth - margin - 50, y, { align: 'right' });
-    doc.text(`-${formatCurrency(overallSubtotal * volumeDiscount)}`, pageWidth - margin, y, { align: 'right' });
-    y += 10;
+    // Línea separadora antes del total
+    doc.setDrawColor(93, 196, 175); // Color primario
+    doc.setLineWidth(0.5);
+    doc.line(pageWidth - margin - 90, y, pageWidth - margin, y);
+    y += 6;
 
+    // Total Final con IVA
     doc.setFont('Poppins', 'bold');
     doc.setFontSize(14);
-    doc.text('Valor Total Estimado:', pageWidth - margin - 50, y, { align: 'right' });
-    doc.text(formatCurrency(finalPrice), pageWidth - margin, y, { align: 'right' });
+    doc.setTextColor(56, 61, 71); // Color oscuro para el total
+    doc.text('TOTAL (IVA Incluido):', labelX, y, { align: 'right' });
+    doc.setTextColor(93, 196, 175); // Color primario para el valor
+    doc.text(formatCurrency(finalPrice), valueX, y, { align: 'right' });
+    
+    // Nota de vigencia
+    y += 15;
+    doc.setFontSize(8);
+    doc.setFont('Poppins', 'normal');
+    doc.setTextColor(128, 128, 128);
+    doc.text('* Esta cotización tiene una vigencia de 30 días a partir de la fecha de emisión.', margin, y);
+    y += 4;
+    doc.text('* Los precios incluyen IVA del 19% según normativa colombiana.', margin, y);
     
     return Buffer.from(doc.output('arraybuffer'));
 } 

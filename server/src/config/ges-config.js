@@ -1978,3 +1978,102 @@ export const GES_DATOS_PREDEFINIDOS = {
         }
     }
 };
+
+/**
+ * MAPEO DE ALIAS PARA NOMBRES DE GES
+ * Cuando el nombre en BD/Wizard difiere del nombre en GES_DATOS_PREDEFINIDOS,
+ * este mapeo permite encontrar los datos de configuración correctos.
+ * Formato: "Nombre en BD/Wizard" → "Nombre en ges-config.js"
+ */
+export const GES_ALIAS_MAP = {
+  // Riesgos Biomecánicos
+  "Posturas prolongadas y mantenidas": "Posturas prolongadas y/o incorrectas",
+  "Movimientos repetitivos": "Movimientos repetitivos (6 o más por minuto)",
+  "Manipulación manual de cargas": "Manejo de cargas mayores a 25 Kg (Hombres)",
+  "Carga física - Levantamiento manual de cargas": "Manejo de cargas mayores a 25 Kg (Hombres)",
+  "Esfuerzos y movimientos con cargas": "Manejo de cargas mayores a 25 Kg (Hombres)",
+  "Posiciones forzadas y gestos repetitivos": "Adopción de posturas nocivas",
+  "Bipedestación prolongada - Permanencia de pie estática": "Posturas prolongadas y/o incorrectas",
+  "Digitación prolongada o uso intensivo de teclado/mouse - Más de 4 horas/día": "Movimientos repetitivos (6 o más por minuto)",
+
+  // Riesgos Físicos
+  "Ruido (continuo, intermitente, impacto)": "Ruido",
+  "Vibraciones (cuerpo entero, segmentaria)": "Vibraciones cuerpo completo",
+  "Vibraciones de cuerpo entero (VCE) - Vehículos, maquinaria pesada": "Vibraciones cuerpo completo",
+  "Iluminación inadecuada (deficiente o en exceso)": "Iluminación deficiente",
+  "Temperaturas extremas (calor o frío)": "Temperaturas extremas: calor",
+  "Presión atmosférica (alta o baja)": "Presiones anormales",
+  "Presión atmosférica anormal - Hipobaria (alturas) o Hiperbaria (buceo, túneles)": "Presiones anormales",
+  "Radiaciones ionizantes (rayos X, gamma, beta, alfa)": "Radiaciones ionizantes",
+  "Radiaciones no ionizantes (UV, IR, microondas, radiofrecuencias, láser)": "Radiaciones no ionizantes",
+  "Radiación ultravioleta (UV) - Exposición solar": "Radiaciones no ionizantes",
+  "Radiación infrarroja (IR) - Exposición a calor radiante": "Radiaciones no ionizantes",
+  "Campos electromagnéticos (CEM) - Radiofrecuencias, microondas": "Radiaciones por equipos audiovisuales",
+  "Laser - Radiación láser (clases 3R, 3B, 4)": "Radiaciones no ionizantes",
+  "Trabajo con pantalla de visualización de datos (PVD) - Más de 4 horas/día": "Radiaciones por equipos audiovisuales",
+
+  // Riesgos Químicos
+  "Polvos y fibras": "Exposición a gases vapores humos polvos no tóxicos",
+  "Gases y vapores": "Exposición a gases vapores humos polvos tóxicos",
+  "Líquidos (nieblas y rocíos)": "Exposición sustancias químicas líquidas tóxicas",
+  "Humos metálicos o no metálicos": "Exposición a gases vapores humos polvos tóxicos",
+  "Material particulado": "Exposición a gases vapores humos polvos tóxicos",
+  "Material particulado - Polvo de sílice, madera, metales": "Exposición a gases vapores humos polvos tóxicos",
+  "Solventes orgánicos - Exposición a benceno, tolueno, xileno": "Exposición sustancias químicas líquidas tóxicas",
+  "Plaguicidas y agroquímicos - Herbicidas, insecticidas, fungicidas": "Exposición a sustancias químicas que generan efectos en el organismo",
+
+  // Riesgos Biológicos
+  "Virus, bacterias, hongos": "Exposición a Virus",
+  "Fluidos corporales y material biológico": "Exposición a material contaminado o con riesgo biológico",
+  "Animales, plantas y derivados": "Presencia de animales/vectores transmisores de enfermedad",
+
+  // Condiciones de Seguridad
+  "Riesgo eléctrico (alta y baja tensión, estática)": "Alta tensión debido a instalaciones eléctricas locativas y estáticas",
+  "Trabajo en alturas": "Caídas de altura",
+  "Tránsito (desplazamientos en vía pública o internos)": "Accidente de Tránsito",
+  "Espacios confinados": "Condiciones de las instalaciones",
+
+  // Riesgos Psicosociales
+  "Estrés laboral": "Trabajo bajo presión",
+  "Carga mental elevada - Alta demanda cognitiva": "Trabajo bajo presión",
+  "Trabajo emocional intenso - Atención de público o situaciones críticas": "Atención de público",
+  "Jornadas de trabajo prolongadas": "Trabajo bajo presión",
+  "Trabajo nocturno o en turnos rotativos": "Monotonía/repetitividad de funciones",
+  "Turnos nocturnos o trabajo nocturno": "Monotonía/repetitividad de funciones",
+  "Acoso laboral (mobbing) o discriminación": "Trabajo bajo presión",
+  "Violencia externa o amenaza de terceros (clientes, usuarios, público)": "Amenazas",
+  "Falta de autonomía o control sobre el trabajo": "Competencias no definidas para el cargo",
+  "Extensión de la jornada laboral - Jornadas superiores a 48 horas/semana": "Trabajo bajo presión",
+  "Monotonía o tareas repetitivas sin variación": "Monotonía/repetitividad de funciones",
+
+  // Riesgos Tecnológicos
+  "Incendio o explosión - Presencia de materiales combustibles/inflamables": "Incendio",
+  "Fuga o derrame de sustancias peligrosas": "Explosión",
+
+  // Fenómenos Naturales
+  "Sismo o terremoto": "Sismo - Terremotos",
+  "Inundación o creciente de ríos": "Inundación",
+  "Vendaval, huracán o vientos fuertes": "Tormentas eléctricas"
+};
+
+/**
+ * Busca configuración de un GES en GES_DATOS_PREDEFINIDOS
+ * Primero busca por nombre exacto, luego por alias
+ * @param {string} gesNombre - Nombre del GES a buscar
+ * @returns {Object|null} Configuración del GES o null si no se encuentra
+ */
+export function buscarConfigGES(gesNombre) {
+  // 1. Buscar por nombre exacto
+  if (GES_DATOS_PREDEFINIDOS[gesNombre]) {
+    return GES_DATOS_PREDEFINIDOS[gesNombre];
+  }
+
+  // 2. Buscar por alias
+  const nombreMapeado = GES_ALIAS_MAP[gesNombre];
+  if (nombreMapeado && GES_DATOS_PREDEFINIDOS[nombreMapeado]) {
+    return GES_DATOS_PREDEFINIDOS[nombreMapeado];
+  }
+
+  // 3. No encontrado
+  return null;
+}

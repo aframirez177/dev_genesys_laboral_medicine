@@ -1,119 +1,141 @@
 @use "sass:map";
+@use "../base/mixins";
 @use "../base/variables";
 
 .steps {
-    padding-top: 5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 5rem 2rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6rem 2rem;
+    justify-items: center;
+    max-width: 1300px;
+    margin: 0 auto;
     background-color: map.get(variables.$colors, "background");
+    
+    // 2 columnas en tablet
+    @include mixins.respond-to("mobile") {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6rem 1.5rem;
+    }
+    
+    // 3 columnas en desktop (2 filas de 3)
+    @include mixins.respond-to("tablet") {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10rem 2rem;
+        padding: 6rem 4rem 4rem;
+    }
+    
     .step-card {
         background-color: #fff2fe;
         border-radius: 12px;
-        padding: 1rem;
-        max-width: 210px;
-        height: 220px;
+        padding: 1.5rem;
+        width: 100%;
+        max-width: 280px;
+        min-height: 260px;
         text-align: center;
         position: relative;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        margin: 7rem 2rem;
-        hyphens: none;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         opacity: 0.1;
         transform: translateY(20px);
-        transition: opacity 0.5s ease, transform 0.5s ease;
+        transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 
         h3 {
         color: map.get(variables.$colors, "primary");
         position: absolute;
-        top: -80px;
-        transform: translateY(-25%);
-        transform-origin: left center;
+        top: -70px;
+        left: 50%;
+        transform: translateX(-50%);
         white-space: nowrap;
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-family: map.get(variables.$fonts, "title");
         font-weight: 800;
         text-align: center;
         transition: 0.2s;
+        
+        @include mixins.respond-to("tablet") {
+            font-size: 2rem;
+            top: -75px;
+        }
         }
 
         h4 {
         font-family: map.get(variables.$fonts, "body");
-        font-size: 11px;
+        font-size: 1.1rem;
         color: map.get(variables.$colors, "alternative");
         background-color: map.get(variables.$colors, "primary");
         border-radius: 23px;
-        padding: 10px 10px;
+        padding: 0.8rem 1.2rem;
         position: absolute;
-        top: -20px;
+        top: -15px;
         text-align: center;
-        width: 150px;
+        max-width: 85%;
         transition: 0.2s;
         }
 
         p {
-        position: relative;
         font-family: map.get(variables.$fonts, "body");
-        font-weight: 500;
-        padding: 0;
-        height: max-content;
+        font-weight: 600;
+        padding: 0 0.5rem;
         text-align: center;
         transition: 0.2s;
-        width: 99%;
+        width: 100%;
         font-size: 1.4rem;
-        top: 15%;
-        transform: translateY(-50%);
+        line-height: 1.5;
+        margin-top: 5rem;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
         }
 
         .cta-button {
-        position: absolute;
-        margin-top: 60%;
+        margin-top: auto;
         font-family: map.get(variables.$fonts, "title");
-        font-size: 12px;
-        padding: 7px;
-        height: 53px;
-        width: 150px;
+        font-size: 1.2rem;
+        padding: 1rem 1.2rem;
+        min-height: 48px;
+        width: 90%;
+        max-width: 180px;
         border-radius: 12px;
         background-color: map.get(variables.$colors, "alternative");
         color: map.get(variables.$colors, "text");
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: 0.2s;
+        border: none;
+        cursor: pointer;
         }
 
         &:hover {
-            box-shadow: 0 10px 20px map.get(variables.$colors, "text");
+            box-shadow: 0 12px 24px rgba(45, 50, 56, 0.15);
             background-color: map.get(variables.$colors, "primary");
+            transform: translateY(-8px);
             
             h3 {
-            font-size: 3rem;
-            top: -90px;
-        }
+                transform: translateX(-50%) scale(1.05);
+            }
 
-        h4 {
-            background-color: map.get(variables.$colors, "alternative");
-            color: map.get(variables.$colors, "text");
-        }
+            h4 {
+                background-color: map.get(variables.$colors, "alternative");
+                color: map.get(variables.$colors, "text");
+            }
 
-        p {
-            color: map.get(variables.$colors, "alternative");
-            font-weight: 800;
-        }
+            p {
+                color: map.get(variables.$colors, "alternative");
+                font-weight: 700;
+            }
+            
+            .cta-button {
+                transform: scale(1.02);
+            }
         }
         
         &.visible {
             opacity: 1;
             transform: translateY(0);
-        }
-        &:hover{
-            transform: translateY(-25px);
-            
         }
     }
 }

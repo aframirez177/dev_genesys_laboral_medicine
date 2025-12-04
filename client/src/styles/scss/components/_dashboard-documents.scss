@@ -1,0 +1,521 @@
+// ===========================================
+// DASHBOARD PREMIUM - DOCUMENTOS
+// Sprint 6 - Fase B - Tarea 9.A
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// DOCUMENTS PAGE HEADER
+// =====================
+.docs-header {
+    @include tokens.flex-between;
+    margin-bottom: tokens.$space-6;
+    flex-wrap: wrap;
+    gap: tokens.$space-4;
+
+    &__title-group {
+        flex: 1;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-1 0;
+    }
+
+    &__subtitle {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__actions {
+        display: flex;
+        gap: tokens.$space-3;
+    }
+}
+
+// =====================
+// STORAGE OVERVIEW
+// =====================
+.storage-overview {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+    margin-bottom: tokens.$space-8;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__content {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: tokens.$space-8;
+        align-items: center;
+    }
+
+    &__chart {
+        @include tokens.flex-center;
+    }
+
+    &__details {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-4;
+    }
+
+    &__stat {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+    }
+
+    &__stat-color {
+        width: 12px;
+        height: 12px;
+        border-radius: tokens.$radius-sm;
+    }
+
+    &__stat-info {
+        flex: 1;
+    }
+
+    &__stat-label {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+    }
+
+    &__stat-value {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__stat-size {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+}
+
+// =====================
+// FOLDER GRID
+// =====================
+.folder-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: tokens.$space-4;
+    margin-bottom: tokens.$space-8;
+}
+
+.folder-card {
+    @include tokens.card-base;
+    padding: tokens.$space-4;
+    cursor: pointer;
+    @include tokens.card-hover;
+
+    &__icon {
+        width: 48px;
+        height: 48px;
+        border-radius: tokens.$radius-lg;
+        @include tokens.flex-center;
+        margin-bottom: tokens.$space-3;
+
+        svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        &--primary {
+            background: rgba(tokens.$dashboard-primary, 0.1);
+            color: tokens.$dashboard-primary;
+        }
+
+        &--success {
+            background: rgba(tokens.$dashboard-success, 0.1);
+            color: tokens.$dashboard-success;
+        }
+
+        &--warning {
+            background: rgba(tokens.$dashboard-warning, 0.1);
+            color: tokens.$dashboard-warning;
+        }
+
+        &--danger {
+            background: rgba(tokens.$dashboard-danger, 0.1);
+            color: tokens.$dashboard-danger;
+        }
+
+        &--info {
+            background: rgba(tokens.$dashboard-info, 0.1);
+            color: tokens.$dashboard-info;
+        }
+    }
+
+    &__name {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin-bottom: tokens.$space-1;
+        @include tokens.text-truncate;
+    }
+
+    &__meta {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+// =====================
+// FILE LIST
+// =====================
+.file-list {
+    @include tokens.card-base;
+    overflow: hidden;
+
+    &__header {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-bottom: 1px solid tokens.$header-border;
+        background: tokens.$dashboard-background;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__filters {
+        display: flex;
+        gap: tokens.$space-2;
+    }
+
+    &__content {
+        max-height: 500px;
+        overflow-y: auto;
+        @include tokens.custom-scrollbar;
+    }
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-4;
+    padding: tokens.$space-4 tokens.$space-6;
+    border-bottom: 1px solid tokens.$header-border;
+    transition: background tokens.$transition-fast;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        background: rgba(tokens.$dashboard-primary, 0.02);
+    }
+
+    &__checkbox {
+        flex-shrink: 0;
+    }
+
+    &__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: tokens.$radius-md;
+        @include tokens.flex-center;
+        flex-shrink: 0;
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        &--pdf {
+            background: rgba(#ef4444, 0.1);
+            color: #ef4444;
+        }
+
+        &--doc {
+            background: rgba(#3b82f6, 0.1);
+            color: #3b82f6;
+        }
+
+        &--xls {
+            background: rgba(#10b981, 0.1);
+            color: #10b981;
+        }
+
+        &--img {
+            background: rgba(#8b5cf6, 0.1);
+            color: #8b5cf6;
+        }
+
+        &--default {
+            background: rgba(tokens.$dashboard-text-light, 0.1);
+            color: tokens.$dashboard-text-light;
+        }
+    }
+
+    &__info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+        @include tokens.text-truncate;
+        cursor: pointer;
+
+        &:hover {
+            color: tokens.$dashboard-primary;
+        }
+    }
+
+    &__meta {
+        display: flex;
+        gap: tokens.$space-3;
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+
+    &__size {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        min-width: 60px;
+        text-align: right;
+    }
+
+    &__date {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        min-width: 100px;
+    }
+
+    &__actions {
+        display: flex;
+        gap: tokens.$space-1;
+        opacity: 0;
+        transition: opacity tokens.$transition-fast;
+    }
+
+    &:hover &__actions {
+        opacity: 1;
+    }
+}
+
+// =====================
+// UPLOAD AREA
+// =====================
+.upload-area {
+    @include tokens.card-base;
+    padding: tokens.$space-8;
+    border: 2px dashed tokens.$header-border;
+    text-align: center;
+    cursor: pointer;
+    transition: all tokens.$transition-normal;
+
+    &:hover,
+    &.dragover {
+        border-color: tokens.$dashboard-primary;
+        background: rgba(tokens.$dashboard-primary, 0.02);
+    }
+
+    &__icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto tokens.$space-4;
+        border-radius: 50%;
+        background: rgba(tokens.$dashboard-primary, 0.1);
+        @include tokens.flex-center;
+
+        svg {
+            width: 32px;
+            height: 32px;
+            color: tokens.$dashboard-primary;
+        }
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__description {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__hint {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+// =====================
+// FILE PREVIEW MODAL
+// =====================
+.file-preview {
+    &__header {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-bottom: 1px solid tokens.$header-border;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__body {
+        padding: tokens.$space-6;
+        @include tokens.flex-center;
+        min-height: 400px;
+        background: tokens.$dashboard-background;
+    }
+
+    &__image {
+        max-width: 100%;
+        max-height: 60vh;
+        border-radius: tokens.$radius-md;
+    }
+
+    &__pdf {
+        width: 100%;
+        height: 60vh;
+        border: none;
+        border-radius: tokens.$radius-md;
+    }
+
+    &__info {
+        padding: tokens.$space-4 tokens.$space-6;
+        border-top: 1px solid tokens.$header-border;
+    }
+
+    &__meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: tokens.$space-4;
+    }
+
+    &__meta-item {
+        &-label {
+            font-size: tokens.$font-xs;
+            color: tokens.$dashboard-text-light;
+            margin-bottom: tokens.$space-1;
+        }
+
+        &-value {
+            font-size: tokens.$font-body;
+            color: tokens.$dashboard-text;
+            font-weight: tokens.$font-medium;
+        }
+    }
+
+    &__footer {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-top: 1px solid tokens.$header-border;
+    }
+}
+
+// =====================
+// BREADCRUMB
+// =====================
+.docs-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    margin-bottom: tokens.$space-4;
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+
+        a {
+            color: tokens.$dashboard-primary;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        &:last-child {
+            color: tokens.$dashboard-text;
+            font-weight: tokens.$font-medium;
+        }
+    }
+
+    &__separator {
+        color: tokens.$dashboard-text-light;
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('laptop') {
+    .storage-overview__content {
+        grid-template-columns: 1fr;
+    }
+
+    .folder-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@include tokens.respond-to('tablet') {
+    .folder-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .file-item {
+        flex-wrap: wrap;
+
+        &__size,
+        &__date {
+            display: none;
+        }
+
+        &__actions {
+            opacity: 1;
+        }
+    }
+
+    .file-preview__meta {
+        grid-template-columns: 1fr;
+    }
+}
+

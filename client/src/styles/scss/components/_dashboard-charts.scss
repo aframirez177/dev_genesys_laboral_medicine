@@ -1,0 +1,667 @@
+// ===========================================
+// DASHBOARD PREMIUM - CHARTS
+// Sprint 6 - Fase B
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+@use "sass:color";
+
+// =====================
+// CHART CONTAINER
+// =====================
+.chart-container {
+    @include tokens.card-base;
+    padding: tokens.$space-6;
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__subtitle {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+    }
+
+    &__body {
+        position: relative;
+        min-height: 200px;
+    }
+}
+
+// =====================
+// DONUT CHART (SVG)
+// =====================
+.donut-chart {
+    position: relative;
+    display: inline-block;
+
+    &__svg {
+        transform: rotate(-90deg);
+    }
+
+    &__background {
+        fill: none;
+        stroke: tokens.$dashboard-background;
+    }
+
+    &__segment {
+        fill: none;
+        transition: stroke-dasharray tokens.$transition-slow;
+
+        &--i, &--success {
+            stroke: tokens.$risk-level-i;
+        }
+
+        &--ii {
+            stroke: tokens.$risk-level-ii;
+        }
+
+        &--iii, &--warning {
+            stroke: tokens.$risk-level-iii;
+        }
+
+        &--iv {
+            stroke: tokens.$risk-level-iv;
+        }
+
+        &--v, &--danger {
+            stroke: tokens.$risk-level-v;
+        }
+
+        &--primary {
+            stroke: tokens.$dashboard-primary;
+        }
+
+        &--info {
+            stroke: tokens.$dashboard-info;
+        }
+
+        &--ai {
+            stroke: tokens.$dashboard-ai-purple;
+        }
+    }
+
+    &__center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    &__value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h1;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        line-height: tokens.$leading-tight;
+    }
+
+    &__label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+// =====================
+// LEGEND
+// =====================
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: tokens.$space-4;
+    margin-top: tokens.$space-4;
+
+    &--vertical {
+        flex-direction: column;
+        gap: tokens.$space-3;
+    }
+
+    &--inline {
+        justify-content: center;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-size: tokens.$font-small;
+        cursor: pointer;
+        transition: opacity tokens.$transition-normal;
+
+        &:hover {
+            opacity: 0.7;
+        }
+
+        &.disabled {
+            opacity: 0.4;
+        }
+    }
+
+    &__dot {
+        width: 12px;
+        height: 12px;
+        border-radius: tokens.$radius-sm;
+        flex-shrink: 0;
+
+        &--i, &--success {
+            background: tokens.$risk-level-i;
+        }
+
+        &--ii {
+            background: tokens.$risk-level-ii;
+        }
+
+        &--iii, &--warning {
+            background: tokens.$risk-level-iii;
+        }
+
+        &--iv {
+            background: tokens.$risk-level-iv;
+        }
+
+        &--v, &--danger {
+            background: tokens.$risk-level-v;
+        }
+
+        &--primary {
+            background: tokens.$dashboard-primary;
+        }
+
+        &--info {
+            background: tokens.$dashboard-info;
+        }
+
+        &--ai {
+            background: tokens.$dashboard-ai-purple;
+        }
+    }
+
+    &__label {
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__value {
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin-left: auto;
+    }
+}
+
+// =====================
+// BAR CHART (Horizontal)
+// =====================
+.bar-chart {
+    &__item {
+        margin-bottom: tokens.$space-4;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__header {
+        @include tokens.flex-between;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__label {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        font-weight: tokens.$font-medium;
+    }
+
+    &__value {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__bar {
+        height: 8px;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-full;
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        border-radius: tokens.$radius-full;
+        transition: width tokens.$transition-slow ease-out;
+
+        &--primary {
+            background: tokens.$dashboard-primary;
+        }
+
+        &--success {
+            background: tokens.$dashboard-success;
+        }
+
+        &--warning {
+            background: tokens.$dashboard-warning;
+        }
+
+        &--danger {
+            background: tokens.$dashboard-danger;
+        }
+
+        &--info {
+            background: tokens.$dashboard-info;
+        }
+
+        &--ai {
+            background: tokens.$dashboard-ai-gradient;
+        }
+    }
+
+    // Variante con icono
+    &--with-icon {
+        .bar-chart__item {
+            display: flex;
+            align-items: center;
+            gap: tokens.$space-3;
+        }
+
+        .bar-chart__icon {
+            width: 32px;
+            height: 32px;
+            border-radius: tokens.$radius-md;
+            @include tokens.flex-center;
+            flex-shrink: 0;
+
+            svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        .bar-chart__content {
+            flex: 1;
+        }
+    }
+
+    // Variante compacta
+    &--compact {
+        .bar-chart__item {
+            margin-bottom: tokens.$space-3;
+        }
+
+        .bar-chart__bar {
+            height: 6px;
+        }
+    }
+}
+
+// =====================
+// PROGRESS RING
+// =====================
+.progress-ring {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &__svg {
+        transform: rotate(-90deg);
+    }
+
+    &__background {
+        fill: none;
+        stroke: tokens.$dashboard-background;
+    }
+
+    &__progress {
+        fill: none;
+        stroke-linecap: round;
+        transition: stroke-dashoffset tokens.$transition-slow ease-out;
+
+        &--primary {
+            stroke: tokens.$dashboard-primary;
+        }
+
+        &--success {
+            stroke: tokens.$dashboard-success;
+        }
+
+        &--warning {
+            stroke: tokens.$dashboard-warning;
+        }
+
+        &--danger {
+            stroke: tokens.$dashboard-danger;
+        }
+    }
+
+    &__content {
+        position: absolute;
+        text-align: center;
+    }
+
+    &__value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__label {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    // Tamaños
+    &--sm {
+        .progress-ring__value {
+            font-size: tokens.$font-body;
+        }
+    }
+
+    &--lg {
+        .progress-ring__value {
+            font-size: tokens.$font-h1;
+        }
+    }
+}
+
+// =====================
+// SPARKLINE
+// =====================
+.sparkline {
+    display: inline-flex;
+    align-items: flex-end;
+    height: 32px;
+    gap: 2px;
+
+    &__bar {
+        width: 4px;
+        background: tokens.$dashboard-primary;
+        border-radius: 2px;
+        transition: height tokens.$transition-normal;
+
+        &:hover {
+            background: color.adjust(tokens.$dashboard-primary, $lightness: -10%);
+        }
+    }
+
+    &--trend-up {
+        .sparkline__bar:last-child {
+            background: tokens.$dashboard-success;
+        }
+    }
+
+    &--trend-down {
+        .sparkline__bar:last-child {
+            background: tokens.$dashboard-danger;
+        }
+    }
+}
+
+// =====================
+// STAT COMPARISON
+// =====================
+.stat-comparison {
+    display: flex;
+    gap: tokens.$space-6;
+
+    &__item {
+        flex: 1;
+        text-align: center;
+        padding: tokens.$space-4;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-lg;
+    }
+
+    &__value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        margin-top: tokens.$space-1;
+    }
+
+    &__divider {
+        width: 1px;
+        background: tokens.$header-border;
+    }
+}
+
+// =====================
+// DISTRIBUTION CHART
+// =====================
+.distribution-chart {
+    &__segments {
+        display: flex;
+        height: 12px;
+        border-radius: tokens.$radius-full;
+        overflow: hidden;
+        margin-bottom: tokens.$space-4;
+    }
+
+    &__segment {
+        height: 100%;
+        transition: width tokens.$transition-slow;
+
+        &:first-child {
+            border-radius: tokens.$radius-full 0 0 tokens.$radius-full;
+        }
+
+        &:last-child {
+            border-radius: 0 tokens.$radius-full tokens.$radius-full 0;
+        }
+    }
+
+    &__labels {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: tokens.$space-3;
+    }
+
+    &__label-item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-size: tokens.$font-small;
+    }
+
+    &__label-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: tokens.$radius-sm;
+    }
+
+    &__label-text {
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__label-value {
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+}
+
+// =====================
+// MINI CHART (Para cards)
+// =====================
+.mini-chart {
+    width: 100%;
+    height: 60px;
+
+    &__line {
+        fill: none;
+        stroke: tokens.$dashboard-primary;
+        stroke-width: 2;
+    }
+
+    &__area {
+        fill: url(#gradient-primary);
+        opacity: 0.1;
+    }
+
+    &__point {
+        fill: tokens.$dashboard-primary;
+        stroke: tokens.$dashboard-white;
+        stroke-width: 2;
+        cursor: pointer;
+
+        &:hover {
+            r: 5;
+        }
+    }
+
+    // Variantes
+    &--success {
+        .mini-chart__line {
+            stroke: tokens.$dashboard-success;
+        }
+
+        .mini-chart__point {
+            fill: tokens.$dashboard-success;
+        }
+    }
+
+    &--danger {
+        .mini-chart__line {
+            stroke: tokens.$dashboard-danger;
+        }
+
+        .mini-chart__point {
+            fill: tokens.$dashboard-danger;
+        }
+    }
+}
+
+// =====================
+// TOOLTIP
+// =====================
+.chart-tooltip {
+    position: absolute;
+    padding: tokens.$space-3;
+    background: tokens.$dashboard-secondary;
+    color: tokens.$dashboard-white;
+    border-radius: tokens.$radius-md;
+    font-size: tokens.$font-small;
+    box-shadow: tokens.$shadow-lg;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity tokens.$transition-fast, transform tokens.$transition-fast;
+    z-index: tokens.$z-tooltip;
+    white-space: nowrap;
+
+    &.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid tokens.$dashboard-secondary;
+    }
+
+    &__label {
+        font-weight: tokens.$font-medium;
+        margin-bottom: tokens.$space-1;
+    }
+
+    &__value {
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-bold;
+    }
+}
+
+// =====================
+// NO DATA STATE
+// =====================
+.chart-no-data {
+    @include tokens.flex-center;
+    flex-direction: column;
+    min-height: 200px;
+    color: tokens.$dashboard-text-light;
+
+    svg {
+        width: 48px;
+        height: 48px;
+        margin-bottom: tokens.$space-3;
+        opacity: 0.5;
+    }
+
+    &__text {
+        font-size: tokens.$font-body;
+    }
+}
+
+// =====================
+// CHART LOADING
+// =====================
+.chart-loading {
+    @include tokens.flex-center;
+    min-height: 200px;
+
+    &__spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid tokens.$dashboard-background;
+        border-top-color: tokens.$dashboard-primary;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('tablet') {
+    .chart-container {
+        padding: tokens.$space-4;
+    }
+
+    .stat-comparison {
+        flex-direction: column;
+        gap: tokens.$space-3;
+
+        &__divider {
+            width: 100%;
+            height: 1px;
+        }
+    }
+
+    .chart-legend {
+        justify-content: flex-start;
+        gap: tokens.$space-3;
+    }
+}
+

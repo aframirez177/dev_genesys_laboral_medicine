@@ -1,0 +1,257 @@
+// ===========================================
+// DASHBOARD PREMIUM - DESIGN TOKENS
+// Sprint 6 - Fase B
+// ===========================================
+
+@use "sass:color";
+
+// =====================
+// COLORES PRIMARIOS
+// =====================
+$dashboard-primary: #5dc4af !default;
+$dashboard-primary-dark: #4db39e !default;
+$dashboard-secondary: #383d47 !default;
+$dashboard-text: #2d3238 !default;
+$dashboard-text-light: #6b7280 !default;
+$dashboard-background: #f5f5f5 !default;
+$dashboard-white: #ffffff !default;
+$dashboard-border: #e5e7eb !default;
+
+// =====================
+// COLORES DE ESTADO
+// =====================
+$dashboard-success: #10b981 !default;
+$dashboard-warning: #f59e0b !default;
+$dashboard-danger: #ef4444 !default;
+$dashboard-info: #3b82f6 !default;
+
+// =====================
+// COLORES NIVELES DE RIESGO GTC-45
+// =====================
+$risk-level-i: #10b981 !default;
+$risk-level-ii: #84cc16 !default;
+$risk-level-iii: #f59e0b !default;
+$risk-level-iv: #f97316 !default;
+$risk-level-v: #ef4444 !default;
+
+// =====================
+// COLORES ESPECIALES
+// =====================
+$dashboard-ai-purple: #7c3aed !default;
+$dashboard-ai-purple-light: #a855f7 !default;
+$dashboard-ai-gradient: linear-gradient(135deg, $dashboard-ai-purple 0%, $dashboard-ai-purple-light 100%) !default;
+$dashboard-live-green: #22c55e !default;
+$dashboard-badge-new: #10b981 !default;
+$dashboard-badge-count: #f97316 !default;
+
+// =====================
+// SIDEBAR
+// =====================
+$sidebar-bg: #383d47 !default;
+$sidebar-hover: rgba(255, 255, 255, 0.1) !default;
+$sidebar-active: #5dc4af !default;
+$sidebar-text: #ffffff !default;
+$sidebar-text-muted: rgba(255, 255, 255, 0.7) !default;
+$sidebar-width: 200px !default;
+$sidebar-collapsed: 64px !default;
+$sidebar-transition: 0.3s ease !default;
+
+// =====================
+// HEADER
+// =====================
+$header-height: 64px !default;
+$header-bg: #ffffff !default;
+$header-border: #e5e7eb !default;
+$header-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !default;
+
+// =====================
+// SPACING (Base 8px)
+// =====================
+$space-0: 0 !default;
+$space-1: 4px !default;
+$space-2: 8px !default;
+$space-3: 12px !default;
+$space-4: 16px !default;
+$space-5: 20px !default;
+$space-6: 24px !default;
+$space-8: 32px !default;
+$space-10: 40px !default;
+$space-12: 48px !default;
+$space-16: 64px !default;
+
+// =====================
+// BORDER RADIUS
+// =====================
+$radius-none: 0 !default;
+$radius-sm: 4px !default;
+$radius-md: 8px !default;
+$radius-lg: 12px !default;
+$radius-xl: 16px !default;
+$radius-2xl: 24px !default;
+$radius-full: 9999px !default;
+
+// =====================
+// SHADOWS
+// =====================
+$shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05) !default;
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !default;
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !default;
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !default;
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !default;
+$shadow-card-hover: 0 8px 16px rgba(0, 0, 0, 0.12) !default;
+$shadow-ai-glow: 0 0 20px rgba(124, 58, 237, 0.3) !default;
+
+// =====================
+// TYPOGRAPHY
+// =====================
+$font-family-title: 'Poppins', sans-serif !default;
+$font-family-body: 'Raleway', sans-serif !default;
+
+$font-display: 4.8rem !default;
+$font-h1: 3.2rem !default;
+$font-h2: 2.4rem !default;
+$font-h3: 2.0rem !default;
+$font-h4: 1.8rem !default;
+$font-body: 1.4rem !default;
+$font-small: 1.2rem !default;
+$font-xs: 1.1rem !default;
+
+$font-regular: 400 !default;
+$font-medium: 500 !default;
+$font-semibold: 600 !default;
+$font-bold: 700 !default;
+$font-extrabold: 800 !default;
+
+$leading-none: 1 !default;
+$leading-tight: 1.1 !default;
+$leading-snug: 1.25 !default;
+$leading-normal: 1.5 !default;
+$leading-relaxed: 1.625 !default;
+
+// =====================
+// TRANSITIONS
+// =====================
+$transition-fast: 0.15s ease !default;
+$transition-normal: 0.2s ease !default;
+$transition-slow: 0.3s ease !default;
+
+// =====================
+// Z-INDEX LAYERS
+// =====================
+$z-dropdown: 100 !default;
+$z-sticky: 200 !default;
+$z-fixed: 300 !default;
+$z-modal-backdrop: 400 !default;
+$z-modal: 500 !default;
+$z-popover: 600 !default;
+$z-tooltip: 700 !default;
+
+// =====================
+// BREAKPOINTS
+// =====================
+$breakpoint-mobile: 640px !default;
+$breakpoint-tablet: 768px !default;
+$breakpoint-laptop: 1024px !default;
+$breakpoint-desktop: 1280px !default;
+$breakpoint-wide: 1536px !default;
+
+// =====================
+// GRID
+// =====================
+$grid-gap: 3rem !default; // 30px - Espaciado entre cards
+$grid-gap-sm: $space-4 !default;
+$container-max: 1440px !default;
+
+// =====================
+// MIXINS
+// =====================
+@mixin respond-to($breakpoint) {
+    @if $breakpoint == 'mobile' {
+        @media (max-width: $breakpoint-mobile) { @content; }
+    } @else if $breakpoint == 'tablet' {
+        @media (max-width: $breakpoint-tablet) { @content; }
+    } @else if $breakpoint == 'laptop' {
+        @media (max-width: $breakpoint-laptop) { @content; }
+    } @else if $breakpoint == 'desktop' {
+        @media (max-width: $breakpoint-desktop) { @content; }
+    }
+}
+
+@mixin card-base {
+    background: $dashboard-white;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    transition: transform $transition-normal, box-shadow $transition-normal;
+}
+
+@mixin card-hover {
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-card-hover;
+    }
+}
+
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@mixin custom-scrollbar {
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $dashboard-background;
+        border-radius: $radius-full;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $dashboard-border;
+        border-radius: $radius-full;
+
+        &:hover {
+            background: color.adjust($dashboard-border, $lightness: -10%);
+        }
+    }
+}
+
+@mixin hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@mixin flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+@mixin focus-ring {
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba($dashboard-primary, 0.3);
+    }
+
+    &:focus-visible {
+        outline: 2px solid $dashboard-primary;
+        outline-offset: 2px;
+    }
+}

@@ -382,7 +382,30 @@ class ProfesiogramaViewer {
             return riskColors[nivel] || '#999';
         };
 
-        // Generate factores de riesgo HTML
+        // Generate GES identificados HTML (NUEVO - lista completa de riesgos con detalles)
+        const gesIdentificadosHTML = cargo.gesIdentificados?.map(ges => `
+            <div class="ges-item" style="border-left: 4px solid ${getRiskColor(ges.nivelNR)};">
+                <div class="ges-header">
+                    <div class="ges-info">
+                        <span class="ges-riesgo-tipo">${ges.riesgo || 'Riesgo'}</span>
+                        <h5 class="ges-nombre">${ges.ges || ''}</h5>
+                    </div>
+                    <span class="ges-badge" style="background-color: ${getRiskColor(ges.nivelNR)};">
+                        NR: ${ges.niveles?.nr || 'N/A'} - ${ges.interpretacionNR || ''}
+                    </span>
+                </div>
+                <div class="ges-niveles">
+                    <span class="nivel-tag">ND: ${ges.niveles?.nd ?? 'N/A'}</span>
+                    <span class="nivel-tag">NE: ${ges.niveles?.ne ?? 'N/A'}</span>
+                    <span class="nivel-tag">NP: ${ges.niveles?.np ?? 'N/A'}</span>
+                    <span class="nivel-tag">NC: ${ges.niveles?.nc ?? 'N/A'}</span>
+                </div>
+                ${ges.efectosPosibles ? `<p class="ges-efectos"><strong>Efectos posibles:</strong> ${ges.efectosPosibles}</p>` : ''}
+                ${ges.justificacion ? `<p class="ges-justificacion"><strong>Justificación:</strong> ${ges.justificacion}</p>` : ''}
+            </div>
+        `).join('') || '';
+
+        // Generate factores de riesgo HTML (solo los que requieren controles - resumen)
         const factoresHTML = cargo.factoresRiesgo?.map(factor => `
             <div class="factor-riesgo-item">
                 <div class="factor-header">
@@ -393,6 +416,7 @@ class ProfesiogramaViewer {
                 </div>
                 <p class="factor-descripcion">${factor.descripcion || ''}</p>
                 <p class="factor-exposicion"><strong>Nivel de exposición:</strong> ${factor.nivelExposicion || 'N/A'}</p>
+                ${factor.justificacion ? `<p class="factor-justificacion"><strong>Justificación técnica:</strong> ${factor.justificacion}</p>` : ''}
             </div>
         `).join('') || '<p class="no-data">No se identificaron factores de riesgo específicos.</p>';
 
@@ -413,6 +437,66 @@ class ProfesiogramaViewer {
 
         // Generate condiciones incompatibles HTML
         const incompatiblesHTML = cargo.condicionesIncompatibles?.map(item => `<li>${item}</li>`).join('') || '<li class="no-data">No se especificaron condiciones incompatibles.</li>';
+
+        // Generate características especiales HTML (toggles)
+        const toggles = cargo.togglesEspeciales || {};
+        const caracteristicasEspeciales = [];
+
+        if (toggles.trabajaAlturas) {
+            caracteristicasEspeciales.push({
+                icono: 'fa-hard-hat',
+                titulo: 'Trabajo en Alturas',
+                descripcion: 'El cargo implica trabajo en alturas (≥1.5m). Requiere certificación según Res. 4272/2021.',
+                examenes: 'Examen médico con énfasis osteomuscular para alturas (EMOA), Glicemia, Perfil Lipídico, Electrocardiograma, Espirometría',
+                normativa: 'Resolución 1409/2012 y 4272/2021'
+            });
+        }
+
+        if (toggles.conduceVehiculo) {
+            caracteristicasEspeciales.push({
+                icono: 'fa-car',
+                titulo: 'Conduce Vehículo',
+                descripcion: 'El cargo requiere conducción de vehículos como parte de sus funciones.',
+                examenes: 'Examen Psicosensométrico (PSM), Glicemia, Perfil Lipídico',
+                normativa: 'Resolución 1565/2014 (PESV) y Ley 1383/2010'
+            });
+        }
+
+        if (toggles.manipulaAlimentos) {
+            caracteristicasEspeciales.push({
+                icono: 'fa-utensils',
+                titulo: 'Manipulación de Alimentos',
+                descripcion: 'El cargo involucra manipulación directa de alimentos para consumo humano.',
+                examenes: 'Examen médico con énfasis en manipulación de alimentos (EMOMP), Frotis de Garganta, KOH, Coprológico',
+                normativa: 'Resolución 2674/2013'
+            });
+        }
+
+        if (toggles.trabajaEspaciosConfinados) {
+            caracteristicasEspeciales.push({
+                icono: 'fa-door-closed',
+                titulo: 'Trabajo en Espacios Confinados',
+                descripcion: 'El cargo implica ingreso a espacios confinados (tanques, silos, pozos, túneles, etc.).',
+                examenes: 'EMO, Espirometría, Electrocardiograma, Glicemia, Perfil Lipídico, Psicosensométrico',
+                normativa: 'Resolución 0491/2020 y NTC 4116'
+            });
+        }
+
+        const caracteristicasHTML = caracteristicasEspeciales.length > 0
+            ? caracteristicasEspeciales.map(c => `
+                <div class="caracteristica-especial-item">
+                    <div class="caracteristica-header">
+                        <i class="fas ${c.icono}"></i>
+                        <h5 class="caracteristica-titulo">${c.titulo}</h5>
+                    </div>
+                    <p class="caracteristica-descripcion">${c.descripcion}</p>
+                    <div class="caracteristica-detalles">
+                        <p><strong>Exámenes requeridos:</strong> ${c.examenes}</p>
+                        <p><strong>Normativa aplicable:</strong> ${c.normativa}</p>
+                    </div>
+                </div>
+            `).join('')
+            : '';
 
         return `
             <div class="cargo-ficha">
@@ -436,13 +520,37 @@ class ProfesiogramaViewer {
                     </div>
                 </div>
 
+                ${caracteristicasHTML ? `
+                <div class="cargo-section caracteristicas-especiales-section">
+                    <h4 class="cargo-section-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Características Especiales del Cargo
+                    </h4>
+                    <p class="section-subtitle">Condiciones especiales que requieren exámenes y controles específicos según normativa vigente</p>
+                    <div class="caracteristicas-especiales-list">
+                        ${caracteristicasHTML}
+                    </div>
+                </div>
+                ` : ''}
+
                 <div class="cargo-section">
                     <h4 class="cargo-section-title">Descripción del cargo</h4>
                     <p class="cargo-descripcion">${cargo.descripcion || 'No disponible'}</p>
                 </div>
 
+                ${gesIdentificadosHTML ? `
                 <div class="cargo-section">
-                    <h4 class="cargo-section-title">Factores de Riesgo Identificados</h4>
+                    <h4 class="cargo-section-title">GES Identificados (Grupos de Exposición Similar)</h4>
+                    <p class="section-subtitle">Listado completo de riesgos identificados para este cargo con sus niveles calculados según GTC-45</p>
+                    <div class="ges-identificados-list">
+                        ${gesIdentificadosHTML}
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="cargo-section">
+                    <h4 class="cargo-section-title">Factores de Riesgo que Requieren Control</h4>
+                    <p class="section-subtitle">Riesgos con NR significativo que requieren medidas de intervención</p>
                     <div class="factores-riesgo-list">
                         ${factoresHTML}
                     </div>

@@ -1,0 +1,809 @@
+// ===========================================
+// DASHBOARD PREMIUM - TABLES
+// Sprint 6 - Fase B
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// TABLE CONTAINER
+// =====================
+.table-container {
+    @include tokens.card-base;
+    overflow: hidden;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    @include tokens.custom-scrollbar;
+}
+
+// =====================
+// DATA TABLE
+// =====================
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: tokens.$font-family-body;
+    font-size: tokens.$font-body;
+
+    // Header
+    thead {
+        background: tokens.$dashboard-background;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+
+        th {
+            padding: tokens.$space-4;
+            text-align: left;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-text-light;
+            font-size: tokens.$font-small;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            border-bottom: 1px solid tokens.$header-border;
+
+            &:first-child {
+                padding-left: tokens.$space-6;
+            }
+
+            &:last-child {
+                padding-right: tokens.$space-6;
+            }
+
+            // Sortable header
+            &.sortable {
+                cursor: pointer;
+                user-select: none;
+                transition: color tokens.$transition-normal;
+
+                &:hover {
+                    color: tokens.$dashboard-secondary;
+                }
+            }
+
+            .sort-icon {
+                display: inline-flex;
+                margin-left: tokens.$space-1;
+                opacity: 0.5;
+
+                svg {
+                    width: 14px;
+                    height: 14px;
+                }
+            }
+
+            &.sorted-asc,
+            &.sorted-desc {
+                color: tokens.$dashboard-primary;
+
+                .sort-icon {
+                    opacity: 1;
+                    color: tokens.$dashboard-primary;
+                }
+            }
+
+            &.sorted-desc .sort-icon {
+                transform: rotate(180deg);
+            }
+        }
+    }
+
+    // Body
+    tbody {
+        tr {
+            border-bottom: 1px solid tokens.$header-border;
+            transition: background tokens.$transition-fast;
+
+            &:hover {
+                background: rgba(tokens.$dashboard-primary, 0.03);
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            // Selected row
+            &.selected {
+                background: rgba(tokens.$dashboard-primary, 0.08);
+            }
+
+            // Expandable row
+            &.expandable {
+                cursor: pointer;
+            }
+
+            // Expanded content row
+            &.expanded-content {
+                background: tokens.$dashboard-background;
+
+                td {
+                    padding: tokens.$space-6;
+                }
+            }
+        }
+
+        td {
+            padding: tokens.$space-4;
+            color: tokens.$dashboard-text;
+            vertical-align: middle;
+
+            &:first-child {
+                padding-left: tokens.$space-6;
+            }
+
+            &:last-child {
+                padding-right: tokens.$space-6;
+            }
+        }
+    }
+
+    // Compact variant
+    &--compact {
+        thead th,
+        tbody td {
+            padding: tokens.$space-3;
+
+            &:first-child {
+                padding-left: tokens.$space-4;
+            }
+
+            &:last-child {
+                padding-right: tokens.$space-4;
+            }
+        }
+    }
+
+    // Striped variant
+    &--striped {
+        tbody tr:nth-child(even) {
+            background: rgba(tokens.$dashboard-background, 0.5);
+        }
+    }
+
+    // Borderless variant
+    &--borderless {
+        tbody tr {
+            border-bottom: none;
+        }
+    }
+}
+
+// =====================
+// CHECKBOX COLUMN
+// =====================
+.table-checkbox {
+    width: 40px;
+
+    .checkbox {
+        width: 18px;
+        height: 18px;
+        appearance: none;
+        border: 2px solid tokens.$header-border;
+        border-radius: tokens.$radius-sm;
+        cursor: pointer;
+        position: relative;
+        transition: all tokens.$transition-fast;
+
+        &:hover {
+            border-color: tokens.$dashboard-primary;
+        }
+
+        &:checked {
+            background: tokens.$dashboard-primary;
+            border-color: tokens.$dashboard-primary;
+
+            &::after {
+                content: '';
+                position: absolute;
+                left: 5px;
+                top: 2px;
+                width: 4px;
+                height: 8px;
+                border: solid white;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+            }
+        }
+
+        &:indeterminate {
+            background: tokens.$dashboard-primary;
+            border-color: tokens.$dashboard-primary;
+
+            &::after {
+                content: '';
+                position: absolute;
+                left: 3px;
+                top: 6px;
+                width: 8px;
+                height: 2px;
+                background: white;
+            }
+        }
+    }
+}
+
+// =====================
+// TABLE CELLS SPECIAL
+// =====================
+// Cell with avatar
+.table-cell-user {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-3;
+
+    &__avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: tokens.$radius-md;
+        background: tokens.$dashboard-primary;
+        @include tokens.flex-center;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        font-size: tokens.$font-small;
+        flex-shrink: 0;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__info {
+        min-width: 0;
+    }
+
+    &__name {
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-secondary;
+        @include tokens.text-truncate;
+    }
+
+    &__sub {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        @include tokens.text-truncate;
+    }
+}
+
+// Cell with icon
+.table-cell-icon {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+
+    svg {
+        width: 16px;
+        height: 16px;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+// Cell with progress
+.table-cell-progress {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-3;
+    min-width: 120px;
+
+    &__bar {
+        flex: 1;
+        height: 6px;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-full;
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        border-radius: tokens.$radius-full;
+        transition: width tokens.$transition-slow;
+
+        &--success {
+            background: tokens.$dashboard-success;
+        }
+
+        &--warning {
+            background: tokens.$dashboard-warning;
+        }
+
+        &--danger {
+            background: tokens.$dashboard-danger;
+        }
+
+        &--primary {
+            background: tokens.$dashboard-primary;
+        }
+    }
+
+    &__value {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text-light;
+        min-width: 36px;
+        text-align: right;
+    }
+}
+
+// =====================
+// ACTIONS COLUMN
+// =====================
+.table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: tokens.$space-1;
+}
+
+.table-action-btn {
+    width: 32px;
+    height: 32px;
+    @include tokens.flex-center;
+    background: transparent;
+    border: none;
+    border-radius: tokens.$radius-md;
+    cursor: pointer;
+    transition: background tokens.$transition-fast;
+
+    svg {
+        width: 18px;
+        height: 18px;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &:hover {
+        background: tokens.$dashboard-background;
+
+        svg {
+            color: tokens.$dashboard-secondary;
+        }
+    }
+
+    &--danger:hover {
+        background: rgba(tokens.$dashboard-danger, 0.1);
+
+        svg {
+            color: tokens.$dashboard-danger;
+        }
+    }
+}
+
+// Dropdown menu button
+.table-menu-btn {
+    @extend .table-action-btn;
+    position: relative;
+
+    &__dropdown {
+        position: absolute;
+        top: calc(100% + tokens.$space-1);
+        right: 0;
+        min-width: 160px;
+        background: tokens.$dashboard-white;
+        border: 1px solid tokens.$header-border;
+        border-radius: tokens.$radius-md;
+        box-shadow: tokens.$shadow-lg;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        transition: all tokens.$transition-normal;
+        z-index: tokens.$z-dropdown;
+
+        &.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        width: 100%;
+        padding: tokens.$space-3 tokens.$space-4;
+        background: transparent;
+        border: none;
+        text-align: left;
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        cursor: pointer;
+        transition: background tokens.$transition-fast;
+
+        svg {
+            width: 16px;
+            height: 16px;
+            color: tokens.$dashboard-text-light;
+        }
+
+        &:hover {
+            background: tokens.$dashboard-background;
+        }
+
+        &--danger {
+            color: tokens.$dashboard-danger;
+
+            svg {
+                color: tokens.$dashboard-danger;
+            }
+
+            &:hover {
+                background: rgba(tokens.$dashboard-danger, 0.05);
+            }
+        }
+    }
+
+    &__divider {
+        height: 1px;
+        background: tokens.$header-border;
+        margin: tokens.$space-1 0;
+    }
+}
+
+// =====================
+// TABLE HEADER (Filtros y acciones)
+// =====================
+.table-header {
+    @include tokens.flex-between;
+    padding: tokens.$space-4 tokens.$space-6;
+    border-bottom: 1px solid tokens.$header-border;
+    flex-wrap: wrap;
+    gap: tokens.$space-4;
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+    }
+}
+
+// =====================
+// TABLE FILTERS
+// =====================
+.table-filters {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-3;
+    padding: tokens.$space-4 tokens.$space-6;
+    background: tokens.$dashboard-background;
+    border-bottom: 1px solid tokens.$header-border;
+    flex-wrap: wrap;
+}
+
+.table-filter {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+
+    &__label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        font-weight: tokens.$font-medium;
+    }
+
+    &__select {
+        height: 36px;
+        padding: 0 tokens.$space-8 0 tokens.$space-3;
+        background: tokens.$dashboard-white;
+        border: 1px solid tokens.$header-border;
+        border-radius: tokens.$radius-md;
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        transition: border-color tokens.$transition-normal;
+
+        &:hover {
+            border-color: tokens.$dashboard-primary;
+        }
+
+        &:focus {
+            outline: none;
+            border-color: tokens.$dashboard-primary;
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.1);
+        }
+    }
+}
+
+.table-search {
+    position: relative;
+    flex: 1;
+    max-width: 280px;
+
+    &__input {
+        width: 100%;
+        height: 36px;
+        padding: 0 tokens.$space-3 0 tokens.$space-10;
+        background: tokens.$dashboard-white;
+        border: 1px solid tokens.$header-border;
+        border-radius: tokens.$radius-md;
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        transition: all tokens.$transition-normal;
+
+        &::placeholder {
+            color: tokens.$dashboard-text-light;
+        }
+
+        &:focus {
+            outline: none;
+            border-color: tokens.$dashboard-primary;
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.1);
+        }
+    }
+
+    &__icon {
+        position: absolute;
+        left: tokens.$space-3;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        color: tokens.$dashboard-text-light;
+        pointer-events: none;
+    }
+}
+
+// =====================
+// TABLE FOOTER (Pagination)
+// =====================
+.table-footer {
+    @include tokens.flex-between;
+    padding: tokens.$space-4 tokens.$space-6;
+    border-top: 1px solid tokens.$header-border;
+    flex-wrap: wrap;
+    gap: tokens.$space-4;
+
+    &__info {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-4;
+    }
+}
+
+// =====================
+// PAGINATION
+// =====================
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-1;
+
+    &__btn {
+        @include tokens.flex-center;
+        min-width: 32px;
+        height: 32px;
+        padding: 0 tokens.$space-2;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: tokens.$radius-md;
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+        cursor: pointer;
+        transition: all tokens.$transition-fast;
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        &:hover:not(:disabled) {
+            background: tokens.$dashboard-background;
+            color: tokens.$dashboard-secondary;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        &.active {
+            background: tokens.$dashboard-primary;
+            color: tokens.$dashboard-secondary;
+            font-weight: tokens.$font-semibold;
+        }
+    }
+
+    &__ellipsis {
+        padding: 0 tokens.$space-2;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+// Per page selector
+.per-page {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+
+    &__label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__select {
+        height: 32px;
+        padding: 0 tokens.$space-6 0 tokens.$space-3;
+        background: tokens.$dashboard-white;
+        border: 1px solid tokens.$header-border;
+        border-radius: tokens.$radius-md;
+        font-size: tokens.$font-body;
+        cursor: pointer;
+    }
+}
+
+// =====================
+// BULK ACTIONS BAR
+// =====================
+.bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-4;
+    padding: tokens.$space-3 tokens.$space-6;
+    background: tokens.$dashboard-secondary;
+    color: white;
+    animation: slideDown tokens.$transition-normal;
+
+    &__count {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+    }
+
+    &__actions {
+        display: flex;
+        gap: tokens.$space-2;
+        margin-left: auto;
+    }
+
+    &__btn {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        padding: tokens.$space-2 tokens.$space-3;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: tokens.$radius-md;
+        font-size: tokens.$font-small;
+        color: white;
+        cursor: pointer;
+        transition: background tokens.$transition-fast;
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        &--danger:hover {
+            background: tokens.$dashboard-danger;
+        }
+    }
+
+    &__close {
+        width: 28px;
+        height: 28px;
+        @include tokens.flex-center;
+        background: transparent;
+        border: none;
+        border-radius: tokens.$radius-md;
+        cursor: pointer;
+
+        svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// =====================
+// EMPTY TABLE STATE
+// =====================
+.table-empty {
+    padding: tokens.$space-12;
+    text-align: center;
+
+    &__icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto tokens.$space-4;
+        color: tokens.$dashboard-text-light;
+        opacity: 0.5;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-2 0;
+    }
+
+    &__description {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+        margin: 0 0 tokens.$space-6 0;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('tablet') {
+    .table-header,
+    .table-filters,
+    .table-footer {
+        padding: tokens.$space-4;
+    }
+
+    .data-table {
+        thead th,
+        tbody td {
+            &:first-child {
+                padding-left: tokens.$space-4;
+            }
+
+            &:last-child {
+                padding-right: tokens.$space-4;
+            }
+        }
+    }
+
+    .table-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .table-search {
+        max-width: none;
+    }
+
+    .pagination {
+        width: 100%;
+        justify-content: center;
+    }
+}
+

@@ -1,0 +1,668 @@
+// ===========================================
+// DASHBOARD PREMIUM - MAPA ORGANIZACIONAL
+// Sprint 6 - Fase B - Tarea 4.A
+// Árbol jerárquico de cargos con niveles de riesgo
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// MAP CONTAINER
+// =====================
+.org-map {
+    @include tokens.card-base;
+    padding: 0;
+    overflow: hidden;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+
+    &__toolbar {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-bottom: 1px solid tokens.$header-border;
+        background: tokens.$dashboard-white;
+        flex-wrap: wrap;
+        gap: tokens.$space-3;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__controls {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+    }
+
+    &__canvas {
+        flex: 1;
+        position: relative;
+        overflow: auto;
+        padding: tokens.$space-8;
+        background: 
+            linear-gradient(90deg, rgba(tokens.$header-border, 0.3) 1px, transparent 1px),
+            linear-gradient(rgba(tokens.$header-border, 0.3) 1px, transparent 1px);
+        background-size: 20px 20px;
+        @include tokens.custom-scrollbar;
+    }
+
+    &__content {
+        min-width: max-content;
+        min-height: 100%;
+        position: relative;
+    }
+
+    &__footer {
+        @include tokens.flex-between;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-top: 1px solid tokens.$header-border;
+        background: tokens.$dashboard-background;
+        flex-wrap: wrap;
+        gap: tokens.$space-4;
+    }
+}
+
+// =====================
+// ZOOM CONTROLS
+// =====================
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-1;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-md;
+    padding: tokens.$space-1;
+
+    &__btn {
+        width: 32px;
+        height: 32px;
+        @include tokens.flex-center;
+        background: transparent;
+        border: none;
+        border-radius: tokens.$radius-sm;
+        cursor: pointer;
+        transition: background tokens.$transition-fast;
+
+        svg {
+            width: 18px;
+            height: 18px;
+            color: tokens.$dashboard-text-light;
+        }
+
+        &:hover {
+            background: tokens.$dashboard-white;
+
+            svg {
+                color: tokens.$dashboard-secondary;
+            }
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    }
+
+    &__value {
+        min-width: 48px;
+        text-align: center;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+    }
+}
+
+// =====================
+// FILTER CONTROLS
+// =====================
+.org-filter {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+
+    &__label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__select {
+        height: 32px;
+        padding: 0 tokens.$space-8 0 tokens.$space-3;
+        background: tokens.$dashboard-white;
+        border: 1px solid tokens.$header-border;
+        border-radius: tokens.$radius-md;
+        font-size: tokens.$font-small;
+        cursor: pointer;
+    }
+}
+
+// =====================
+// LEGEND
+// =====================
+.org-legend {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-4;
+    flex-wrap: wrap;
+
+    &__title {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__items {
+        display: flex;
+        gap: tokens.$space-3;
+        flex-wrap: wrap;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__dot {
+        width: 12px;
+        height: 12px;
+        border-radius: tokens.$radius-sm;
+
+        &--i { background: tokens.$risk-level-i; }
+        &--ii { background: tokens.$risk-level-ii; }
+        &--iii { background: tokens.$risk-level-iii; }
+        &--iv { background: tokens.$risk-level-iv; }
+        &--v { background: tokens.$risk-level-v; }
+    }
+}
+
+// =====================
+// ORG NODE (Position Card)
+// =====================
+.org-node {
+    position: absolute;
+    width: 220px;
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-lg;
+    box-shadow: tokens.$shadow-md;
+    cursor: grab;
+    transition: box-shadow tokens.$transition-normal, transform tokens.$transition-normal;
+    user-select: none;
+
+    &:hover {
+        box-shadow: tokens.$shadow-lg;
+        z-index: 5;
+    }
+
+    &.dragging {
+        cursor: grabbing;
+        box-shadow: tokens.$shadow-xl;
+        z-index: 100;
+        transform: scale(1.02);
+    }
+
+    &.selected {
+        box-shadow: 0 0 0 2px tokens.$dashboard-primary, tokens.$shadow-lg;
+    }
+
+    // Risk level border indicator
+    &--level-i { border-top: 4px solid tokens.$risk-level-i; }
+    &--level-ii { border-top: 4px solid tokens.$risk-level-ii; }
+    &--level-iii { border-top: 4px solid tokens.$risk-level-iii; }
+    &--level-iv { border-top: 4px solid tokens.$risk-level-iv; }
+    &--level-v { border-top: 4px solid tokens.$risk-level-v; }
+
+    &__header {
+        padding: tokens.$space-3 tokens.$space-4;
+        @include tokens.flex-between;
+    }
+
+    &__badge {
+        flex-shrink: 0;
+    }
+
+    &__expand {
+        width: 24px;
+        height: 24px;
+        @include tokens.flex-center;
+        background: transparent;
+        border: none;
+        border-radius: tokens.$radius-sm;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity tokens.$transition-fast;
+
+        svg {
+            width: 16px;
+            height: 16px;
+            color: tokens.$dashboard-text-light;
+        }
+
+        &:hover {
+            opacity: 1;
+            background: tokens.$dashboard-background;
+        }
+    }
+
+    &__body {
+        padding: 0 tokens.$space-4 tokens.$space-4;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-1 0;
+        @include tokens.text-truncate;
+    }
+
+    &__department {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        @include tokens.text-truncate;
+    }
+
+    &__stats {
+        display: flex;
+        gap: tokens.$space-3;
+        margin-top: tokens.$space-3;
+        padding-top: tokens.$space-3;
+        border-top: 1px solid tokens.$header-border;
+    }
+
+    &__stat {
+        flex: 1;
+        text-align: center;
+
+        &-value {
+            font-family: tokens.$font-family-title;
+            font-size: tokens.$font-h4;
+            font-weight: tokens.$font-bold;
+            color: tokens.$dashboard-secondary;
+        }
+
+        &-label {
+            font-size: tokens.$font-xs;
+            color: tokens.$dashboard-text-light;
+        }
+    }
+
+    &__footer {
+        padding: tokens.$space-2 tokens.$space-4;
+        background: tokens.$dashboard-background;
+        border-radius: 0 0 tokens.$radius-lg tokens.$radius-lg;
+        @include tokens.flex-between;
+    }
+
+    &__workers {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    &__action {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-primary;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: tokens.$font-medium;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+// =====================
+// CONNECTORS (SVG Lines)
+// =====================
+.org-connectors {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.org-connector {
+    fill: none;
+    stroke: tokens.$header-border;
+    stroke-width: 2;
+    stroke-linecap: round;
+
+    &--highlighted {
+        stroke: tokens.$dashboard-primary;
+        stroke-width: 3;
+    }
+
+    &--dashed {
+        stroke-dasharray: 8, 4;
+    }
+}
+
+// =====================
+// NODE DETAILS PANEL
+// =====================
+.org-details-panel {
+    position: fixed;
+    right: 0;
+    top: tokens.$header-height;
+    bottom: 0;
+    width: 400px;
+    background: tokens.$dashboard-white;
+    box-shadow: tokens.$shadow-xl;
+    transform: translateX(100%);
+    transition: transform tokens.$transition-slow;
+    z-index: tokens.$z-fixed;
+    display: flex;
+    flex-direction: column;
+
+    &.open {
+        transform: translateX(0);
+    }
+
+    &__header {
+        @include tokens.flex-between;
+        padding: tokens.$space-6;
+        border-bottom: 1px solid tokens.$header-border;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    &__close {
+        width: 32px;
+        height: 32px;
+        @include tokens.flex-center;
+        background: transparent;
+        border: none;
+        border-radius: tokens.$radius-md;
+        cursor: pointer;
+
+        svg {
+            width: 20px;
+            height: 20px;
+            color: tokens.$dashboard-text-light;
+        }
+
+        &:hover {
+            background: tokens.$dashboard-background;
+        }
+    }
+
+    &__body {
+        flex: 1;
+        overflow-y: auto;
+        padding: tokens.$space-6;
+        @include tokens.custom-scrollbar;
+    }
+
+    &__section {
+        margin-bottom: tokens.$space-6;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__section-title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-text-light;
+        margin: 0 0 tokens.$space-3 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    &__risks {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-2;
+    }
+
+    &__risk-item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+    }
+
+    &__risk-info {
+        flex: 1;
+    }
+
+    &__risk-name {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        font-weight: tokens.$font-medium;
+    }
+
+    &__risk-category {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__workers-list {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-2;
+    }
+
+    &__worker {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3;
+        border-radius: tokens.$radius-md;
+        cursor: pointer;
+        transition: background tokens.$transition-fast;
+
+        &:hover {
+            background: tokens.$dashboard-background;
+        }
+    }
+
+    &__worker-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: tokens.$radius-md;
+        background: tokens.$dashboard-primary;
+        @include tokens.flex-center;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        font-size: tokens.$font-small;
+        flex-shrink: 0;
+    }
+
+    &__worker-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__worker-name {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+        @include tokens.text-truncate;
+    }
+
+    &__worker-id {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__footer {
+        padding: tokens.$space-4 tokens.$space-6;
+        border-top: 1px solid tokens.$header-border;
+        display: flex;
+        gap: tokens.$space-3;
+    }
+}
+
+// =====================
+// SUMMARY FOOTER CARDS
+// =====================
+.org-summary {
+    display: flex;
+    gap: tokens.$space-4;
+    flex-wrap: wrap;
+
+    &__card {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-3 tokens.$space-4;
+        background: tokens.$dashboard-white;
+        border-radius: tokens.$radius-md;
+        box-shadow: tokens.$shadow-xs;
+    }
+
+    &__icon {
+        width: 36px;
+        height: 36px;
+        border-radius: tokens.$radius-md;
+        @include tokens.flex-center;
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        &--primary {
+            background: rgba(tokens.$dashboard-primary, 0.1);
+            color: tokens.$dashboard-primary;
+        }
+
+        &--danger {
+            background: rgba(tokens.$dashboard-danger, 0.1);
+            color: tokens.$dashboard-danger;
+        }
+
+        &--warning {
+            background: rgba(tokens.$dashboard-warning, 0.1);
+            color: tokens.$dashboard-warning;
+        }
+    }
+
+    &__value {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h4;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__label {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+// =====================
+// MINIMAP
+// =====================
+.org-minimap {
+    position: absolute;
+    bottom: tokens.$space-4;
+    right: tokens.$space-4;
+    width: 180px;
+    height: 120px;
+    background: tokens.$dashboard-white;
+    border: 1px solid tokens.$header-border;
+    border-radius: tokens.$radius-md;
+    box-shadow: tokens.$shadow-md;
+    overflow: hidden;
+
+    &__content {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    &__viewport {
+        position: absolute;
+        border: 2px solid tokens.$dashboard-primary;
+        background: rgba(tokens.$dashboard-primary, 0.1);
+        cursor: move;
+    }
+
+    &__node {
+        position: absolute;
+        width: 8px;
+        height: 6px;
+        border-radius: 1px;
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('laptop') {
+    .org-details-panel {
+        width: 360px;
+    }
+
+    .org-node {
+        width: 200px;
+    }
+}
+
+@include tokens.respond-to('tablet') {
+    .org-map__toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .org-details-panel {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .org-legend {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .org-minimap {
+        display: none;
+    }
+
+    .org-summary {
+        width: 100%;
+
+        &__card {
+            flex: 1;
+            min-width: 140px;
+        }
+    }
+}
+

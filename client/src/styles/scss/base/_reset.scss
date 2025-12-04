@@ -8,6 +8,9 @@
 }
 
 html {
+    // ⚠️ IMPORTANTE: Este valor hace que 1rem = 10px
+    // Facilita las conversiones: 16px = 1.6rem, 24px = 2.4rem, etc.
+    // Base: 62.5% de 16px (tamaño default del navegador) = 10px
     font-size: 62.5%;
     width: 100%;
     overflow-x: hidden;

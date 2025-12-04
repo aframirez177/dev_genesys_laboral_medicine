@@ -1,0 +1,174 @@
+// ==========================================
+// MEDIDAS DE CONTROL PARA NIVELES FORM
+// Sección de controles (fuente, medio, individuo)
+// ==========================================
+
+@use 'sass:map';
+@use 'sass:color';
+@use '../base/variables';
+
+// ==========================================
+// CONTROLES SECTION
+// ==========================================
+
+.controles-section {
+  margin: 3rem 0 2rem 0;
+  padding: 2.4rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-left: 4px solid map.get(variables.$colors, 'primary');
+}
+
+.controles-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.controles-section__title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: map.get(variables.$colors, 'text');
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+
+  i {
+    color: map.get(variables.$colors, 'primary');
+    font-size: 2rem;
+  }
+}
+
+.controles-section__help {
+  background: none;
+  border: none;
+  color: map.get(variables.$colors, 'primary');
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.15);
+    color: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -15%);
+  }
+}
+
+// ==========================================
+// CONTROLES GRID
+// ==========================================
+
+.controles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+// ==========================================
+// CONTROL FIELD
+// ==========================================
+
+.control-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.control-field__label {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: map.get(variables.$colors, 'text');
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  i {
+    color: map.get(variables.$colors, 'primary');
+    font-size: 1.6rem;
+  }
+}
+
+.control-field__textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 1.2rem;
+  font-family: map.get(variables.$fonts, 'body');
+  font-size: 1.4rem;
+  color: map.get(variables.$colors, 'text');
+  background: #f9f9f9;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  resize: vertical;
+  transition: all 0.3s ease;
+  line-height: 1.5;
+
+  &::placeholder {
+    color: #999;
+    font-size: 1.3rem;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: map.get(variables.$colors, 'primary');
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, 'primary'), 0.1);
+  }
+
+  &:hover:not(:focus) {
+    border-color: #c0c0c0;
+  }
+}
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+
+@media (max-width: 768px) {
+  .controles-section {
+    padding: 1.8rem;
+    margin: 2rem 0 1.5rem 0;
+  }
+
+  .controles-section__title {
+    font-size: 1.6rem;
+
+    i {
+      font-size: 1.8rem;
+    }
+  }
+
+  .control-field__label {
+    font-size: 1.3rem;
+
+    i {
+      font-size: 1.5rem;
+    }
+  }
+
+  .control-field__textarea {
+    font-size: 1.3rem;
+    min-height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .controles-section {
+    padding: 1.5rem;
+  }
+
+  .controles-section__title {
+    font-size: 1.5rem;
+  }
+
+  .control-field__textarea {
+    min-height: 70px;
+  }
+}

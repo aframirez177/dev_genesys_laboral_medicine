@@ -1,0 +1,938 @@
+@use "sass:map";
+@use "sass:color";
+@use "../base/mixins";
+@use "../base/variables";
+
+// ========================================
+// 🎨 CONTROLES MANAGER - PASO 5 DEL WIZARD
+// ========================================
+// Sistema completo de estilos para medidas de intervención GTC-45
+// Siguiendo principios WCAG 2.1 AA, grid de 8px, micro-interacciones
+
+// ========================================
+// CONTENEDOR PRINCIPAL
+// ========================================
+.controles-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.4rem; // 24px
+
+  // Animación de entrada
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ========================================
+// HEADER CON PROGRESO
+// ========================================
+.controles-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2.4rem; // 24px
+  margin-bottom: 3.2rem; // 32px
+  padding: 2.4rem; // 24px
+  background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+  border-radius: 1.6rem; // 16px
+  box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.06); // 2px 8px
+  border: 1px solid rgba(map.get(variables.$colors, "primary"), 0.1);
+
+  @include mixins.respond-to("mobile") {
+    flex-direction: column;
+    gap: 1.6rem; // 16px
+    padding: 1.6rem; // 16px
+  }
+}
+
+// Header left (nombre GES, categoría)
+.controles-header__left {
+  flex: 1;
+  min-width: 0; // Permitir text-overflow
+}
+
+.ges-nombre {
+  font-size: 2.4rem; // 24px
+  font-family: map.get(variables.$fonts, "title");
+  font-weight: 700;
+  color: map.get(variables.$colors, "secondary"); // #383d47
+  margin: 0 0 0.8rem 0; // 8px bottom
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem; // 12px
+
+  i {
+    color: map.get(variables.$colors, "primary");
+    font-size: 2.8rem; // 28px
+  }
+
+  @include mixins.respond-to("mobile") {
+    font-size: 2rem; // 20px
+    i {
+      font-size: 2.4rem; // 24px
+    }
+  }
+}
+
+.ges-categoria {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem; // 8px
+  padding: 0.4rem 1.2rem; // 4px 12px
+  background-color: rgba(map.get(variables.$colors, "primary"), 0.1);
+  color: map.get(variables.$colors, "text-primary-accessible");
+  border-radius: 2rem; // 20px (pill shape)
+  font-size: 1.3rem; // 13px
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  i {
+    font-size: 1.4rem; // 14px
+  }
+}
+
+// Header right (progreso circular)
+.controles-header__right {
+  flex-shrink: 0;
+}
+
+.progress-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem; // 8px
+}
+
+// ========================================
+// PROGRESO CIRCULAR (WCAG 2.1 AA)
+// ========================================
+.progress-circle {
+  position: relative;
+  width: 8rem; // 80px
+  height: 8rem; // 80px
+
+  svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #e0e0e0;
+  stroke-width: 3;
+}
+
+.circle {
+  fill: none;
+  stroke: map.get(variables.$colors, "primary");
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-family: map.get(variables.$fonts, "title");
+  font-weight: 700;
+
+  .progress-number {
+    font-size: 2.4rem; // 24px
+    color: map.get(variables.$colors, "primary");
+    display: block;
+    line-height: 1;
+  }
+
+  .progress-total {
+    font-size: 1.4rem; // 14px
+    color: map.get(variables.$colors, "text-dark");
+    opacity: 0.7;
+  }
+}
+
+.progress-label {
+  font-size: 1.3rem; // 13px
+  color: map.get(variables.$colors, "text-dark");
+  opacity: 0.8;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+}
+
+// WCAG: Atributos ARIA requeridos
+// <svg aria-label="Progreso de GES: {current} de {total}" role="img">
+.progress-circle svg[role="img"] {
+  // Ensure proper accessibility
+}
+
+// ========================================
+// JERARQUÍA DE CONTROLES
+// ========================================
+.controles-hierarchy {
+  background: #ffffff;
+  border-radius: 1.6rem; // 16px
+  padding: 2.4rem; // 24px
+  box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.06); // 2px 8px
+  margin-bottom: 2.4rem; // 24px
+  border: 1px solid #e8e8e8;
+
+  @include mixins.respond-to("mobile") {
+    padding: 1.6rem; // 16px
+  }
+}
+
+// ========================================
+// HIERARCHY INTRO (con botón Cargar Sugerencias)
+// ========================================
+.hierarchy-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2.4rem; // 24px
+  padding: 1.6rem; // 16px
+  margin-bottom: 2.4rem; // 24px
+  background: rgba(map.get(variables.$colors, "primary"), 0.05);
+  border-left: 4px solid map.get(variables.$colors, "primary");
+  border-radius: 0.8rem; // 8px
+
+  @include mixins.respond-to("mobile") {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.6rem; // 16px
+  }
+}
+
+.hierarchy-intro__left {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem; // 12px
+  flex: 1;
+
+  i {
+    color: map.get(variables.$colors, "primary");
+    font-size: 2rem; // 20px
+    flex-shrink: 0;
+    margin-top: 0.2rem; // Alinear con texto
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.4rem; // 14px
+    line-height: 1.6;
+    color: map.get(variables.$colors, "text-dark");
+  }
+}
+
+// Botón Cargar Sugerencias ya tiene estilos en _wizard-buttons.scss
+// Aquí solo agregamos micro-interacciones específicas del contexto
+
+#btn-cargar-sugerencias {
+  flex-shrink: 0;
+  min-width: 16rem; // 160px - Tamaño mínimo para evitar texto cortado
+
+  // Micro-interacción: pulso suave al cargar
+  &.loading {
+    i.fa-lightbulb {
+      animation: lightbulbPulse 1s ease-in-out infinite;
+    }
+  }
+
+  @include mixins.respond-to("mobile") {
+    width: 100%;
+  }
+}
+
+@keyframes lightbulbPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.15);
+  }
+}
+
+// Field highlight animation (cuando se cargan sugerencias)
+@keyframes fieldHighlight {
+  0% {
+    background-color: rgba(map.get(variables.$colors, "success"), 0.15);
+    transform: scale(1.02);
+  }
+  100% {
+    background-color: #f9f9f9;
+    transform: scale(1);
+  }
+}
+
+// ========================================
+// CONTROL GROUP (cada medida)
+// ========================================
+.control-group {
+  margin-bottom: 2.4rem; // 24px
+  padding: 2rem; // 20px
+  background: #f9f9f9;
+  border-radius: 1.2rem; // 12px
+  border: 2px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  // Barra lateral de nivel (1-4)
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg,
+      map.get(variables.$colors, "primary") 0%,
+      color.adjust(map.get(variables.$colors, "primary"), $lightness: 20%) 100%
+    );
+    border-radius: 1.2rem 0 0 1.2rem; // 12px
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  // Estados hover y focus-within
+  &:hover {
+    background: #ffffff;
+    border-color: rgba(map.get(variables.$colors, "primary"), 0.15);
+    box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.08); // 4px 12px
+    transform: translateY(-2px);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:focus-within {
+    background: #ffffff;
+    border-color: map.get(variables.$colors, "primary");
+    box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, "primary"), 0.1);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .control-header__left {
+      .control-number {
+        background-color: map.get(variables.$colors, "primary");
+        color: #ffffff;
+        transform: scale(1.1);
+      }
+
+      .control-icon {
+        color: map.get(variables.$colors, "primary");
+        transform: scale(1.15);
+      }
+    }
+  }
+
+  // Variaciones por nivel (1-4)
+  &[data-level="1"] .control-number {
+    background-color: #e8f9f6; // Verde muy claro
+    color: map.get(variables.$colors, "primary");
+  }
+
+  &[data-level="2"] .control-number {
+    background-color: #e3f2fd; // Azul muy claro
+    color: #1976d2;
+  }
+
+  &[data-level="3"] .control-number {
+    background-color: #fff3e0; // Naranja muy claro
+    color: map.get(variables.$colors, "atention"); // #ff9800
+  }
+
+  &[data-level="4"] .control-number {
+    background-color: #fce4ec; // Rosa claro
+    color: #c2185b;
+  }
+
+  @include mixins.respond-to("mobile") {
+    padding: 1.6rem; // 16px
+    margin-bottom: 1.6rem; // 16px
+  }
+}
+
+// ========================================
+// CONTROL HEADER
+// ========================================
+.control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.6rem; // 16px
+  margin-bottom: 1.2rem; // 12px
+
+  @include mixins.respond-to("mobile") {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem; // 8px
+  }
+}
+
+.control-header__left {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem; // 12px
+  flex: 1;
+}
+
+.control-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem; // 32px
+  height: 3.2rem; // 32px
+  border-radius: 0.8rem; // 8px
+  font-weight: 700;
+  font-size: 1.6rem; // 16px
+  font-family: map.get(variables.$fonts, "title");
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.control-icon {
+  font-size: 2rem; // 20px
+  color: map.get(variables.$colors, "text-dark");
+  opacity: 0.7;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.control-title {
+  font-size: 1.8rem; // 18px
+  font-family: map.get(variables.$fonts, "title");
+  font-weight: 600;
+  color: map.get(variables.$colors, "secondary"); // #383d47
+  margin: 0;
+  line-height: 1.3;
+  cursor: pointer; // Label clickable (WCAG best practice)
+
+  @include mixins.respond-to("mobile") {
+    font-size: 1.6rem; // 16px
+  }
+}
+
+// ========================================
+// CONTADOR DE CARACTERES
+// ========================================
+.control-char-count {
+  font-size: 1.3rem; // 13px
+  color: map.get(variables.$colors, "text-dark");
+  opacity: 0.6;
+  font-weight: 500;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums; // Números monoespaciados
+  transition: all 0.3s ease;
+
+  .char-current {
+    font-weight: 700;
+    color: map.get(variables.$colors, "primary");
+    transition: color 0.3s ease;
+  }
+
+  // Estados de advertencia
+  &.warning {
+    opacity: 1;
+    color: map.get(variables.$colors, "atention"); // #ff9800
+
+    .char-current {
+      color: map.get(variables.$colors, "atention");
+    }
+  }
+
+  &.danger {
+    opacity: 1;
+    color: map.get(variables.$colors, "danger"); // #f44336
+
+    .char-current {
+      color: map.get(variables.$colors, "danger");
+      animation: charCountPulse 0.5s ease-in-out;
+    }
+  }
+}
+
+@keyframes charCountPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+// ========================================
+// CONTROL BODY (textarea container)
+// ========================================
+.control-body {
+  position: relative;
+}
+
+// ========================================
+// CONTROL TEXTAREA (WCAG 2.1 AA + Micro-interacciones)
+// ========================================
+.control-textarea {
+  width: 100%;
+  min-height: 9.6rem; // 96px (12 * 8px)
+  padding: 1.2rem; // 12px
+  font-family: map.get(variables.$fonts, "body");
+  font-size: 1.4rem; // 14px
+  line-height: 1.6;
+  color: map.get(variables.$colors, "text");
+  background-color: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 0.8rem; // 8px
+  resize: vertical;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Placeholder
+  &::placeholder {
+    color: #999999;
+    font-size: 1.3rem; // 13px
+    opacity: 0.8;
+  }
+
+  // Hover state
+  &:hover:not(:focus):not(:disabled) {
+    border-color: #c0c0c0;
+    background-color: #fafafa;
+  }
+
+  // Focus state (WCAG 2.1 AA - visible focus)
+  &:focus {
+    outline: none;
+    border-color: map.get(variables.$colors, "primary");
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(map.get(variables.$colors, "primary"), 0.12);
+  }
+
+  // Estado "llenado" (con contenido)
+  &.filled:not(:focus) {
+    background-color: #f0fdf9; // Verde muy suave
+    border-color: rgba(map.get(variables.$colors, "success"), 0.3);
+  }
+
+  // Disabled state
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+  }
+
+  // Responsive
+  @include mixins.respond-to("mobile") {
+    font-size: 1.4rem; // 14px
+    min-height: 8rem; // 80px
+  }
+}
+
+// ========================================
+// NAVEGACIÓN DE CONTROLES
+// ========================================
+.controles-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.6rem; // 16px
+  padding: 2.4rem; // 24px
+  background: #f9f9f9;
+  border-radius: 1.6rem; // 16px
+  margin-top: 2.4rem; // 24px
+  border: 1px solid #e8e8e8;
+
+  @include mixins.respond-to("mobile") {
+    flex-direction: column;
+    padding: 1.6rem; // 16px
+    gap: 1.2rem; // 12px
+  }
+}
+
+.controles-navigation__center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+
+  @include mixins.respond-to("mobile") {
+    width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// ========================================
+// WIZARD TABS (múltiples cargos)
+// ========================================
+.wizard-tabs {
+  display: flex;
+  gap: 0.8rem; // 8px
+  margin-bottom: 2.4rem; // 24px
+  padding: 0.8rem; // 8px
+  background: #f3f0f0;
+  border-radius: 1.2rem; // 12px
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: map.get(variables.$colors, "primary") #e0e0e0;
+
+  &::-webkit-scrollbar {
+    height: 0.6rem; // 6px
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #e0e0e0;
+    border-radius: 0.3rem; // 3px
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: map.get(variables.$colors, "primary");
+    border-radius: 0.3rem; // 3px
+  }
+}
+
+.wizard-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem; // 8px
+  padding: 0.8rem 1.6rem; // 8px 16px
+  font-size: 1.4rem; // 14px
+  font-weight: 600;
+  font-family: map.get(variables.$fonts, "body");
+  color: map.get(variables.$colors, "text-dark");
+  background: transparent;
+  border: none;
+  border-radius: 0.8rem; // 8px
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  i {
+    font-size: 1.4rem; // 14px
+    opacity: 0.7;
+    transition: all 0.3s ease;
+  }
+
+  &:hover:not(.active) {
+    background-color: rgba(map.get(variables.$colors, "primary"), 0.1);
+    color: map.get(variables.$colors, "primary");
+
+    i {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+
+  &.active {
+    background-color: map.get(variables.$colors, "primary");
+    color: #ffffff;
+    box-shadow: 0 0.2rem 0.8rem rgba(map.get(variables.$colors, "primary"), 0.3);
+
+    i {
+      opacity: 1;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid map.get(variables.$colors, "text-primary-accessible");
+    outline-offset: 2px;
+  }
+}
+
+// ========================================
+// HINT / AYUDA CONTEXTUAL
+// ========================================
+.wizard-hint {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem; // 12px
+  padding: 1.2rem 1.6rem; // 12px 16px
+  border-radius: 0.8rem; // 8px
+  font-size: 1.4rem; // 14px
+  line-height: 1.5;
+  border-left: 4px solid;
+
+  i {
+    font-size: 1.8rem; // 18px
+    flex-shrink: 0;
+  }
+
+  &.info {
+    background-color: rgba(map.get(variables.$colors, "primary"), 0.08);
+    border-color: map.get(variables.$colors, "primary");
+    color: map.get(variables.$colors, "text-dark");
+
+    i {
+      color: map.get(variables.$colors, "primary");
+    }
+  }
+
+  &.success {
+    background-color: rgba(map.get(variables.$colors, "success"), 0.08);
+    border-color: map.get(variables.$colors, "success");
+    color: map.get(variables.$colors, "text-dark");
+
+    i {
+      color: map.get(variables.$colors, "success");
+    }
+  }
+
+  &.warning {
+    background-color: rgba(map.get(variables.$colors, "atention"), 0.08);
+    border-color: map.get(variables.$colors, "atention");
+    color: map.get(variables.$colors, "text-dark");
+
+    i {
+      color: map.get(variables.$colors, "atention");
+    }
+  }
+}
+
+// ========================================
+// TOAST NOTIFICATIONS (feedback)
+// ========================================
+.toast-notification {
+  position: fixed;
+  top: 2.4rem; // 24px
+  right: 2.4rem; // 24px
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem; // 12px
+  padding: 1.2rem 2rem; // 12px 20px
+  background: #ffffff;
+  border-radius: 0.8rem; // 8px
+  box-shadow: 0 0.4rem 1.6rem rgba(0, 0, 0, 0.15); // 4px 16px
+  min-width: 28rem; // 280px
+  max-width: 40rem; // 400px
+  animation: toastSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: 4px solid;
+
+  i {
+    font-size: 2rem; // 20px
+    flex-shrink: 0;
+  }
+
+  .toast-message {
+    flex: 1;
+    font-size: 1.4rem; // 14px
+    font-weight: 500;
+    line-height: 1.4;
+    color: map.get(variables.$colors, "text-dark");
+  }
+
+  .toast-close {
+    background: none;
+    border: none;
+    color: map.get(variables.$colors, "text-dark");
+    opacity: 0.6;
+    cursor: pointer;
+    padding: 0.4rem; // 4px
+    font-size: 1.8rem; // 18px
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  // Variantes de toast
+  &.success {
+    border-color: map.get(variables.$colors, "success");
+
+    i {
+      color: map.get(variables.$colors, "success");
+    }
+  }
+
+  &.error {
+    border-color: map.get(variables.$colors, "danger");
+
+    i {
+      color: map.get(variables.$colors, "danger");
+    }
+  }
+
+  &.warning {
+    border-color: map.get(variables.$colors, "atention");
+
+    i {
+      color: map.get(variables.$colors, "atention");
+    }
+  }
+
+  &.info {
+    border-color: map.get(variables.$colors, "primary");
+
+    i {
+      color: map.get(variables.$colors, "primary");
+    }
+  }
+
+  // Animación de salida
+  &.hiding {
+    animation: toastSlideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @include mixins.respond-to("mobile") {
+    top: 1.6rem; // 16px
+    right: 1.6rem; // 16px
+    left: 1.6rem; // 16px
+    min-width: auto;
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(calc(100% + 2.4rem)); // 24px
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(calc(100% + 2.4rem)); // 24px
+    opacity: 0;
+  }
+}
+
+// ========================================
+// EMPTY STATE (sin cargos / sin riesgos)
+// ========================================
+.wizard-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem; // 16px
+  padding: 4.8rem 2.4rem; // 48px 24px
+  text-align: center;
+
+  i {
+    font-size: 6.4rem; // 64px
+    color: map.get(variables.$colors, "primary");
+    opacity: 0.4;
+  }
+
+  h3 {
+    font-size: 2.4rem; // 24px
+    font-family: map.get(variables.$fonts, "title");
+    font-weight: 700;
+    color: map.get(variables.$colors, "secondary");
+    margin: 0;
+  }
+
+  p {
+    font-size: 1.6rem; // 16px
+    color: map.get(variables.$colors, "text-dark");
+    opacity: 0.8;
+    margin: 0;
+    max-width: 48rem; // 480px
+  }
+
+  button {
+    margin-top: 0.8rem; // 8px
+  }
+}
+
+// ========================================
+// TRANSICIONES ENTRE GES
+// ========================================
+.ges-transition-enter {
+  animation: gesEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ges-transition-exit {
+  animation: gesExit 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes gesEnter {
+  from {
+    opacity: 0;
+    transform: translateX(2.4rem); // 24px
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes gesExit {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-2.4rem); // -24px
+  }
+}
+
+// ========================================
+// RESPONSIVE AJUSTMENTS
+// ========================================
+@include mixins.respond-to("tablet") {
+  .controles-container {
+    padding: 1.6rem; // 16px
+  }
+
+  .controles-header {
+    margin-bottom: 2.4rem; // 24px
+  }
+
+  .ges-nombre {
+    font-size: 2rem; // 20px
+  }
+
+  .control-title {
+    font-size: 1.6rem; // 16px
+  }
+}
+
+@include mixins.respond-to("mobile") {
+  .controles-container {
+    padding: 1.2rem; // 12px
+  }
+
+  .controles-header {
+    margin-bottom: 1.6rem; // 16px
+  }
+
+  .controles-hierarchy {
+    margin-bottom: 1.6rem; // 16px
+  }
+
+  .control-group {
+    margin-bottom: 1.6rem; // 16px
+  }
+
+  .controles-navigation {
+    margin-top: 1.6rem; // 16px
+  }
+}

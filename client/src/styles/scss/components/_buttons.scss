@@ -1,101 +1,272 @@
 @use "sass:map";
+@use "sass:color";
 @use "../base/mixins";
 @use "../base/variables";
 
-// Base para todos los botones
+// ========================================
+// 🎨 SISTEMA UNIFICADO DE BOTONES
+// ========================================
+// Diseñado según principios WCAG AA y UX modernas
+
+// ========================================
+// Base común para todos los botones
+// ========================================
+// NOTA: 1rem = 10px (debido a font-size: 62.5% en html)
 %button-base {
-    padding: 0.5rem 1.61rem;
-    border-radius: 34px;
-    cursor: pointer;
-    font-size: 1.4rem;
-    font-weight: 500;
-    font-family: map.get(variables.$fonts, "body");
-    @include mixins.smooth-weight-transition();
-    text-decoration: none;
-    display: inline-block;
-    min-width: 1rem;
-    height: 4.3rem;
+    // Estructura y layout
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-
-&:hover {
-        @include mixins.smooth-weight-transition();
-        font-weight: 800;
-        transform: translateY(-3px), scale(110%);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transform: scale(105%);
+    gap: 0.8rem;  // 8px
+    
+    // Espaciado
+    padding: 0.8rem 2.4rem;  // 8px 24px
+    min-height: 4.4rem;  // 44px - Tamaño mínimo táctil WCAG
+    
+    // Tipografía
+    font-family: map.get(variables.$fonts, "body");
+    font-size: 1.6rem;  // 16px
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    
+    // Visual
+    border-radius: map.get(variables.$radius, "lg");
+    border: 2px solid transparent;
+    cursor: pointer;
+    user-select: none;
+    
+    // Transiciones suaves
+    transition: all map.get(variables.$transitions, "base");
+    
+    // Estados base
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: map.get(variables.$shadows, "md");
+    }
+    
+    &:active {
+        transform: translateY(0);
+        box-shadow: map.get(variables.$shadows, "sm");
+    }
+    
+    // 🎯 Accesibilidad: Foco visible
+    &:focus-visible {
+        outline: 3px solid map.get(variables.$colors, "text-primary-accessible");
+        outline-offset: 2px;
+    }
+    
+    // Estado deshabilitado
+    &:disabled,
+    &[aria-disabled="true"] {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
     }
 }
-/* Los botones */
 
+// ========================================
+// 🟢 BOTÓN PRIMARY (CTA Principal)
+// ========================================
+.cta-button,
+.btn-primary {
+    @extend %button-base;
+    background-color: map.get(variables.$colors, "primary");
+    color: map.get(variables.$colors, "secondary");
+    border-color: map.get(variables.$colors, "primary");
+    
+    &:hover {
+        background-color: color.adjust(map.get(variables.$colors, "primary"), $lightness: -10%);
+        border-color: color.adjust(map.get(variables.$colors, "primary"), $lightness: -10%);
+    }
+    
+    &:active {
+        background-color: color.adjust(map.get(variables.$colors, "primary"), $lightness: -15%);
+    }
+}
+
+// ========================================
+// ⚪ BOTÓN SECONDARY (Outline/Ghost)
+// ========================================
+.cta-button-1,
+.btn-secondary,
+.btn-outline {
+    @extend %button-base;
+    background-color: transparent;
+    color: map.get(variables.$colors, "text-dark");
+    border-color: map.get(variables.$colors, "text-dark");
+    
+    &:hover {
+        background-color: map.get(variables.$colors, "text-dark");
+        color: #ffffff;
+    }
+    
+    &:active {
+        background-color: color.adjust(map.get(variables.$colors, "text-dark"), $lightness: -10%);
+    }
+}
+
+// ========================================
+// 🔵 BOTÓN GHOST (Sin borde)
+// ========================================
+.btn-ghost {
+    @extend %button-base;
+    background-color: transparent;
+    color: map.get(variables.$colors, "text-primary-accessible");
+    border-color: transparent;
+    
+    &:hover {
+        background-color: rgba(map.get(variables.$colors, "primary"), 0.1);
+    }
+    
+    &:active {
+        background-color: rgba(map.get(variables.$colors, "primary"), 0.2);
+    }
+}
+
+// ========================================
+// 🔴 BOTÓN DANGER (Acciones destructivas)
+// ========================================
+.btn-danger {
+    @extend %button-base;
+    background-color: map.get(variables.$colors, "danger");
+    color: #ffffff;
+    border-color: map.get(variables.$colors, "danger");
+    
+    &:hover {
+        background-color: color.adjust(map.get(variables.$colors, "danger"), $lightness: -10%);
+    }
+}
+
+// ========================================
+// 📐 TAMAÑOS DE BOTONES
+// ========================================
+.btn-sm {
+    padding: 0.6rem 1.6rem;  // 6px 16px
+    min-height: 3.6rem;      // 36px
+    font-size: 1.4rem;       // 14px
+}
+
+.btn-lg {
+    padding: 1.2rem 3.2rem;  // 12px 32px
+    min-height: 5.6rem;      // 56px
+    font-size: 1.8rem;       // 18px
+}
+
+// Botón de ancho completo
+.btn-full {
+    width: 100%;
+}
+
+// ========================================
+// ⏳ ESTADO DE LOADING
+// ========================================
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+    
+    &::after {
+        content: "";
+        position: absolute;
+        width: 1.6rem;   // 16px
+        height: 1.6rem;  // 16px
+        top: 50%;
+        left: 50%;
+        margin-left: -0.8rem;  // -8px
+        margin-top: -0.8rem;   // -8px
+        border: 2px solid currentColor;
+        border-radius: 50%;
+        border-right-color: transparent;
+        animation: btn-spin 0.6s linear infinite;
+    }
+}
+
+@keyframes btn-spin {
+    100% { transform: rotate(360deg); }
+}
+
+// ========================================
+// 🔗 LINKS COMO BOTONES
+// ========================================
 a {
-    font-family:map.get(variables.$fonts, "body" );
-    font-size: 1.4rem;
+    font-family: map.get(variables.$fonts, "body");
+    font-size: 1.6rem;
     font-weight: 500;
     text-decoration: none;
-    color: map.get(variables.$colors, "secondary" );
-    @include mixins.smooth-weight-transition();
-    position: relative;
-    min-width: 1rem;
-    align-items: center;
-    justify-content: center;
-    top: 0px;
+    color: map.get(variables.$colors, "secondary");
+    transition: all map.get(variables.$transitions, "fast");
+    
+    &:hover {
+        color: map.get(variables.$colors, "text-primary-accessible");
+        text-decoration: underline;
     }
-    a:hover {
-    font-weight: 800;
-    transform: scale(105%);
-    @include mixins.smooth-weight-transition();
+    
+    &:focus-visible {
+        outline: 2px solid map.get(variables.$colors, "link-accessible");
+        outline-offset: 2px;
+        border-radius: 2px;
     }
-    // Botón desplegable (dropdown)
-    .dropdown-toggle {
-        font-weight: 400;
-        margin-top: .5rem;
-        background: none;
-        border: none;
-        font-family: map.get(variables.$fonts, "body" );
-        font-size: 1.5rem;
-        color: map.get(variables.$colors,"secondary" );
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        @include mixins.smooth-weight-transition();
-        
+}
 
-        &::after {
+// ========================================
+// 🎯 BOTÓN DROPDOWN
+// ========================================
+.dropdown-toggle {
+    background: none;
+    border: none;
+    font-family: map.get(variables.$fonts, "body");
+    font-size: 1.6rem;  // 16px
+    font-weight: 500;
+    color: map.get(variables.$colors, "secondary");
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;         // 8px
+    padding: 0.8rem 1.6rem;  // 8px 16px
+    border-radius: map.get(variables.$radius, "md");
+    transition: all map.get(variables.$transitions, "fast");
+    
+    &:hover {
+        background-color: rgba(map.get(variables.$colors, "primary"), 0.1);
+        font-weight: 600;
+    }
+    
+    &:focus-visible {
+        outline: 2px solid map.get(variables.$colors, "text-primary-accessible");
+        outline-offset: 2px;
+    }
+    
+    // Icono de flecha
+    &::after {
         content: "";
-        width: 1rem;
-        height: 1rem;
-        margin-left: 0.5rem;
+        width: 1.2rem;   // 12px
+        height: 1.2rem;  // 12px
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23383d47"><path d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7a.9959.9959 0 010-1.41c.39-.38 1.03-.39 1.42 0z"/></svg>');
         background-repeat: no-repeat;
         background-position: center;
         background-size: contain;
-        @include mixins.smooth-weight-transition();
-        }
-
-        &[aria-expanded="true"]::after {
-        transform: rotate(180deg);
-        }
-
-        &:hover {
-        font-weight: 800;
-        }
+        transition: transform map.get(variables.$transitions, "fast");
     }
-// Botón de llamado a la acción (CTA)
-.cta-button {
-    @extend %button-base;
-    background-color: map.get(variables.$colors, "primary");
-    color: map.get(variables.$colors, "secondary");
-    border: none;
-    @include mixins.smooth-weight-transition();
+    
+    &[aria-expanded="true"]::after {
+        transform: rotate(180deg);
+    }
 }
-// Botón de CTA alternativo
-.cta-button-1 {
-    @extend %button-base;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: map.get(variables.$colors, "text");
-    border: solid 1px map.get(variables.$colors, "text");
-    backdrop-filter: blur(3px);
-    margin: 0; // Sin margin adicional
-    @include mixins.smooth-weight-transition();
+
+// ========================================
+// 📱 RESPONSIVE
+// ========================================
+@include mixins.respond-to("mobile") {
+    %button-base {
+        padding: 0.6rem 1.6rem;  // 6px 16px
+        font-size: 1.4rem;       // 14px
+    }
+    
+    .btn-lg {
+        padding: 1rem 2.4rem;    // 10px 24px
+        font-size: 1.6rem;       // 16px
+    }
 }
