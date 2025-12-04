@@ -56,6 +56,7 @@ module.exports = {
     wizardExample: "./src/js/main_wizard_example.js",
     wizardRiesgos: "./src/main_wizard_riesgos.js",
     dashboard: "./src/main_dashboard.js",
+    login: "./src/main_login.js",
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
@@ -276,6 +277,12 @@ module.exports = {
       inject: true,
       template: "./public/pages/dashboard.html",
       filename: "./pages/dashboard.html",
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ["login"],
+      inject: true,
+      template: "./public/pages/login.html",
+      filename: "./pages/login.html",
     }),
     /* new PreloadWebpackPlugin({
       rel: "preload",

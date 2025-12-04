@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.genesyslm.com.co/sitemap.xml
