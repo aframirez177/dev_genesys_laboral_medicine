@@ -3,12 +3,12 @@
 @use "../base/variables";
 
 .steps {
-    padding: 5rem 2rem 3rem;
+    padding: 5rem 10rem 3rem;
     display: grid;
     grid-template-columns: 1fr;
     gap: 6rem 2rem;
     justify-items: center;
-    max-width: 1300px;
+    max-width: 100%;
     margin: 0 auto;
     background-color: map.get(variables.$colors, "background");
     
@@ -22,7 +22,7 @@
     @include mixins.respond-to("tablet") {
         grid-template-columns: repeat(3, 1fr);
         gap: 10rem 2rem;
-        padding: 6rem 4rem 4rem;
+        padding: 6rem 10rem 4rem;
     }
     
     .step-card {
