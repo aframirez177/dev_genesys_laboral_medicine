@@ -42,7 +42,7 @@ header {
             
             a {
                 position: relative;
-                top: 4px;
+                top: 5px;
                 font-weight: 500;
                 transition: font-weight 0.2s ease;
                 
@@ -228,8 +228,8 @@ header {
         color: map.get(variables.$colors,"secondary");
         text-decoration: none;
         font-size: 1.4rem;
-        font-weight: 500;
-        transition: font-weight 0.2s ease;
+        font-weight: 600;
+        transition: font-weight 0.3s ease;
 
         &:hover {
             font-weight: 800;
@@ -322,8 +322,8 @@ header {
                         color: map.get(variables.$colors, "secondary");
                         text-decoration: none;
                         font-size: 1.2rem;
-                        font-weight: 500;
-                        transition: font-weight 0.2s ease;
+                        font-weight: 600;
+                        transition: font-weight 0.3s ease;
                         text-align: left;
                         max-width: 140px;
                         padding-bottom: 1.6rem;                        
