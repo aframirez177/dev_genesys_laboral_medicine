@@ -311,6 +311,95 @@ class CatalogoService {
   }
 
   // ========================================
+  // MÉTODOS PÚBLICOS - CIIU
+  // ========================================
+
+  /**
+   * Obtener todas las secciones CIIU (con cache)
+   * @param {Object} options - { activo: Boolean }
+   * @returns {Array} Lista de secciones (21)
+   */
+  async getCIIUSecciones(options = {}) {
+    const cacheKey = this._generateCacheKey('ciiu:secciones', options);
+
+    let data = await this._getFromCache(cacheKey);
+    if (data) return data;
+
+    data = await CatalogoRepository.getCIIUSecciones(options);
+
+    await this._setCache(cacheKey, data, this.ttl.sectores);
+
+    return data;
+  }
+
+  /**
+   * Obtener divisiones CIIU por sección (lazy loading con cache)
+   * @param {String} seccionCodigo - Código de sección (A, B, C, ..., U)
+   * @returns {Array} Lista de divisiones de esa sección
+   */
+  async getCIIUDivisionesBySeccion(seccionCodigo) {
+    const cacheKey = this._generateCacheKey('ciiu:divisiones', seccionCodigo);
+
+    let data = await this._getFromCache(cacheKey);
+    if (data) return data;
+
+    data = await CatalogoRepository.getCIIUDivisionesBySeccion(seccionCodigo);
+
+    await this._setCache(cacheKey, data, this.ttl.sectores);
+
+    return data;
+  }
+
+  /**
+   * Obtener todas las divisiones CIIU (con cache)
+   * @param {Object} options - { activo: Boolean }
+   * @returns {Array} Lista de divisiones (87)
+   */
+  async getCIIUDivisiones(options = {}) {
+    const cacheKey = this._generateCacheKey('ciiu:divisiones:all', options);
+
+    let data = await this._getFromCache(cacheKey);
+    if (data) return data;
+
+    data = await CatalogoRepository.getCIIUDivisiones(options);
+
+    await this._setCache(cacheKey, data, this.ttl.sectores);
+
+    return data;
+  }
+
+  /**
+   * Obtener una división CIIU por código
+   * @param {String} codigo - Código de división (01, 02, ..., 99)
+   * @returns {Object|null} División encontrada
+   */
+  async getCIIUDivisionByCodigo(codigo) {
+    const cacheKey = this._generateCacheKey('ciiu:division', codigo);
+
+    let data = await this._getFromCache(cacheKey);
+    if (data) return data;
+
+    data = await CatalogoRepository.getCIIUDivisionByCodigo(codigo);
+
+    if (data) {
+      await this._setCache(cacheKey, data, this.ttl.sectores);
+    }
+
+    return data;
+  }
+
+  /**
+   * Buscar divisiones CIIU por nombre
+   * @param {String} searchTerm - Término de búsqueda
+   * @param {Number} limit - Límite de resultados
+   * @returns {Array} Divisiones que coinciden
+   */
+  async searchCIIUDivisiones(searchTerm, limit = 10) {
+    // No cachear búsquedas dinámicas
+    return await CatalogoRepository.searchCIIUDivisiones(searchTerm, limit);
+  }
+
+  // ========================================
   // MÉTODOS PÚBLICOS - GES
   // ========================================
 

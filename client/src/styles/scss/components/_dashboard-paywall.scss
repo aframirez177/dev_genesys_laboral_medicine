@@ -1,0 +1,354 @@
+// ===========================================
+// PAYWALL MODAL - Dashboard Premium
+// Sprint 6 - Paywall Implementation
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// OVERLAY
+// =====================
+.paywall-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: calc(tokens.$z-modal + 100);
+    @include tokens.flex-center;
+    padding: tokens.$space-6;
+    animation: paywall-fade-in 0.3s ease;
+}
+
+@keyframes paywall-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes paywall-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+// =====================
+// MODAL
+// =====================
+.paywall-modal {
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-xl;
+    box-shadow: tokens.$shadow-xl;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: paywall-slide-up 0.4s ease;
+    @include tokens.custom-scrollbar;
+}
+
+// =====================
+// HEADER
+// =====================
+.paywall-modal__header {
+    text-align: center;
+    padding: tokens.$space-8 tokens.$space-6 tokens.$space-6;
+    background: linear-gradient(135deg, tokens.$dashboard-primary 0%, #3aa897 100%);
+    border-radius: tokens.$radius-xl tokens.$radius-xl 0 0;
+    color: tokens.$dashboard-white;
+}
+
+.paywall-modal__icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto tokens.$space-4;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    @include tokens.flex-center;
+
+    svg {
+        width: 36px;
+        height: 36px;
+        color: tokens.$dashboard-white;
+    }
+}
+
+.paywall-modal__title {
+    font-family: tokens.$font-family-title;
+    font-size: tokens.$font-h2;
+    font-weight: tokens.$font-bold;
+    margin: 0 0 tokens.$space-2 0;
+}
+
+.paywall-modal__subtitle {
+    font-size: tokens.$font-body;
+    opacity: 0.9;
+    margin: 0;
+}
+
+// =====================
+// BODY
+// =====================
+.paywall-modal__body {
+    padding: tokens.$space-6;
+}
+
+// =====================
+// PRICE
+// =====================
+.paywall-price {
+    text-align: center;
+    padding: tokens.$space-6 0;
+    border-bottom: 1px solid tokens.$dashboard-border;
+    margin-bottom: tokens.$space-6;
+}
+
+.paywall-price__amount {
+    display: block;
+    font-family: tokens.$font-family-title;
+    font-size: 4.8rem;
+    font-weight: tokens.$font-bold;
+    color: tokens.$dashboard-secondary;
+    line-height: 1;
+}
+
+.paywall-price__period {
+    display: block;
+    font-size: tokens.$font-body;
+    color: tokens.$dashboard-text-light;
+    margin-top: tokens.$space-2;
+}
+
+// =====================
+// FEATURES
+// =====================
+.paywall-features {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-3;
+    margin-bottom: tokens.$space-6;
+}
+
+.paywall-feature {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-3;
+    font-size: tokens.$font-body;
+    color: tokens.$dashboard-text;
+
+    svg {
+        width: 20px;
+        height: 20px;
+        color: tokens.$dashboard-success;
+        flex-shrink: 0;
+    }
+}
+
+// =====================
+// CARGOS COUNT
+// =====================
+.paywall-cargos {
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-lg;
+    padding: tokens.$space-5;
+    text-align: center;
+    margin-bottom: tokens.$space-6;
+}
+
+.paywall-cargos__label {
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text-light;
+    margin-bottom: tokens.$space-2;
+}
+
+.paywall-cargos__count {
+    font-family: tokens.$font-family-title;
+    font-size: tokens.$font-h1;
+    font-weight: tokens.$font-bold;
+    color: tokens.$dashboard-primary;
+    line-height: 1;
+    margin-bottom: tokens.$space-3;
+}
+
+.paywall-cargos__total {
+    font-size: tokens.$font-h4;
+    color: tokens.$dashboard-secondary;
+
+    strong {
+        color: tokens.$dashboard-primary;
+        font-weight: tokens.$font-bold;
+    }
+}
+
+// =====================
+// ACTIONS
+// =====================
+.paywall-actions {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-3;
+    margin-bottom: tokens.$space-6;
+}
+
+.paywall-btn-pay {
+    width: 100%;
+    padding: tokens.$space-4 tokens.$space-6;
+    font-size: tokens.$font-h4;
+
+    svg {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+// =====================
+// DIVIDER
+// =====================
+.paywall-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin-bottom: tokens.$space-6;
+
+    &::before,
+    &::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid tokens.$dashboard-border;
+    }
+
+    span {
+        padding: 0 tokens.$space-4;
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+// =====================
+// FREE DOCS
+// =====================
+.paywall-free-docs {
+    background: rgba(tokens.$dashboard-success, 0.05);
+    border: 1px solid rgba(tokens.$dashboard-success, 0.2);
+    border-radius: tokens.$radius-lg;
+    padding: tokens.$space-5;
+}
+
+.paywall-free-docs__title {
+    font-size: tokens.$font-small;
+    font-weight: tokens.$font-semibold;
+    color: tokens.$dashboard-secondary;
+    margin: 0 0 tokens.$space-4 0;
+    text-align: center;
+}
+
+.paywall-free-docs__list {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-3;
+}
+
+.paywall-free-doc {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-3;
+    width: 100%;
+    padding: tokens.$space-3 tokens.$space-4;
+    background: tokens.$dashboard-white;
+    border: 1px solid tokens.$dashboard-border;
+    border-radius: tokens.$radius-md;
+    font-family: tokens.$font-family-body;
+    font-size: tokens.$font-body;
+    color: tokens.$dashboard-text;
+    cursor: pointer;
+    transition: all tokens.$transition-normal;
+
+    &:hover {
+        border-color: tokens.$dashboard-success;
+        background: rgba(tokens.$dashboard-success, 0.05);
+    }
+
+    svg:first-child {
+        width: 20px;
+        height: 20px;
+        color: tokens.$dashboard-success;
+        flex-shrink: 0;
+    }
+
+    span {
+        flex: 1;
+        text-align: left;
+    }
+
+    svg:last-child {
+        width: 18px;
+        height: 18px;
+        color: tokens.$dashboard-text-light;
+        flex-shrink: 0;
+    }
+
+    &:hover svg:last-child {
+        color: tokens.$dashboard-success;
+    }
+}
+
+// =====================
+// FOOTER
+// =====================
+.paywall-modal__footer {
+    padding: tokens.$space-4 tokens.$space-6;
+    background: tokens.$dashboard-background;
+    border-top: 1px solid tokens.$dashboard-border;
+    border-radius: 0 0 tokens.$radius-xl tokens.$radius-xl;
+}
+
+.paywall-modal__note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: tokens.$space-2;
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text-light;
+    margin: 0;
+
+    svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@media (max-width: tokens.$breakpoint-mobile) {
+    .paywall-modal {
+        max-width: 100%;
+        margin: tokens.$space-4;
+    }
+
+    .paywall-modal__header {
+        padding: tokens.$space-6 tokens.$space-4 tokens.$space-4;
+    }
+
+    .paywall-modal__title {
+        font-size: tokens.$font-h3;
+    }
+
+    .paywall-price__amount {
+        font-size: 3.6rem;
+    }
+
+    .paywall-modal__body {
+        padding: tokens.$space-4;
+    }
+}

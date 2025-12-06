@@ -37,7 +37,10 @@ export class WizardState {
         nombreEmpresa: '',
         nit: '',
         email: '',
-        sector: '',
+        sector: '', // Legacy - kept for backward compatibility
+        ciiuSeccion: '', // CIIU Section code (A, B, C, ...)
+        ciiuDivision: '', // CIIU Division code (01, 02, ...)
+        ciudad: '',
         cargos: []
         // Each cargo: {
         //   nombre: '',
@@ -263,8 +266,15 @@ export class WizardState {
         if (!this.data.formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.data.formData.email)) {
           errors.email = 'Email inválido';
         }
-        if (!this.data.formData.sector) {
-          errors.sector = 'Debe seleccionar un sector';
+        // Validate CIIU fields
+        if (!this.data.formData.ciiuSeccion) {
+          errors.ciiuSeccion = 'Debe seleccionar una sección económica';
+        }
+        if (!this.data.formData.ciiuDivision) {
+          errors.ciiuDivision = 'Debe seleccionar una actividad económica';
+        }
+        if (!this.data.formData.ciudad || this.data.formData.ciudad.trim().length < 2) {
+          errors.ciudad = 'Debe ingresar una ciudad';
         }
         break;
 
@@ -374,8 +384,18 @@ export class WizardState {
         break;
 
       case 'sector':
+        // Legacy field - no longer required
+        break;
+
+      case 'ciiuSeccion':
         if (!value || value === '') {
-          return 'Debe seleccionar un sector económico';
+          return 'Debe seleccionar una sección económica';
+        }
+        break;
+
+      case 'ciiuDivision':
+        if (!value || value === '') {
+          return 'Debe seleccionar una actividad económica';
         }
         break;
 
@@ -866,7 +886,10 @@ export class WizardState {
         nombreEmpresa: this.data.formData.nombreEmpresa,
         nit: this.data.formData.nit,
         email: this.data.formData.email,
-        sector: this.data.formData.sector,
+        sector: this.data.formData.ciiuDivision || this.data.formData.sector, // Use CIIU division or legacy sector
+        ciiuSeccion: this.data.formData.ciiuSeccion,
+        ciiuDivision: this.data.formData.ciiuDivision,
+        ciudad: this.data.formData.ciudad,
         nombreContacto: this.data.formData.nombreContacto || this.data.formData.email
       },
       analytics: {

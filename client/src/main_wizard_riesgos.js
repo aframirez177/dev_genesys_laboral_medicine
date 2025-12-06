@@ -216,14 +216,24 @@ async function loadCatalogos(wizardState) {
     const catalogos = {
       riesgos: [], // All GES
       categorias: [], // Risk categories (Físico, Biomecánico, etc.)
-      sectores: []
+      sectores: [], // Legacy sectors (para compatibilidad)
+      ciiuSecciones: [], // CIIU Secciones (21)
+      ciudades: [] // Ciudades de Colombia
     };
 
     // Load all catalog data in parallel for performance
-    const [gesResponse, categoriasResponse, sectoresResponse] = await Promise.all([
+    const [
+      gesResponse,
+      categoriasResponse,
+      sectoresResponse,
+      ciiuSeccionesResponse,
+      ciudadesResponse
+    ] = await Promise.all([
       fetch('/api/catalogo/ges?limit=200'), // Get all GES
       fetch('/api/catalogo/riesgos'), // Get risk categories
-      fetch('/api/catalogo/sectores') // Get sectors
+      fetch('/api/catalogo/sectores'), // Get legacy sectors
+      fetch('/api/catalogo/ciiu/secciones'), // Get CIIU sections (21)
+      fetch('/api/catalogo/ciudades') // Get cities
     ]);
 
     // Process GES
@@ -244,13 +254,31 @@ async function loadCatalogos(wizardState) {
       console.error('[Wizard Riesgos] ❌ Error loading categories:', categoriasResponse.statusText);
     }
 
-    // Process Sectors
+    // Process Sectors (legacy)
     if (sectoresResponse.ok) {
       const sectData = await sectoresResponse.json();
       catalogos.sectores = sectData.data || [];
       console.log(`[Wizard Riesgos] ✅ Loaded ${catalogos.sectores.length} sectors`);
     } else {
       console.error('[Wizard Riesgos] ❌ Error loading sectors:', sectoresResponse.statusText);
+    }
+
+    // Process CIIU Secciones (nuevo - 21 secciones)
+    if (ciiuSeccionesResponse.ok) {
+      const ciiuData = await ciiuSeccionesResponse.json();
+      catalogos.ciiuSecciones = ciiuData.data || [];
+      console.log(`[Wizard Riesgos] ✅ Loaded ${catalogos.ciiuSecciones.length} CIIU sections`);
+    } else {
+      console.error('[Wizard Riesgos] ❌ Error loading CIIU sections:', ciiuSeccionesResponse.statusText);
+    }
+
+    // Process Ciudades
+    if (ciudadesResponse.ok) {
+      const ciudadesData = await ciudadesResponse.json();
+      catalogos.ciudades = ciudadesData.data || [];
+      console.log(`[Wizard Riesgos] ✅ Loaded ${catalogos.ciudades.length} cities`);
+    } else {
+      console.error('[Wizard Riesgos] ❌ Error loading cities:', ciudadesResponse.statusText);
     }
 
     // Save catalogos to state

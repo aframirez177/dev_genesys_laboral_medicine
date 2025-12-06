@@ -42,11 +42,15 @@
 @use 'components/dashboard-psicosocial';
 @use 'components/dashboard-documents';
 @use 'components/dashboard-profesiograma';
+@use 'components/dashboard-matriz';
 @use 'components/dashboard-config';
 @use 'components/dashboard-medical-panel';
 
 // 6. Mini-Wizard de Cargos (Sprint 6 - Fase L)
 @use 'components/cargo-mini-wizard';
+
+// 7. Paywall Modal (Sprint 6)
+@use 'components/dashboard-paywall';
 
 // =====================
 // LAYOUT COMPONENTS

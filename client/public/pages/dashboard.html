@@ -42,8 +42,7 @@
             <img src="../assets/images/logo_icono_color_vectores_fabicon.svg" alt="Genesys Logo" />
           </div>
           <div class="sidebar-logo__text">
-            <span class="sidebar-logo__text-brand">Genesys</span>
-            <span class="sidebar-logo__text-tagline">Health Intelligence</span>
+            <span class="sidebar-logo__text-brand">Genesys BI</span>
           </div>
         </div>
 
@@ -187,27 +186,38 @@
               <i data-lucide="menu"></i>
             </button>
 
-            <!-- Company Selector -->
-            <div class="header-company-selector" id="company-selector">
-              <span class="header-company-selector__label">EMPRESA:</span>
-              <span class="header-company-selector__value" id="company-name">Cargando...</span>
-              <i data-lucide="chevron-down" class="header-company-selector__icon"></i>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="header-search">
-              <i data-lucide="search" class="header-search__icon"></i>
-              <input
-                type="text"
-                class="header-search__input"
-                placeholder="Buscar..."
-                id="global-search"
-              />
-              <span class="header-search__shortcut">⌘K</span>
+            <!-- Company Info -->
+            <div class="header-company-info" id="company-info">
+              <div class="header-company-info__main">
+                <span class="header-company-info__name" id="company-name">Cargando...</span>
+              </div>
+              <div class="header-company-info__details">
+                <span class="header-company-info__item">
+                  <i data-lucide="briefcase"></i>
+                  <span id="company-sector">-</span>
+                </span>
+                <span class="header-company-info__item">
+                  <i data-lucide="tag"></i>
+                  <span id="company-activity">-</span>
+                </span>
+                <span class="header-company-info__item">
+                  <i data-lucide="file-text"></i>
+                  <span id="company-nit">-</span>
+                </span>
+              </div>
             </div>
           </div>
 
           <div class="header-right">
+            <!-- Responsable Info -->
+            <div class="header-responsable" id="responsable-info">
+              <i data-lucide="user-check"></i>
+              <div class="header-responsable__text">
+                <span class="header-responsable__label">Responsable</span>
+                <span class="header-responsable__name" id="responsable-name">-</span>
+              </div>
+            </div>
+
             <!-- Notifications -->
             <button class="header-notifications" id="notifications-btn" aria-label="Notificaciones">
               <i data-lucide="bell" class="header-notifications__icon"></i>
@@ -663,46 +673,9 @@
               </div>
             </div>
 
-            <!-- Summary Metrics -->
-            <div class="dashboard-grid dashboard-grid--cols-5" id="matriz-summary">
-              <div class="card card--stat">
-                <div class="stat-value" id="matriz-total">--</div>
-                <div class="stat-label">Total Peligros</div>
-              </div>
-              <div class="card card--stat card--level-v">
-                <div class="stat-value stat-value--danger" id="matriz-nivel-v">--</div>
-                <div class="stat-label">Nivel V - Intolerable</div>
-              </div>
-              <div class="card card--stat card--level-iv">
-                <div class="stat-value stat-value--warning" id="matriz-nivel-iv">--</div>
-                <div class="stat-label">Nivel IV - Importante</div>
-              </div>
-              <div class="card card--stat card--level-iii">
-                <div class="stat-value" id="matriz-nivel-iii">--</div>
-                <div class="stat-label">Nivel III - Moderado</div>
-              </div>
-              <div class="card card--stat card--level-i-ii">
-                <div class="stat-value stat-value--success" id="matriz-nivel-i-ii">--</div>
-                <div class="stat-label">Nivel I-II - Aceptable</div>
-              </div>
-            </div>
-
-            <!-- Categories Grid -->
-            <div class="dashboard-section" id="matriz-categories-section">
-              <h2 class="dashboard-section__title">Distribución por Categoría</h2>
-              <div class="dashboard-grid dashboard-grid--cols-3" id="matriz-categories">
-                <!-- Category cards will be loaded dynamically -->
-              </div>
-            </div>
-
-            <!-- Critical Hazards Banner -->
-            <div class="alert-banner alert-banner--danger" id="matriz-critical-banner">
-              <i data-lucide="alert-triangle"></i>
-              <span>PELIGROS CRÍTICOS (Nivel V y IV) - Requieren acción inmediata</span>
-            </div>
-
-            <!-- Critical Hazards List -->
-            <div id="matriz-critical-content">
+            <!-- NEW: Interactive Matriz Container (World-Class UI) -->
+            <div class="matriz-dashboard-container" id="matriz-dashboard-container">
+              <!-- Will be populated by MatrizRiesgosComponent -->
               <div class="loading-container">
                 <div class="loading-spinner"></div>
                 <p>Cargando matriz de riesgos...</p>
@@ -879,6 +852,93 @@
 
       <!-- Mobile Overlay -->
       <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- PAYWALL MODAL                                -->
+    <!-- ============================================ -->
+    <div class="paywall-overlay" id="paywall-overlay" style="display: none;">
+      <div class="paywall-modal">
+        <div class="paywall-modal__header">
+          <div class="paywall-modal__icon">
+            <i data-lucide="lock"></i>
+          </div>
+          <h2 class="paywall-modal__title">Acceso Premium Requerido</h2>
+          <p class="paywall-modal__subtitle">Para continuar usando el Dashboard de Inteligencia de Salud</p>
+        </div>
+
+        <div class="paywall-modal__body">
+          <div class="paywall-price">
+            <span class="paywall-price__amount">$30.000</span>
+            <span class="paywall-price__period">COP por cargo</span>
+          </div>
+
+          <div class="paywall-features">
+            <div class="paywall-feature">
+              <i data-lucide="check-circle"></i>
+              <span>Matriz de Riesgos GTC-45 completa</span>
+            </div>
+            <div class="paywall-feature">
+              <i data-lucide="check-circle"></i>
+              <span>Profesiograma por cargo</span>
+            </div>
+            <div class="paywall-feature">
+              <i data-lucide="check-circle"></i>
+              <span>Dashboard de inteligencia de salud</span>
+            </div>
+            <div class="paywall-feature">
+              <i data-lucide="check-circle"></i>
+              <span>Alertas de vencimiento de exámenes</span>
+            </div>
+            <div class="paywall-feature">
+              <i data-lucide="check-circle"></i>
+              <span>Sistema de vigilancia epidemiológica</span>
+            </div>
+          </div>
+
+          <div class="paywall-cargos">
+            <div class="paywall-cargos__label">Cargos registrados:</div>
+            <div class="paywall-cargos__count" id="paywall-cargo-count">0</div>
+            <div class="paywall-cargos__total">
+              Total a pagar: <strong id="paywall-total">$0</strong>
+            </div>
+          </div>
+
+          <div class="paywall-actions">
+            <button class="btn btn--primary btn--lg paywall-btn-pay" id="paywall-btn-pay">
+              <i data-lucide="credit-card"></i>
+              Pagar Ahora
+            </button>
+          </div>
+
+          <div class="paywall-divider">
+            <span>o descarga gratis</span>
+          </div>
+
+          <div class="paywall-free-docs">
+            <p class="paywall-free-docs__title">Documentos gratuitos disponibles:</p>
+            <div class="paywall-free-docs__list">
+              <button class="paywall-free-doc" id="paywall-download-cotizacion">
+                <i data-lucide="receipt"></i>
+                <span>Cotización de Exámenes Médicos</span>
+                <i data-lucide="download"></i>
+              </button>
+              <button class="paywall-free-doc" id="paywall-download-perfil">
+                <i data-lucide="user-check"></i>
+                <span>Perfil de Cargo</span>
+                <i data-lucide="download"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="paywall-modal__footer">
+          <p class="paywall-modal__note">
+            <i data-lucide="info"></i>
+            Pago único por cargo. Sin suscripciones.
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Initialize Lucide Icons -->

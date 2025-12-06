@@ -186,24 +186,14 @@ function renderDocumentCard(docConfig, docData) {
             </div>
 
             <div class="card-actions">
-                ${docConfig.key === 'profesiograma' && isAvailable ? `
-                    <a
-                        href="./profesiograma_view.html?id=${docData.id}"
-                        class="card-btn card-btn-primary"
-                        target="_blank"
-                    >
-                        🩺 Ver Profesiograma
-                    </a>
-                ` : `
-                    <a
-                        href="${isAvailable ? url : '#'}"
-                        class="card-btn card-btn-download ${!isAvailable ? 'disabled' : ''}"
-                        ${isAvailable ? 'target="_blank"' : ''}
-                        ${!isAvailable ? 'onclick="return false;"' : ''}
-                    >
-                        ⬇ Descargar
-                    </a>
-                `}
+                <a
+                    href="${isAvailable ? url : '#'}"
+                    class="card-btn card-btn-download ${!isAvailable ? 'disabled' : ''}"
+                    ${isAvailable ? 'target="_blank"' : ''}
+                    ${!isAvailable ? 'onclick="return false;"' : ''}
+                >
+                    ⬇ Descargar
+                </a>
                 ${!docConfig.isFree && !isPaid ? `
                     <button
                         class="card-btn card-btn-cart"

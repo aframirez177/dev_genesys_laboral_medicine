@@ -1,0 +1,573 @@
+// ===========================================
+// DASHBOARD PREMIUM - MATRIZ DE RIESGOS TAB
+// Sprint 6 - World-Class UX/UI Design
+// ===========================================
+
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// MATRIZ CONTAINER
+// =====================
+.matriz-dashboard-container {
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-lg;
+    padding: tokens.$space-6;
+    min-height: 600px;
+
+    // Spacing between sections
+    > * + * {
+        margin-top: tokens.$space-6;
+    }
+}
+
+// Results count
+.matriz-results-count {
+    text-align: center;
+    padding: tokens.$space-4;
+    color: tokens.$dashboard-text-light;
+    font-size: tokens.$font-small;
+    border-top: 1px solid tokens.$dashboard-border;
+}
+
+// =====================
+// METRICS CARDS (TOP)
+// =====================
+.matriz-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: tokens.$space-4;
+    margin-bottom: tokens.$space-6;
+}
+
+.metric-card {
+    @include tokens.card-base;
+    padding: tokens.$space-5;
+    text-align: center;
+    transition: all tokens.$transition-normal;
+    border-left: 4px solid tokens.$dashboard-border;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: tokens.$shadow-lg;
+    }
+
+    &__icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto tokens.$space-3;
+        @include tokens.flex-center;
+        border-radius: tokens.$radius-full;
+        background: tokens.$dashboard-background;
+
+        i, svg {
+            width: 24px;
+            height: 24px;
+            color: tokens.$dashboard-primary;
+        }
+    }
+
+    &__value {
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        line-height: 1;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: tokens.$font-medium;
+    }
+
+    // Risk level variants
+    &--critical {
+        border-left-color: tokens.$risk-level-v;
+        .metric-card__icon { background: rgba(tokens.$risk-level-v, 0.1); i, svg { color: tokens.$risk-level-v; } }
+        .metric-card__value { color: tokens.$risk-level-v; }
+    }
+
+    &--high {
+        border-left-color: tokens.$risk-level-iv;
+        .metric-card__icon { background: rgba(tokens.$risk-level-iv, 0.1); i, svg { color: tokens.$risk-level-iv; } }
+        .metric-card__value { color: tokens.$risk-level-iv; }
+    }
+
+    &--medium {
+        border-left-color: tokens.$risk-level-iii;
+        .metric-card__icon { background: rgba(tokens.$risk-level-iii, 0.1); i, svg { color: tokens.$risk-level-iii; } }
+        .metric-card__value { color: tokens.$risk-level-iii; }
+    }
+
+    &--low {
+        border-left-color: tokens.$risk-level-ii;
+        .metric-card__icon { background: rgba(tokens.$risk-level-ii, 0.1); i, svg { color: tokens.$risk-level-ii; } }
+        .metric-card__value { color: tokens.$risk-level-ii; }
+    }
+}
+
+// =====================
+// FILTERS & SEARCH BAR
+// =====================
+.matriz-toolbar {
+    @include tokens.flex-between;
+    gap: tokens.$space-4;
+    margin-bottom: tokens.$space-6;
+    padding: tokens.$space-4;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-md;
+    flex-wrap: wrap;
+}
+
+.matriz-search {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+
+    &__input {
+        width: 100%;
+        height: 44px;
+        padding: 0 tokens.$space-4 0 tokens.$space-10;
+        background: tokens.$dashboard-white;
+        border: 1px solid tokens.$dashboard-border;
+        border-radius: tokens.$radius-md;
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        transition: all tokens.$transition-normal;
+
+        &::placeholder {
+            color: tokens.$dashboard-text-light;
+        }
+
+        &:focus {
+            outline: none;
+            border-color: tokens.$dashboard-primary;
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.1);
+        }
+    }
+
+    &__icon {
+        position: absolute;
+        left: tokens.$space-3;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: tokens.$dashboard-text-light;
+        pointer-events: none;
+    }
+}
+
+.matriz-filters {
+    display: flex;
+    gap: tokens.$space-3;
+    flex-wrap: wrap;
+}
+
+.filter-dropdown {
+    position: relative;
+    min-width: 160px;
+
+    select {
+        width: 100%;
+        height: 44px;
+        padding: 0 tokens.$space-4;
+        background: tokens.$dashboard-white;
+        border: 1px solid tokens.$dashboard-border;
+        border-radius: tokens.$radius-md;
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        cursor: pointer;
+        transition: all tokens.$transition-normal;
+
+        &:focus {
+            outline: none;
+            border-color: tokens.$dashboard-primary;
+        }
+    }
+}
+
+.matriz-actions {
+    display: flex;
+    gap: tokens.$space-2;
+}
+
+// =====================
+// RISK TABLE (INTERACTIVE)
+// =====================
+.matriz-table-container {
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-md;
+    overflow: hidden;
+    box-shadow: tokens.$shadow-sm;
+}
+
+.matriz-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: tokens.$font-small;
+
+    thead {
+        background: tokens.$dashboard-background;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+
+        th {
+            padding: tokens.$space-3 tokens.$space-4;
+            text-align: left;
+            font-weight: tokens.$font-semibold;
+            color: tokens.$dashboard-secondary;
+            font-size: tokens.$font-xs;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid tokens.$dashboard-border;
+            white-space: nowrap;
+
+            &.sortable {
+                cursor: pointer;
+                user-select: none;
+                position: relative;
+                padding-right: tokens.$space-6;
+
+                &:hover {
+                    background: rgba(tokens.$dashboard-primary, 0.05);
+                }
+
+                &::after {
+                    content: '⇅';
+                    position: absolute;
+                    right: tokens.$space-2;
+                    color: tokens.$dashboard-text-light;
+                    font-size: 12px;
+                }
+
+                &.sorted-asc::after {
+                    content: '↑';
+                    color: tokens.$dashboard-primary;
+                }
+
+                &.sorted-desc::after {
+                    content: '↓';
+                    color: tokens.$dashboard-primary;
+                }
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 1px solid tokens.$dashboard-border;
+            transition: background tokens.$transition-fast;
+
+            &:hover {
+                background: rgba(tokens.$dashboard-primary, 0.03);
+            }
+
+            &.row-expandable {
+                cursor: pointer;
+            }
+        }
+
+        td {
+            padding: tokens.$space-4;
+            color: tokens.$dashboard-text;
+            vertical-align: top;
+
+            &.cell-cargo {
+                font-weight: tokens.$font-semibold;
+                color: tokens.$dashboard-secondary;
+            }
+
+            &.cell-riesgo {
+                max-width: 300px;
+                line-height: tokens.$leading-relaxed;
+            }
+
+            &.cell-nr {
+                text-align: center;
+                font-weight: tokens.$font-bold;
+            }
+        }
+    }
+}
+
+// =====================
+// RISK BADGES
+// =====================
+.risk-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: tokens.$space-1 tokens.$space-3;
+    border-radius: tokens.$radius-full;
+    font-size: tokens.$font-xs;
+    font-weight: tokens.$font-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+
+    &--nr {
+        min-width: 60px;
+
+        &-v {
+            background: rgba(tokens.$risk-level-v, 0.15);
+            color: tokens.$risk-level-v;
+            border: 2px solid tokens.$risk-level-v;
+        }
+
+        &-iv {
+            background: rgba(tokens.$risk-level-iv, 0.15);
+            color: tokens.$risk-level-iv;
+            border: 2px solid tokens.$risk-level-iv;
+        }
+
+        &-iii {
+            background: rgba(tokens.$risk-level-iii, 0.15);
+            color: tokens.$risk-level-iii;
+            border: 2px solid tokens.$risk-level-iii;
+        }
+
+        &-ii {
+            background: rgba(tokens.$risk-level-ii, 0.15);
+            color: tokens.$risk-level-ii;
+            border: 2px solid tokens.$risk-level-ii;
+        }
+
+        &-i {
+            background: rgba(tokens.$risk-level-i, 0.15);
+            color: tokens.$risk-level-i;
+            border: 2px solid tokens.$risk-level-i;
+        }
+    }
+
+    &--tipo {
+        background: tokens.$dashboard-background;
+        color: tokens.$dashboard-text;
+        border: 1px solid tokens.$dashboard-border;
+    }
+}
+
+// =====================
+// EXPANDABLE ROW DETAILS
+// =====================
+.risk-details {
+    display: none;
+
+    &.expanded {
+        display: table-row;
+    }
+
+    td {
+        padding: 0 !important;
+        background: tokens.$dashboard-background;
+    }
+}
+
+.risk-details-content {
+    padding: tokens.$space-6;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: tokens.$space-6;
+}
+
+.details-section {
+    &__title {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: tokens.$space-3;
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+
+        i, svg {
+            width: 16px;
+            height: 16px;
+            color: tokens.$dashboard-primary;
+        }
+    }
+
+    &__content {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text;
+        line-height: tokens.$leading-relaxed;
+
+        strong {
+            color: tokens.$dashboard-secondary;
+            font-weight: tokens.$font-semibold;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: tokens.$space-2 0;
+
+            li {
+                padding: tokens.$space-1 0;
+                padding-left: tokens.$space-4;
+                position: relative;
+
+                &::before {
+                    content: '•';
+                    position: absolute;
+                    left: 0;
+                    color: tokens.$dashboard-primary;
+                    font-weight: tokens.$font-bold;
+                }
+            }
+        }
+    }
+}
+
+.niveles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: tokens.$space-3;
+    margin-top: tokens.$space-3;
+}
+
+.nivel-item {
+    background: tokens.$dashboard-white;
+    padding: tokens.$space-3;
+    border-radius: tokens.$radius-sm;
+    border: 1px solid tokens.$dashboard-border;
+    text-align: center;
+
+    &__label {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: tokens.$space-1;
+    }
+
+    &__value {
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+    }
+}
+
+// =====================
+// EMPTY STATE
+// =====================
+.matriz-empty-state {
+    @include tokens.flex-center;
+    flex-direction: column;
+    padding: tokens.$space-12;
+    text-align: center;
+
+    &__icon {
+        width: 120px;
+        height: 120px;
+        @include tokens.flex-center;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-full;
+        margin-bottom: tokens.$space-6;
+
+        i, svg {
+            width: 60px;
+            height: 60px;
+            color: tokens.$dashboard-text-light;
+        }
+    }
+
+    &__title {
+        font-size: tokens.$font-h2;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__description {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+        max-width: 500px;
+        margin-bottom: tokens.$space-6;
+    }
+}
+
+// =====================
+// LOADING STATE
+// =====================
+.matriz-loading {
+    @include tokens.flex-center;
+    padding: tokens.$space-12;
+
+    &__spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid tokens.$dashboard-border;
+        border-top-color: tokens.$dashboard-primary;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+@include tokens.respond-to('tablet') {
+    .matriz-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .matriz-search {
+        min-width: 100%;
+    }
+
+    .matriz-filters {
+        width: 100%;
+    }
+
+    .filter-dropdown {
+        flex: 1;
+    }
+
+    .matriz-table {
+        font-size: tokens.$font-xs;
+
+        thead th {
+            padding: tokens.$space-2;
+        }
+
+        tbody td {
+            padding: tokens.$space-3;
+        }
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .niveles-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

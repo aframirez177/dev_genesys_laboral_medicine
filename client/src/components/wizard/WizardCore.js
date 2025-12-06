@@ -733,46 +733,105 @@ export class WizardCore {
               />
             </div>
 
-            <!-- Sector Económico -->
-            <div class="form-group">
-              <label for="sector">Sector Económico *</label>
-              <select
-                id="sector"
-                name="sector"
-                class="wizard-enhanced-select"
-                aria-describedby="hint-sector"
-                required>
-                <option value="">Selecciona un sector</option>
-                ${(catalogos.sectores || []).map(sector => `
-                  <option value="${sector.codigo || sector.id}" ${data.sector === (sector.codigo || sector.id) ? 'selected' : ''}>
-                    ${sector.nombre}
-                  </option>
-                `).join('')}
-              </select>
-              ${(!catalogos.sectores || catalogos.sectores.length === 0) ? `
-                <div class="wizard-hint warning" id="hint-sector">
-                  <i class="fas fa-exclamation-triangle"></i>
-                  Cargando sectores...
-                </div>
-              ` : `
-                <div class="wizard-hint" id="hint-sector">
+            <!-- Sector Económico con UX mejorada -->
+            <div class="form-group form-group--sector-animated ${data.ciiuSeccion ? 'sector-selected' : ''}" id="sector-container">
+              
+              <!-- Estado inicial: Solo dropdown de sector -->
+              <div class="sector-initial ${data.ciiuSeccion ? 'hidden' : ''}" id="sector-initial">
+                <label for="ciiuSeccion" class="form-label-with-help">
+                  <span class="form-label-text">Sector Económico *</span>
+                  <button type="button" class="wizard-help-button"
+                    data-tooltip="Clasificación CIIU según la DIAN"
+                    data-tooltip-placement="right"
+                    aria-label="Ayuda">
+                    <i class="fas fa-question-circle"></i>
+                  </button>
+                </label>
+                <select
+                  id="ciiuSeccion"
+                  name="ciiuSeccion"
+                  class="wizard-enhanced-select wizard-select-sector"
+                  aria-describedby="hint-ciiu-seccion"
+                  required>
+                  <option value="">Selecciona tu sector económico...</option>
+                  ${(catalogos.ciiuSecciones || []).map(seccion => `
+                    <option value="${seccion.codigo}" ${data.ciiuSeccion === seccion.codigo ? 'selected' : ''}>
+                      ${seccion.nombre}
+                    </option>
+                  `).join('')}
+                </select>
+                <div class="wizard-hint" id="hint-ciiu-seccion">
                   <i class="fas fa-info-circle"></i>
-                  Actividad económica principal de tu empresa
+                  Categoría principal según clasificación DIAN
                 </div>
-              `}
+              </div>
+
+              <!-- Estado después de seleccionar: Sector como badge editable + Dropdown actividad -->
+              <div class="sector-selected-view ${!data.ciiuSeccion ? 'hidden' : ''}" id="sector-selected-view">
+                <!-- Badge del sector seleccionado -->
+                <div class="sector-badge" id="sector-badge">
+                  <span class="sector-badge-label">Sector:</span>
+                  <span class="sector-badge-value" id="sector-badge-value">
+                    ${data.ciiuSeccion ? (catalogos.ciiuSecciones || []).find(s => s.codigo === data.ciiuSeccion)?.nombre || '' : ''}
+                  </span>
+                  <button type="button" class="sector-edit-btn" id="sector-edit-btn" title="Cambiar sector">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Dropdown de Actividad Económica -->
+                <div class="activity-dropdown-container">
+                  <label for="ciiuDivision" class="form-label-with-help">
+                    <span class="form-label-text">Actividad Económica *</span>
+                    <button type="button" class="wizard-help-button"
+                      data-tooltip="Actividad específica dentro del sector"
+                      data-tooltip-placement="right"
+                      aria-label="Ayuda">
+                      <i class="fas fa-question-circle"></i>
+                    </button>
+                  </label>
+                  <select
+                    id="ciiuDivision"
+                    name="ciiuDivision"
+                    class="wizard-enhanced-select wizard-select-activity"
+                    aria-describedby="hint-ciiu-division"
+                    required>
+                    <option value="">Selecciona tu actividad económica...</option>
+                    <!-- Opciones cargadas dinámicamente -->
+                  </select>
+                  <div class="wizard-hint" id="hint-ciiu-division">
+                    <i class="fas fa-info-circle"></i>
+                    Actividad específica de tu empresa
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- Ciudad -->
+            <!-- Ciudad (con datalist desde BD) -->
             <div class="form-group">
               <label for="ciudad">Ciudad *</label>
               <input
                 type="text"
                 id="ciudad"
                 name="ciudad"
+                list="ciudades-datalist"
                 value="${data.ciudad || ''}"
                 placeholder="Ej: Bogotá"
+                autocomplete="off"
                 required
               />
+              <datalist id="ciudades-datalist">
+                ${(catalogos.ciudades || []).map(ciudad => `
+                  <option value="${ciudad.nombre}" data-departamento="${ciudad.departamento}">
+                `).join('')}
+              </datalist>
+              <div class="wizard-hint">
+                <i class="fas fa-info-circle"></i>
+                Escribe para buscar tu ciudad
+              </div>
             </div>
           </div>
         </div>
@@ -2021,7 +2080,7 @@ export class WizardCore {
   attachInfoBasicaListeners() {
     // All inputs including optional ones
     const inputs = this.container.querySelectorAll(
-      '#nombreEmpresa, #nit, #email, #sector, #telefono, #direccion, #ciudad'
+      '#nombreEmpresa, #nit, #email, #ciiuSeccion, #ciiuDivision, #telefono, #direccion, #ciudad'
     );
 
     inputs.forEach(input => {
@@ -2053,6 +2112,203 @@ export class WizardCore {
         this.state.updateBasicInfo(field, value, true);
       });
     });
+
+    // 🆕 CIIU Cascading Dropdown with animated UX
+    this.setupSectorAnimatedDropdown();
+  }
+
+  /**
+   * Setup animated sector dropdown with two-step selection
+   */
+  setupSectorAnimatedDropdown() {
+    const sectorContainer = this.container.querySelector('#sector-container');
+    const sectorInitial = this.container.querySelector('#sector-initial');
+    const sectorSelectedView = this.container.querySelector('#sector-selected-view');
+    const ciiuSeccionSelect = this.container.querySelector('#ciiuSeccion');
+    const ciiuDivisionSelect = this.container.querySelector('#ciiuDivision');
+    const sectorBadgeValue = this.container.querySelector('#sector-badge-value');
+    const sectorEditBtn = this.container.querySelector('#sector-edit-btn');
+
+    if (!ciiuSeccionSelect || !ciiuDivisionSelect) return;
+
+    // Handler for sector selection
+    ciiuSeccionSelect.addEventListener('change', async (e) => {
+      const seccionCodigo = e.target.value;
+      
+      if (!seccionCodigo) return;
+
+      // 🔧 FIX: Reset division state when sector changes
+      this.state.updateBasicInfo('ciiuDivision', '', true);
+      this.state.updateBasicInfo('sector', '', true);
+      
+      // Clear the division dropdown immediately
+      if (ciiuDivisionSelect) {
+        ciiuDivisionSelect.innerHTML = '<option value="">Cargando actividades...</option>';
+        ciiuDivisionSelect.value = '';
+      }
+
+      // Save sector to state
+      this.state.updateBasicInfo('ciiuSeccion', seccionCodigo, true);
+
+      // Get sector name from selected option
+      const selectedOption = e.target.options[e.target.selectedIndex];
+      const sectorNombre = selectedOption.text;
+
+      // Update badge text
+      if (sectorBadgeValue) {
+        sectorBadgeValue.textContent = sectorNombre;
+      }
+
+      // Animate transition
+      if (sectorInitial && sectorSelectedView) {
+        // Fade out initial view
+        sectorInitial.style.opacity = '0';
+        sectorInitial.style.transform = 'translateY(-10px)';
+        
+        setTimeout(() => {
+          sectorInitial.classList.add('hidden');
+          sectorSelectedView.classList.remove('hidden');
+          
+          // Fade in selected view
+          sectorSelectedView.style.opacity = '0';
+          sectorSelectedView.style.transform = 'translateY(10px)';
+          
+          requestAnimationFrame(() => {
+            sectorSelectedView.style.transition = 'all 0.3s ease-out';
+            sectorSelectedView.style.opacity = '1';
+            sectorSelectedView.style.transform = 'translateY(0)';
+          });
+        }, 200);
+      }
+
+      // Add selected class to container
+      if (sectorContainer) {
+        sectorContainer.classList.add('sector-selected');
+      }
+
+      // Load activities for this sector (fresh load)
+      await this.loadCIIUDivisiones(seccionCodigo, ciiuDivisionSelect);
+    });
+
+    // Handler for edit button (go back to sector selection)
+    if (sectorEditBtn) {
+      sectorEditBtn.addEventListener('click', () => {
+        console.log('[WizardCore] 🔄 Resetting sector selection');
+        
+        // Reset state completely
+        this.state.updateBasicInfo('ciiuSeccion', '', true);
+        this.state.updateBasicInfo('ciiuDivision', '', true);
+        this.state.updateBasicInfo('sector', '', true);
+
+        // Animate back to initial view
+        if (sectorSelectedView && sectorInitial) {
+          sectorSelectedView.style.opacity = '0';
+          sectorSelectedView.style.transform = 'translateY(10px)';
+          
+          setTimeout(() => {
+            sectorSelectedView.classList.add('hidden');
+            sectorInitial.classList.remove('hidden');
+            
+            // Reset both selects completely
+            if (ciiuSeccionSelect) {
+              ciiuSeccionSelect.value = '';
+            }
+            if (ciiuDivisionSelect) {
+              ciiuDivisionSelect.innerHTML = '<option value="">Selecciona tu actividad económica...</option>';
+              ciiuDivisionSelect.value = '';
+              ciiuDivisionSelect.disabled = false;
+            }
+            
+            // Fade in initial view
+            sectorInitial.style.opacity = '0';
+            sectorInitial.style.transform = 'translateY(-10px)';
+            
+            requestAnimationFrame(() => {
+              sectorInitial.style.transition = 'all 0.3s ease-out';
+              sectorInitial.style.opacity = '1';
+              sectorInitial.style.transform = 'translateY(0)';
+            });
+          }, 200);
+        }
+
+        // Remove selected class
+        if (sectorContainer) {
+          sectorContainer.classList.remove('sector-selected');
+        }
+      });
+    }
+
+    // Handler for activity selection
+    ciiuDivisionSelect.addEventListener('change', (e) => {
+      this.state.updateBasicInfo('ciiuDivision', e.target.value, true);
+      // Also save as 'sector' for backward compatibility
+      this.state.updateBasicInfo('sector', e.target.value, true);
+    });
+
+    // 🆕 If sector was already selected (resuming), show selected view and load activities
+    const savedSeccion = this.state.data.formData.ciiuSeccion;
+    const savedDivision = this.state.data.formData.ciiuDivision;
+    
+    if (savedSeccion) {
+      // Already showing selected view (from template), just load activities
+      this.loadCIIUDivisiones(savedSeccion, ciiuDivisionSelect).then(() => {
+        if (savedDivision) {
+          ciiuDivisionSelect.value = savedDivision;
+        }
+      });
+    }
+  }
+
+  /**
+   * Load CIIU divisions (activities) for a sector
+   */
+  async loadCIIUDivisiones(seccionCodigo, selectElement) {
+    if (!selectElement) return;
+
+    console.log(`[WizardCore] 🔄 Loading divisions for sector: ${seccionCodigo}`);
+
+    // Show loading state and reset value
+    selectElement.innerHTML = '<option value="">Cargando actividades...</option>';
+    selectElement.value = '';
+    selectElement.disabled = true;
+
+    try {
+      // Fetch divisions for selected section (add cache-busting)
+      const response = await fetch(`/api/catalogo/ciiu/secciones/${seccionCodigo}/divisiones?_t=${Date.now()}`);
+      
+      if (!response.ok) {
+        throw new Error(`Error cargando actividades: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const divisiones = data.data || [];
+
+      console.log(`[WizardCore] 📦 Received ${divisiones.length} divisions for sector ${seccionCodigo}:`, 
+        divisiones.slice(0, 3).map(d => d.nombre));
+
+      // Populate division dropdown (only name, no code)
+      selectElement.innerHTML = `
+        <option value="">Selecciona tu actividad económica...</option>
+        ${divisiones.map(div => `
+          <option value="${div.codigo}">${div.nombre}</option>
+        `).join('')}
+      `;
+      selectElement.value = ''; // Ensure no pre-selection
+      selectElement.disabled = false;
+
+      // 🆕 Refresh enhanced dropdown if it exists
+      if (selectElement._dropdownApi && typeof selectElement._dropdownApi.refresh === 'function') {
+        selectElement._dropdownApi.refresh();
+        console.log(`[WizardCore] 🔄 Refreshed enhanced dropdown for activities`);
+      }
+
+      console.log(`[WizardCore] ✅ Loaded ${divisiones.length} activities for sector ${seccionCodigo}`);
+
+    } catch (error) {
+      console.error('[WizardCore] ❌ Error loading CIIU divisions:', error);
+      selectElement.innerHTML = '<option value="">Error cargando actividades</option>';
+      selectElement.disabled = true;
+    }
   }
 
   /**
@@ -2275,6 +2531,14 @@ export class WizardCore {
         catalogoRiesgos: catalogos.categorias || [],
         seleccionados: cargo.gesSeleccionados || [],
         onChange: (gesArray) => this.handleGESChange(index, gesArray)
+      });
+
+      // 🆕 Listen for GES selection to trigger flying animation
+      container.addEventListener('ges-selected', (e) => {
+        const { cargoIndex, sourceElement } = e.detail;
+        if (sourceElement) {
+          this.animateGESToCargoTab(sourceElement, cargoIndex);
+        }
       });
 
       console.log(`[WizardCore] ✅ RiesgoSelector #${index} initialized for cargo "${cargo.nombre}"`);
@@ -2556,85 +2820,6 @@ export class WizardCore {
     containers.forEach((container, index) => {
       container.style.display = index === cargoIndex ? '' : 'none';
     });
-  }
-
-  /**
-   * P1-1: Show tooltip with riesgos seleccionados para un cargo
-   */
-  showCargoTooltip(tabElement) {
-    const cargoIndex = parseInt(tabElement.dataset.cargoIndex);
-    const cargo = this.state.getCargo(cargoIndex);
-
-    if (!cargo) return;
-
-    const riesgos = cargo.ges || [];
-
-    // No mostrar tooltip si no hay riesgos
-    if (riesgos.length === 0) {
-      return;
-    }
-
-    // Agrupar riesgos por categoría
-    const grouped = {};
-    riesgos.forEach(ges => {
-      const cat = ges.categoria || 'Otros';
-      if (!grouped[cat]) grouped[cat] = [];
-      grouped[cat].push(ges);
-    });
-
-    // Generar HTML del tooltip
-    let html = '<div class="cargo-tooltip">';
-    html += `<div class="tooltip-header">${cargo.nombre}</div>`;
-    html += '<div class="tooltip-body">';
-
-    Object.entries(grouped).forEach(([categoria, items]) => {
-      const color = this.getCategoryColor(categoria);
-      const displayItems = items.slice(0, 5);
-      const remaining = items.length - 5;
-
-      html += '<div class="tooltip-category">';
-      html += `<div class="category-badge" style="background: ${color}">${categoria}</div>`;
-      html += '<ul class="tooltip-risks">';
-
-      displayItems.forEach(ges => {
-        html += `<li>${ges.nombre}</li>`;
-      });
-
-      if (remaining > 0) {
-        html += `<li class="more">...y ${remaining} más</li>`;
-      }
-
-      html += '</ul></div>';
-    });
-
-    html += '</div></div>';
-
-    // Crear tooltip usando floating-ui
-    const tooltipContainer = document.createElement('div');
-    tooltipContainer.innerHTML = html;
-
-    this.currentTooltip = createTooltip(tabElement, tooltipContainer.firstChild, {
-      placement: 'top',
-      offset: 12,
-      trigger: 'manual' // Manual porque manejamos hover manualmente
-    });
-
-    this.currentTooltip.show();
-  }
-
-  /**
-   * P1-1: Hide tooltip
-   */
-  hideCargoTooltip() {
-    if (this.currentTooltip) {
-      this.currentTooltip.hide();
-      setTimeout(() => {
-        if (this.currentTooltip) {
-          this.currentTooltip.destroy();
-          this.currentTooltip = null;
-        }
-      }, 200);
-    }
   }
 
   /**
@@ -3387,5 +3572,175 @@ export class WizardCore {
    */
   showError(message) {
     alert(message); // TODO: Replace with better UI
+  }
+
+  // ========================================
+  // CARGO TOOLTIP CON FLOATING-UI
+  // ========================================
+
+  /**
+   * Show cargo tooltip with selected risks
+   * @param {HTMLElement} tabElement - The cargo tab button
+   */
+  async showCargoTooltip(tabElement) {
+    // Remove any existing tooltip
+    this.hideCargoTooltip();
+
+    const cargoIndex = parseInt(tabElement.dataset.cargoIndex);
+    const cargoName = tabElement.dataset.cargoName;
+    const cargos = this.state.getCargos();
+    const cargo = cargos[cargoIndex];
+
+    if (!cargo) return;
+
+    // Get selected GES/risks
+    const selectedGES = cargo.gesSeleccionados || cargo.ges || [];
+    
+    if (selectedGES.length === 0) {
+      // Don't show tooltip if no risks selected
+      return;
+    }
+
+    // Create tooltip element
+    const tooltip = document.createElement('div');
+    tooltip.className = 'cargo-tooltip';
+    tooltip.id = 'cargo-tooltip-floating';
+    tooltip.setAttribute('role', 'tooltip');
+
+    // Build content
+    const riesgosList = selectedGES.map(ges => {
+      const gesName = typeof ges === 'string' ? ges : (ges.nombre || ges.name || 'GES');
+      const riesgoType = typeof ges === 'object' ? (ges.categoria || ges.riesgo || '') : '';
+      return `
+        <li class="cargo-tooltip__item">
+          <i class="fas fa-shield-alt"></i>
+          <span>${gesName}</span>
+          ${riesgoType ? `<small>${riesgoType}</small>` : ''}
+        </li>
+      `;
+    }).join('');
+
+    tooltip.innerHTML = `
+      <div class="cargo-tooltip__header">
+        <i class="fas fa-briefcase"></i>
+        <span>${cargoName}</span>
+      </div>
+      <div class="cargo-tooltip__divider"></div>
+      <div class="cargo-tooltip__body">
+        <p class="cargo-tooltip__label">Riesgos Seleccionados (${selectedGES.length})</p>
+        <ul class="cargo-tooltip__list">
+          ${riesgosList}
+        </ul>
+      </div>
+    `;
+
+    document.body.appendChild(tooltip);
+
+    // Position with Floating-UI
+    try {
+      const { computePosition, flip, shift, offset } = await import('@floating-ui/dom');
+      
+      const { x, y } = await computePosition(tabElement, tooltip, {
+        placement: 'bottom',
+        middleware: [
+          offset(10),
+          flip(),
+          shift({ padding: 8 })
+        ]
+      });
+
+      Object.assign(tooltip.style, {
+        left: `${x}px`,
+        top: `${y}px`
+      });
+
+      // Animate in
+      requestAnimationFrame(() => {
+        tooltip.classList.add('visible');
+      });
+    } catch (error) {
+      console.warn('[WizardCore] Error positioning tooltip:', error);
+      // Fallback positioning
+      const rect = tabElement.getBoundingClientRect();
+      tooltip.style.left = `${rect.left}px`;
+      tooltip.style.top = `${rect.bottom + 10}px`;
+      tooltip.classList.add('visible');
+    }
+  }
+
+  /**
+   * Hide cargo tooltip
+   */
+  hideCargoTooltip() {
+    const tooltip = document.getElementById('cargo-tooltip-floating');
+    if (tooltip) {
+      tooltip.classList.remove('visible');
+      setTimeout(() => {
+        tooltip.remove();
+      }, 200);
+    }
+  }
+
+  // ========================================
+  // GES SELECTION ANIMATION
+  // ========================================
+
+  /**
+   * Animate GES flying to cargo tab
+   * Called when a GES is selected
+   * @param {HTMLElement} gesElement - The GES item being selected
+   * @param {number} cargoIndex - Index of the target cargo
+   */
+  animateGESToCargoTab(gesElement, cargoIndex) {
+    const cargoTab = this.container.querySelector(`[data-cargo-index="${cargoIndex}"]`);
+    if (!cargoTab || !gesElement) return;
+
+    // Get positions
+    const gesRect = gesElement.getBoundingClientRect();
+    const tabRect = cargoTab.getBoundingClientRect();
+
+    // Create flying element
+    const flyingGES = document.createElement('div');
+    flyingGES.className = 'ges-flying';
+    flyingGES.innerHTML = '<i class="fas fa-shield-alt"></i>';
+    
+    // Initial position
+    Object.assign(flyingGES.style, {
+      position: 'fixed',
+      left: `${gesRect.left + gesRect.width / 2}px`,
+      top: `${gesRect.top + gesRect.height / 2}px`,
+      zIndex: '10000'
+    });
+
+    document.body.appendChild(flyingGES);
+
+    // Calculate target position (center of cargo tab counter)
+    const targetX = tabRect.left + tabRect.width - 25;
+    const targetY = tabRect.top + tabRect.height / 2;
+
+    // Animate
+    requestAnimationFrame(() => {
+      flyingGES.style.transition = 'all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+      flyingGES.style.left = `${targetX}px`;
+      flyingGES.style.top = `${targetY}px`;
+      flyingGES.style.transform = 'scale(0.3)';
+      flyingGES.style.opacity = '0.5';
+    });
+
+    // Pulse the cargo tab counter
+    setTimeout(() => {
+      const counter = cargoTab.querySelector('.cargo-count');
+      if (counter) {
+        counter.classList.add('pulse-animation');
+        setTimeout(() => {
+          counter.classList.remove('pulse-animation');
+        }, 600);
+      }
+    }, 400);
+
+    // Remove flying element
+    setTimeout(() => {
+      flyingGES.remove();
+    }, 600);
   }
 }

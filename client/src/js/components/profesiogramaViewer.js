@@ -200,9 +200,9 @@ class ProfesiogramaViewer {
     }
 
     async exportPDF() {
-        // Get profesiograma ID from URL
+        // Get profesiograma ID from URL (support both 'id' and 'documento_id' params)
         const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
+        const id = urlParams.get('id') || urlParams.get('documento_id');
 
         if (!id) {
             alert('No se encontró el ID del profesiograma');
@@ -274,12 +274,12 @@ class ProfesiogramaViewer {
     }
 
     async loadData() {
-        // Get profesiograma ID from URL
+        // Get profesiograma ID from URL (support both 'id' and 'documento_id' params)
         const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
+        const id = urlParams.get('id') || urlParams.get('documento_id');
 
         if (!id) {
-            console.warn('No profesiograma ID in URL');
+            console.warn('No profesiograma ID in URL (looked for both ?id= and ?documento_id=)');
             return;
         }
 

@@ -235,6 +235,168 @@ export const searchCiudades = async (req, res) => {
   }
 };
 
+// ========================================
+// CIIU - Clasificación Industrial Internacional Uniforme
+// ========================================
+
+/**
+ * GET /api/catalogo/ciiu/secciones
+ * Obtener todas las secciones CIIU (21 secciones)
+ */
+export const getCIIUSecciones = async (req, res) => {
+  try {
+    const { activo } = req.query;
+
+    const options = {};
+    if (activo !== undefined) options.activo = activo === 'true';
+
+    const secciones = await CatalogoService.getCIIUSecciones(options);
+
+    res.json({
+      success: true,
+      data: secciones,
+      total: secciones.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error en getCIIUSecciones:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error obteniendo secciones CIIU',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * GET /api/catalogo/ciiu/secciones/:codigo/divisiones
+ * Obtener divisiones de una sección específica (lazy loading)
+ */
+export const getCIIUDivisionesBySeccion = async (req, res) => {
+  try {
+    const { codigo } = req.params;
+
+    if (!codigo || codigo.length !== 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'Código de sección inválido (debe ser una letra A-U)'
+      });
+    }
+
+    const divisiones = await CatalogoService.getCIIUDivisionesBySeccion(codigo);
+
+    res.json({
+      success: true,
+      data: divisiones,
+      total: divisiones.length,
+      seccion: codigo.toUpperCase()
+    });
+
+  } catch (error) {
+    console.error('❌ Error en getCIIUDivisionesBySeccion:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error obteniendo divisiones CIIU',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * GET /api/catalogo/ciiu/divisiones
+ * Obtener todas las divisiones CIIU (87 divisiones)
+ */
+export const getCIIUDivisiones = async (req, res) => {
+  try {
+    const { activo } = req.query;
+
+    const options = {};
+    if (activo !== undefined) options.activo = activo === 'true';
+
+    const divisiones = await CatalogoService.getCIIUDivisiones(options);
+
+    res.json({
+      success: true,
+      data: divisiones,
+      total: divisiones.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error en getCIIUDivisiones:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error obteniendo divisiones CIIU',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * GET /api/catalogo/ciiu/divisiones/:codigo
+ * Obtener una división CIIU por código
+ */
+export const getCIIUDivisionByCodigo = async (req, res) => {
+  try {
+    const { codigo } = req.params;
+
+    const division = await CatalogoService.getCIIUDivisionByCodigo(codigo);
+
+    if (!division) {
+      return res.status(404).json({
+        success: false,
+        message: `División CIIU no encontrada: ${codigo}`
+      });
+    }
+
+    res.json({
+      success: true,
+      data: division
+    });
+
+  } catch (error) {
+    console.error('❌ Error en getCIIUDivisionByCodigo:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error obteniendo división CIIU',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * GET /api/catalogo/ciiu/search
+ * Buscar divisiones CIIU por nombre
+ */
+export const searchCIIU = async (req, res) => {
+  try {
+    const { q, limit = 10 } = req.query;
+
+    if (!q || q.length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: 'El término de búsqueda debe tener al menos 2 caracteres'
+      });
+    }
+
+    const divisiones = await CatalogoService.searchCIIUDivisiones(q, parseInt(limit));
+
+    res.json({
+      success: true,
+      data: divisiones,
+      total: divisiones.length,
+      query: q
+    });
+
+  } catch (error) {
+    console.error('❌ Error en searchCIIU:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error buscando CIIU',
+      error: error.message
+    });
+  }
+};
+
 /**
  * GET /api/catalogo/ges
  * Buscar GES con múltiples filtros

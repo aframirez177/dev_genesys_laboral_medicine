@@ -132,6 +132,9 @@ export function createDropdown(selectElement, {
   let isOpen = false;
   let currentValue = selectedOption ? selectedOption.value : '';
 
+  // Guardar referencia al dropdown API en el select para acceso externo
+  // Se define la API más abajo y se asigna aquí después
+
   // Update position
   async function updatePosition() {
     const { x, y } = await computePosition(trigger, panel, {
@@ -270,8 +273,39 @@ export function createDropdown(selectElement, {
     }
   });
 
+  // Método para actualizar opciones dinámicamente (para lazy loading)
+  function refresh() {
+    // Re-extraer opciones del select nativo
+    const newOptions = Array.from(selectElement.options)
+      .filter(opt => opt.value !== '')
+      .map(opt => ({
+        value: opt.value,
+        label: opt.textContent,
+        selected: opt.selected
+      }));
+
+    // Actualizar array de opciones
+    options.length = 0;
+    options.push(...newOptions);
+
+    // Re-renderizar el panel
+    renderOptions();
+
+    // Actualizar el texto del trigger si hay selección
+    const selectedOption = newOptions.find(opt => opt.selected);
+    if (selectedOption) {
+      triggerText.textContent = selectedOption.label;
+      currentValue = selectedOption.value;
+    } else {
+      triggerText.textContent = placeholder;
+      currentValue = '';
+    }
+
+    console.log(`[Dropdown] Refreshed with ${newOptions.length} options`);
+  }
+
   // API pública
-  return {
+  const api = {
     open,
     close,
     getValue: () => currentValue,
@@ -281,12 +315,19 @@ export function createDropdown(selectElement, {
         selectOption(option);
       }
     },
+    refresh, // 🆕 Método para actualizar opciones dinámicamente
     destroy: () => {
       panel.remove();
       wrapper.remove();
       selectElement.style.display = '';
+      delete selectElement._dropdownApi;
     }
   };
+
+  // Guardar referencia en el select para acceso externo
+  selectElement._dropdownApi = api;
+
+  return api;
 }
 
 /**

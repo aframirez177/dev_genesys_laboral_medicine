@@ -556,6 +556,73 @@
 }
 
 // =====================
+// EXAMS GRID - Medical Exams Display
+// =====================
+.exams-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: tokens.$space-3;
+}
+
+.exam-item {
+    background: tokens.$dashboard-background;
+    border: 1px solid tokens.$dashboard-border;
+    border-radius: tokens.$radius-md;
+    padding: tokens.$space-3;
+    transition: all tokens.$transition-normal;
+
+    &:hover {
+        border-color: tokens.$dashboard-primary;
+        background: rgba(tokens.$dashboard-primary, 0.02);
+        box-shadow: tokens.$shadow-sm;
+    }
+
+    &__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: tokens.$space-2;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__name {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        line-height: tokens.$leading-tight;
+        flex: 1;
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+    }
+
+    &__periodicidad {
+        display: inline-flex;
+        align-items: center;
+        gap: tokens.$space-1;
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        font-weight: tokens.$font-medium;
+
+        i, svg {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+        }
+    }
+}
+
+// Compact 2-column grid for larger screens
+@media (min-width: 768px) {
+    .exams-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+// =====================
 // RESPONSIVE
 // =====================
 @include tokens.respond-to('tablet') {
@@ -582,5 +649,9 @@
             flex-direction: column;
             gap: tokens.$space-4;
         }
+    }
+
+    .exams-grid {
+        grid-template-columns: 1fr; // Back to single column on mobile
     }
 }

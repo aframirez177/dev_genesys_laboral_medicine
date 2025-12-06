@@ -68,16 +68,16 @@
     min-height: tokens.$header-height;
 
     &__icon {
-        width: 36px;
-        height: 36px;
-        background: tokens.$dashboard-primary;
-        border-radius: tokens.$radius-md;
+        width: 40px;
+        height: 40px;
+        background: transparent;
+        border-radius: 0;
         @include tokens.flex-center;
         flex-shrink: 0;
 
         svg, img {
-            width: 20px;
-            height: 20px;
+            width: 40px;
+            height: 40px;
             color: white;
         }
     }
@@ -92,17 +92,9 @@
     &__brand {
         font-family: tokens.$font-family-title;
         font-size: tokens.$font-h4;
-        font-weight: tokens.$font-bold;
-        color: tokens.$sidebar-text;
+        font-weight: 800;
+        color: white;
         line-height: tokens.$leading-tight;
-        white-space: nowrap;
-    }
-
-    &__tagline {
-        font-family: tokens.$font-family-body;
-        font-size: tokens.$font-xs;
-        color: tokens.$sidebar-text-muted;
-        margin-top: 2px;
         white-space: nowrap;
     }
 }

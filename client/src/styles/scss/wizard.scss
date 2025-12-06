@@ -34,6 +34,8 @@
 @use 'components/contact-form';
 @use 'components/floating-ui';
 @use 'components/wizard-switches'; // Switches modernos para toggles
+@use 'components/wizard-sector-animated'; // Dropdown sector con animaciones (Sprint 6)
+@use 'components/wizard-cargo-tooltip'; // Tooltip de cargo con Floating-UI
 
 // Layout
 @use 'layout/header';

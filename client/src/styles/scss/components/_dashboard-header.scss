@@ -13,6 +13,8 @@
     top: 0;
     left: tokens.$sidebar-width;
     right: 0;
+    width: calc(100vw - #{tokens.$sidebar-width}); // Account for left displacement
+    max-width: calc(100vw - #{tokens.$sidebar-width}); // Prevent overflow
     height: tokens.$header-height;
     background: tokens.$header-bg;
     border-bottom: 1px solid tokens.$header-border;
@@ -21,9 +23,12 @@
     @include tokens.flex-between;
     padding: 0 tokens.$space-6;
     transition: left tokens.$sidebar-transition;
+    overflow: hidden; // Prevent horizontal overflow
 
     .sidebar-collapsed & {
         left: tokens.$sidebar-collapsed;
+        width: calc(100vw - #{tokens.$sidebar-collapsed});
+        max-width: calc(100vw - #{tokens.$sidebar-collapsed});
     }
 }
 
@@ -33,7 +38,10 @@
 .header-left {
     display: flex;
     align-items: center;
-    gap: tokens.$space-6;
+    gap: tokens.$space-4;
+    flex: 1;
+    min-width: 0; // Allow flex items to shrink below their content size
+    overflow: hidden;
 }
 
 // Mobile menu button - HIDDEN by default on desktop
@@ -61,68 +69,123 @@
 }
 
 // =====================
-// COMPANY SELECTOR
+// COMPANY INFO
 // =====================
-.header-company-selector {
+.header-company-info {
     display: flex;
-    align-items: center;
-    gap: tokens.$space-3;
-    padding: tokens.$space-2 tokens.$space-3;
-    background: tokens.$dashboard-background;
-    border: 1px solid tokens.$header-border;
-    border-radius: tokens.$radius-md;
-    cursor: pointer;
-    transition: all tokens.$transition-normal;
-    min-width: 180px;
+    flex-direction: column;
+    gap: tokens.$space-1;
+    flex: 0 1 auto; // Don't grow, can shrink
+    min-width: 0; // Allow shrinking
+    max-width: 500px; // Limit maximum width
+    overflow: hidden;
 
-    &:hover {
-        border-color: tokens.$dashboard-primary;
-        box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.1);
-    }
-
-    &__icon {
-        width: 32px;
-        height: 32px;
-        background: tokens.$dashboard-primary;
-        border-radius: tokens.$radius-sm;
-        @include tokens.flex-center;
-        flex-shrink: 0;
-
-        svg {
-            width: 18px;
-            height: 18px;
-            color: white;
-        }
-    }
-
-    &__info {
-        flex: 1;
+    &__main {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
         min-width: 0;
     }
 
-    &__label {
-        font-size: tokens.$font-xs;
-        color: tokens.$dashboard-text-light;
-        font-weight: tokens.$font-medium;
-    }
-
-    &__value {
-        font-size: tokens.$font-body;
+    &__name {
+        font-size: tokens.$font-body; // Reduced from h4
         color: tokens.$dashboard-secondary;
-        font-weight: tokens.$font-semibold;
-        @include tokens.text-truncate;
+        font-weight: tokens.$font-semibold; // Reduced from bold
+        line-height: 1;
+        @include tokens.text-truncate; // Truncate long names
+        max-width: 250px; // Limit company name width
     }
 
-    &__chevron {
+    &__details {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2; // Reduced gap
+        flex-wrap: nowrap;
+        overflow: hidden;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-1; // Reduced gap
+        font-size: 11px; // Even smaller
+        color: tokens.$dashboard-text-light;
+        white-space: nowrap;
+        min-width: 0;
+        flex-shrink: 1; // Allow items to shrink
+
+        svg {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+        }
+
+        span {
+            @include tokens.text-truncate;
+            max-width: 100px; // Reduced from 120px
+        }
+
+        // Hide some items on smaller screens
+        &:nth-child(3) {
+            // NIT - keep always visible (most important)
+        }
+
+        &:nth-child(2) {
+            // Actividad económica - can be hidden if needed
+            @media (max-width: 1400px) {
+                display: none;
+            }
+        }
+    }
+}
+
+// =====================
+// RESPONSABLE INFO
+// =====================
+.header-responsable {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    padding: tokens.$space-2 tokens.$space-3;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-md;
+    border: 1px solid tokens.$header-border;
+    flex-shrink: 1; // Allow shrinking
+    min-width: 100px; // Minimum width
+    max-width: 160px; // Reduced max width
+
+    svg {
         width: 16px;
         height: 16px;
-        color: tokens.$dashboard-text-light;
+        color: tokens.$dashboard-primary;
         flex-shrink: 0;
-        transition: transform tokens.$transition-normal;
     }
 
-    &.open &__chevron {
-        transform: rotate(180deg);
+    &__text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        overflow: hidden;
+        flex: 1;
+    }
+
+    &__label {
+        font-size: 9px;
+        color: tokens.$dashboard-text-light;
+        font-weight: tokens.$font-medium;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    &__name {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-secondary;
+        font-weight: tokens.$font-semibold;
+        line-height: 1.2;
+        @include tokens.text-truncate;
     }
 }
 
@@ -220,6 +283,8 @@
     display: flex;
     align-items: center;
     gap: tokens.$space-2;
+    flex-shrink: 0; // Prevent shrinking - this section has priority
+    min-width: fit-content; // Ensure it fits its content
 }
 
 // Action Button base

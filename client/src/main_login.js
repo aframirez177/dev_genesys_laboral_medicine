@@ -61,10 +61,10 @@ async function handleLogin(tipo, form) {
       loginData[key] = value;
     });
 
-    // Add tipo to login data
-    loginData.tipo = tipo;
+    // Choose endpoint based on tipo
+    const endpoint = tipo === 'empresa' ? '/api/auth/login-empresa' : '/api/auth/login';
 
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -83,12 +83,17 @@ async function handleLogin(tipo, form) {
     localStorage.setItem('userType', tipo);
 
     if (tipo === 'usuario') {
-      localStorage.setItem('userId', data.user.usuario_id);
+      localStorage.setItem('userId', data.user.id);
       localStorage.setItem('userEmail', data.user.email);
       localStorage.setItem('empresaId', data.user.empresa_id);
+      // Store user object for dashboard
+      localStorage.setItem('genesys_user', JSON.stringify(data.user));
     } else {
-      localStorage.setItem('empresaId', data.empresa.empresa_id);
+      localStorage.setItem('empresaId', data.empresa.id);
       localStorage.setItem('empresaNIT', data.empresa.nit);
+      localStorage.setItem('empresaNombre', data.empresa.nombre_legal);
+      // Store empresa object for dashboard
+      localStorage.setItem('genesys_empresa', JSON.stringify(data.empresa));
     }
 
     // Redirect to dashboard

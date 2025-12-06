@@ -6,6 +6,7 @@
  */
 
 import { createCargoMiniWizard } from './components/CargoMiniWizard.js';
+import MatrizRiesgosComponent from './components/matrizRiesgosComponent.js';
 
 // ============================================
 // STATE MANAGEMENT
@@ -797,142 +798,75 @@ async function loadExamenesPage() {
 
 /**
  * Matriz GTC-45 Page - Load from API
+ * NEW: Uses MatrizRiesgosComponent for world-class interactive table
  */
 async function loadMatrizPage() {
     console.log('🔵 [MATRIZ] ========== Loading Matriz Page ==========');
-
-    // Show loading state
-    showPageContent('matriz-critical-content', `
-        <div class="empty-state">
-            <div class="empty-state__icon">
-                <div class="skeleton skeleton--circle" style="width:64px;height:64px;"></div>
-            </div>
-            <h3 class="empty-state__title">Cargando matriz...</h3>
-        </div>
-    `);
 
     // Fetch matriz from API
     const result = await fetchMatrizFromAPI();
     console.log('🔵 [MATRIZ] API result:', result);
 
-    if (!result || !result.success) {
-        setTextContent('matriz-total', '0');
-        setTextContent('matriz-nivel-v', '0');
-        setTextContent('matriz-nivel-iv', '0');
-        setTextContent('matriz-nivel-iii', '0');
-        setTextContent('matriz-nivel-i-ii', '0');
-        setTextContent('matriz-fecha', new Date().toLocaleDateString('es-CO'));
-        setTextContent('matriz-responsable', 'Sin asignar');
+    // Update header metadata
+    setTextContent('matriz-fecha', new Date().toLocaleDateString('es-CO'));
+    const empresaData = localStorage.getItem('genesys_empresa');
+    let empresaNombre = 'Sin asignar';
+    if (empresaData) {
+        try {
+            const empresa = JSON.parse(empresaData);
+            empresaNombre = empresa.nombre_legal || empresa.razon_social || empresa.nombre || 'Sin asignar';
+        } catch (e) { /* ignore */ }
+    }
+    setTextContent('matriz-responsable', empresaNombre);
 
-        showPageContent('matriz-critical-content', `
-            <div class="empty-state">
-                <div class="empty-state__icon">
-                    <i data-lucide="layout-grid"></i>
+    // Check if we have data
+    if (!result || !result.success) {
+        // Show empty state
+        const container = document.getElementById('matriz-dashboard-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="matriz-empty-state">
+                    <div class="matriz-empty-state__icon">
+                        <i data-lucide="layout-grid"></i>
+                    </div>
+                    <h3 class="matriz-empty-state__title">Matriz de Riesgos GTC-45</h3>
+                    <p class="matriz-empty-state__description">
+                        Aún no hay peligros identificados. Complete el wizard para generar la matriz de riesgos.
+                    </p>
+                    <a href="/pages/wizard_riesgos.html" class="btn btn--primary">
+                        <i data-lucide="plus"></i>
+                        Crear Matriz
+                    </a>
                 </div>
-                <h3 class="empty-state__title">Matriz de Riesgos GTC-45</h3>
-                <p class="empty-state__description">Aún no hay peligros identificados. Complete el wizard para generar la matriz de riesgos.</p>
-                <a href="/pages/wizard_riesgos.html" class="btn btn--primary">Crear Matriz</a>
-            </div>
-        `);
-        if (window.lucide) window.lucide.createIcons();
+            `;
+            if (window.lucide) window.lucide.createIcons();
+        }
         return;
     }
 
+    // Initialize the interactive component with API data
     try {
-        const { categorias, alertasCriticas, resumen } = result;
-        console.log('🔵 [MATRIZ] Processing resumen:', resumen);
-
-        // Update stats from API response
-        setTextContent('matriz-total', (resumen?.totalPeligros || 0).toString());
-        setTextContent('matriz-nivel-v', (resumen?.conteoNiveles?.V || 0).toString());
-        setTextContent('matriz-nivel-iv', (resumen?.conteoNiveles?.IV || 0).toString());
-        setTextContent('matriz-nivel-iii', (resumen?.conteoNiveles?.III || 0).toString());
-        setTextContent('matriz-nivel-i-ii', ((resumen?.conteoNiveles?.I || 0) + (resumen?.conteoNiveles?.II || 0)).toString());
-        setTextContent('matriz-fecha', new Date().toLocaleDateString('es-CO'));
-
-        // Get company name from localStorage
-        const empresaData = localStorage.getItem('genesys_empresa');
-        let empresaNombre = 'Sin asignar';
-        if (empresaData) {
-            try {
-                const empresa = JSON.parse(empresaData);
-                empresaNombre = empresa.nombre_legal || empresa.razon_social || empresa.nombre || 'Sin asignar';
-            } catch (e) { /* ignore */ }
-        }
-        setTextContent('matriz-responsable', empresaNombre);
-
-        // Show critical risks or success message
-        if (alertasCriticas && alertasCriticas.length > 0) {
-            const criticalHTML = alertasCriticas.map(r => `
-                <div class="card card--danger mb-3">
-                    <div class="card__body">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h4 class="font-semibold">${r.descripcion}</h4>
-                                <p class="text-sm text-muted">Cargo: ${r.cargo} · ${r.tipo}</p>
-                            </div>
-                            <span class="badge badge--${r.nrNivel === 'V' ? 'danger' : 'warning'}">
-                                Nivel ${r.nrNivel} (NR: ${r.nr})
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-
-            showPageContent('matriz-critical-content', criticalHTML);
-        } else if (resumen?.totalPeligros > 0) {
-            showPageContent('matriz-critical-content', `
-                <div class="card card--success">
-                    <div class="card__body text-center">
-                        <i data-lucide="check-circle" class="text-success mb-2" style="width:48px;height:48px;"></i>
-                        <h3>Sin riesgos críticos</h3>
-                        <p class="text-muted">No hay peligros de nivel IV o V en la matriz actual.</p>
-                    </div>
-                </div>
-            `);
-        } else {
-            showPageContent('matriz-critical-content', `
-                <div class="empty-state">
-                    <div class="empty-state__icon">
-                        <i data-lucide="layout-grid"></i>
-                    </div>
-                    <h3 class="empty-state__title">Sin peligros identificados</h3>
-                    <p class="empty-state__description">Agregue riesgos en el wizard para completar la matriz.</p>
-                    <a href="/pages/wizard_riesgos.html" class="btn btn--primary">Ir al Wizard</a>
-                </div>
-            `);
-        }
-
-        // Show categories breakdown if we have data
-        if (categorias && categorias.length > 0) {
-            const categoriasContainer = document.getElementById('matriz-categorias-content');
-            if (categoriasContainer) {
-                const categoriasHTML = categorias.map(cat => `
-                    <div class="card mb-3" style="border-left: 4px solid ${cat.color};">
-                        <div class="card__header">
-                            <h4 class="card__title">${cat.nombre}</h4>
-                            <span class="badge">${cat.peligros.length} peligro(s)</span>
-                        </div>
-                    </div>
-                `).join('');
-                categoriasContainer.innerHTML = categoriasHTML;
-            }
-        }
-
+        const matrizComponent = new MatrizRiesgosComponent('matriz-dashboard-container');
+        await matrizComponent.init(result);
+        console.log('🟢 [MATRIZ] Component initialized successfully');
     } catch (e) {
-        console.error('Error loading matriz:', e);
-        showPageContent('matriz-critical-content', `
-            <div class="empty-state">
-                <div class="empty-state__icon">
-                    <i data-lucide="alert-circle"></i>
+        console.error('🔴 [MATRIZ] Error initializing component:', e);
+        const container = document.getElementById('matriz-dashboard-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="matriz-empty-state">
+                    <div class="matriz-empty-state__icon">
+                        <i data-lucide="alert-circle"></i>
+                    </div>
+                    <h3 class="matriz-empty-state__title">Error al cargar</h3>
+                    <p class="matriz-empty-state__description">
+                        Hubo un error al cargar los datos de la matriz. Intente recargar la página.
+                    </p>
                 </div>
-                <h3 class="empty-state__title">Error al cargar</h3>
-                <p class="empty-state__description">Hubo un error al cargar los datos de la matriz.</p>
-            </div>
-        `);
+            `;
+            if (window.lucide) window.lucide.createIcons();
+        }
     }
-
-    if (window.lucide) window.lucide.createIcons();
 }
 
 /**
@@ -1051,9 +985,12 @@ async function loadDocumentosPage() {
         try {
             const empresa = JSON.parse(empresaData);
             if (empresa.id) {
-                const token = localStorage.getItem('genesys_token');
+                const token = localStorage.getItem('authToken') || localStorage.getItem('genesys_token');
                 const response = await fetch(`/api/documentos/empresa/${empresa.id}`, {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                    headers: token ? {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    } : { 'Content-Type': 'application/json' }
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -1373,9 +1310,11 @@ async function loadProfesiogramaPage() {
             return;
         }
 
-        // Get company info from localStorage
+        // Get company info and documento_id from the latest cargo
         const empresaData = localStorage.getItem('genesys_empresa');
         let empresaInfo = { nombre: 'Empresa', nit: '--' };
+        let documentoId = cargos[0]?.documento_id || null; // Get documento_id from first cargo (most recent)
+
         if (empresaData) {
             try {
                 const empresa = JSON.parse(empresaData);
@@ -1392,6 +1331,14 @@ async function loadProfesiogramaPage() {
             const togglesActivos = cargo.togglesActivos || [];
             const nrNivel = cargo.nrNivelMaximo || 'I';
             const conteoNiveles = cargo.conteoNiveles || {};
+            const examenesMedicos = cargo.examenesMedicos || []; // 🆕 Exámenes médicos
+
+            // 🐛 DEBUG: Log exámenes médicos
+            console.log(`🔬 [CARGO ${index + 1}] "${cargo.nombre_cargo}":`, {
+                riesgosCount,
+                examenesMedicosCount: examenesMedicos.length,
+                examenesMedicos: examenesMedicos
+            });
 
             // NR level badge color
             const nrBadgeClass = {
@@ -1420,6 +1367,24 @@ async function loadProfesiogramaPage() {
                     const colorMap = { 'I': 'success', 'II': 'info', 'III': 'warning', 'IV': 'danger', 'V': 'danger' };
                     return `<span class="badge badge--${colorMap[nivel] || 'muted'}">${count} NR-${nivel}</span>`;
                 }).join(' ');
+
+            // 🆕 Medical exams HTML
+            const examenesHTML = examenesMedicos.length > 0
+                ? examenesMedicos.map(examen => `
+                    <div class="exam-item">
+                        <div class="exam-item__header">
+                            <span class="exam-item__name">${examen.nombre}</span>
+                            <span class="badge badge--${examen.prioridad === 1 ? 'danger' : 'info'} badge--sm">${examen.tipo}</span>
+                        </div>
+                        <div class="exam-item__footer">
+                            <span class="exam-item__periodicidad">
+                                <i data-lucide="calendar" style="width:12px;height:12px;"></i>
+                                ${examen.periodicidad}
+                            </span>
+                        </div>
+                    </div>
+                `).join('')
+                : '<p class="text-muted text-sm">No hay exámenes médicos asignados para este cargo.</p>';
 
             return `
                 <div class="card card--profesiograma">
@@ -1459,19 +1424,21 @@ async function loadProfesiogramaPage() {
                         ` : ''}
 
                         <div class="profesiograma-section">
-                            <p class="profesiograma-section__title">
-                                <i data-lucide="clipboard-list" style="width:16px;height:16px;color:#5dc4af;"></i>
-                                Información
-                            </p>
-                            <div class="profesiograma-list">
-                                <div class="profesiograma-list__item">
-                                    <span class="badge badge--primary badge--sm">ID</span>
-                                    <span>${cargo.id}</span>
-                                </div>
-                                <div class="profesiograma-list__item">
-                                    <span class="badge badge--info badge--sm">Doc</span>
-                                    <span>Documento #${cargo.documento_id}</span>
-                                </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                <p class="profesiograma-section__title" style="margin-bottom:0;">
+                                    <i data-lucide="stethoscope" style="width:16px;height:16px;color:#10b981;"></i>
+                                    Exámenes Médicos Requeridos
+                                    ${examenesMedicos.length > 0 ? `<span class="badge badge--sm badge--success" style="margin-left:8px;">${examenesMedicos.length}</span>` : ''}
+                                </p>
+                                ${examenesMedicos.length > 0 ? `
+                                    <button class="btn btn--outline btn--sm" style="padding:4px 12px;font-size:12px;" onclick="alert('Función de descarga en desarrollo')">
+                                        <i data-lucide="download" style="width:12px;height:12px;"></i>
+                                        Descargar Excel
+                                    </button>
+                                ` : ''}
+                            </div>
+                            <div class="exams-grid">
+                                ${examenesHTML}
                             </div>
                         </div>
                     </div>
@@ -1526,7 +1493,7 @@ async function loadProfesiogramaPage() {
                 <a href="/pages/wizard_riesgos.html" class="btn btn--outline mr-3">
                     <i data-lucide="edit"></i> Editar en Wizard
                 </a>
-                <a href="/pages/profesiograma_view.html" class="btn btn--primary">
+                <a href="/pages/profesiograma_view.html${documentoId ? '?documento_id=' + documentoId : ''}" class="btn btn--primary">
                     <i data-lucide="eye"></i> Ver Profesiograma Completo
                 </a>
             </div>
@@ -1604,7 +1571,7 @@ function setTextContent(id, value) {
  * Get auth headers for API calls
  */
 function getAuthHeaders() {
-    const token = localStorage.getItem('genesys_token');
+    const token = localStorage.getItem('authToken') || localStorage.getItem('genesys_token');
     return {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : ''
@@ -1876,20 +1843,7 @@ function handleLogout() {
 async function loadCompanyData() {
     console.log('[Dashboard] Loading company data...');
 
-    // Source 1: genesys_empresa (login as empresa)
-    const empresaData = localStorage.getItem('genesys_empresa');
-    if (empresaData) {
-        try {
-            const empresa = JSON.parse(empresaData);
-            console.log('[Dashboard] Found empresa from login:', empresa);
-            updateCompanyUI(empresa.razon_social || empresa.nombre_legal || empresa.nombre, empresa);
-            return empresa;
-        } catch (e) {
-            console.warn('[Dashboard] Error parsing genesys_empresa:', e);
-        }
-    }
-
-    // Source 2: genesys_wizard_state (from wizard)
+    // PRIORITY 1: genesys_wizard_state (from wizard - has complete data with cargos!)
     const wizardState = localStorage.getItem('genesys_wizard_state');
     if (wizardState) {
         try {
@@ -1901,6 +1855,8 @@ async function loadCompanyData() {
                     nit: state.formData.nit,
                     email: state.formData.email,
                     sector: state.formData.sector,
+                    actividad_economica: state.formData.actividadEconomica || state.formData.actividad_economica,
+                    responsable: state.formData.responsable || state.formData.nombreResponsable,
                     cargos: state.formData.cargos || []
                 };
                 updateCompanyUI(companyInfo.nombre, companyInfo);
@@ -1916,7 +1872,61 @@ async function loadCompanyData() {
         }
     }
 
-    // Source 3: genesys_user (login as user associated to company)
+    // PRIORITY 2: genesys_empresa (login as empresa - fallback when no wizard data)
+    const empresaData = localStorage.getItem('genesys_empresa');
+    if (empresaData) {
+        try {
+            const empresa = JSON.parse(empresaData);
+            console.log('[Dashboard] Found empresa from login:', empresa);
+
+            // Try to fetch documents and cargos from API
+            const empresaId = localStorage.getItem('empresaId');
+            const authToken = localStorage.getItem('authToken');
+
+            if (empresaId && authToken) {
+                try {
+                    const response = await fetch(`/api/documentos/empresa/${empresaId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.documents && data.documents.length > 0) {
+                            console.log('[Dashboard] Found documents:', data.documents.length);
+
+                            // Get metadata from the latest document
+                            const latestDoc = data.documents[0];
+                            const metadata = latestDoc.metadata || {};
+
+                            // Enrich empresa data with metadata
+                            const enrichedEmpresa = {
+                                ...empresa,
+                                sector: metadata.sector || empresa.sector || '-',
+                                actividad_economica: metadata.actividadEconomica || empresa.actividad_economica || '-',
+                                responsable: metadata.nombreResponsable || empresa.responsable || '-',
+                                numCargos: metadata.numCargos || 0
+                            };
+
+                            updateCompanyUI(enrichedEmpresa.nombre_legal || enrichedEmpresa.razon_social, enrichedEmpresa);
+                            return enrichedEmpresa;
+                        }
+                    }
+                } catch (apiError) {
+                    console.warn('[Dashboard] Error fetching documents from API:', apiError);
+                }
+            }
+
+            // Fallback to basic empresa data from login
+            updateCompanyUI(empresa.nombre_legal || empresa.razon_social || empresa.nombre, empresa);
+            return empresa;
+        } catch (e) {
+            console.warn('[Dashboard] Error parsing genesys_empresa:', e);
+        }
+    }
+
+    // PRIORITY 3: genesys_user (login as user associated to company)
     const userData = localStorage.getItem('genesys_user');
     if (userData) {
         try {
@@ -1943,6 +1953,14 @@ async function loadCompanyData() {
 function updateCompanyUI(companyName, companyData) {
     // Update company name in header
     setTextContent('company-name', companyName || 'Sin empresa');
+
+    // Update company details in header
+    setTextContent('company-sector', companyData?.sector || '-');
+    setTextContent('company-activity', companyData?.actividad_economica || '-');
+    setTextContent('company-nit', companyData?.nit || '-');
+
+    // Update responsable in header
+    setTextContent('responsable-name', companyData?.responsable || companyData?.nombre_responsable || '-');
 
     // Update dashboard state
     DashboardState.companyName = companyName;
@@ -2258,3 +2276,196 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Export for use in other modules
 export { DashboardState, NavigationHandler };
+
+// ============================================
+// PAYWALL MODAL INITIALIZATION
+// ============================================
+
+/**
+ * Initialize paywall modal - shows after 8 seconds if user hasn't paid
+ * Price: $30.000 COP per cargo
+ * Free documents: Cotización and Perfil de Cargo
+ */
+function initPaywallModal() {
+    const PAYWALL_DELAY = 8000;
+    const PRICE_PER_CARGO = 30000;
+
+    const hasUserPaid = () => localStorage.getItem('genesys_payment_status') === 'paid';
+
+    const showPaywallModal = () => {
+        const overlay = document.getElementById('paywall-overlay');
+        if (!overlay) return;
+
+        // Get cargo count from wizard state
+        let cargoCount = 0;
+        try {
+            const state = JSON.parse(localStorage.getItem('genesys_wizard_state') || '{}');
+            cargoCount = state.formData?.cargos?.length || 0;
+        } catch (e) {
+            console.warn('[Paywall] Error reading cargo count:', e);
+        }
+
+        // Calculate total
+        const total = cargoCount * PRICE_PER_CARGO;
+
+        // Update display
+        const countEl = document.getElementById('paywall-cargo-count');
+        if (countEl) countEl.textContent = cargoCount.toString();
+
+        const totalEl = document.getElementById('paywall-total');
+        if (totalEl) totalEl.textContent = '$' + total.toLocaleString('es-CO');
+
+        // Show overlay
+        overlay.style.display = 'flex';
+        if (window.lucide) window.lucide.createIcons();
+
+        console.log('[Paywall] Modal shown - Cargos:', cargoCount, 'Total:', '$' + total.toLocaleString('es-CO'));
+    };
+
+    // Pay button handler
+    const payBtn = document.getElementById('paywall-btn-pay');
+    if (payBtn) {
+        payBtn.addEventListener('click', async () => {
+            console.log('[Paywall] Pay button clicked');
+
+            // Close modal
+            const overlay = document.getElementById('paywall-overlay');
+            if (overlay) overlay.style.display = 'none';
+
+            // Show payment instructions
+            showNotification('Contáctenos para procesar su pago y desbloquear todos los documentos', 'info');
+
+            // TODO: Integrate with payment gateway (Wompi, PayU, etc.)
+            // For now, redirect to WhatsApp or contact page
+            setTimeout(() => {
+                const phone = '573102877240'; // Replace with actual business phone
+                const message = encodeURIComponent('Hola, quiero pagar por los documentos del dashboard');
+                window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+            }, 1500);
+        });
+    }
+
+    // Download free cotización
+    const downloadCotizacion = document.getElementById('paywall-download-cotizacion');
+    if (downloadCotizacion) {
+        downloadCotizacion.addEventListener('click', async function() {
+            this.disabled = true;
+            console.log('[Paywall] Downloading cotización...');
+
+            try {
+                // Get empresa ID and auth token
+                const empresaId = localStorage.getItem('empresaId');
+                const authToken = localStorage.getItem('authToken');
+
+                if (!empresaId || !authToken) {
+                    throw new Error('No se encontró información de sesión');
+                }
+
+                // Fetch documents from API
+                const response = await fetch(`/api/documentos/empresa/${empresaId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al obtener documentos');
+                }
+
+                const data = await response.json();
+
+                // Get latest document's cotizacion URL
+                if (data.documents && data.documents.length > 0) {
+                    const latestDoc = data.documents[0]; // Most recent
+                    const cotizacionUrl = latestDoc.preview_urls?.cotizacion;
+
+                    if (cotizacionUrl) {
+                        window.open(cotizacionUrl, '_blank');
+                        showNotification('Cotización descargada exitosamente', 'success');
+                    } else {
+                        throw new Error('Cotización no disponible');
+                    }
+                } else {
+                    throw new Error('No hay documentos disponibles');
+                }
+            } catch (error) {
+                console.error('[Paywall] Error downloading cotización:', error);
+                showNotification(error.message || 'Error al descargar la cotización', 'error');
+            }
+
+            this.disabled = false;
+        });
+    }
+
+    // Download free perfil de cargo
+    const downloadPerfil = document.getElementById('paywall-download-perfil');
+    if (downloadPerfil) {
+        downloadPerfil.addEventListener('click', async function() {
+            this.disabled = true;
+            console.log('[Paywall] Downloading perfil...');
+
+            try {
+                // Get empresa ID and auth token
+                const empresaId = localStorage.getItem('empresaId');
+                const authToken = localStorage.getItem('authToken');
+
+                if (!empresaId || !authToken) {
+                    throw new Error('No se encontró información de sesión');
+                }
+
+                // Fetch documents from API
+                const response = await fetch(`/api/documentos/empresa/${empresaId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al obtener documentos');
+                }
+
+                const data = await response.json();
+
+                // Get latest document's perfil URL
+                if (data.documents && data.documents.length > 0) {
+                    const latestDoc = data.documents[0]; // Most recent
+                    const perfilUrl = latestDoc.preview_urls?.perfil;
+
+                    if (perfilUrl) {
+                        window.open(perfilUrl, '_blank');
+                        showNotification('Perfil de Cargo descargado exitosamente', 'success');
+                    } else {
+                        throw new Error('Perfil de cargo no disponible');
+                    }
+                } else {
+                    throw new Error('No hay documentos disponibles');
+                }
+            } catch (error) {
+                console.error('[Paywall] Error downloading perfil:', error);
+                showNotification(error.message || 'Error al descargar el perfil', 'error');
+            }
+
+            this.disabled = false;
+        });
+    }
+
+    // Start paywall timer if user hasn't paid
+    if (!hasUserPaid()) {
+        console.log('[Paywall] User has not paid. Timer starting (' + (PAYWALL_DELAY / 1000) + 's)...');
+        setTimeout(() => {
+            // Check again in case user paid during the timer
+            if (!hasUserPaid()) {
+                showPaywallModal();
+            }
+        }, PAYWALL_DELAY);
+    } else {
+        console.log('[Paywall] User has paid. No paywall will be shown.');
+    }
+}
+
+// Initialize paywall when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPaywallModal);
+} else {
+    initPaywallModal();
+}

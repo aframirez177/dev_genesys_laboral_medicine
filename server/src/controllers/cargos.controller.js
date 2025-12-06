@@ -4,6 +4,8 @@
  */
 
 import db from '../config/database.js';
+import { EXAM_DETAILS, formatearPeriodicidad } from '../config/exam-details-config.js';
+import riesgosService from '../services/riesgos.service.js';
 
 /**
  * Get all cargos for an empresa (from all documents)
@@ -38,20 +40,57 @@ export async function getCargosByEmpresa(req, res) {
         // For each cargo, get risk summary
         const cargosConRiesgos = await Promise.all(
             cargos.map(async (cargo) => {
-                // Get riesgos for this cargo
-                const riesgos = await db('riesgos_cargo')
-                    .where('cargo_id', cargo.id)
+                // ✅ Get riesgos for this cargo (WITH all data from catalogo_ges)
+                const riesgosDB = await db('riesgos_cargo')
+                    .leftJoin('catalogo_ges', 'riesgos_cargo.ges_id', 'catalogo_ges.id')
+                    .where('riesgos_cargo.cargo_id', cargo.id)
                     .select(
-                        'id',
-                        'tipo_riesgo',
-                        'descripcion_riesgo',
-                        'nivel_deficiencia',
-                        'nivel_exposicion',
-                        'nivel_consecuencia'
+                        'riesgos_cargo.id',
+                        'riesgos_cargo.tipo_riesgo',
+                        'riesgos_cargo.descripcion_riesgo',
+                        'riesgos_cargo.nivel_deficiencia',
+                        'riesgos_cargo.nivel_exposicion',
+                        'riesgos_cargo.nivel_consecuencia',
+                        'riesgos_cargo.ges_id',
+                        'catalogo_ges.examenes_medicos',
+                        'catalogo_ges.epp_sugeridos',
+                        'catalogo_ges.aptitudes_requeridas',
+                        'catalogo_ges.condiciones_incompatibles',
+                        'catalogo_ges.nombre as ges_nombre'
                     );
 
-                // Calculate NR for each riesgo
-                const riesgosConNR = riesgos.map(r => {
+                // ✅ Reconstruir estructura para servicio de riesgos (MISMA LÓGICA QUE VIEWER)
+                const cargoParaServicio = {
+                    cargoName: cargo.nombre_cargo,
+                    area: cargo.area,
+                    descripcionTareas: cargo.descripcion_tareas,
+                    zona: cargo.zona,
+                    numTrabajadores: cargo.num_trabajadores,
+                    tareasRutinarias: cargo.tareas_rutinarias,
+                    trabajaAlturas: cargo.trabaja_alturas,
+                    manipulaAlimentos: cargo.manipula_alimentos,
+                    conduceVehiculo: cargo.conduce_vehiculo,
+                    trabajaEspaciosConfinados: cargo.trabaja_espacios_confinados,
+                    gesSeleccionados: riesgosDB.map(riesgo => ({
+                        riesgo: riesgo.tipo_riesgo,
+                        ges: riesgo.descripcion_riesgo,
+                        examenesMedicos: riesgo.examenes_medicos,
+                        eppSugeridos: riesgo.epp_sugeridos,
+                        aptitudesRequeridas: riesgo.aptitudes_requeridas,
+                        condicionesIncompatibles: riesgo.condiciones_incompatibles,
+                        niveles: {
+                            deficiencia: { value: riesgo.nivel_deficiencia },
+                            exposicion: { value: riesgo.nivel_exposicion },
+                            consecuencia: { value: riesgo.nivel_consecuencia }
+                        }
+                    }))
+                };
+
+                // ✅ USAR SERVICIO DE RIESGOS (misma lógica que profesiograma viewer)
+                const controles = riesgosService.consolidarControlesCargo(cargoParaServicio);
+
+                // Calculate NR for each riesgo (for UI counts)
+                const riesgosConNR = riesgosDB.map(r => {
                     const np = r.nivel_deficiencia * r.nivel_exposicion;
                     const nr = np * r.nivel_consecuencia;
                     return {
@@ -62,10 +101,8 @@ export async function getCargosByEmpresa(req, res) {
                     };
                 });
 
-                // Find max NR
-                const nrMaximo = riesgosConNR.length > 0
-                    ? Math.max(...riesgosConNR.map(r => r.nr))
-                    : 0;
+                // Use NR from service metadata
+                const nrMaximo = controles.metadata.nrMaximo;
 
                 // Count risks by NR level
                 const conteoNiveles = {
@@ -76,13 +113,35 @@ export async function getCargosByEmpresa(req, res) {
                     V: riesgosConNR.filter(r => r.nrNivel === 'V').length
                 };
 
+                // ✅ Formatear exámenes consolidados con DETALLES completos (MISMA LÓGICA QUE VIEWER)
+                const examenesConsolidados = Array.from(controles.consolidado.examenes).map(codigoExamen => {
+                    const examenDetalle = EXAM_DETAILS[codigoExamen];
+                    return {
+                        codigo: codigoExamen,
+                        nombre: examenDetalle?.fullName || codigoExamen,
+                        periodicidadMeses: examenDetalle?.periodicidadMeses || 12,
+                        periodicidad: formatearPeriodicidad(examenDetalle?.periodicidadMeses || 12),
+                        prioridad: 1, // All exams from service are required
+                        tipo: 'Obligatorio'
+                    };
+                }).sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+                // 🐛 DEBUG: Log exámenes consolidados
+                console.log(`🔬 [BACKEND] Cargo "${cargo.nombre_cargo}":`, {
+                    riesgosCount: riesgosDB.length,
+                    examenesCount: examenesConsolidados.length,
+                    examenes: examenesConsolidados.map(e => e.codigo),
+                    source: 'riesgosService.consolidarControlesCargo'
+                });
+
                 return {
                     ...cargo,
-                    riesgosCount: riesgos.length,
+                    riesgosCount: riesgosDB.length,
                     nrMaximo,
                     nrNivelMaximo: calcularNivelNR(nrMaximo),
                     conteoNiveles,
-                    togglesActivos: getTogglesActivos(cargo)
+                    togglesActivos: getTogglesActivos(cargo),
+                    examenesMedicos: examenesConsolidados // ✅ Usando MISMA LÓGICA que viewer
                 };
             })
         );
@@ -327,6 +386,9 @@ export async function getMatrizGTC45(req, res) {
 }
 
 // Helper functions
+
+// ✅ REMOVED: consolidarExamenesMedicos function
+// Now using riesgosService.consolidarControlesCargo for consistency with profesiograma viewer
 
 function calcularNivelNR(nr) {
     if (nr >= 600) return 'V';

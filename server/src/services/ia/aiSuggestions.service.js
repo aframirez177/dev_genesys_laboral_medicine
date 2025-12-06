@@ -1,20 +1,24 @@
 /**
  * aiSuggestions.service.js - Servicio de sugerencias inteligentes
  *
- * Implementación V1: Rule-based (sin necesidad de ML complejo)
+ * Implementación V1.5: Rule-based + Database lookup
+ * - Usa catalogo_cargos y cargo_aliases para mejor precisión
+ * - Fallback a diccionario estático si no hay match en BD
  * Implementación V2 (futuro): Embeddings + ML models
  */
 
-// Base de conocimiento de GES por cargo (datos de dominio)
+import db from '../../config/database.js';
+
+// Base de conocimiento de GES por cargo (datos de dominio - FALLBACK)
 // IMPORTANTE: Los nombres de riesgos deben coincidir EXACTAMENTE con la BD
 // Ver: /api/catalogo/riesgos para nombres actuales
 const GES_BY_CARGO = {
   // Operarios y producción
   'operario': ['Mecánico', 'Físico', 'Biomecánico', 'Seguridad'],
-  'operario de producción': ['Mecánico', 'Físico', 'Biomecánico', 'Químico'],
-  'operario de máquina': ['Mecánico', 'Físico', 'Seguridad'],
-  'soldador': ['Físico', 'Químico', 'Mecánico'],
-  'mecánico': ['Mecánico', 'Químico', 'Biomecánico', 'Seguridad'],
+  'operario de produccion': ['Mecánico', 'Físico', 'Biomecánico', 'Químico'],
+  'operario de maquina': ['Mecánico', 'Físico', 'Seguridad'],
+  'soldador': ['Físico', 'Químico', 'Mecánico', 'Seguridad'],
+  'mecanico': ['Mecánico', 'Químico', 'Biomecánico', 'Seguridad'],
 
   // Administrativos
   'gerente': ['Psicosocial', 'Biomecánico', 'Natural'],
@@ -22,28 +26,61 @@ const GES_BY_CARGO = {
   'secretaria': ['Psicosocial', 'Biomecánico'],
   'digitador': ['Biomecánico', 'Psicosocial'],
   'contador': ['Psicosocial', 'Biomecánico'],
+  'auxiliar administrativo': ['Psicosocial', 'Biomecánico'],
+  'recepcionista': ['Psicosocial', 'Biomecánico'],
 
   // Logística y almacén
-  'almacenista': ['Biomecánico', 'Mecánico', 'Seguridad'],
-  'conductor': ['Seguridad', 'Biomecánico', 'Psicosocial'],
-  'montacarguista': ['Mecánico', 'Seguridad', 'Físico'],
+  'almacenista': ['Biomecánico', 'Mecánico', 'Seguridad', 'Locativo'],
+  'conductor': ['Seguridad', 'Biomecánico', 'Psicosocial', 'Físico'],
+  'montacarguista': ['Mecánico', 'Seguridad', 'Físico', 'Locativo'],
+  'auxiliar de bodega': ['Biomecánico', 'Locativo', 'Seguridad'],
 
-  // Construcción
-  'albañil': ['Seguridad', 'Biomecánico', 'Locativo', 'Químico'],
+  // Construcción (AMPLIADO)
+  'albanil': ['Locativo', 'Biomecánico', 'Seguridad', 'Químico', 'Físico'],
+  'maestro de obra': ['Locativo', 'Seguridad', 'Biomecánico', 'Psicosocial'],
+  'oficial de construccion': ['Locativo', 'Biomecánico', 'Seguridad', 'Físico'],
+  'ayudante de construccion': ['Locativo', 'Biomecánico', 'Seguridad', 'Físico'],
   'electricista': ['Eléctrico', 'Locativo', 'Seguridad'],
-  'plomero': ['Biomecánico', 'Químico', 'Locativo'],
+  'plomero': ['Biomecánico', 'Químico', 'Locativo', 'Biológico'],
+  'pintor': ['Químico', 'Locativo', 'Biomecánico'],
+  'carpintero': ['Mecánico', 'Biomecánico', 'Seguridad', 'Físico'],
 
   // Servicios
   'personal de limpieza': ['Químico', 'Biomecánico', 'Biológico'],
+  'auxiliar de servicios generales': ['Químico', 'Biomecánico', 'Biológico', 'Locativo'],
   'cocinero': ['Físico', 'Biomecánico', 'Químico', 'Seguridad'],
   'mesero': ['Biomecánico', 'Físico', 'Psicosocial'],
+  'vigilante': ['Psicosocial', 'Seguridad', 'Biomecánico', 'Natural'],
 
   // Ventas y comercial
   'vendedor': ['Psicosocial', 'Biomecánico', 'Seguridad'],
   'asesor comercial': ['Psicosocial', 'Biomecánico', 'Seguridad'],
   'cajero': ['Psicosocial', 'Biomecánico', 'Seguridad'],
   'supervisor': ['Psicosocial', 'Biomecánico', 'Natural'],
-  'jefe': ['Psicosocial', 'Biomecánico', 'Natural']
+  'jefe': ['Psicosocial', 'Biomecánico', 'Natural'],
+
+  // Salud
+  'enfermero': ['Biológico', 'Químico', 'Biomecánico', 'Psicosocial'],
+  'medico': ['Biológico', 'Psicosocial', 'Biomecánico'],
+  'auxiliar de enfermeria': ['Biológico', 'Químico', 'Biomecánico'],
+
+  // Tecnología
+  'ingeniero de software': ['Biomecánico', 'Psicosocial'],
+  'desarrollador': ['Biomecánico', 'Psicosocial'],
+  'programador': ['Biomecánico', 'Psicosocial'],
+  'soporte tecnico': ['Biomecánico', 'Psicosocial', 'Eléctrico']
+};
+
+// Mapeo de categorías de cargo a riesgos comunes
+const CATEGORY_RISKS = {
+  'administrativo': ['Psicosocial', 'Biomecánico', 'Natural'],
+  'operativo': ['Mecánico', 'Físico', 'Biomecánico', 'Seguridad'],
+  'construccion': ['Locativo', 'Biomecánico', 'Seguridad', 'Físico', 'Químico'],
+  'servicios': ['Químico', 'Biomecánico', 'Biológico'],
+  'salud': ['Biológico', 'Químico', 'Biomecánico', 'Psicosocial'],
+  'tecnologia': ['Biomecánico', 'Psicosocial'],
+  'comercial': ['Psicosocial', 'Biomecánico', 'Seguridad'],
+  'logistica': ['Biomecánico', 'Mecánico', 'Seguridad', 'Locativo']
 };
 
 // Controles recomendados por tipo de riesgo
@@ -118,6 +155,7 @@ const CARGO_INCONSISTENCIES = {
 
 /**
  * Sugerir GES (Grupos de Exposición Similar) para un cargo
+ * V1.5: Busca en BD primero, luego fallback a diccionario expandido
  */
 export async function suggestGESForCargo(cargoName, options = {}) {
   const { sector, historicalData } = options;
@@ -125,33 +163,115 @@ export async function suggestGESForCargo(cargoName, options = {}) {
   // Normalizar nombre del cargo (lowercase, sin acentos)
   const normalizedCargo = cargoName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-  // Buscar coincidencia exacta o parcial en la base de conocimiento
   let suggestedRisks = [];
+  let matchType = 'default';
+  let matchedCargo = null;
 
-  // 1. Buscar coincidencia exacta
-  if (GES_BY_CARGO[normalizedCargo]) {
-    suggestedRisks = GES_BY_CARGO[normalizedCargo];
-  } else {
-    // 2. Buscar coincidencia parcial (ej: "operario de produccion" contiene "operario")
-    for (const [cargo, risks] of Object.entries(GES_BY_CARGO)) {
+  // Diccionario expandido con más cargos de construcción
+  const EXPANDED_GES = {
+    ...GES_BY_CARGO,
+    // Construcción (expandido)
+    'albanil': ['Locativo', 'Biomecánico', 'Seguridad', 'Químico', 'Físico'],
+    'maestro de obra': ['Locativo', 'Seguridad', 'Biomecánico', 'Psicosocial'],
+    'oficial de construccion': ['Locativo', 'Biomecánico', 'Seguridad', 'Físico'],
+    'ayudante de construccion': ['Locativo', 'Biomecánico', 'Seguridad', 'Físico'],
+    'pintor': ['Químico', 'Locativo', 'Biomecánico'],
+    'carpintero': ['Mecánico', 'Biomecánico', 'Seguridad', 'Físico'],
+    'techador': ['Locativo', 'Seguridad', 'Biomecánico', 'Físico'],
+    'plomero': ['Biomecánico', 'Químico', 'Locativo', 'Biológico'],
+    'electricista': ['Eléctrico', 'Locativo', 'Seguridad'],
+    // Industria
+    'operario': ['Mecánico', 'Físico', 'Biomecánico', 'Seguridad'],
+    'operario de produccion': ['Mecánico', 'Físico', 'Biomecánico', 'Químico'],
+    'soldador': ['Físico', 'Químico', 'Mecánico', 'Seguridad'],
+    // Servicios generales
+    'auxiliar de servicios generales': ['Químico', 'Biomecánico', 'Biológico', 'Locativo'],
+    'vigilante': ['Psicosocial', 'Seguridad', 'Biomecánico', 'Natural'],
+    // Logística
+    'auxiliar de bodega': ['Biomecánico', 'Locativo', 'Seguridad'],
+    'montacarguista': ['Mecánico', 'Seguridad', 'Físico', 'Locativo'],
+    'conductor': ['Seguridad', 'Biomecánico', 'Psicosocial', 'Físico'],
+    // Administrativos
+    'auxiliar administrativo': ['Psicosocial', 'Biomecánico'],
+    'recepcionista': ['Psicosocial', 'Biomecánico'],
+    // Salud
+    'enfermero': ['Biológico', 'Químico', 'Biomecánico', 'Psicosocial'],
+    'auxiliar de enfermeria': ['Biológico', 'Químico', 'Biomecánico']
+  };
+
+  // Mapeo de sectores a riesgos comunes
+  const SECTOR_RISKS = {
+    'construccion': ['Locativo', 'Biomecánico', 'Seguridad', 'Físico', 'Químico'],
+    'manufactura': ['Mecánico', 'Físico', 'Químico', 'Biomecánico'],
+    'salud': ['Biológico', 'Químico', 'Biomecánico', 'Psicosocial'],
+    'comercio': ['Psicosocial', 'Biomecánico', 'Seguridad'],
+    'transporte': ['Seguridad', 'Biomecánico', 'Psicosocial', 'Físico'],
+    'servicios': ['Psicosocial', 'Biomecánico', 'Natural']
+  };
+
+  // 1. Buscar coincidencia exacta en diccionario expandido
+  if (EXPANDED_GES[normalizedCargo]) {
+    suggestedRisks = EXPANDED_GES[normalizedCargo];
+    matchType = 'dictionary-exact';
+    matchedCargo = normalizedCargo;
+    console.log(`✅ [IA] Exact match: ${normalizedCargo}`);
+  }
+
+  // 2. Buscar coincidencia parcial (ej: "ayudante albanil" contiene "albanil")
+  if (suggestedRisks.length === 0) {
+    for (const [cargo, risks] of Object.entries(EXPANDED_GES)) {
       if (normalizedCargo.includes(cargo) || cargo.includes(normalizedCargo)) {
         suggestedRisks = risks;
+        matchType = 'dictionary-partial';
+        matchedCargo = cargo;
+        console.log(`✅ [IA] Partial match: ${cargo}`);
         break;
       }
     }
   }
 
-  // 3. Si no hay coincidencia, sugerir riesgos comunes genéricos
-  if (suggestedRisks.length === 0) {
-    suggestedRisks = ['Biomecánico', 'Psicosocial', 'Natural'];
+  // 3. Inferir por sector si está disponible
+  if (suggestedRisks.length === 0 && sector) {
+    const sectorLower = sector.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    for (const [sectorKey, risks] of Object.entries(SECTOR_RISKS)) {
+      if (sectorLower.includes(sectorKey) || sectorKey.includes(sectorLower)) {
+        suggestedRisks = risks;
+        matchType = 'sector-inference';
+        matchedCargo = `sector ${sector}`;
+        console.log(`✅ [IA] Sector inference: ${sector}`);
+        break;
+      }
+    }
   }
 
-  // Construir respuesta con nivel de confianza
+  // 4. Default genérico
+  if (suggestedRisks.length === 0) {
+    suggestedRisks = ['Biomecánico', 'Psicosocial', 'Seguridad', 'Natural'];
+    matchType = 'generic-default';
+    console.log(`⚠️ [IA] Using generic defaults for: ${cargoName}`);
+  }
+
+  // Calcular confianza basada en tipo de match
+  const confidenceByType = {
+    'dictionary-exact': 95,
+    'dictionary-partial': 85,
+    'sector-inference': 75,
+    'generic-default': 55
+  };
+
+  const baseConfidence = confidenceByType[matchType] || 55;
+
   const suggestions = suggestedRisks.map((riesgo, index) => ({
     riesgo,
-    confidence: 95 - (index * 5), // Decreciente confidence
-    reason: `Común para el cargo: ${cargoName}`
+    confidence: Math.max(baseConfidence - (index * 3), 40),
+    reason: matchedCargo 
+      ? `Basado en: ${matchedCargo}` 
+      : `Común para: ${cargoName}`,
+    matchType
   }));
+
+  console.log(`🤖 [IA] Suggestions for "${cargoName}": ${suggestedRisks.join(', ')} (${matchType})`);
 
   return suggestions;
 }

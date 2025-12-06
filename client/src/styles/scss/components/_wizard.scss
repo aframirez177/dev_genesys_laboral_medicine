@@ -1334,6 +1334,10 @@
   border-radius: 3rem;
   padding: 0rem;
   height: 55rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   .form-group {
     margin-bottom: 2.5rem;
@@ -6067,8 +6071,9 @@
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
-      max-height: 600px;
-      overflow-y: auto;
+      min-height: 600px;
+      max-height: none;
+      overflow-y: visible;
       padding-right: 1rem;
 
       // Scrollbar personalizado

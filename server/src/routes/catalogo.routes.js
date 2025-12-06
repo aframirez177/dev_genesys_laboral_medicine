@@ -8,6 +8,11 @@ import {
   getCiudades,
   getDepartamentos,
   searchCiudades,
+  getCIIUSecciones,
+  getCIIUDivisiones,
+  getCIIUDivisionesBySeccion,
+  getCIIUDivisionByCodigo,
+  searchCIIU,
   buscarGES,
   getGESById,
   getGESBatch,
@@ -57,6 +62,25 @@ router.get('/departamentos', getDepartamentos);
 
 // GET /api/catalogo/ciudades - Obtener todas las ciudades
 router.get('/ciudades', getCiudades);
+
+// ========================================
+// CIIU - Clasificación Industrial Internacional Uniforme
+// ========================================
+
+// GET /api/catalogo/ciiu/search - Buscar divisiones CIIU (debe ir antes de rutas con params)
+router.get('/ciiu/search', searchCIIU);
+
+// GET /api/catalogo/ciiu/secciones - Obtener todas las secciones (21)
+router.get('/ciiu/secciones', getCIIUSecciones);
+
+// GET /api/catalogo/ciiu/secciones/:codigo/divisiones - Obtener divisiones de una sección (lazy loading)
+router.get('/ciiu/secciones/:codigo/divisiones', getCIIUDivisionesBySeccion);
+
+// GET /api/catalogo/ciiu/divisiones - Obtener todas las divisiones (87)
+router.get('/ciiu/divisiones', getCIIUDivisiones);
+
+// GET /api/catalogo/ciiu/divisiones/:codigo - Obtener una división por código
+router.get('/ciiu/divisiones/:codigo', getCIIUDivisionByCodigo);
 
 // ========================================
 // GES (Grupos de Exposición Similar)

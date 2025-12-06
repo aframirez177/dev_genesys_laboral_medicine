@@ -929,7 +929,7 @@ export class RiesgoSelector {
           type="checkbox"
           class="ges-item__checkbox"
           .checked=${isSelected}
-          @change=${() => this.handleToggleGES(ges)}
+          @change=${(e) => this.handleToggleGES(ges, e)}
         />
 
         <div class="ges-item__content">
@@ -1105,7 +1105,7 @@ export class RiesgoSelector {
   /**
    * 🆕 Handle toggle GES selection con background fetch
    */
-  handleToggleGES(ges) {
+  handleToggleGES(ges, event = null) {
     const isSelected = this.state.seleccionados.some(g => g.id === ges.id);
 
     if (isSelected) {
@@ -1127,6 +1127,9 @@ export class RiesgoSelector {
       this.loadGESDetails(ges.id).catch(err => {
         console.error('Error cargando detalles en background:', err);
       });
+
+      // 🆕 Dispatch custom event for animation
+      this.dispatchGESSelectedEvent(ges, event);
     }
 
     // Notify parent component
@@ -1134,6 +1137,24 @@ export class RiesgoSelector {
 
     // 🆕 Re-render with lit-html (solo actualiza lo que cambió)
     this.renderComponent();
+  }
+
+  /**
+   * 🆕 Dispatch event when GES is selected (for flying animation)
+   */
+  dispatchGESSelectedEvent(ges, event) {
+    const gesElement = event?.target?.closest?.('.ges-item');
+    
+    const customEvent = new CustomEvent('ges-selected', {
+      bubbles: true,
+      detail: {
+        ges,
+        cargoIndex: this.options.cargoIndex,
+        sourceElement: gesElement
+      }
+    });
+
+    this.container.dispatchEvent(customEvent);
   }
 
   /**

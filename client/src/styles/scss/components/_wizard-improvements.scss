@@ -325,7 +325,7 @@ $desktop-adjustments: (
   opacity: 0;
   pointer-events: none;
   transition: opacity map.get(variables.$transitions, 'fast');
-  min-width: 100%;
+  min-width: 50rem;
 
   &[data-show] {
     opacity: 1;

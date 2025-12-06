@@ -1,0 +1,204 @@
+/**
+ * Wizard Sector Animated - Dropdowns en cascada con animaciones
+ * Sprint 6 - UX mejorada para selección CIIU
+ */
+
+// Variables
+$sector-badge-bg: linear-gradient(135deg, #5dc4af 0%, #4db39e 100%);
+$sector-badge-text: #ffffff;
+$sector-edit-btn-bg: rgba(255, 255, 255, 0.2);
+$sector-edit-btn-hover: rgba(255, 255, 255, 0.3);
+$transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// Container principal
+.form-group--sector-animated {
+  position: relative;
+  min-height: 80px;
+  transition: all $transition-smooth;
+  
+  // Estado inicial
+  .sector-initial {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.2s ease-out;
+    
+    &.hidden {
+      display: none;
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+  
+  // Estado después de seleccionar
+  .sector-selected-view {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s ease-out;
+    
+    &.hidden {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+}
+
+// Badge del sector seleccionado
+.sector-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.2rem;
+  background: $sector-badge-bg;
+  color: $sector-badge-text;
+  border-radius: 50px;
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-bottom: 1.6rem;
+  box-shadow: 0 2px 8px rgba(93, 196, 175, 0.3);
+  animation: badgeSlideIn 0.4s ease-out;
+  
+  .sector-badge-label {
+    font-weight: 400;
+    opacity: 0.9;
+  }
+  
+  .sector-badge-value {
+    font-weight: 600;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .sector-edit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: $sector-edit-btn-bg;
+    border: none;
+    border-radius: 50%;
+    color: $sector-badge-text;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+    
+    &:hover {
+      background: $sector-edit-btn-hover;
+      transform: scale(1.1);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+// Container del dropdown de actividad
+.activity-dropdown-container {
+  animation: activitySlideIn 0.4s ease-out 0.1s both;
+  
+  label {
+    margin-bottom: 0.8rem;
+  }
+}
+
+// Animaciones
+@keyframes badgeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes activitySlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Select mejorado para sector
+.wizard-select-sector,
+.wizard-select-activity {
+  width: 100%;
+  padding: 1.2rem 1.6rem;
+  padding-right: 4rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #383d47;
+  background-color: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%235dc4af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1.2rem center;
+  background-size: 20px;
+  
+  &:hover {
+    border-color: #5dc4af;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: #5dc4af;
+    box-shadow: 0 0 0 3px rgba(93, 196, 175, 0.2);
+  }
+  
+  &:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  
+  option {
+    padding: 1rem;
+    font-size: 1.4rem;
+  }
+}
+
+// Placeholder styling
+.wizard-select-sector option:first-child,
+.wizard-select-activity option:first-child {
+  color: #999;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .sector-badge {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem 1.5rem;
+    
+    .sector-badge-value {
+      max-width: 100%;
+      margin-top: 0.4rem;
+    }
+  }
+}
+

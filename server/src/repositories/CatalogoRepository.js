@@ -154,6 +154,93 @@ class CatalogoRepository {
       .limit(limit);
   }
 
+  // ========================================
+  // CIIU - Clasificación Industrial Internacional Uniforme
+  // ========================================
+
+  /**
+   * Obtener todas las secciones CIIU (21 secciones)
+   * @param {Object} options - { activo: Boolean }
+   * @returns {Array} Lista de secciones
+   */
+  async getCIIUSecciones(options = {}) {
+    let query = db('ciiu_secciones').select('*');
+
+    if (options.activo !== undefined) {
+      query = query.where('activo', options.activo);
+    }
+
+    return await query.orderBy('orden', 'asc');
+  }
+
+  /**
+   * Obtener divisiones CIIU por sección (lazy loading)
+   * @param {String} seccionCodigo - Código de sección (A, B, C, ..., U)
+   * @returns {Array} Lista de divisiones de esa sección
+   */
+  async getCIIUDivisionesBySeccion(seccionCodigo) {
+    return await db('ciiu_divisiones')
+      .select('*')
+      .where('seccion_codigo', seccionCodigo.toUpperCase())
+      .where('activo', true)
+      .orderBy('orden', 'asc');
+  }
+
+  /**
+   * Obtener todas las divisiones CIIU (87 divisiones)
+   * @param {Object} options - { activo: Boolean }
+   * @returns {Array} Lista de divisiones con datos de sección
+   */
+  async getCIIUDivisiones(options = {}) {
+    let query = db('ciiu_divisiones as d')
+      .join('ciiu_secciones as s', 'd.seccion_codigo', 's.codigo')
+      .select(
+        'd.*',
+        's.nombre as seccion_nombre'
+      );
+
+    if (options.activo !== undefined) {
+      query = query.where('d.activo', options.activo);
+    }
+
+    return await query.orderBy(['s.orden', 'd.orden']);
+  }
+
+  /**
+   * Obtener una división CIIU por código
+   * @param {String} codigo - Código de división (01, 02, ..., 99)
+   * @returns {Object|null} División encontrada
+   */
+  async getCIIUDivisionByCodigo(codigo) {
+    return await db('ciiu_divisiones as d')
+      .join('ciiu_secciones as s', 'd.seccion_codigo', 's.codigo')
+      .select(
+        'd.*',
+        's.nombre as seccion_nombre'
+      )
+      .where('d.codigo', codigo)
+      .first();
+  }
+
+  /**
+   * Buscar divisiones CIIU por nombre
+   * @param {String} searchTerm - Término de búsqueda
+   * @param {Number} limit - Límite de resultados
+   * @returns {Array} Divisiones que coinciden
+   */
+  async searchCIIUDivisiones(searchTerm, limit = 10) {
+    return await db('ciiu_divisiones as d')
+      .join('ciiu_secciones as s', 'd.seccion_codigo', 's.codigo')
+      .select(
+        'd.*',
+        's.nombre as seccion_nombre'
+      )
+      .whereRaw('LOWER(d.nombre) LIKE ?', [`%${searchTerm.toLowerCase()}%`])
+      .where('d.activo', true)
+      .orderBy(['s.orden', 'd.orden'])
+      .limit(limit);
+  }
+
   /**
    * Obtener un sector por ID o código
    * @param {Number|String} idOrCodigo - ID numérico o código string
@@ -539,6 +626,30 @@ class CatalogoRepository {
       .orderByRaw(`ARRAY_POSITION(ARRAY[${placeholders}]::integer[], g.id)`, ids); // Mantener orden del array
 
     return ges;
+  }
+
+  // ========================================
+  // VALIDACIÓN DE CATÁLOGO
+  // ========================================
+
+  /**
+   * Obtener conteo de GES agrupados por tipo de riesgo
+   * Para validar que todas las categorías esperadas tengan al menos 1 GES
+   * @returns {Array<Object>} - Array con { riesgo_nombre, tipo_riesgo, total }
+   */
+  async getGESCountByRiesgo() {
+    const results = await db('catalogo_ges as g')
+      .leftJoin('catalogo_riesgos as r', 'g.riesgo_id', 'r.id')
+      .select(
+        'r.nombre as riesgo_nombre',
+        'r.codigo as tipo_riesgo'
+      )
+      .count('g.id as total')
+      .where('g.activo', true)
+      .groupBy('r.nombre', 'r.codigo')
+      .orderBy('r.nombre');
+
+    return results;
   }
 }
 
