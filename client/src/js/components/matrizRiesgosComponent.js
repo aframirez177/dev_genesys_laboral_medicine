@@ -313,12 +313,42 @@ export class MatrizRiesgosComponent {
                     </div>
                 </div>
 
-                <!-- Controles de Ingeniería (Fuente) -->
+                <!-- Eliminación -->
+                ${risk.controles?.eliminacion && risk.controles.eliminacion.length > 0 ? `
+                    <div class="details-section">
+                        <div class="details-section__title">
+                            <i data-lucide="x-circle"></i>
+                            Eliminación
+                        </div>
+                        <div class="details-section__content">
+                            <ul>
+                                ${risk.controles.eliminacion.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Sustitución -->
+                ${risk.controles?.sustitucion && risk.controles.sustitucion.length > 0 ? `
+                    <div class="details-section">
+                        <div class="details-section__title">
+                            <i data-lucide="repeat"></i>
+                            Sustitución
+                        </div>
+                        <div class="details-section__content">
+                            <ul>
+                                ${risk.controles.sustitucion.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Controles de Ingeniería -->
                 ${risk.controles?.ingenieria && risk.controles.ingenieria.length > 0 ? `
                     <div class="details-section">
                         <div class="details-section__title">
                             <i data-lucide="settings"></i>
-                            Controles de Ingeniería (Fuente)
+                            Controles de Ingeniería
                         </div>
                         <div class="details-section__content">
                             <ul>
@@ -328,12 +358,12 @@ export class MatrizRiesgosComponent {
                     </div>
                 ` : ''}
 
-                <!-- Controles Administrativos (Medio) -->
+                <!-- Controles Administrativos -->
                 ${risk.controles?.administrativos && risk.controles.administrativos.length > 0 ? `
                     <div class="details-section">
                         <div class="details-section__title">
                             <i data-lucide="clipboard-list"></i>
-                            Controles Administrativos (Medio)
+                            Controles Administrativos
                         </div>
                         <div class="details-section__content">
                             <ul>
@@ -343,12 +373,12 @@ export class MatrizRiesgosComponent {
                     </div>
                 ` : ''}
 
-                <!-- EPP (Individuo) -->
+                <!-- EPP -->
                 ${risk.controles?.epp && risk.controles.epp.length > 0 ? `
                     <div class="details-section">
                         <div class="details-section__title">
                             <i data-lucide="shield-check"></i>
-                            Elementos de Protección Personal (Individuo)
+                            Equipos de Protección Personal (EPP)
                         </div>
                         <div class="details-section__content">
                             <ul>
@@ -360,6 +390,8 @@ export class MatrizRiesgosComponent {
 
                 <!-- Mensaje si no hay controles -->
                 ${!risk.controles || (
+                    (!risk.controles.eliminacion || risk.controles.eliminacion.length === 0) &&
+                    (!risk.controles.sustitucion || risk.controles.sustitucion.length === 0) &&
                     (!risk.controles.ingenieria || risk.controles.ingenieria.length === 0) &&
                     (!risk.controles.administrativos || risk.controles.administrativos.length === 0) &&
                     (!risk.controles.epp || risk.controles.epp.length === 0)
