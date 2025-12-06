@@ -72,10 +72,17 @@ async function handleLogin(tipo, form) {
       body: JSON.stringify(loginData)
     });
 
-    const data = await response.json();
+    // Parse response
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      throw new Error('Error de comunicación con el servidor');
+    }
 
     if (!response.ok) {
-      throw new Error(data.error || 'Error al iniciar sesión');
+      // Backend returns 'message' not 'error'
+      throw new Error(data.message || data.error || 'Error al iniciar sesión');
     }
 
     // Success - store token and redirect
@@ -100,8 +107,17 @@ async function handleLogin(tipo, form) {
     window.location.href = '/pages/dashboard.html';
 
   } catch (error) {
-    // Show error
-    errorDiv.textContent = error.message;
+    // Show error with better messaging
+    console.error('Login error:', error);
+
+    let errorMessage = error.message;
+
+    // Provide more context for network errors
+    if (error.message === 'Failed to fetch' || error.message.includes('NetworkError')) {
+      errorMessage = 'No se pudo conectar con el servidor. Verifica tu conexión a internet.';
+    }
+
+    errorDiv.textContent = errorMessage;
     errorDiv.classList.add('visible');
   } finally {
     // Remove loading state
