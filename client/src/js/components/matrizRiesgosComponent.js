@@ -170,12 +170,6 @@ export class MatrizRiesgosComponent {
                 </div>
 
                 <div class="matriz-actions">
-                    ${this.documento && this.documento.excelUrl ? `
-                        <button class="btn btn--primary" id="btn-export-matriz-excel">
-                            <i data-lucide="download"></i>
-                            <span>Exportar Excel</span>
-                        </button>
-                    ` : ''}
                     <button class="btn btn--icon" id="btn-reset-filters" title="Limpiar filtros">
                         <i data-lucide="rotate-ccw"></i>
                     </button>
@@ -467,12 +461,6 @@ export class MatrizRiesgosComponent {
             }
         });
 
-        // Export Excel button
-        const exportBtn = document.getElementById('btn-export-matriz-excel');
-        if (exportBtn) {
-            exportBtn.addEventListener('click', () => this.exportExcel());
-        }
-
         // Reset filters button
         const resetBtn = document.getElementById('btn-reset-filters');
         if (resetBtn) {
@@ -652,11 +640,24 @@ export class MatrizRiesgosComponent {
      * Toggle row details (expand/collapse)
      */
     toggleRowDetails(riskId, button) {
-        const detailsRow = document.getElementById(`details-${riskId}`);
-        const icon = button.querySelector('i');
+        // Try to find the details row - check in table container
+        const tableContainer = this.container.querySelector('.matriz-table-container');
+        if (!tableContainer) {
+            console.error('Table container not found');
+            return;
+        }
 
-        if (!detailsRow || !icon) {
-            console.error('Details row or icon not found for risk:', riskId);
+        const detailsRow = tableContainer.querySelector(`#details-${riskId}`);
+        const icon = button ? button.querySelector('i') : null;
+
+        if (!detailsRow) {
+            console.error('Details row not found for risk:', riskId);
+            console.log('Available detail rows:', tableContainer.querySelectorAll('.risk-details'));
+            return;
+        }
+
+        if (!icon) {
+            console.error('Icon not found in button');
             return;
         }
 

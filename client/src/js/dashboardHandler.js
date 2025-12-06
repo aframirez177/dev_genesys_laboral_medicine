@@ -849,6 +849,9 @@ async function loadMatrizPage() {
         const matrizComponent = new MatrizRiesgosComponent('matriz-dashboard-container');
         await matrizComponent.init(result);
         console.log('🟢 [MATRIZ] Component initialized successfully');
+
+        // Setup Excel export button in header
+        setupMatrizExcelExport(result.documento);
     } catch (e) {
         console.error('🔴 [MATRIZ] Error initializing component:', e);
         const container = document.getElementById('matriz-dashboard-container');
@@ -870,49 +873,30 @@ async function loadMatrizPage() {
 }
 
 /**
- * Setup Excel export for Matriz GTC-45
+ * Setup Excel export for Matriz GTC-45 - Direct download from Spaces
  */
-function setupMatrizExcelExport(formData) {
+function setupMatrizExcelExport(documento) {
     const exportBtn = document.getElementById('btn-export-matriz-excel');
     if (!exportBtn) return;
 
-    exportBtn.addEventListener('click', async () => {
-        exportBtn.disabled = true;
-        const originalHTML = exportBtn.innerHTML;
-        exportBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> Generando...';
-        if (window.lucide) window.lucide.createIcons();
+    // Remove any existing listeners
+    const newBtn = exportBtn.cloneNode(true);
+    exportBtn.parentNode.replaceChild(newBtn, exportBtn);
 
-        try {
-            const response = await fetch('/api/matriz-riesgos/generar-excel', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    formData: formData,
-                    companyName: formData.nombreEmpresa || 'Empresa',
-                    nit: formData.nit || 'N/A'
-                })
-            });
+    if (!documento || !documento.excelUrl) {
+        newBtn.style.display = 'none';
+        return;
+    }
 
-            if (!response.ok) throw new Error('Error generating Excel');
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Matriz_GTC45_${formData.nombreEmpresa || 'Empresa'}_${new Date().toISOString().split('T')[0]}.xlsx`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            a.remove();
-
-        } catch (error) {
-            console.error('Error exporting matriz:', error);
-            alert('Error al exportar la matriz. Intente de nuevo.');
-        } finally {
-            exportBtn.disabled = false;
-            exportBtn.innerHTML = originalHTML;
-            if (window.lucide) window.lucide.createIcons();
-        }
+    newBtn.addEventListener('click', () => {
+        // Direct download via link (avoids CORS)
+        const a = document.createElement('a');
+        a.href = documento.excelUrl;
+        a.download = documento.excelUrl.split('/').pop() || 'Matriz_GTC45.xlsx';
+        a.target = '_blank'; // Open in new tab to trigger download
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
     });
 }
 
