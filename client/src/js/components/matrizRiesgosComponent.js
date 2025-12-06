@@ -21,6 +21,7 @@ export class MatrizRiesgosComponent {
             cargo: '',
             tipo: ''
         };
+        this.documento = null; // Store documento info for Excel export
     }
 
     /**
@@ -36,6 +37,7 @@ export class MatrizRiesgosComponent {
 
         this.data = this.processAPIData(apiData);
         this.filteredData = [...this.data];
+        this.documento = apiData.documento || null; // Store documento info for export
 
         this.render();
         this.attachEventListeners();
@@ -168,6 +170,12 @@ export class MatrizRiesgosComponent {
                 </div>
 
                 <div class="matriz-actions">
+                    ${this.documento && this.documento.excelUrl ? `
+                        <button class="btn btn--primary" id="btn-export-matriz-excel">
+                            <i data-lucide="download"></i>
+                            <span>Exportar Excel</span>
+                        </button>
+                    ` : ''}
                     <button class="btn btn--icon" id="btn-reset-filters" title="Limpiar filtros">
                         <i data-lucide="rotate-ccw"></i>
                     </button>
@@ -459,6 +467,12 @@ export class MatrizRiesgosComponent {
             }
         });
 
+        // Export Excel button
+        const exportBtn = document.getElementById('btn-export-matriz-excel');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => this.exportExcel());
+        }
+
         // Reset filters button
         const resetBtn = document.getElementById('btn-reset-filters');
         if (resetBtn) {
@@ -537,6 +551,60 @@ export class MatrizRiesgosComponent {
         this.sortConfig = { column: null, direction: 'asc' };
         this.render();
         this.attachEventListeners();
+    }
+
+    /**
+     * Export Excel - Download existing matrix Excel file
+     */
+    async exportExcel() {
+        if (!this.documento || !this.documento.excelUrl) {
+            console.error('No Excel URL available');
+            alert('No hay archivo Excel disponible para descargar');
+            return;
+        }
+
+        const exportBtn = document.getElementById('btn-export-matriz-excel');
+        if (!exportBtn) return;
+
+        // Show loading state
+        const originalHTML = exportBtn.innerHTML;
+        exportBtn.disabled = true;
+        exportBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> <span>Descargando...</span>';
+        if (window.lucide) window.lucide.createIcons();
+
+        try {
+            // Fetch the Excel file
+            const response = await fetch(this.documento.excelUrl);
+
+            if (!response.ok) {
+                throw new Error('Error al descargar el archivo');
+            }
+
+            // Create blob and download
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+
+            // Extract filename from URL or use default
+            const urlParts = this.documento.excelUrl.split('/');
+            const filename = urlParts[urlParts.length - 1] || 'Matriz_GTC45.xlsx';
+            a.download = filename;
+
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+
+        } catch (error) {
+            console.error('Error exporting matriz:', error);
+            alert('Error al descargar el archivo Excel. Intente de nuevo.');
+        } finally {
+            // Restore button state
+            exportBtn.disabled = false;
+            exportBtn.innerHTML = originalHTML;
+            if (window.lucide) window.lucide.createIcons();
+        }
     }
 
     /**

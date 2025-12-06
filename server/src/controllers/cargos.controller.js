@@ -275,6 +275,12 @@ export async function getMatrizGTC45(req, res) {
     try {
         const { empresaId } = req.params;
 
+        // Get documento_id and preview_urls for Excel export
+        const documento = await db('documentos_generados')
+            .where('empresa_id', empresaId)
+            .orderBy('created_at', 'desc')
+            .first('id', 'preview_urls', 'created_at', 'updated_at');
+
         // Get all riesgos from all cargos of this empresa
         const riesgos = await db('riesgos_cargo')
             .join('cargos_documento', 'riesgos_cargo.cargo_id', 'cargos_documento.id')
@@ -368,11 +374,30 @@ export async function getMatrizGTC45(req, res) {
             alertasCriticas: alertasCriticas.length
         };
 
+        // Extract Excel URL from preview_urls if available
+        let excelUrl = null;
+        if (documento && documento.preview_urls) {
+            try {
+                const previewUrls = typeof documento.preview_urls === 'string'
+                    ? JSON.parse(documento.preview_urls)
+                    : documento.preview_urls;
+                excelUrl = previewUrls.matriz || null;
+            } catch (e) {
+                console.error('Error parsing preview_urls:', e);
+            }
+        }
+
         res.json({
             success: true,
             categorias: Object.values(categorias),
             alertasCriticas,
-            resumen
+            resumen,
+            documento: documento ? {
+                id: documento.id,
+                excelUrl,
+                created_at: documento.created_at,
+                updated_at: documento.updated_at
+            } : null
         });
 
     } catch (error) {
