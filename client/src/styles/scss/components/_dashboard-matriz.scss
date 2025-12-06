@@ -438,6 +438,11 @@
                 }
             }
         }
+
+        .text-muted {
+            color: tokens.$dashboard-text-light;
+            font-style: italic;
+        }
     }
 }
 

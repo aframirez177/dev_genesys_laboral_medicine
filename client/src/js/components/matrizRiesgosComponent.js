@@ -313,56 +313,67 @@ export class MatrizRiesgosComponent {
                     </div>
                 </div>
 
-                <!-- Niveles Detallados -->
-                <div class="details-section">
-                    <div class="details-section__title">
-                        <i data-lucide="bar-chart-3"></i>
-                        Niveles de Evaluación
-                    </div>
-                    <div class="niveles-grid">
-                        ${this.renderNivelItem('ND', risk.nd, 'Deficiencia')}
-                        ${this.renderNivelItem('NE', risk.ne, 'Exposición')}
-                        ${this.renderNivelItem('NC', risk.nc, 'Consecuencia')}
-                        ${this.renderNivelItem('NP', risk.np, 'Probabilidad')}
-                    </div>
-                </div>
-
-                <!-- Controles Existentes -->
-                ${risk.controles ? `
+                <!-- Controles de Ingeniería (Fuente) -->
+                ${risk.controles?.ingenieria && risk.controles.ingenieria.length > 0 ? `
                     <div class="details-section">
                         <div class="details-section__title">
-                            <i data-lucide="shield-check"></i>
-                            Controles y Medidas
+                            <i data-lucide="settings"></i>
+                            Controles de Ingeniería (Fuente)
                         </div>
                         <div class="details-section__content">
-                            ${risk.controles.epp ? `
-                                <strong>EPP:</strong>
-                                <ul>
-                                    ${risk.controles.epp.map(e => `<li>${e}</li>`).join('')}
-                                </ul>
-                            ` : ''}
-                            ${risk.controles.examenes ? `
-                                <strong>Exámenes Médicos:</strong>
-                                <ul>
-                                    ${risk.controles.examenes.map(e => `<li>${e}</li>`).join('')}
-                                </ul>
-                            ` : ''}
+                            <ul>
+                                ${risk.controles.ingenieria.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
                         </div>
                     </div>
                 ` : ''}
-            </div>
-        `;
-    }
 
-    /**
-     * Render nivel item for grid
-     */
-    renderNivelItem(label, value, description) {
-        return `
-            <div class="nivel-item">
-                <div class="nivel-item__label">${label}</div>
-                <div class="nivel-item__value">${value}</div>
-                <div class="nivel-item__label" style="font-size: 10px; margin-top: 4px;">${description}</div>
+                <!-- Controles Administrativos (Medio) -->
+                ${risk.controles?.administrativos && risk.controles.administrativos.length > 0 ? `
+                    <div class="details-section">
+                        <div class="details-section__title">
+                            <i data-lucide="clipboard-list"></i>
+                            Controles Administrativos (Medio)
+                        </div>
+                        <div class="details-section__content">
+                            <ul>
+                                ${risk.controles.administrativos.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- EPP (Individuo) -->
+                ${risk.controles?.epp && risk.controles.epp.length > 0 ? `
+                    <div class="details-section">
+                        <div class="details-section__title">
+                            <i data-lucide="shield-check"></i>
+                            Elementos de Protección Personal (Individuo)
+                        </div>
+                        <div class="details-section__content">
+                            <ul>
+                                ${risk.controles.epp.map(e => `<li>${e}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Mensaje si no hay controles -->
+                ${!risk.controles || (
+                    (!risk.controles.ingenieria || risk.controles.ingenieria.length === 0) &&
+                    (!risk.controles.administrativos || risk.controles.administrativos.length === 0) &&
+                    (!risk.controles.epp || risk.controles.epp.length === 0)
+                ) ? `
+                    <div class="details-section">
+                        <div class="details-section__title">
+                            <i data-lucide="alert-circle"></i>
+                            Medidas de Control
+                        </div>
+                        <div class="details-section__content">
+                            <p class="text-muted">No se han definido medidas de control para este riesgo.</p>
+                        </div>
+                    </div>
+                ` : ''}
             </div>
         `;
     }
@@ -543,6 +554,11 @@ export class MatrizRiesgosComponent {
     toggleRowDetails(riskId, button) {
         const detailsRow = document.getElementById(`details-${riskId}`);
         const icon = button.querySelector('i');
+
+        if (!detailsRow || !icon) {
+            console.error('Details row or icon not found for risk:', riskId);
+            return;
+        }
 
         if (detailsRow.classList.contains('expanded')) {
             // Collapse
