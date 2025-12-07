@@ -7,7 +7,12 @@
 # ==============================================================================
 
 # Configuración de agentes y AI (CRÍTICO - no exponer metodología de trabajo)
-.claude/
+# Ignorar todo en .claude EXCEPTO logs/seeds (instrucciones para Digital Ocean)
+.claude/*
+!.claude/logs/
+.claude/logs/*
+!.claude/logs/seeds/
+
 .cursor/
 CLAUDE.md
 
