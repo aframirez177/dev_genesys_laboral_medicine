@@ -1,0 +1,16 @@
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (16, 'RF', 'Físico', 3, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (17, 'RB', 'Biomecánico', 6, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (18, 'RQ', 'Químico', 4, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (19, 'RBL', 'Biológico', 5, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (20, 'CS', 'Seguridad', 11, false);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (21, 'RPS', 'Psicosocial', 8, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (22, 'RT', 'Riesgo Tecnológico', 7, false);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (23, 'RFN', 'Natural', 10, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (24, 'MEC', 'Mecánico', 1, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (25, 'ELE', 'Eléctrico', 2, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (26, 'FH', 'Factores Humanos', 7, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (27, 'LOC', 'Locativo', 9, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (28, 'OTR', 'Otros Riesgos', 12, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (29, 'SAN', 'Saneamiento Básico', 13, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (30, 'SP', 'Salud Pública', 14, true);
+INSERT INTO catalogo_riesgos (id, codigo, nombre, orden, activo) VALUES (31, 'SEG', 'Seguridad', 10, true);
