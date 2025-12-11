@@ -75,7 +75,7 @@ const CONTROLES_TOGGLES = {
 
   conduceVehiculo: {
     fundamento: 'Resolución 1565/2014 (PESV) y Ley 1383/2010 - Conducción de vehículos',
-    examenes: ['PSM', 'GLI', 'PL'],
+    examenes: ['PSP', 'GLI', 'PL'], // PSP = Prueba de Sustancias Psicoactivas
     periodicidad: 24, // Cada 2 años
     aptitudes: [
       'Agudeza visual mínima 20/40 corregida',
@@ -130,6 +130,62 @@ const CONTROLES_TOGGLES = {
 class RiesgosService {
 
   /**
+   * Aplica jerarquía de exámenes: los específicos reemplazan a los genéricos
+   * Ejemplo: EMOA (específico alturas) reemplaza EMO (genérico)
+   * @param {Array<String>} examenes - Lista de códigos de exámenes
+   * @returns {Array<String>} Lista deduplicada por jerarquía
+   */
+  aplicarJerarquiaExamenes(examenes) {
+    // Jerarquía de exámenes médicos ocupacionales (EMO)
+    // Nivel 0 = genérico, Nivel 1 = específico
+    const jerarquia = {
+      'EMO': {
+        nivel: 0,
+        reemplazadoPor: ['EMOA', 'EMOMP', 'EMOD']
+      },
+      'EMOA': {
+        nivel: 1,
+        reemplaza: ['EMO']
+      },
+      'EMOMP': {
+        nivel: 1,
+        reemplaza: ['EMO']
+      },
+      'EMOD': {
+        nivel: 1,
+        reemplaza: ['EMO']
+      }
+    };
+
+    const examenesSet = new Set(examenes);
+    const examenesAEliminar = new Set();
+
+    // Detectar qué exámenes genéricos deben eliminarse
+    examenes.forEach(examen => {
+      const config = jerarquia[examen];
+      if (config && config.reemplaza) {
+        // Este examen específico reemplaza a otros
+        config.reemplaza.forEach(generico => {
+          if (examenesSet.has(generico)) {
+            examenesAEliminar.add(generico);
+            console.log(`[Jerarquía] ${examen} reemplaza a ${generico}`);
+          }
+        });
+      }
+    });
+
+    // Filtrar exámenes eliminados
+    const resultado = examenes.filter(ex => !examenesAEliminar.has(ex));
+
+    if (examenesAEliminar.size > 0) {
+      console.log(`[Jerarquía] Exámenes eliminados por jerarquía:`, Array.from(examenesAEliminar));
+      console.log(`[Jerarquía] Exámenes finales:`, resultado);
+    }
+
+    return resultado;
+  }
+
+  /**
    * Calcula NP y NR para un GES individual
    * @param {Object} ges - GES con niveles { niveles: { deficiencia: {value}, exposicion: {value}, consecuencia: {value} } }
    * @returns {Object} Niveles calculados con metadatos
@@ -177,15 +233,21 @@ class RiesgosService {
   }
 
   /**
-   * Determina si se aplican controles según NR y umbrales
+   * Determina si se aplican controles según NP (Nivel de Probabilidad) y NR
    * @param {Number} nr - Nivel de riesgo calculado
+   * @param {Number} np - Nivel de probabilidad calculado
    * @param {Object} gesConfig - Configuración del GES desde ges-config.js
    * @param {Object} umbrales - Umbrales personalizados (opcional)
    * @returns {Object} Controles a aplicar
    */
-  determinarControlesPorNR(nr, gesConfig, umbrales = UMBRALES_DEFAULT) {
+  determinarControlesPorNR(nr, np, gesConfig, umbrales = UMBRALES_DEFAULT) {
+    // Umbrales de decisión
     const aplicaEPP = nr >= umbrales.nrMinimoParaEPP;
-    const aplicaExamenes = nr >= umbrales.nrMinimoParaExamenes;
+
+    // NUEVA LÓGICA: Solo asignar exámenes si NP >= 8 (nivel de probabilidad mínimo)
+    // Esto evita asignar exámenes a GES con baja probabilidad
+    const aplicaExamenes = (np >= 8) && (nr >= umbrales.nrMinimoParaExamenes);
+
     const aplicaAptitudes = nr >= umbrales.nrMinimoParaAptitudes;
 
     // Determinar periodicidad según nivel de NR
@@ -372,10 +434,10 @@ class RiesgosService {
           }
         }
 
-        // Determinar controles según NR (solo si hay NR válido)
+        // Determinar controles según NP y NR (solo si hay niveles válidos)
         let controlesGes;
-        if (nivelesValidos && niveles.nr !== null) {
-          controlesGes = this.determinarControlesPorNR(niveles.nr, gesConfig, umbrales);
+        if (nivelesValidos && niveles.nr !== null && niveles.np !== null) {
+          controlesGes = this.determinarControlesPorNR(niveles.nr, niveles.np, gesConfig, umbrales);
 
           // Clasificar GES por nivel
           if (niveles.nr >= 121) { // NR ≥ III (Alto o Crítico)
@@ -452,8 +514,10 @@ class RiesgosService {
       }
     });
 
-    // Convertir Sets a Arrays para serializar a JSON
-    controles.consolidado.examenes = Array.from(controles.consolidado.examenes);
+    // Aplicar jerarquía de exámenes (específicos reemplazan genéricos)
+    // Convertir a Array y luego aplicar deduplicación inteligente
+    const examenesConsolidados = Array.from(controles.consolidado.examenes);
+    controles.consolidado.examenes = this.aplicarJerarquiaExamenes(examenesConsolidados);
     controles.consolidado.epp = Array.from(controles.consolidado.epp);
     controles.consolidado.aptitudes = Array.from(controles.consolidado.aptitudes);
     controles.consolidado.condicionesIncompatibles = Array.from(controles.consolidado.condicionesIncompatibles);

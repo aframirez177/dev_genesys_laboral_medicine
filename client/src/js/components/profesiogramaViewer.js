@@ -420,12 +420,15 @@ class ProfesiogramaViewer {
             </div>
         `).join('') || '<p class="no-data">No se identificaron factores de riesgo específicos.</p>';
 
-        // Generate examenes HTML
-        const examenesHTML = cargo.examenes?.map(examen => `
-            <tr>
+        // Generate examenes HTML (clickeable con modal)
+        const examenesHTML = cargo.examenes?.map((examen, index) => `
+            <tr class="examen-row" data-examen-index="${index}" data-cargo-index="${cargoIndex}" style="cursor: pointer;">
                 <td>${examen.nombre || ''}</td>
                 <td>${examen.periodicidad || ''}</td>
-                <td>${examen.justificacion || ''}</td>
+                <td class="justificacion-cell">
+                    <span class="justificacion-preview">${examen.justificacion || ''}</span>
+                    <i class="fas fa-info-circle" style="margin-left: 8px; color: #5dc4af;"></i>
+                </td>
             </tr>
         `).join('') || '<tr><td colspan="3" class="no-data">No se definieron exámenes complementarios.</td></tr>';
 

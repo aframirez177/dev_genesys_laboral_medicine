@@ -678,7 +678,7 @@ async function loadExamenesPage() {
         const EXAMENES_POR_TOGGLE = {
             trabajaAlturas: ['EMOA', 'GLI', 'PL', 'PE', 'ESP', 'ECG'],
             manipulaAlimentos: ['EMOMP', 'FRO', 'KOH', 'COP'],
-            conduceVehiculo: ['PSM', 'GLI', 'PL'],
+            conduceVehiculo: ['PSP', 'GLI', 'PL'], // PSP = Prueba de Sustancias Psicoactivas
             trabajaEspaciosConfinados: ['EMO', 'ESP', 'ECG', 'GLI', 'PL', 'PSM'],
             espaciosConfinados: ['EMO', 'ESP', 'ECG', 'GLI', 'PL', 'PSM']
         };
@@ -1827,6 +1827,41 @@ function handleLogout() {
 async function loadCompanyData() {
     console.log('[Dashboard] Loading company data...');
 
+    // Helper function to enrich data from API
+    const enrichFromAPI = async () => {
+        const empresaId = localStorage.getItem('empresaId');
+        const authToken = localStorage.getItem('authToken');
+
+        if (empresaId && authToken) {
+            try {
+                const response = await fetch(`/api/documentos/empresa/${empresaId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.documents && data.documents.length > 0) {
+                        console.log('[Dashboard] Enriched data from API with', data.documents.length, 'documents');
+                        const latestDoc = data.documents[0];
+                        const metadata = latestDoc.metadata || {};
+                        return {
+                            sector: metadata.sector,
+                            actividad_economica: metadata.actividadEconomica,
+                            responsable: metadata.nombreResponsable,
+                            nombre_responsable: latestDoc.nombre_responsable,
+                            numCargos: metadata.numCargos
+                        };
+                    }
+                }
+            } catch (apiError) {
+                console.warn('[Dashboard] Error enriching from API:', apiError);
+            }
+        }
+        return null;
+    };
+
     // PRIORITY 1: genesys_wizard_state (from wizard - has complete data with cargos!)
     const wizardState = localStorage.getItem('genesys_wizard_state');
     if (wizardState) {
@@ -1834,13 +1869,17 @@ async function loadCompanyData() {
             const state = JSON.parse(wizardState);
             if (state.formData && state.formData.nombreEmpresa) {
                 console.log('[Dashboard] Found company from wizard state:', state.formData.nombreEmpresa);
+
+                // Try to enrich with API data first
+                const apiData = await enrichFromAPI();
+
                 const companyInfo = {
                     nombre: state.formData.nombreEmpresa,
                     nit: state.formData.nit,
                     email: state.formData.email,
-                    sector: state.formData.sector,
-                    actividad_economica: state.formData.actividadEconomica || state.formData.actividad_economica,
-                    responsable: state.formData.responsable || state.formData.nombreResponsable,
+                    sector: apiData?.sector || state.formData.sector,
+                    actividad_economica: apiData?.actividad_economica || state.formData.actividadEconomica || state.formData.actividad_economica,
+                    responsable: apiData?.responsable || apiData?.nombre_responsable || state.formData.responsable || state.formData.nombreResponsable,
                     cargos: state.formData.cargos || []
                 };
                 updateCompanyUI(companyInfo.nombre, companyInfo);
@@ -1863,46 +1902,24 @@ async function loadCompanyData() {
             const empresa = JSON.parse(empresaData);
             console.log('[Dashboard] Found empresa from login:', empresa);
 
-            // Try to fetch documents and cargos from API
-            const empresaId = localStorage.getItem('empresaId');
-            const authToken = localStorage.getItem('authToken');
+            // Always try to enrich from API
+            const apiData = await enrichFromAPI();
 
-            if (empresaId && authToken) {
-                try {
-                    const response = await fetch(`/api/documentos/empresa/${empresaId}`, {
-                        headers: {
-                            'Authorization': `Bearer ${authToken}`
-                        }
-                    });
+            if (apiData) {
+                // Enrich empresa data with fresh API data
+                const enrichedEmpresa = {
+                    ...empresa,
+                    sector: apiData.sector || empresa.sector || '-',
+                    actividad_economica: apiData.actividad_economica || empresa.actividad_economica || '-',
+                    responsable: apiData.responsable || apiData.nombre_responsable || empresa.responsable || '-',
+                    numCargos: apiData.numCargos || 0
+                };
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.success && data.documents && data.documents.length > 0) {
-                            console.log('[Dashboard] Found documents:', data.documents.length);
-
-                            // Get metadata from the latest document
-                            const latestDoc = data.documents[0];
-                            const metadata = latestDoc.metadata || {};
-
-                            // Enrich empresa data with metadata
-                            const enrichedEmpresa = {
-                                ...empresa,
-                                sector: metadata.sector || empresa.sector || '-',
-                                actividad_economica: metadata.actividadEconomica || empresa.actividad_economica || '-',
-                                responsable: metadata.nombreResponsable || empresa.responsable || '-',
-                                numCargos: metadata.numCargos || 0
-                            };
-
-                            updateCompanyUI(enrichedEmpresa.nombre_legal || enrichedEmpresa.razon_social, enrichedEmpresa);
-                            return enrichedEmpresa;
-                        }
-                    }
-                } catch (apiError) {
-                    console.warn('[Dashboard] Error fetching documents from API:', apiError);
-                }
+                updateCompanyUI(enrichedEmpresa.nombre_legal || enrichedEmpresa.razon_social, enrichedEmpresa);
+                return enrichedEmpresa;
             }
 
-            // Fallback to basic empresa data from login
+            // Fallback to basic empresa data from login if API fails
             updateCompanyUI(empresa.nombre_legal || empresa.razon_social || empresa.nombre, empresa);
             return empresa;
         } catch (e) {

@@ -1,0 +1,20 @@
+{
+  "name": "genesys-e2e-tests",
+  "version": "1.0.0",
+  "description": "Tests E2E para Genesys Laboral Medicine - Wizard SST",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:ui": "npx playwright test --ui",
+    "test:debug": "npx playwright test --debug",
+    "test:wizard": "npx playwright test wizard.spec.ts --headed",
+    "codegen": "npx playwright codegen http://localhost:3000/wizard.html",
+    "report": "npx playwright show-report",
+    "clean": "rm -rf test-results playwright-report"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.2.0",
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.10.2"
+  }
+}
