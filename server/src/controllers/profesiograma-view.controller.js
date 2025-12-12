@@ -4,10 +4,11 @@
  */
 
 import db from '../config/database.js';
-import { generatePDFFromView } from '../utils/profesiogramaToPdf.js';
 import riesgosService from '../services/riesgos.service.js';
 import { EXAM_DETAILS } from '../config/exam-details-config.js';
 import { GES_DATOS_PREDEFINIDOS } from '../config/ges-config.js';
+// Nuevo generador de PDF completo con jsPDF
+import { generarProfesiogramaCompletoPDF } from './profesiograma-pdf.controller.js';
 
 /**
  * Get profesiograma data by ID
@@ -278,34 +279,113 @@ function calcularNivelARL(nrMaximo) {
 }
 
 /**
- * Generate PDF from profesiograma view using Puppeteer
+ * Generate PDF using jsPDF (nuevo generador completo)
+ * Ya no usa Puppeteer - genera el PDF directamente con jsPDF
  */
 async function exportPDF(req, res) {
     try {
         const { id } = req.params;
 
-        console.log(`📄 Generando PDF para profesiograma ID: ${id}`);
+        console.log(`📄 Generando PDF con jsPDF para profesiograma ID: ${id}`);
 
-        // Detectar puerto según entorno
-        // En desarrollo: webpack-dev-server corre en puerto 8080
-        // En producción: todo está en puerto 3000
-        const isDevelopment = process.env.NODE_ENV === 'development';
-        const frontendPort = isDevelopment ? 8080 : 3000;
-        const viewUrl = `http://localhost:${frontendPort}/pages/profesiograma_view.html?id=${id}`;
+        // 1. Obtener documento de la BD
+        const documento = await db('documentos_generados')
+            .where({ id })
+            .first();
 
-        console.log(`🌐 URL de vista (${isDevelopment ? 'DEV' : 'PROD'}): ${viewUrl}`);
+        if (!documento) {
+            return res.status(404).json({
+                error: 'Profesiograma no encontrado',
+                message: `No existe un documento con ID ${id}`
+            });
+        }
 
-        // Generate PDF using Puppeteer
-        const pdfBuffer = await generatePDFFromView(viewUrl, id);
+        // 2. Obtener empresa
+        const empresa = await db('empresas')
+            .where({ id: documento.empresa_id })
+            .first();
 
-        console.log(`✅ PDF generado: ${pdfBuffer.length} bytes`);
+        // 3. Obtener cargos del documento
+        const cargosDB = await db('cargos_documento')
+            .where({ documento_id: documento.id })
+            .select('*');
 
-        // Set response headers
+        console.log(`✓ Cargos encontrados: ${cargosDB.length}`);
+
+        // 4. Para cada cargo, obtener sus riesgos y reconstruir estructura
+        const cargos = await Promise.all(
+            cargosDB.map(async (cargoDB) => {
+                // Obtener riesgos del cargo
+                const riesgosDB = await db('riesgos_cargo')
+                    .where({ cargo_id: cargoDB.id })
+                    .select('*');
+
+                // Reconstruir estructura de cargo para el generador PDF
+                const cargo = {
+                    cargoName: cargoDB.nombre_cargo,
+                    area: cargoDB.area,
+                    descripcionTareas: cargoDB.descripcion_tareas,
+                    zona: cargoDB.zona,
+                    numTrabajadores: cargoDB.num_trabajadores,
+                    tareasRutinarias: cargoDB.tareas_rutinarias,
+                    trabajaAlturas: cargoDB.trabaja_alturas,
+                    manipulaAlimentos: cargoDB.manipula_alimentos,
+                    conduceVehiculo: cargoDB.conduce_vehiculo,
+                    trabajaEspaciosConfinados: cargoDB.trabaja_espacios_confinados,
+                    gesSeleccionados: riesgosDB.map(riesgo => ({
+                        riesgo: riesgo.tipo_riesgo,
+                        ges: riesgo.descripcion_riesgo,
+                        niveles: {
+                            deficiencia: { value: riesgo.nivel_deficiencia },
+                            exposicion: { value: riesgo.nivel_exposicion },
+                            consecuencia: { value: riesgo.nivel_consecuencia }
+                        }
+                    }))
+                };
+
+                // Calcular controles consolidados usando riesgosService
+                const controles = riesgosService.consolidarControlesCargo(cargo);
+
+                // Añadir NR calculado a cada GES
+                cargo.gesSeleccionados = cargo.gesSeleccionados.map((ges, index) => {
+                    const gesConControles = controles.porGES[index];
+                    return {
+                        ...ges,
+                        nr: gesConControles?.niveles?.nr || 0,
+                        nrNivel: gesConControles?.niveles?.nrNivel || 'N/A',
+                        nrInterpretacion: gesConControles?.niveles?.nrInterpretacion || 'N/A'
+                    };
+                });
+
+                cargo.controlesConsolidados = controles;
+
+                return cargo;
+            })
+        );
+
+        // 5. Construir formData para el generador PDF
+        const formData = {
+            cargos,
+            contact: {
+                companyName: empresa?.nombre_legal || 'Empresa',
+                nit: empresa?.nit || 'N/A'
+            }
+        };
+
+        console.log(`📊 Generando PDF con ${cargos.length} cargos...`);
+
+        // 6. Generar PDF con el nuevo generador jsPDF
+        const pdfBuffer = await generarProfesiogramaCompletoPDF(formData, {
+            companyName: empresa?.nombre_legal || 'Empresa'
+        });
+
+        console.log(`✅ PDF generado con jsPDF: ${pdfBuffer.length} bytes`);
+
+        // 7. Enviar PDF como respuesta
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename=profesiograma_${id}.pdf`);
         res.setHeader('Content-Length', pdfBuffer.length);
 
-        // Send PDF
         res.send(pdfBuffer);
 
     } catch (error) {
