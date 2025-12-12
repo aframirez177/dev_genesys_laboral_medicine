@@ -68,8 +68,15 @@ export class MatrizRiesgosComponent {
                     np: peligro.niveles.np,
                     nr: peligro.niveles.nr,
                     nrNivel: peligro.niveles.nrNivel,
+                    niveles: peligro.niveles, // Full niveles object for display
                     interpretacion: peligro.interpretacion,
-                    controles: peligro.controles
+                    controles: peligro.controles,
+                    // Controles existentes (fuente, medio, individuo)
+                    controlesExistentes: peligro.controlesExistentes,
+                    tieneControlesExistentes: peligro.tieneControlesExistentes,
+                    // Warning para riesgos altos sin controles
+                    requiereAccionUrgente: peligro.requiereAccionUrgente,
+                    sugerenciasIA: peligro.sugerenciasIA
                 });
             });
         });
@@ -298,118 +305,358 @@ export class MatrizRiesgosComponent {
     }
 
     /**
-     * Render expanded risk details
+     * Render expanded risk details - NUEVA ESTRUCTURA
+     * Fila 1: Interpretación + Controles Existentes (Fuente, Medio, Individuo) con warnings
+     * Fila 2: Controles Sugeridos ISO 45001
      */
     renderRiskDetails(risk) {
+        // Determinar si el riesgo es alto (necesita warnings en campos vacíos)
+        const isHighRisk = risk.requiereAccionUrgente ||
+                          risk.nrNivel === 'V' ||
+                          risk.nrNivel === 'IV' ||
+                          (risk.np && risk.np >= 10);
+
+        // Verificar campos vacíos
+        const fuenteEmpty = this.isControlEmpty(risk.controlesExistentes?.fuente);
+        const medioEmpty = this.isControlEmpty(risk.controlesExistentes?.medio);
+        const individuoEmpty = this.isControlEmpty(risk.controlesExistentes?.individuo);
+
+        // SVG iconos por nivel de riesgo
+        const riskLevelIcon = this.getRiskLevelIcon(risk.nrNivel);
+        const nivelLower = (risk.nrNivel || 'iii').toLowerCase();
+
         return `
-            <div class="details-grid">
-                <!-- Interpretación -->
-                <div class="details-section">
-                    <div class="details-section__title">
-                        <i data-lucide="info"></i>
-                        Interpretación del Riesgo
+            <div class="risk-expanded-panel">
+                <!-- FILA 1: Interpretación + Controles Existentes -->
+                <div class="risk-panel-row risk-panel-row--primary">
+                    <!-- Columna 1: Interpretación del Riesgo -->
+                    <div class="risk-panel-card risk-panel-card--interpretation">
+                        <div class="risk-panel-card__header">
+                            <div class="risk-level-indicator risk-level-indicator--${nivelLower}">
+                                ${riskLevelIcon}
+                            </div>
+                            <div class="risk-panel-card__title">
+                                <span class="label">Interpretación del Riesgo</span>
+                                <span class="level-badge level-badge--${nivelLower}">
+                                    Nivel ${risk.nrNivel || 'N/A'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="risk-panel-card__body">
+                            <p class="interpretation-meaning">
+                                <strong>${risk.interpretacion?.significado || 'Sin interpretación'}</strong>
+                            </p>
+                            <p class="interpretation-action">
+                                ${risk.interpretacion?.accion || ''}
+                            </p>
+                        </div>
                     </div>
-                    <div class="details-section__content">
-                        <strong>${risk.interpretacion?.significado || 'N/A'}</strong>
-                        <p>${risk.interpretacion?.accion || ''}</p>
+
+                    <!-- Columna 2: Control en Fuente -->
+                    <div class="risk-panel-card risk-panel-card--control ${fuenteEmpty && isHighRisk ? 'risk-panel-card--warning' : ''}">
+                        ${fuenteEmpty && isHighRisk ? `
+                            <div class="control-warning-float">
+                                <i data-lucide="alert-triangle"></i>
+                                <span>Sin control</span>
+                            </div>
+                        ` : ''}
+                        <div class="risk-panel-card__header">
+                            <i data-lucide="target" class="control-icon"></i>
+                            <span class="risk-panel-card__title">Fuente</span>
+                        </div>
+                        <div class="risk-panel-card__body">
+                            ${this.renderControlContent(risk.controlesExistentes?.fuente)}
+                        </div>
+                    </div>
+
+                    <!-- Columna 3: Control en Medio -->
+                    <div class="risk-panel-card risk-panel-card--control ${medioEmpty && isHighRisk ? 'risk-panel-card--warning' : ''}">
+                        ${medioEmpty && isHighRisk ? `
+                            <div class="control-warning-float">
+                                <i data-lucide="alert-triangle"></i>
+                                <span>Sin control</span>
+                            </div>
+                        ` : ''}
+                        <div class="risk-panel-card__header">
+                            <i data-lucide="layers" class="control-icon"></i>
+                            <span class="risk-panel-card__title">Medio</span>
+                        </div>
+                        <div class="risk-panel-card__body">
+                            ${this.renderControlContent(risk.controlesExistentes?.medio)}
+                        </div>
+                    </div>
+
+                    <!-- Columna 4: Control en Individuo -->
+                    <div class="risk-panel-card risk-panel-card--control ${individuoEmpty && isHighRisk ? 'risk-panel-card--warning' : ''}">
+                        ${individuoEmpty && isHighRisk ? `
+                            <div class="control-warning-float">
+                                <i data-lucide="alert-triangle"></i>
+                                <span>Sin control</span>
+                            </div>
+                        ` : ''}
+                        <div class="risk-panel-card__header">
+                            <i data-lucide="user-check" class="control-icon"></i>
+                            <span class="risk-panel-card__title">Individuo</span>
+                        </div>
+                        <div class="risk-panel-card__body">
+                            ${this.renderControlContent(risk.controlesExistentes?.individuo)}
+                        </div>
                     </div>
                 </div>
 
-                <!-- Eliminación -->
-                ${risk.controles?.eliminacion && risk.controles.eliminacion.length > 0 ? `
-                    <div class="details-section">
-                        <div class="details-section__title">
-                            <i data-lucide="x-circle"></i>
-                            Eliminación
+                <!-- Botón de Sugerencias IA (si hay riesgo alto) -->
+                ${isHighRisk && risk.sugerenciasIA ? `
+                    <div class="risk-panel-suggestions-bar">
+                        <button class="btn-suggestions" data-risk-id="${risk.id}">
+                            <i data-lucide="lightbulb"></i>
+                            <span>Ver sugerencias para reducir este riesgo</span>
+                            <i data-lucide="chevron-right" class="arrow"></i>
+                        </button>
+                    </div>
+
+                    <!-- Tooltip de sugerencias (position: fixed) -->
+                    <div class="sugerencias-ia-tooltip" id="sugerencias-${risk.id}">
+                        <div class="sugerencias-ia-tooltip__header">
+                            <i data-lucide="sparkles"></i>
+                            <span>Sugerencias para reducir el riesgo</span>
                         </div>
-                        <div class="details-section__content">
-                            <ul>
-                                ${risk.controles.eliminacion.map(c => `<li>${c}</li>`).join('')}
-                            </ul>
+                        <div class="sugerencias-ia-tooltip__body">
+                            ${risk.sugerenciasIA.fuente?.length ? `
+                                <div class="sugerencia-grupo">
+                                    <span class="sugerencia-label">En la Fuente</span>
+                                    <ul>${risk.sugerenciasIA.fuente.map(s => `<li>${s}</li>`).join('')}</ul>
+                                </div>
+                            ` : ''}
+                            ${risk.sugerenciasIA.medio?.length ? `
+                                <div class="sugerencia-grupo">
+                                    <span class="sugerencia-label">En el Medio</span>
+                                    <ul>${risk.sugerenciasIA.medio.map(s => `<li>${s}</li>`).join('')}</ul>
+                                </div>
+                            ` : ''}
+                            ${risk.sugerenciasIA.individuo?.length ? `
+                                <div class="sugerencia-grupo">
+                                    <span class="sugerencia-label">En el Individuo</span>
+                                    <ul>${risk.sugerenciasIA.individuo.map(s => `<li>${s}</li>`).join('')}</ul>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 ` : ''}
 
-                <!-- Sustitución -->
-                ${risk.controles?.sustitucion && risk.controles.sustitucion.length > 0 ? `
-                    <div class="details-section">
-                        <div class="details-section__title">
-                            <i data-lucide="repeat"></i>
-                            Sustitución
-                        </div>
-                        <div class="details-section__content">
-                            <ul>
-                                ${risk.controles.sustitucion.map(c => `<li>${c}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                ` : ''}
-
-                <!-- Controles de Ingeniería -->
-                ${risk.controles?.ingenieria && risk.controles.ingenieria.length > 0 ? `
-                    <div class="details-section">
-                        <div class="details-section__title">
-                            <i data-lucide="settings"></i>
-                            Controles de Ingeniería
-                        </div>
-                        <div class="details-section__content">
-                            <ul>
-                                ${risk.controles.ingenieria.map(c => `<li>${c}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                ` : ''}
-
-                <!-- Controles Administrativos -->
-                ${risk.controles?.administrativos && risk.controles.administrativos.length > 0 ? `
-                    <div class="details-section">
-                        <div class="details-section__title">
-                            <i data-lucide="clipboard-list"></i>
-                            Controles Administrativos
-                        </div>
-                        <div class="details-section__content">
-                            <ul>
-                                ${risk.controles.administrativos.map(c => `<li>${c}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                ` : ''}
-
-                <!-- EPP -->
-                ${risk.controles?.epp && risk.controles.epp.length > 0 ? `
-                    <div class="details-section">
-                        <div class="details-section__title">
+                <!-- FILA 2: Medidas de Intervención Sugeridas -->
+                ${this.hasControlesSugeridos(risk) ? `
+                    <div class="risk-panel-row risk-panel-row--controls">
+                        <div class="risk-panel-section-header">
                             <i data-lucide="shield-check"></i>
-                            Equipos de Protección Personal (EPP)
+                            <span>Medidas de Intervención Sugeridas (ISO 45001)</span>
                         </div>
-                        <div class="details-section__content">
-                            <ul>
-                                ${risk.controles.epp.map(e => `<li>${e}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                ` : ''}
-
-                <!-- Mensaje si no hay controles -->
-                ${!risk.controles || (
-                    (!risk.controles.eliminacion || risk.controles.eliminacion.length === 0) &&
-                    (!risk.controles.sustitucion || risk.controles.sustitucion.length === 0) &&
-                    (!risk.controles.ingenieria || risk.controles.ingenieria.length === 0) &&
-                    (!risk.controles.administrativos || risk.controles.administrativos.length === 0) &&
-                    (!risk.controles.epp || risk.controles.epp.length === 0)
-                ) ? `
-                    <div class="details-section">
-                        <div class="details-section__title">
-                            <i data-lucide="alert-circle"></i>
-                            Medidas de Control
-                        </div>
-                        <div class="details-section__content">
-                            <p class="text-muted">No se han definido medidas de control para este riesgo.</p>
+                        <div class="risk-panel-controls-grid">
+                            ${this.renderControlSugerido(risk.controles?.eliminacion, 'Eliminación', 1, 'eliminacion')}
+                            ${this.renderControlSugerido(risk.controles?.sustitucion, 'Sustitución', 2, 'sustitucion')}
+                            ${this.renderControlSugerido(risk.controles?.epp, 'EPP', 3, 'epp')}
+                            ${this.renderControlSugerido(risk.controles?.ingenieria, 'Controles de Ingeniería', 4, 'ingenieria')}
+                            ${this.renderControlSugerido(risk.controles?.administrativos, 'Controles Administrativos', 5, 'administrativos')}
                         </div>
                     </div>
                 ` : ''}
             </div>
         `;
+    }
+
+    /**
+     * Verifica si un control está vacío
+     */
+    isControlEmpty(controles) {
+        if (!controles) return true;
+        const items = Array.isArray(controles) ? controles : [controles];
+        const validItems = items.filter(i => i && typeof i === 'string' && i.trim());
+        return validItems.length === 0;
+    }
+
+    /**
+     * Obtiene el icono SVG según el nivel de riesgo
+     */
+    getRiskLevelIcon(nivel) {
+        const icons = {
+            'V': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>`,
+            'IV': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>`,
+            'III': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                     <circle cx="12" cy="12" r="10"></circle>
+                     <line x1="12" y1="8" x2="12" y2="12"></line>
+                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                   </svg>`,
+            'II': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>`,
+            'I': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                   <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                 </svg>`
+        };
+        return icons[nivel] || icons['III'];
+    }
+
+    /**
+     * Renderiza contenido de control existente
+     */
+    renderControlContent(controles) {
+        if (!controles) {
+            return `<p class="control-empty">No especificado</p>`;
+        }
+
+        const items = Array.isArray(controles) ? controles : [controles];
+        const validItems = items.filter(i => i && typeof i === 'string' && i.trim());
+
+        if (validItems.length === 0) {
+            return `<p class="control-empty">No especificado</p>`;
+        }
+
+        return `
+            <ul class="control-list">
+                ${validItems.map(c => `<li>${c}</li>`).join('')}
+            </ul>
+        `;
+    }
+
+    /**
+     * Verifica si hay controles sugeridos
+     */
+    hasControlesSugeridos(risk) {
+        return risk.controles && (
+            risk.controles.eliminacion?.length > 0 ||
+            risk.controles.sustitucion?.length > 0 ||
+            risk.controles.ingenieria?.length > 0 ||
+            risk.controles.administrativos?.length > 0 ||
+            risk.controles.epp?.length > 0
+        );
+    }
+
+    /**
+     * Renderiza control sugerido individual
+     */
+    renderControlSugerido(items, label, numero, tipo) {
+        if (!items || items.length === 0) return '';
+
+        const list = Array.isArray(items) ? items : [items];
+        const validItems = list.filter(i => i && typeof i === 'string' && i.trim());
+
+        if (validItems.length === 0) return '';
+
+        return `
+            <div class="control-sugerido control-sugerido--${tipo}">
+                <div class="control-sugerido__header">
+                    <span class="control-sugerido__badge">${numero}</span>
+                    <span class="control-sugerido__title">${label}</span>
+                </div>
+                <ul class="control-sugerido__list">
+                    ${validItems.map(c => `<li>${c}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    /**
+     * Attach tooltip event listeners for IA suggestions
+     */
+    attachTooltipEventListeners() {
+        const btnSuggestions = this.container.querySelectorAll('.btn-suggestions');
+
+        btnSuggestions.forEach(btn => {
+            const riskId = btn.dataset.riskId;
+            const tooltip = document.getElementById(`sugerencias-${riskId}`);
+
+            if (!tooltip) return;
+
+            // Click handler for button
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // Close other tooltips first
+                this.container.querySelectorAll('.sugerencias-ia-tooltip.active').forEach(t => {
+                    if (t !== tooltip) {
+                        t.classList.remove('active');
+                    }
+                });
+
+                // Position and toggle the tooltip
+                this.positionTooltip(btn, tooltip);
+                tooltip.classList.toggle('active');
+            });
+        });
+
+        // Close tooltip when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.btn-suggestions') && !e.target.closest('.sugerencias-ia-tooltip')) {
+                this.container.querySelectorAll('.sugerencias-ia-tooltip.active').forEach(t => {
+                    t.classList.remove('active');
+                });
+            }
+        });
+
+        // Reposition tooltips on scroll
+        const tableContainer = this.container.querySelector('.matriz-table-container');
+        if (tableContainer) {
+            tableContainer.addEventListener('scroll', () => {
+                this.container.querySelectorAll('.sugerencias-ia-tooltip.active').forEach(tooltip => {
+                    const riskId = tooltip.id.replace('sugerencias-', '');
+                    const btn = this.container.querySelector(`.btn-suggestions[data-risk-id="${riskId}"]`);
+                    if (btn) {
+                        this.positionTooltip(btn, tooltip);
+                    }
+                });
+            });
+        }
+    }
+
+    /**
+     * Position tooltip relative to trigger button using fixed positioning
+     */
+    positionTooltip(trigger, tooltip) {
+        const rect = trigger.getBoundingClientRect();
+        const tooltipWidth = 380; // Max width of tooltip from CSS
+        const tooltipMaxHeight = 400;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const spacing = 12;
+
+        // Calculate horizontal position
+        let left = rect.right + spacing;
+
+        // If tooltip would go off right edge, position to the left of button
+        if (left + tooltipWidth > viewportWidth - 20) {
+            left = rect.left - tooltipWidth - spacing;
+        }
+
+        // If still off screen on left, center it
+        if (left < 20) {
+            left = Math.max(20, (viewportWidth - tooltipWidth) / 2);
+        }
+
+        // Calculate vertical position - align with button top
+        let top = rect.top;
+
+        // If tooltip would go off bottom, adjust up
+        if (top + tooltipMaxHeight > viewportHeight - 20) {
+            top = viewportHeight - tooltipMaxHeight - 20;
+        }
+
+        // Ensure not above viewport
+        if (top < 20) {
+            top = 20;
+        }
+
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
     }
 
     /**
@@ -489,6 +736,9 @@ export class MatrizRiesgosComponent {
         if (clearSearchBtn) {
             clearSearchBtn.addEventListener('click', () => this.resetFilters());
         }
+
+        // Attach tooltip event listeners for IA suggestions
+        this.attachTooltipEventListeners();
     }
 
     /**
@@ -648,7 +898,6 @@ export class MatrizRiesgosComponent {
         }
 
         const detailsRow = tableContainer.querySelector(`#details-${riskId}`);
-        const icon = button ? button.querySelector('i') : null;
 
         if (!detailsRow) {
             console.error('Details row not found for risk:', riskId);
@@ -656,22 +905,24 @@ export class MatrizRiesgosComponent {
             return;
         }
 
-        if (!icon) {
-            console.error('Icon not found in button');
-            return;
-        }
+        // Toggle the expanded state
+        const isExpanded = detailsRow.classList.contains('expanded');
 
-        if (detailsRow.classList.contains('expanded')) {
+        if (isExpanded) {
             // Collapse
             detailsRow.classList.remove('expanded');
-            icon.setAttribute('data-lucide', 'chevron-down');
         } else {
             // Expand
             detailsRow.classList.add('expanded');
-            icon.setAttribute('data-lucide', 'chevron-up');
         }
 
-        if (window.lucide) window.lucide.createIcons();
+        // Update icon - Lucide replaces <i> with <svg>, so we need to handle both
+        // Replace the button's innerHTML to ensure proper icon update
+        if (button) {
+            const newIcon = isExpanded ? 'chevron-down' : 'chevron-up';
+            button.innerHTML = `<i data-lucide="${newIcon}"></i>`;
+            if (window.lucide) window.lucide.createIcons();
+        }
     }
 
     /**
@@ -700,6 +951,9 @@ export class MatrizRiesgosComponent {
         if (clearSearchBtn) {
             clearSearchBtn.addEventListener('click', () => this.resetFilters());
         }
+
+        // Attach tooltip event listeners for IA suggestions
+        this.attachTooltipEventListeners();
     }
 }
 

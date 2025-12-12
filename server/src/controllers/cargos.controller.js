@@ -141,7 +141,9 @@ export async function getCargosByEmpresa(req, res) {
                     nrNivelMaximo: calcularNivelNR(nrMaximo),
                     conteoNiveles,
                     togglesActivos: getTogglesActivos(cargo),
-                    examenesMedicos: examenesConsolidados // ✅ Usando MISMA LÓGICA que viewer
+                    examenesMedicos: examenesConsolidados, // ✅ Usando MISMA LÓGICA que viewer
+                    // ✅ Incluir gesSeleccionados para edición del cargo
+                    gesSeleccionados: cargoParaServicio.gesSeleccionados
                 };
             })
         );
@@ -282,14 +284,23 @@ export async function getMatrizGTC45(req, res) {
             .first('id', 'preview_urls', 'created_at', 'updated_at');
 
         // Get all riesgos from all cargos of this empresa
+        // LEFT JOIN con catalogo_ges para obtener epp_sugeridos y medidas_intervencion
+        // Usa COALESCE para intentar match por ges_id primero, luego por nombre
         const riesgos = await db('riesgos_cargo')
             .join('cargos_documento', 'riesgos_cargo.cargo_id', 'cargos_documento.id')
             .join('documentos_generados', 'cargos_documento.documento_id', 'documentos_generados.id')
+            .leftJoin('catalogo_ges', function() {
+                this.on('riesgos_cargo.ges_id', '=', 'catalogo_ges.id')
+                    .orOn('riesgos_cargo.descripcion_riesgo', '=', 'catalogo_ges.nombre');
+            })
             .where('documentos_generados.empresa_id', empresaId)
             .select(
                 'riesgos_cargo.*',
                 'cargos_documento.nombre_cargo',
-                'cargos_documento.area'
+                'cargos_documento.area',
+                'catalogo_ges.epp_sugeridos as epp_catalogo',
+                'catalogo_ges.medidas_intervencion as medidas_intervencion',
+                'catalogo_ges.id as catalogo_ges_id'
             );
 
         // Calculate NR and organize by type
@@ -318,6 +329,29 @@ export async function getMatrizGTC45(req, res) {
                 };
             }
 
+            // Build controles object
+            const controles = buildControlesFromRiesgo(r);
+
+            // Parse controles existentes (los que el usuario ya tiene implementados)
+            // Los datos pueden venir como string simple (texto plano) o JSON array
+            const controlesExistentes = {
+                fuente: parseControles(r.controles_fuente) || (r.controles_fuente ? [r.controles_fuente] : []),
+                medio: parseControles(r.controles_medio) || (r.controles_medio ? [r.controles_medio] : []),
+                individuo: parseControles(r.controles_individuo) || (r.controles_individuo ? [r.controles_individuo] : [])
+            };
+
+            // Verificar si hay controles existentes implementados
+            const tieneControlesExistentes =
+                (Array.isArray(controlesExistentes.fuente) && controlesExistentes.fuente.length > 0) ||
+                (Array.isArray(controlesExistentes.medio) && controlesExistentes.medio.length > 0) ||
+                (Array.isArray(controlesExistentes.individuo) && controlesExistentes.individuo.length > 0) ||
+                (typeof controlesExistentes.fuente === 'string' && controlesExistentes.fuente.trim()) ||
+                (typeof controlesExistentes.medio === 'string' && controlesExistentes.medio.trim()) ||
+                (typeof controlesExistentes.individuo === 'string' && controlesExistentes.individuo.trim());
+
+            // Warning si es riesgo alto/critico (IV, V) o NP >= 10 y no hay controles existentes
+            const requiereAccionUrgente = (nrNivel === 'IV' || nrNivel === 'V' || np >= 10) && !tieneControlesExistentes;
+
             categorias[r.tipo_riesgo].peligros.push({
                 id: r.id,
                 descripcion: r.descripcion_riesgo,
@@ -332,7 +366,12 @@ export async function getMatrizGTC45(req, res) {
                     nrNivel
                 },
                 interpretacion: getInterpretacionNR(nr),
-                controles: buildControlesFromRiesgo(r)
+                controles,
+                controlesExistentes,
+                tieneControlesExistentes,
+                requiereAccionUrgente,
+                // Sugerencias IA para reducir el riesgo (basadas en el tipo de riesgo)
+                sugerenciasIA: requiereAccionUrgente ? getSugerenciasReduccionRiesgo(r.tipo_riesgo, r.descripcion_riesgo) : null
             });
 
             categorias[r.tipo_riesgo].conteoNiveles[nrNivel]++;
@@ -423,12 +462,174 @@ function calcularNivelNR(nr) {
     return 'I';
 }
 
+/**
+ * Get AI-based suggestions for risk reduction based on risk type
+ * Returns actionable suggestions for fuente, medio, and individuo
+ */
+function getSugerenciasReduccionRiesgo(tipoRiesgo, descripcionRiesgo) {
+    const sugerenciasPorTipo = {
+        'Biologico': {
+            fuente: [
+                'Implementar sistema de desinfección en el área de trabajo',
+                'Instalar cabinas de bioseguridad',
+                'Establecer zonas de aislamiento para materiales contaminados'
+            ],
+            medio: [
+                'Instalar sistemas de ventilación con filtros HEPA',
+                'Colocar dispensadores de gel antibacterial',
+                'Implementar protocolos de limpieza y desinfección periódica'
+            ],
+            individuo: [
+                'Usar guantes de nitrilo o látex',
+                'Usar mascarilla N95 o superior',
+                'Vacunación según protocolo de riesgo biológico'
+            ]
+        },
+        'Fisico': {
+            fuente: [
+                'Instalar aislamiento acústico en equipos ruidosos',
+                'Implementar sistemas de amortiguación de vibraciones',
+                'Instalar pantallas de protección térmica o radiante'
+            ],
+            medio: [
+                'Instalar barreras acústicas o paneles fonoabsorbentes',
+                'Implementar sistemas de iluminación LED regulable',
+                'Instalar sistemas de climatización adecuados'
+            ],
+            individuo: [
+                'Usar protección auditiva (tapones u orejeras)',
+                'Usar gafas de protección con filtro UV',
+                'Implementar pausas activas y rotación de tareas'
+            ]
+        },
+        'Quimico': {
+            fuente: [
+                'Sustituir sustancias peligrosas por alternativas menos tóxicas',
+                'Encapsular o confinar procesos que generen vapores',
+                'Automatizar procesos de manipulación de químicos'
+            ],
+            medio: [
+                'Instalar sistemas de extracción localizada',
+                'Implementar duchas de emergencia y lavaojos',
+                'Señalizar y etiquetar correctamente todos los químicos'
+            ],
+            individuo: [
+                'Usar respirador con filtro según el químico',
+                'Usar guantes resistentes a químicos',
+                'Usar traje de protección química si es necesario'
+            ]
+        },
+        'Psicosocial': {
+            fuente: [
+                'Redistribuir cargas de trabajo equitativamente',
+                'Implementar horarios flexibles',
+                'Definir claramente roles y responsabilidades'
+            ],
+            medio: [
+                'Crear espacios de descanso y desconexión',
+                'Implementar programa de bienestar laboral',
+                'Establecer canales de comunicación efectivos'
+            ],
+            individuo: [
+                'Capacitar en manejo del estrés',
+                'Implementar pausas activas obligatorias',
+                'Ofrecer apoyo psicológico profesional'
+            ]
+        },
+        'Biomecanico': {
+            fuente: [
+                'Adquirir mobiliario ergonómico ajustable',
+                'Implementar ayudas mecánicas para levantamiento',
+                'Automatizar tareas repetitivas'
+            ],
+            medio: [
+                'Reorganizar el puesto de trabajo ergonómicamente',
+                'Implementar rotación de tareas',
+                'Optimizar alturas de trabajo y alcances'
+            ],
+            individuo: [
+                'Capacitar en técnicas de manipulación de cargas',
+                'Implementar programa de pausas activas',
+                'Usar fajas lumbares si es necesario'
+            ]
+        },
+        'Condiciones de seguridad': {
+            fuente: [
+                'Instalar guardas de protección en máquinas',
+                'Implementar sistemas de bloqueo/etiquetado (LOTO)',
+                'Mantener equipos en condiciones óptimas'
+            ],
+            medio: [
+                'Demarcar y señalizar áreas de peligro',
+                'Instalar sistemas de iluminación de emergencia',
+                'Mantener orden y aseo en áreas de trabajo'
+            ],
+            individuo: [
+                'Usar EPP según el riesgo específico',
+                'Capacitar en procedimientos seguros de trabajo',
+                'Implementar permisos de trabajo para tareas de alto riesgo'
+            ]
+        },
+        'Fenomenos naturales': {
+            fuente: [
+                'Reforzar estructuras contra sismos',
+                'Implementar sistemas de drenaje contra inundaciones',
+                'Instalar pararrayos en zonas de tormentas eléctricas'
+            ],
+            medio: [
+                'Establecer rutas de evacuación señalizadas',
+                'Instalar sistemas de alerta temprana',
+                'Mantener kit de emergencia actualizado'
+            ],
+            individuo: [
+                'Capacitar en planes de emergencia',
+                'Realizar simulacros periódicos',
+                'Conocer puntos de encuentro y rutas de evacuación'
+            ]
+        }
+    };
+
+    return sugerenciasPorTipo[tipoRiesgo] || {
+        fuente: ['Evaluar y eliminar la fuente del peligro', 'Implementar controles de ingeniería'],
+        medio: ['Instalar barreras de protección', 'Señalizar y demarcar áreas de riesgo'],
+        individuo: ['Usar EPP adecuado', 'Capacitar al personal en prevención']
+    };
+}
+
 function getInterpretacionNR(nr) {
-    if (nr >= 600) return 'Situacion critica - Intervencion urgente';
-    if (nr >= 150) return 'Situacion alta - Corregir y adoptar medidas';
-    if (nr >= 40) return 'Mejorar si es posible';
-    if (nr >= 20) return 'Mantener medidas de control';
-    return 'No intervenir, salvo justificacion';
+    if (nr >= 600) {
+        return {
+            significado: 'Situación crítica',
+            accion: 'Suspender actividades hasta reducir el riesgo. Intervención urgente.',
+            nivel: 'V'
+        };
+    }
+    if (nr >= 150) {
+        return {
+            significado: 'Situación alta',
+            accion: 'Corregir y adoptar medidas de control de inmediato.',
+            nivel: 'IV'
+        };
+    }
+    if (nr >= 40) {
+        return {
+            significado: 'Mejorable',
+            accion: 'Mejorar si es posible. Justificar la intervención.',
+            nivel: 'III'
+        };
+    }
+    if (nr >= 20) {
+        return {
+            significado: 'Aceptable',
+            accion: 'Mantener las medidas de control existentes.',
+            nivel: 'II'
+        };
+    }
+    return {
+        significado: 'Bajo',
+        accion: 'No intervenir, salvo que un análisis más preciso lo justifique.',
+        nivel: 'I'
+    };
 }
 
 function getTogglesActivos(cargo) {
@@ -454,6 +655,7 @@ function parseControles(controlesJson) {
 /**
  * Build controles object from riesgo columns (controles_fuente, controles_medio, controles_individuo)
  * Maps to ISO 45001 hierarchy
+ * También incorpora información del catálogo GES (medidas_intervencion, epp_sugeridos)
  */
 function buildControlesFromRiesgo(riesgo) {
     const controles = {
@@ -491,6 +693,63 @@ function buildControlesFromRiesgo(riesgo) {
             controles.epp.push(...parsed);
         } else if (typeof parsed === 'string' && parsed.trim()) {
             controles.epp.push(parsed);
+        }
+    }
+
+    // Agregar medidas de intervención desde el catálogo GES
+    // Siempre se agregan las del catálogo para complementar
+    if (riesgo.medidas_intervencion) {
+        try {
+            const medidas = typeof riesgo.medidas_intervencion === 'string'
+                ? JSON.parse(riesgo.medidas_intervencion)
+                : riesgo.medidas_intervencion;
+
+            if (medidas && typeof medidas === 'object') {
+                // Eliminación - siempre agregar del catálogo
+                if (medidas.eliminacion && typeof medidas.eliminacion === 'string' && medidas.eliminacion.trim()) {
+                    controles.eliminacion.push(medidas.eliminacion.trim());
+                }
+                // Sustitución - siempre agregar del catálogo
+                if (medidas.sustitucion && typeof medidas.sustitucion === 'string' && medidas.sustitucion.trim()) {
+                    controles.sustitucion.push(medidas.sustitucion.trim());
+                }
+                // Controles de Ingeniería - agregar si no hay existentes
+                // Soporta tanto camelCase como snake_case del catálogo
+                const ingenieria = medidas.controlesIngenieria || medidas.controles_ingenieria;
+                if (ingenieria && typeof ingenieria === 'string' && ingenieria.trim()) {
+                    if (controles.ingenieria.length === 0) {
+                        controles.ingenieria.push(ingenieria.trim());
+                    }
+                }
+                // Controles Administrativos - agregar si no hay existentes
+                // Soporta tanto camelCase como snake_case del catálogo
+                const administrativos = medidas.controlesAdministrativos || medidas.controles_administrativos;
+                if (administrativos && typeof administrativos === 'string' && administrativos.trim()) {
+                    if (controles.administrativos.length === 0) {
+                        controles.administrativos.push(administrativos.trim());
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Error parsing medidas_intervencion:', e.message);
+        }
+    }
+
+    // Agregar EPP desde el catálogo GES si no hay EPP definidos
+    if (riesgo.epp_catalogo) {
+        try {
+            const eppCatalogo = typeof riesgo.epp_catalogo === 'string'
+                ? JSON.parse(riesgo.epp_catalogo)
+                : riesgo.epp_catalogo;
+
+            if (Array.isArray(eppCatalogo) && eppCatalogo.length > 0) {
+                // Si no hay EPP definidos, usar los del catálogo
+                if (controles.epp.length === 0) {
+                    controles.epp.push(...eppCatalogo.filter(e => e && typeof e === 'string'));
+                }
+            }
+        } catch (e) {
+            console.warn('Error parsing epp_catalogo:', e.message);
         }
     }
 
@@ -825,19 +1084,40 @@ export async function updateCargo(req, res) {
         // Insert updated riesgos and controles
         if (riesgosSeleccionados && riesgosSeleccionados.length > 0) {
             for (const riesgo of riesgosSeleccionados) {
-                const gesId = riesgo.id_ges || riesgo.idGes || riesgo.id;
-                const nivelData = niveles[gesId] || { ND: 1, NE: 1, NC: 10 };
+                // Soportar múltiples estructuras de datos:
+                // - Formato wizard: { categoria, nombre, id_ges }
+                // - Formato gesSeleccionados: { riesgo, ges, niveles: { deficiencia, exposicion, consecuencia } }
+                const gesId = riesgo.id_ges || riesgo.idGes || riesgo.id || riesgo.gesId;
+
+                // Obtener niveles desde múltiples fuentes
+                let nivelData;
+                if (riesgo.niveles && riesgo.niveles.deficiencia) {
+                    // Formato gesSeleccionados (viene del backend)
+                    nivelData = {
+                        ND: riesgo.niveles.deficiencia.value || riesgo.niveles.deficiencia || 1,
+                        NE: riesgo.niveles.exposicion.value || riesgo.niveles.exposicion || 1,
+                        NC: riesgo.niveles.consecuencia.value || riesgo.niveles.consecuencia || 10
+                    };
+                } else {
+                    // Formato wizard (objeto niveles separado)
+                    nivelData = niveles[gesId] || { ND: 1, NE: 1, NC: 10 };
+                }
+
                 const controlData = controles[gesId] || { fuente: '', medio: '', individuo: '' };
+
+                // Determinar tipo_riesgo y descripcion_riesgo según la estructura
+                const tipoRiesgo = riesgo.categoria || riesgo.riesgo || 'Otros';
+                const descripcionRiesgo = riesgo.nombre || riesgo.ges || '';
 
                 // Insert riesgo
                 const [riesgoId] = await trx('riesgos_cargo').insert({
                     cargo_id: cargoId,
-                    tipo_riesgo: riesgo.categoria || 'Otros',
-                    descripcion_riesgo: riesgo.nombre,
+                    tipo_riesgo: tipoRiesgo,
+                    descripcion_riesgo: descripcionRiesgo,
                     nivel_deficiencia: nivelData.ND,
                     nivel_exposicion: nivelData.NE,
                     nivel_consecuencia: nivelData.NC,
-                    ges_id: gesId,
+                    ges_id: gesId || null,
                     estado_aprobacion: estado_aprobacion || 'aprobado',
                     created_at: new Date()
                 });

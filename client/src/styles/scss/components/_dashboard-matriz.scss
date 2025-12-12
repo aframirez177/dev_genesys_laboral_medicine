@@ -3,6 +3,7 @@
 // Sprint 6 - World-Class UX/UI Design
 // ===========================================
 
+@use 'sass:color';
 @use 'dashboard-tokens' as tokens;
 
 // =====================
@@ -475,6 +476,525 @@
     }
 }
 
+// ===========================================
+// PANEL EXPANDIBLE - NUEVA ESTRUCTURA
+// Fila 1: Interpretación + Controles Existentes
+// Fila 2: Controles Sugeridos ISO 45001
+// ===========================================
+
+// =====================
+// CONTENEDOR PRINCIPAL
+// =====================
+.risk-expanded-panel {
+    padding: tokens.$space-5;
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-md;
+    border: 1px solid tokens.$dashboard-border;
+
+    > * + * {
+        margin-top: tokens.$space-5;
+    }
+}
+
+// =====================
+// FILAS DEL PANEL
+// =====================
+.risk-panel-row {
+    &--primary {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr;
+        gap: tokens.$space-4;
+
+        @include tokens.respond-to('laptop') {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @include tokens.respond-to('tablet') {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &--controls {
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-md;
+        padding: tokens.$space-4;
+    }
+}
+
+// =====================
+// HEADER DE SECCION
+// =====================
+.risk-panel-section-header {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    margin-bottom: tokens.$space-4;
+    padding-bottom: tokens.$space-3;
+    border-bottom: 1px solid tokens.$dashboard-border;
+    font-size: tokens.$font-small;
+    font-weight: tokens.$font-semibold;
+    color: tokens.$dashboard-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    i, svg {
+        width: 18px;
+        height: 18px;
+        color: tokens.$dashboard-primary;
+    }
+}
+
+// =====================
+// CARDS INDIVIDUALES
+// =====================
+.risk-panel-card {
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-md;
+    border: 1px solid tokens.$dashboard-border;
+    padding: tokens.$space-4;
+    position: relative;
+    transition: border-color tokens.$transition-normal, box-shadow tokens.$transition-normal;
+
+    &:hover {
+        border-color: rgba(tokens.$dashboard-primary, 0.3);
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        margin-bottom: tokens.$space-3;
+        padding-bottom: tokens.$space-2;
+        border-bottom: 1px solid tokens.$dashboard-border;
+    }
+
+    &__title {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+
+        .label {
+            display: block;
+            font-size: tokens.$font-xs;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: tokens.$dashboard-text-light;
+            margin-bottom: tokens.$space-1;
+        }
+    }
+
+    &__body {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text;
+        line-height: tokens.$leading-relaxed;
+    }
+
+    // Variante: Interpretación
+    &--interpretation {
+        background: tokens.$dashboard-white;
+        border: 2px solid tokens.$dashboard-border;
+
+        .interpretation-meaning {
+            margin: 0 0 tokens.$space-2 0;
+            strong { color: tokens.$dashboard-secondary; }
+        }
+
+        .interpretation-action {
+            margin: 0;
+            color: tokens.$dashboard-text-light;
+            font-size: tokens.$font-small;
+        }
+    }
+
+    // Variante: Control
+    &--control {
+        min-height: 120px;
+
+        .control-icon {
+            width: 16px;
+            height: 16px;
+            color: tokens.$dashboard-primary;
+        }
+
+        .control-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+                position: relative;
+                padding: tokens.$space-1 0 tokens.$space-1 tokens.$space-4;
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    left: tokens.$space-1;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 5px;
+                    height: 5px;
+                    background: tokens.$dashboard-primary;
+                    border-radius: 50%;
+                }
+            }
+        }
+
+        .control-empty {
+            margin: 0;
+            color: tokens.$dashboard-text-light;
+            font-style: italic;
+            font-size: tokens.$font-small;
+        }
+    }
+
+    // Variante: Warning (riesgo alto sin control)
+    &--warning {
+        border-color: tokens.$dashboard-warning;
+        background: rgba(tokens.$dashboard-warning, 0.05);
+
+        &:hover {
+            border-color: tokens.$dashboard-warning;
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-warning, 0.1);
+        }
+
+        .control-icon {
+            color: tokens.$dashboard-warning;
+        }
+    }
+}
+
+// =====================
+// INDICADOR DE NIVEL DE RIESGO
+// =====================
+.risk-level-indicator {
+    width: 48px;
+    height: 48px;
+    border-radius: tokens.$radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    &--v { background: rgba(tokens.$risk-level-v, 0.15); color: tokens.$risk-level-v; }
+    &--iv { background: rgba(tokens.$risk-level-iv, 0.15); color: tokens.$risk-level-iv; }
+    &--iii { background: rgba(tokens.$risk-level-iii, 0.15); color: tokens.$risk-level-iii; }
+    &--ii { background: rgba(tokens.$risk-level-ii, 0.15); color: tokens.$risk-level-ii; }
+    &--i { background: rgba(tokens.$risk-level-i, 0.15); color: tokens.$risk-level-i; }
+}
+
+// =====================
+// BADGE DE NIVEL
+// =====================
+.level-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: tokens.$space-1 tokens.$space-2;
+    border-radius: tokens.$radius-full;
+    font-size: tokens.$font-xs;
+    font-weight: tokens.$font-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &--v { background: rgba(tokens.$risk-level-v, 0.15); color: tokens.$risk-level-v; border: 1px solid tokens.$risk-level-v; }
+    &--iv { background: rgba(tokens.$risk-level-iv, 0.15); color: tokens.$risk-level-iv; border: 1px solid tokens.$risk-level-iv; }
+    &--iii { background: rgba(tokens.$risk-level-iii, 0.15); color: tokens.$risk-level-iii; border: 1px solid tokens.$risk-level-iii; }
+    &--ii { background: rgba(tokens.$risk-level-ii, 0.15); color: tokens.$risk-level-ii; border: 1px solid tokens.$risk-level-ii; }
+    &--i { background: rgba(tokens.$risk-level-i, 0.15); color: tokens.$risk-level-i; border: 1px solid tokens.$risk-level-i; }
+}
+
+// =====================
+// WARNING FLOTANTE
+// =====================
+.control-warning-float {
+    position: absolute;
+    top: tokens.$space-2;
+    right: tokens.$space-2;
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-1;
+    padding: tokens.$space-1 tokens.$space-2;
+    background: tokens.$dashboard-warning;
+    color: white;
+    border-radius: tokens.$radius-full;
+    font-size: 10px;
+    font-weight: tokens.$font-bold;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    animation: pulse-warning 2s ease-in-out infinite;
+
+    i, svg {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+@keyframes pulse-warning {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.02); }
+}
+
+// =====================
+// BARRA DE SUGERENCIAS
+// =====================
+.risk-panel-suggestions-bar {
+    padding: tokens.$space-3;
+    background: rgba(tokens.$dashboard-warning, 0.08);
+    border-radius: tokens.$radius-md;
+    border: 1px dashed tokens.$dashboard-warning;
+
+    .btn-suggestions {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: tokens.$space-2;
+        padding: tokens.$space-3 tokens.$space-4;
+        background: transparent;
+        border: none;
+        color: tokens.$dashboard-warning;
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        cursor: pointer;
+        transition: all tokens.$transition-normal;
+        border-radius: tokens.$radius-md;
+
+        i, svg {
+            width: 18px;
+            height: 18px;
+
+            &.arrow {
+                margin-left: auto;
+                transition: transform tokens.$transition-normal;
+            }
+        }
+
+        &:hover {
+            background: rgba(tokens.$dashboard-warning, 0.1);
+            .arrow { transform: translateX(4px); }
+        }
+    }
+}
+
+// =====================
+// GRID DE CONTROLES SUGERIDOS
+// =====================
+.risk-panel-controls-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: tokens.$space-3;
+
+    @include tokens.respond-to('laptop') {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include tokens.respond-to('tablet') {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include tokens.respond-to('mobile') {
+        grid-template-columns: 1fr;
+    }
+}
+
+// =====================
+// CONTROL SUGERIDO INDIVIDUAL
+// =====================
+.control-sugerido {
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-sm;
+    border: 1px solid tokens.$dashboard-border;
+    overflow: hidden;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        padding: tokens.$space-2 tokens.$space-3;
+        background: tokens.$dashboard-background;
+        border-bottom: 1px solid tokens.$dashboard-border;
+    }
+
+    &__badge {
+        width: 22px;
+        height: 22px;
+        border-radius: tokens.$radius-full;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: tokens.$font-xs;
+        font-weight: tokens.$font-bold;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    &__title {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    &__list {
+        list-style: none;
+        padding: tokens.$space-3;
+        margin: 0;
+
+        li {
+            position: relative;
+            padding: tokens.$space-1 0 tokens.$space-1 tokens.$space-4;
+            font-size: tokens.$font-small;
+            color: tokens.$dashboard-text;
+
+            &::before {
+                content: '';
+                position: absolute;
+                left: tokens.$space-1;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 4px;
+                height: 4px;
+                background: tokens.$dashboard-primary;
+                border-radius: 50%;
+            }
+
+            &:not(:last-child) {
+                margin-bottom: tokens.$space-1;
+            }
+        }
+    }
+
+    // Colores de badges según tipo
+    &--eliminacion .control-sugerido__badge { background: #ef4444; }
+    &--sustitucion .control-sugerido__badge { background: #f59e0b; }
+    &--ingenieria .control-sugerido__badge { background: #3b82f6; }
+    &--administrativos .control-sugerido__badge { background: #8b5cf6; }
+    &--epp .control-sugerido__badge { background: #10b981; }
+}
+
+// =====================
+// TOOLTIP SUGERENCIAS IA (OSCURO - POSITION FIXED)
+// =====================
+.sugerencias-ia-tooltip {
+    // CRITICO: position fixed para evitar clipping por overflow
+    position: fixed;
+    z-index: tokens.$z-tooltip;
+
+    // Dimensiones
+    width: 420px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+
+    // FONDO OSCURO (como sidebar) al ~95% opacidad
+    background: rgba(tokens.$sidebar-bg, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    // Visual
+    border-radius: tokens.$radius-lg;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+
+    // Animación
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity tokens.$transition-normal, visibility tokens.$transition-normal, transform tokens.$transition-normal;
+    pointer-events: none;
+
+    // Estado activo
+    &.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    // Custom scrollbar para tema oscuro
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: tokens.$radius-full; }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: tokens.$radius-full;
+        &:hover { background: rgba(255, 255, 255, 0.3); }
+    }
+
+    // Header
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-4;
+        background: rgba(tokens.$dashboard-primary, 0.15);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: tokens.$radius-lg tokens.$radius-lg 0 0;
+        color: white;
+        font-weight: tokens.$font-semibold;
+        font-size: tokens.$font-body;
+
+        i, svg {
+            width: 22px;
+            height: 22px;
+            color: tokens.$dashboard-primary;
+        }
+    }
+
+    // Body
+    &__body {
+        padding: tokens.$space-4;
+    }
+
+    // Grupo de sugerencias
+    .sugerencia-grupo {
+        &:not(:last-child) {
+            margin-bottom: tokens.$space-4;
+            padding-bottom: tokens.$space-4;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    }
+
+    // Label de categoría
+    .sugerencia-label {
+        display: block;
+        font-size: tokens.$font-xs;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-primary;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: tokens.$space-2;
+    }
+
+    // Lista
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            position: relative;
+            padding: tokens.$space-2 0 tokens.$space-2 tokens.$space-5;
+            font-size: tokens.$font-small;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: tokens.$leading-relaxed;
+
+            &::before {
+                content: '';
+                position: absolute;
+                left: tokens.$space-1;
+                top: tokens.$space-3;
+                width: 6px;
+                height: 6px;
+                background: tokens.$dashboard-primary;
+                border-radius: 50%;
+            }
+        }
+    }
+}
+
 // =====================
 // EMPTY STATE
 // =====================
@@ -574,5 +1094,354 @@
 
     .niveles-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+// =====================
+// CARGO DETAILS POPUP
+// =====================
+.cargo-details-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+
+    &.show {
+        opacity: 1;
+        visibility: visible;
+
+        .cargo-details-modal {
+            transform: translateY(0) scale(1);
+        }
+    }
+}
+
+.cargo-details-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.cargo-details-modal {
+    position: relative;
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-lg;
+    box-shadow: tokens.$shadow-xl;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.3s ease;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: tokens.$space-5 tokens.$space-6;
+        border-bottom: 1px solid tokens.$dashboard-border;
+        background: tokens.$dashboard-background;
+        border-radius: tokens.$radius-lg tokens.$radius-lg 0 0;
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+
+        i, svg {
+            width: 24px;
+            height: 24px;
+            color: tokens.$dashboard-primary;
+        }
+    }
+
+    &__close {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: transparent;
+        border-radius: tokens.$radius-full;
+        cursor: pointer;
+        @include tokens.flex-center;
+        transition: background tokens.$transition-fast;
+
+        &:hover {
+            background: tokens.$dashboard-border;
+        }
+
+        i, svg {
+            width: 20px;
+            height: 20px;
+            color: tokens.$dashboard-text-light;
+        }
+    }
+
+    &__body {
+        flex: 1;
+        overflow-y: auto;
+        padding: tokens.$space-6;
+
+        > * + * {
+            margin-top: tokens.$space-5;
+        }
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: tokens.$space-3;
+        padding: tokens.$space-4 tokens.$space-6;
+        border-top: 1px solid tokens.$dashboard-border;
+        background: tokens.$dashboard-background;
+        border-radius: 0 0 tokens.$radius-lg tokens.$radius-lg;
+    }
+}
+
+// Details sections inside popup
+.cargo-details-modal .details-section {
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-md;
+    padding: tokens.$space-4;
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin-bottom: tokens.$space-3;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        i, svg {
+            width: 16px;
+            height: 16px;
+            color: tokens.$dashboard-primary;
+        }
+    }
+}
+
+.cargo-details-modal .details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: tokens.$space-3;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-1;
+
+    .detail-label {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .detail-value {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+        font-weight: tokens.$font-medium;
+    }
+}
+
+.descripcion-text {
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text;
+    line-height: tokens.$leading-relaxed;
+    margin: 0;
+}
+
+.toggles-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: tokens.$space-2;
+}
+
+// GES categories in popup
+.ges-list {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.ges-category {
+    margin-bottom: tokens.$space-3;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    &__header {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-primary;
+        padding: tokens.$space-2 0;
+        border-bottom: 1px solid tokens.$dashboard-border;
+        margin-bottom: tokens.$space-2;
+    }
+
+    &__list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: tokens.$space-2;
+            background: tokens.$dashboard-white;
+            border-radius: tokens.$radius-sm;
+            margin-bottom: tokens.$space-1;
+            font-size: tokens.$font-small;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
+.ges-name {
+    color: tokens.$dashboard-text;
+    flex: 1;
+    padding-right: tokens.$space-2;
+}
+
+.ges-niveles {
+    font-size: tokens.$font-xs;
+    color: tokens.$dashboard-text-light;
+    font-family: monospace;
+    white-space: nowrap;
+}
+
+// Examenes list in popup
+.examenes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        padding: tokens.$space-2;
+        background: tokens.$dashboard-white;
+        border-radius: tokens.$radius-sm;
+        margin-bottom: tokens.$space-1;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.examen-codigo {
+    font-size: tokens.$font-xs;
+    font-weight: tokens.$font-bold;
+    color: tokens.$dashboard-primary;
+    background: rgba(tokens.$dashboard-primary, 0.1);
+    padding: tokens.$space-1 tokens.$space-2;
+    border-radius: tokens.$radius-sm;
+    white-space: nowrap;
+}
+
+.examen-nombre {
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text;
+}
+
+// Niveles grid inside popup (override)
+.cargo-details-modal .niveles-grid {
+    display: flex;
+    gap: tokens.$space-2;
+    flex-wrap: wrap;
+}
+
+.cargo-details-modal .nivel-item {
+    flex: 1;
+    min-width: 60px;
+    text-align: center;
+    padding: tokens.$space-2;
+    border-radius: tokens.$radius-sm;
+    background: tokens.$dashboard-white;
+    border: 1px solid tokens.$dashboard-border;
+
+    &--v {
+        border-color: tokens.$risk-level-v;
+        .nivel-count { color: tokens.$risk-level-v; }
+    }
+
+    &--iv {
+        border-color: tokens.$risk-level-iv;
+        .nivel-count { color: tokens.$risk-level-iv; }
+    }
+
+    &--iii {
+        border-color: tokens.$risk-level-iii;
+        .nivel-count { color: tokens.$risk-level-iii; }
+    }
+
+    &--ii {
+        border-color: tokens.$risk-level-ii;
+        .nivel-count { color: tokens.$risk-level-ii; }
+    }
+
+    &--i {
+        border-color: tokens.$risk-level-i;
+        .nivel-count { color: tokens.$risk-level-i; }
+    }
+}
+
+.nivel-label {
+    display: block;
+    font-size: tokens.$font-xs;
+    color: tokens.$dashboard-text-light;
+    margin-bottom: tokens.$space-1;
+}
+
+.nivel-count {
+    display: block;
+    font-size: tokens.$font-h3;
+    font-weight: tokens.$font-bold;
+}
+
+// Responsive for popup
+@include tokens.respond-to('tablet') {
+    .cargo-details-modal {
+        width: 95%;
+        max-height: 90vh;
+
+        &__body {
+            padding: tokens.$space-4;
+        }
+    }
+
+    .cargo-details-modal .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cargo-details-modal .niveles-grid {
+        flex-wrap: wrap;
+    }
+
+    .cargo-details-modal .nivel-item {
+        min-width: calc(33% - tokens.$space-2);
     }
 }
