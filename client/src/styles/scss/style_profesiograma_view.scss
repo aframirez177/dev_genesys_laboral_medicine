@@ -1097,7 +1097,8 @@ body {
     html, body {
         font-size: 62.5%;
         width: 100%;
-        height: auto;
+        height: auto !important;
+        overflow: visible !important;
     }
 
     .print-hidden {
@@ -1115,11 +1116,12 @@ body {
         min-width: 100% !important;
         width: 100% !important;
         height: auto !important;
-        min-height: auto; // ✅ Cambiado de 100vh a auto para permitir flujo natural
-        page-break-after: auto; // ✅ Cambiado de always - dejar que el contenido fluya
-        page-break-inside: auto; // ✅ Cambiado de avoid - permitir división de páginas largas
+        min-height: auto; // Permitir flujo natural
+        page-break-after: auto; // Dejar que el contenido fluya
+        page-break-inside: auto; // Permitir división de páginas largas
         scroll-snap-align: none;
-        padding: 0; // ✅ Eliminar padding (se maneja con @page margin)
+        padding: 0; // Se maneja con @page margin
+        overflow: visible !important;
     }
 
     // Solo forzar page break en la portada y secciones especiales
@@ -1160,6 +1162,39 @@ body {
         page-break-inside: avoid;
     }
 
+    // ==========================================
+    // CARGO FICHA - Estilos especiales de impresión
+    // ==========================================
+    .cargo-ficha {
+        page-break-inside: auto !important; // Permitir división de fichas largas
+        page-break-before: auto;
+        margin-bottom: 2rem;
+        box-shadow: none !important;
+        border-width: 0.2rem;
+    }
+
+    // Header del cargo debe quedarse junto
+    .cargo-header {
+        page-break-inside: avoid;
+        page-break-after: avoid;
+    }
+
+    // Secciones dentro del cargo
+    .cargo-section {
+        page-break-inside: auto; // Permitir división si es muy larga
+    }
+
+    // Título de sección debe quedarse con su contenido
+    .cargo-section-title {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+    }
+
+    // Factor de riesgo individual no se divide
+    .factor-riesgo-item {
+        page-break-inside: avoid;
+    }
+
     // Tablas: permitir división pero mantener headers
     table {
         page-break-inside: auto;
@@ -1172,6 +1207,26 @@ body {
     tbody tr {
         page-break-inside: avoid; // No dividir filas
         page-break-after: auto;
+    }
+
+    // Tabla de exámenes
+    .examenes-table {
+        page-break-inside: auto;
+
+        thead {
+            display: table-header-group;
+        }
+
+        tbody tr {
+            page-break-inside: avoid;
+        }
+
+        // Asegurar que los chulitos se vean
+        .check-cell {
+            color: $success !important;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
     }
 
     // Adjust font sizes for print
@@ -1193,7 +1248,9 @@ body {
     .portada-info,
     .definicion-card,
     .normativa-item,
-    .field-value {
+    .field-value,
+    .cargo-numero,
+    .factor-badge {
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
     }
@@ -1306,7 +1363,7 @@ body {
     padding: $spacing-xxl;
     margin-bottom: $spacing-xxl;
     box-shadow: $shadow-md;
-    page-break-inside: avoid; // For PDF printing
+    // Nota: page-break-inside se maneja en @media print para permitir fichas largas
 
     &:hover {
         border-color: $primary;
@@ -1383,7 +1440,7 @@ body {
 
 .cargo-section {
     margin-bottom: $spacing-xl;
-    page-break-inside: avoid; // For PDF printing
+    // Nota: page-break-inside se maneja en @media print
 
     &:last-child {
         margin-bottom: 0;
@@ -1692,6 +1749,14 @@ body {
             font-weight: 600;
             padding: $spacing-md;
             text-align: left;
+
+            // Columnas de check (Ingreso, Periódico, Retiro)
+            &.check-header {
+                text-align: center;
+                width: 7rem;
+                min-width: 7rem;
+                white-space: nowrap;
+            }
         }
     }
 
@@ -1717,6 +1782,17 @@ body {
                     text-align: center;
                     color: rgba($text, 0.5);
                     font-style: italic;
+                }
+
+                // Celdas de check (chulitos)
+                &.check-cell {
+                    text-align: center;
+                    vertical-align: middle;
+                    font-size: 1.8rem;
+                    color: $success;
+                    font-weight: 700;
+                    width: 7rem;
+                    min-width: 7rem;
                 }
             }
         }

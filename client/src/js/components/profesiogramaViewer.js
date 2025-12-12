@@ -423,17 +423,31 @@ class ProfesiogramaViewer {
             </div>
         `).join('') || '<p class="no-data">No se identificaron factores de riesgo específicos.</p>';
 
-        // Generate examenes HTML (clickeable con modal)
+        // Generate examenes HTML con columnas Ingreso, Periódico, Retiro
+        // Lógica: Ingreso y Periódico = ✓ para todos los exámenes
+        //         Retiro = ✓ solo para exámenes que contengan "EMO" o "Examen Médico" o "Médico Ocupacional"
+        const isRetiroExamen = (nombre) => {
+            if (!nombre) return false;
+            const nombreLower = nombre.toLowerCase();
+            return nombreLower.includes('emo') ||
+                   nombreLower.includes('examen médico') ||
+                   nombreLower.includes('examen medico') ||
+                   nombreLower.includes('médico ocupacional') ||
+                   nombreLower.includes('medico ocupacional');
+        };
+
         const examenesHTML = cargo.examenes?.map((examen, index) => `
-            <tr class="examen-row" data-examen-index="${index}" data-cargo-index="${cargoIndex}" style="cursor: pointer;">
+            <tr class="examen-row" data-examen-index="${index}" data-cargo-index="${cargoIndex}">
                 <td>${examen.nombre || ''}</td>
+                <td class="check-cell">✓</td>
+                <td class="check-cell">✓</td>
+                <td class="check-cell">${isRetiroExamen(examen.nombre) ? '✓' : ''}</td>
                 <td>${examen.periodicidad || ''}</td>
                 <td class="justificacion-cell">
                     <span class="justificacion-preview">${examen.justificacion || ''}</span>
-                    <i class="fas fa-info-circle" style="margin-left: 8px; color: #5dc4af;"></i>
                 </td>
             </tr>
-        `).join('') || '<tr><td colspan="3" class="no-data">No se definieron exámenes complementarios.</td></tr>';
+        `).join('') || '<tr><td colspan="6" class="no-data">No se definieron exámenes médicos.</td></tr>';
 
         // Generate EPP HTML
         const eppHTML = cargo.epp?.map(item => `<li>${item}</li>`).join('') || '<li class="no-data">No se especificaron EPP.</li>';
@@ -563,11 +577,14 @@ class ProfesiogramaViewer {
                 </div>
 
                 <div class="cargo-section">
-                    <h4 class="cargo-section-title">Exámenes Médicos Complementarios</h4>
+                    <h4 class="cargo-section-title">Exámenes Médicos</h4>
                     <table class="examenes-table">
                         <thead>
                             <tr>
                                 <th>Examen</th>
+                                <th class="check-header">Ingreso</th>
+                                <th class="check-header">Periódico</th>
+                                <th class="check-header">Retiro</th>
                                 <th>Periodicidad</th>
                                 <th>Justificación</th>
                             </tr>
