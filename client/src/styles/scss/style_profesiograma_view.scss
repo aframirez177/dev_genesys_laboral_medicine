@@ -1122,6 +1122,16 @@ body {
         scroll-snap-align: none;
         padding: 0; // Se maneja con @page margin
         overflow: visible !important;
+        display: block !important; // Cambiar de flex a block
+        flex-shrink: unset !important;
+    }
+
+    // CRÍTICO: Remover restricciones de altura del contenido
+    .page-content {
+        max-height: none !important; // Remover límite de altura
+        height: auto !important;
+        overflow: visible !important; // Mostrar todo el contenido
+        padding-right: 0;
     }
 
     // Solo forzar page break en la portada y secciones especiales
@@ -1239,9 +1249,20 @@ body {
     }
 
     // Remove shadows and transitions for print
+    // También asegurar que nada oculte contenido
     * {
         box-shadow: none !important;
         transition: none !important;
+    }
+
+    // Asegurar overflow visible para todos los contenedores principales
+    .profesiograma-viewer,
+    .page,
+    .page-content,
+    #cargos-container {
+        overflow: visible !important;
+        max-height: none !important;
+        height: auto !important;
     }
 
     // Ensure backgrounds print
