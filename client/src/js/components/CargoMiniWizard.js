@@ -124,14 +124,16 @@ export class CargoMiniWizard {
       nombre: data.nombre || data.nombre_cargo || '',
       area: data.area || '',
       zona: data.zona || '',
-      descripcion: data.descripcion || '',
+      // Mapear descripcion desde múltiples fuentes posibles (camelCase y snake_case)
+      descripcion: data.descripcion || data.descripcion_tareas || data.descripcionTareas || '',
       numPersonas: data.numPersonas || data.num_trabajadores || 1,
       tareasRutinarias: data.tareasRutinarias || data.tareas_rutinarias || false,
       trabajaAlturas: data.trabajaAlturas || data.trabaja_alturas || false,
       manipulaAlimentos: data.manipulaAlimentos || data.manipula_alimentos || false,
       conduceVehiculo: data.conduceVehiculo || data.conduce_vehiculo || false,
       trabajaEspaciosConfinados: data.trabajaEspaciosConfinados || data.trabaja_espacios_confinados || false,
-      riesgosSeleccionados: data.riesgos || data.riesgosSeleccionados || [],
+      // Mapear riesgos desde múltiples fuentes: gesSeleccionados tiene prioridad
+      riesgosSeleccionados: data.gesSeleccionados || data.riesgos || data.riesgosSeleccionados || [],
       niveles: data.niveles || {},
       controles: data.controles || {}
     };
@@ -436,9 +438,10 @@ export class CargoMiniWizard {
    * Step 2: Selección de riesgos/GES
    */
   renderRiesgosStep() {
-    // Agrupar GES por categoría
+    // Agrupar GES por categoría de riesgo
+    // Soportar múltiples nombres de campo: riesgo_nombre (API), categoria (legacy), riesgo (gesSeleccionados)
     const gesGrouped = this.state.catalogoGES.reduce((acc, ges) => {
-      const cat = ges.categoria || 'Otros';
+      const cat = ges.riesgo_nombre || ges.categoria || ges.riesgo || 'Otros';
       if (!acc[cat]) acc[cat] = [];
       acc[cat].push(ges);
       return acc;

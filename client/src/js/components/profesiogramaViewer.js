@@ -362,15 +362,18 @@ class ProfesiogramaViewer {
         container.innerHTML = '';
 
         cargos.forEach((cargo, index) => {
-            const cargoHTML = this.generateCargoHTML(cargo, index + 1);
+            const cargoHTML = this.generateCargoHTML(cargo, index + 1, index);
             container.innerHTML += cargoHTML;
         });
     }
 
     /**
      * Generate HTML for a single cargo
+     * @param {Object} cargo - Cargo data
+     * @param {Number} fichaNum - Número de ficha (1-based)
+     * @param {Number} cargoIndex - Índice del cargo (0-based, para data attributes)
      */
-    generateCargoHTML(cargo, fichaNum) {
+    generateCargoHTML(cargo, fichaNum, cargoIndex) {
         // Get risk level color
         const getRiskColor = (nivel) => {
             const riskColors = {

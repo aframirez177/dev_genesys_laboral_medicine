@@ -525,6 +525,9 @@ async function loadCargosPage() {
                         </div>
                     </div>
                     <div class="card__footer">
+                        <button class="btn btn--sm btn--ghost btn-view-cargo" data-cargo-id="${cargo.id}" data-cargo='${JSON.stringify(cargo).replace(/'/g, "&#39;")}'>
+                            <i data-lucide="eye"></i> Ver detalles
+                        </button>
                         <button class="btn btn--sm btn--outline btn-edit-cargo" data-cargo-id="${cargo.id}" data-cargo='${JSON.stringify(cargo).replace(/'/g, "&#39;")}'>
                             <i data-lucide="edit-2"></i> Editar
                         </button>
@@ -678,7 +681,7 @@ async function loadExamenesPage() {
         const EXAMENES_POR_TOGGLE = {
             trabajaAlturas: ['EMOA', 'GLI', 'PL', 'PE', 'ESP', 'ECG'],
             manipulaAlimentos: ['EMOMP', 'FRO', 'KOH', 'COP'],
-            conduceVehiculo: ['PSP', 'GLI', 'PL'], // PSP = Prueba de Sustancias Psicoactivas
+            conduceVehiculo: ['PSM', 'PSP', 'GLI', 'PL'], // PSM = Psicosensométrica, PSP = Sustancias Psicoactivas
             trabajaEspaciosConfinados: ['EMO', 'ESP', 'ECG', 'GLI', 'PL', 'PSM'],
             espaciosConfinados: ['EMO', 'ESP', 'ECG', 'GLI', 'PL', 'PSM']
         };
@@ -1820,16 +1823,19 @@ function handleLogout() {
 
 /**
  * Load company data from multiple sources:
- * 1. genesys_empresa (from login)
- * 2. genesys_wizard_state (from wizard - contains formData with company info)
- * 3. API call to /api/empresas/me (if token exists)
+ * PRIORITY 1: genesys_empresa (from login) - ALWAYS use logged-in empresa as source of truth
+ * PRIORITY 2: genesys_wizard_state (ONLY if matches logged-in empresa or no empresa logged in)
+ * PRIORITY 3: API call to /api/empresas/me (if token exists)
+ *
+ * IMPORTANT: We DON'T use wizard state from OTHER empresas/sessions to avoid
+ * cross-tab contamination where opening a wizard in another tab changes the dashboard.
  */
 async function loadCompanyData() {
     console.log('[Dashboard] Loading company data...');
 
     // Helper function to enrich data from API
-    const enrichFromAPI = async () => {
-        const empresaId = localStorage.getItem('empresaId');
+    const enrichFromAPI = async (empresaIdOverride) => {
+        const empresaId = empresaIdOverride || localStorage.getItem('empresaId');
         const authToken = localStorage.getItem('authToken');
 
         if (empresaId && authToken) {
@@ -1862,40 +1868,11 @@ async function loadCompanyData() {
         return null;
     };
 
-    // PRIORITY 1: genesys_wizard_state (from wizard - has complete data with cargos!)
-    const wizardState = localStorage.getItem('genesys_wizard_state');
-    if (wizardState) {
-        try {
-            const state = JSON.parse(wizardState);
-            if (state.formData && state.formData.nombreEmpresa) {
-                console.log('[Dashboard] Found company from wizard state:', state.formData.nombreEmpresa);
+    // Get logged-in empresa ID (this is the SOURCE OF TRUTH)
+    const loggedInEmpresaId = getEmpresaId();
+    console.log('[Dashboard] Logged-in empresa ID:', loggedInEmpresaId);
 
-                // Try to enrich with API data first
-                const apiData = await enrichFromAPI();
-
-                const companyInfo = {
-                    nombre: state.formData.nombreEmpresa,
-                    nit: state.formData.nit,
-                    email: state.formData.email,
-                    sector: apiData?.sector || state.formData.sector,
-                    actividad_economica: apiData?.actividad_economica || state.formData.actividadEconomica || state.formData.actividad_economica,
-                    responsable: apiData?.responsable || apiData?.nombre_responsable || state.formData.responsable || state.formData.nombreResponsable,
-                    cargos: state.formData.cargos || []
-                };
-                updateCompanyUI(companyInfo.nombre, companyInfo);
-
-                // Also update dashboard state
-                DashboardState.companyName = companyInfo.nombre;
-                DashboardState.data.cargos = companyInfo.cargos;
-
-                return companyInfo;
-            }
-        } catch (e) {
-            console.warn('[Dashboard] Error parsing genesys_wizard_state:', e);
-        }
-    }
-
-    // PRIORITY 2: genesys_empresa (login as empresa - fallback when no wizard data)
+    // PRIORITY 1: genesys_empresa (login as empresa - SOURCE OF TRUTH)
     const empresaData = localStorage.getItem('genesys_empresa');
     if (empresaData) {
         try {
@@ -2158,6 +2135,26 @@ function bindCargoMiniWizardEvents() {
         });
     });
 
+    // Bind all view details buttons
+    document.querySelectorAll('.btn-view-cargo').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            let cargoData = {};
+
+            try {
+                const cargoJson = btn.dataset.cargo;
+                if (cargoJson) {
+                    cargoData = JSON.parse(cargoJson.replace(/&#39;/g, "'"));
+                }
+            } catch (err) {
+                console.error('[CargoDetails] Error parsing cargo data:', err);
+            }
+
+            showCargoDetailsPopup(cargoData);
+        });
+    });
+
     console.log('[CargoWizard] Events bound successfully');
 }
 
@@ -2193,6 +2190,242 @@ function showNotification(message, type = 'info') {
             notification.remove();
         }, 300);
     }, 4000);
+}
+
+// ============================================
+// CARGO DETAILS POPUP
+// ============================================
+
+/**
+ * Show cargo details in a modal popup
+ */
+function showCargoDetailsPopup(cargo) {
+    // Remove any existing popup
+    const existingPopup = document.querySelector('.cargo-details-popup');
+    if (existingPopup) {
+        existingPopup.remove();
+    }
+
+    // Get toggle labels
+    const toggleLabels = {
+        trabajaAlturas: 'Trabajo en Alturas',
+        manipulaAlimentos: 'Manipulación de Alimentos',
+        conduceVehiculo: 'Conduce Vehículo',
+        trabajaEspaciosConfinados: 'Espacios Confinados'
+    };
+
+    const togglesActivos = cargo.togglesActivos || [];
+
+    // Get NR badge class
+    const nrNivel = cargo.nrNivelMaximo || 'N/A';
+    let nrBadgeClass = 'muted';
+    if (nrNivel === 'I') nrBadgeClass = 'success';
+    else if (nrNivel === 'II') nrBadgeClass = 'info';
+    else if (nrNivel === 'III') nrBadgeClass = 'warning';
+    else if (nrNivel === 'IV') nrBadgeClass = 'danger';
+    else if (nrNivel === 'V') nrBadgeClass = 'critical';
+
+    // Build GES/riesgos list
+    const gesSeleccionados = cargo.gesSeleccionados || [];
+    const gesGrouped = gesSeleccionados.reduce((acc, ges) => {
+        const cat = ges.riesgo || ges.categoria || 'Otros';
+        if (!acc[cat]) acc[cat] = [];
+        acc[cat].push(ges);
+        return acc;
+    }, {});
+
+    let riesgosHtml = '';
+    if (Object.keys(gesGrouped).length > 0) {
+        riesgosHtml = Object.entries(gesGrouped).map(([categoria, items]) => `
+            <div class="ges-category">
+                <div class="ges-category__header">${categoria}</div>
+                <ul class="ges-category__list">
+                    ${items.map(ges => {
+                        const niveles = ges.niveles || {};
+                        const nd = niveles.deficiencia?.value || niveles.deficiencia || '-';
+                        const ne = niveles.exposicion?.value || niveles.exposicion || '-';
+                        const nc = niveles.consecuencia?.value || niveles.consecuencia || '-';
+                        return `<li>
+                            <span class="ges-name">${ges.ges || ges.nombre || 'Sin nombre'}</span>
+                            <span class="ges-niveles">ND:${nd} NE:${ne} NC:${nc}</span>
+                        </li>`;
+                    }).join('')}
+                </ul>
+            </div>
+        `).join('');
+    } else {
+        riesgosHtml = '<p class="text-muted">Sin riesgos asignados</p>';
+    }
+
+    // Build exámenes list
+    const examenesMedicos = cargo.examenesMedicos || [];
+    let examenesHtml = '';
+    if (examenesMedicos.length > 0) {
+        examenesHtml = `
+            <ul class="examenes-list">
+                ${examenesMedicos.map(exam => `
+                    <li>
+                        <span class="examen-codigo">${exam.codigo}</span>
+                        <span class="examen-nombre">${exam.nombre}</span>
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+    } else {
+        examenesHtml = '<p class="text-muted">Sin exámenes asignados</p>';
+    }
+
+    // Build conteo niveles
+    const conteoNiveles = cargo.conteoNiveles || {};
+    const nivelesHtml = `
+        <div class="niveles-grid">
+            ${['V', 'IV', 'III', 'II', 'I'].map(nivel => `
+                <div class="nivel-item nivel-item--${nivel.toLowerCase()}">
+                    <span class="nivel-label">NR ${nivel}</span>
+                    <span class="nivel-count">${conteoNiveles[nivel] || 0}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    // Create popup
+    const popup = document.createElement('div');
+    popup.className = 'cargo-details-popup';
+    popup.innerHTML = `
+        <div class="cargo-details-overlay"></div>
+        <div class="cargo-details-modal">
+            <div class="cargo-details-modal__header">
+                <h2 class="cargo-details-modal__title">
+                    <i data-lucide="briefcase"></i>
+                    ${cargo.nombre_cargo || 'Sin nombre'}
+                </h2>
+                <button class="cargo-details-modal__close" aria-label="Cerrar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="cargo-details-modal__body">
+                <!-- Info básica -->
+                <div class="details-section">
+                    <h3 class="details-section__title">
+                        <i data-lucide="info"></i> Información General
+                    </h3>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Área</span>
+                            <span class="detail-value">${cargo.area || 'Sin área'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Zona</span>
+                            <span class="detail-value">${cargo.zona || 'Sin zona'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Personas</span>
+                            <span class="detail-value">${cargo.num_trabajadores || 0}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">NR Máximo</span>
+                            <span class="detail-value">
+                                <span class="badge badge--${nrBadgeClass}">${cargo.nrMaximo || 'N/A'} (${nrNivel})</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                ${cargo.descripcion_tareas ? `
+                <div class="details-section">
+                    <h3 class="details-section__title">
+                        <i data-lucide="file-text"></i> Descripción de Tareas
+                    </h3>
+                    <p class="descripcion-text">${cargo.descripcion_tareas}</p>
+                </div>
+                ` : ''}
+
+                <!-- Condiciones especiales -->
+                ${togglesActivos.length > 0 ? `
+                <div class="details-section">
+                    <h3 class="details-section__title">
+                        <i data-lucide="alert-triangle"></i> Condiciones Especiales
+                    </h3>
+                    <div class="toggles-badges">
+                        ${togglesActivos.map(toggle => `
+                            <span class="badge badge--attention">${toggle}</span>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- Distribución de riesgos -->
+                <div class="details-section">
+                    <h3 class="details-section__title">
+                        <i data-lucide="bar-chart-3"></i> Distribución de Riesgos por NR
+                    </h3>
+                    ${nivelesHtml}
+                </div>
+
+                <!-- Riesgos GES -->
+                <div class="details-section">
+                    <h3 class="details-section__title">
+                        <i data-lucide="shield-alert"></i> Riesgos Identificados (${gesSeleccionados.length})
+                    </h3>
+                    <div class="ges-list">
+                        ${riesgosHtml}
+                    </div>
+                </div>
+
+                <!-- Exámenes médicos -->
+                <div class="details-section">
+                    <h3 class="details-section__title">
+                        <i data-lucide="stethoscope"></i> Exámenes Médicos (${examenesMedicos.length})
+                    </h3>
+                    ${examenesHtml}
+                </div>
+            </div>
+            <div class="cargo-details-modal__footer">
+                <button class="btn btn--outline btn-close-popup">Cerrar</button>
+                <button class="btn btn--primary btn-edit-from-popup" data-cargo-id="${cargo.id}">
+                    <i data-lucide="edit-2"></i> Editar Cargo
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    // Initialize Lucide icons
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
+
+    // Animate in
+    requestAnimationFrame(() => {
+        popup.classList.add('show');
+    });
+
+    // Close handlers
+    const closePopup = () => {
+        popup.classList.remove('show');
+        setTimeout(() => popup.remove(), 300);
+    };
+
+    popup.querySelector('.cargo-details-overlay').addEventListener('click', closePopup);
+    popup.querySelector('.cargo-details-modal__close').addEventListener('click', closePopup);
+    popup.querySelector('.btn-close-popup').addEventListener('click', closePopup);
+
+    // Edit from popup
+    popup.querySelector('.btn-edit-from-popup').addEventListener('click', () => {
+        closePopup();
+        openEditCargoWizard(cargo.id, cargo);
+    });
+
+    // Close on Escape
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            closePopup();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
 }
 
 // ============================================
@@ -2260,6 +2493,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load company data from storage/API
     await loadCompanyData();
 
+    // Pre-load cargos data from API for logged-in empresa
+    // This ensures DashboardState.data.cargos is populated before paywall shows
+    const empresaId = getEmpresaId();
+    if (empresaId) {
+        console.log('[Dashboard] Pre-loading cargos for empresa:', empresaId);
+        await fetchCargosFromAPI();
+    }
+
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         // Cmd/Ctrl + K for search
@@ -2297,13 +2538,24 @@ function initPaywallModal() {
         const overlay = document.getElementById('paywall-overlay');
         if (!overlay) return;
 
-        // Get cargo count from wizard state
+        // Get cargo count from DashboardState (loaded from API for logged-in empresa)
+        // This avoids cross-tab contamination from wizard state
         let cargoCount = 0;
-        try {
-            const state = JSON.parse(localStorage.getItem('genesys_wizard_state') || '{}');
-            cargoCount = state.formData?.cargos?.length || 0;
-        } catch (e) {
-            console.warn('[Paywall] Error reading cargo count:', e);
+        if (DashboardState.data.cargos && DashboardState.data.cargos.length > 0) {
+            cargoCount = DashboardState.data.cargos.length;
+            console.log('[Paywall] Using cargo count from DashboardState:', cargoCount);
+        } else {
+            // Fallback: try to get from genesys_empresa (not wizard state!)
+            try {
+                const empresaData = localStorage.getItem('genesys_empresa');
+                if (empresaData) {
+                    const empresa = JSON.parse(empresaData);
+                    cargoCount = empresa.numCargos || 0;
+                    console.log('[Paywall] Using cargo count from genesys_empresa:', cargoCount);
+                }
+            } catch (e) {
+                console.warn('[Paywall] Error reading cargo count:', e);
+            }
         }
 
         // Calculate total

@@ -75,8 +75,8 @@ const CONTROLES_TOGGLES = {
 
   conduceVehiculo: {
     fundamento: 'Resolución 1565/2014 (PESV) y Ley 1383/2010 - Conducción de vehículos',
-    examenes: ['PSP', 'GLI', 'PL'], // PSP = Prueba de Sustancias Psicoactivas
-    periodicidad: 24, // Cada 2 años
+    examenes: ['PSM', 'PSP', 'GLI', 'PL'], // PSM = Psicosensométrica, PSP = Sustancias Psicoactivas
+    periodicidad: 12, // Anual (el más restrictivo por PSM)
     aptitudes: [
       'Agudeza visual mínima 20/40 corregida',
       'Campo visual mínimo 140 grados',
