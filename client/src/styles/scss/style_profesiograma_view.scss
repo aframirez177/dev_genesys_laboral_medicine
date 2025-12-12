@@ -1174,19 +1174,44 @@ body {
 
     // ==========================================
     // CARGO FICHA - Estilos especiales de impresión
+    // Estructura: Cada cargo tiene 2 páginas
+    // - Página 1: Info + GES + Factores de Riesgo
+    // - Página 2: Exámenes + EPP + Aptitudes + Condiciones
     // ==========================================
+
+    // Ficha general
     .cargo-ficha {
-        page-break-inside: auto !important; // Permitir división de fichas largas
-        page-break-before: auto;
-        margin-bottom: 2rem;
+        page-break-inside: auto !important;
+        margin-bottom: 0;
         box-shadow: none !important;
         border-width: 0.2rem;
+    }
+
+    // PÁGINA 1 DE CADA FICHA: Inicia en nueva página
+    .cargo-ficha-pagina-1 {
+        page-break-before: always !important; // Nueva página antes de cada cargo
+        page-break-after: always !important;  // Salto después para separar de página 2
+        page-break-inside: auto;
+    }
+
+    // PÁGINA 2 DE CADA FICHA: Continuación
+    .cargo-ficha-pagina-2 {
+        page-break-before: always !important; // Nueva página para protocolo médico
+        page-break-after: auto;
+        page-break-inside: auto;
     }
 
     // Header del cargo debe quedarse junto
     .cargo-header {
         page-break-inside: avoid;
         page-break-after: avoid;
+    }
+
+    // Header de continuación (página 2)
+    .cargo-header-continuacion {
+        background-color: lighten($primary, 35%) !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
     }
 
     // Secciones dentro del cargo
@@ -1202,6 +1227,11 @@ body {
 
     // Factor de riesgo individual no se divide
     .factor-riesgo-item {
+        page-break-inside: avoid;
+    }
+
+    // GES item no se divide
+    .ges-item {
         page-break-inside: avoid;
     }
 
@@ -1389,6 +1419,42 @@ body {
     &:hover {
         border-color: $primary;
         box-shadow: $shadow-lg;
+    }
+
+    // Página 1 de ficha (GES + Factores de Riesgo)
+    &.cargo-ficha-pagina-1 {
+        border-bottom: 0.2rem dashed rgba($primary, 0.3);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        margin-bottom: 0;
+    }
+
+    // Página 2 de ficha (Exámenes + EPP + Aptitudes)
+    &.cargo-ficha-pagina-2 {
+        border-top: none;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        margin-top: 0;
+        padding-top: $spacing-lg;
+
+        .cargo-header-continuacion {
+            background-color: lighten($primary, 42%);
+            margin: -$spacing-xxl;
+            margin-bottom: $spacing-lg;
+            padding: $spacing-md $spacing-xxl;
+            border-bottom: 0.2rem solid rgba($primary, 0.2);
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+
+            .cargo-numero {
+                font-size: 1.2rem;
+                color: rgba($text, 0.7);
+            }
+
+            .cargo-nombre {
+                font-size: 1.8rem;
+            }
+        }
     }
 }
 

@@ -518,8 +518,12 @@ class ProfesiogramaViewer {
             `).join('')
             : '';
 
+        // Estructura de ficha dividida en páginas para impresión:
+        // PÁGINA 1: Info + GES + Factores de Riesgo
+        // PÁGINA 2: Exámenes + EPP + Aptitudes + Condiciones Incompatibles
         return `
-            <div class="cargo-ficha">
+            <!-- PÁGINA 1 DE FICHA: Identificación de Riesgos -->
+            <div class="cargo-ficha cargo-ficha-pagina-1">
                 <div class="cargo-header">
                     <div class="cargo-numero">FICHA N°: ${String(fichaNum).padStart(3, '0')}</div>
                     <h3 class="cargo-nombre">${cargo.nombre || 'Cargo sin nombre'}</h3>
@@ -567,17 +571,17 @@ class ProfesiogramaViewer {
                     </div>
                 </div>
                 ` : ''}
+            </div>
 
-                <div class="cargo-section">
-                    <h4 class="cargo-section-title">Factores de Riesgo que Requieren Control</h4>
-                    <p class="section-subtitle">Riesgos con NR significativo que requieren medidas de intervención</p>
-                    <div class="factores-riesgo-list">
-                        ${factoresHTML}
-                    </div>
+            <!-- PÁGINA 2 DE FICHA: Protocolo Médico y Controles -->
+            <div class="cargo-ficha cargo-ficha-pagina-2">
+                <div class="cargo-header cargo-header-continuacion">
+                    <div class="cargo-numero">FICHA N°: ${String(fichaNum).padStart(3, '0')} (Continuación)</div>
+                    <h3 class="cargo-nombre">${cargo.nombre || 'Cargo sin nombre'}</h3>
                 </div>
 
                 <div class="cargo-section">
-                    <h4 class="cargo-section-title">Exámenes Médicos</h4>
+                    <h4 class="cargo-section-title">Exámenes Médicos Ocupacionales</h4>
                     <table class="examenes-table">
                         <thead>
                             <tr>
