@@ -4,7 +4,8 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 // Importa tus funciones de generación (asegúrate que las rutas sean correctas)
 import { generarMatrizExcel } from './matriz-riesgos.controller.js';
-import { generarProfesiogramaPDF } from './profesiograma.controller.js';
+// Nuevo generador de Profesiograma PDF completo con jsPDF (todas las secciones)
+import { generarProfesiogramaCompletoPDF } from './profesiograma-pdf.controller.js';
 import { generarPerfilCargoPDF } from './perfil-cargo.controller.js';
 // Importar generador de cotización
 import { generarCotizacionPDF } from './cotizacion.controller.js';
@@ -242,7 +243,7 @@ export const registrarYGenerar = async (req, res) => {
                 nit: companyNit,
                 diligenciadoPor: nombreResponsable
             }),
-            generarProfesiogramaPDF(formDataEnriquecido, { companyName: companyName }),
+            generarProfesiogramaCompletoPDF(formDataEnriquecido, { companyName: companyName }),
             generarPerfilCargoPDF(formDataEnriquecido, { companyName: companyName }),
             generarCotizacionPDF(formDataEnriquecido)
         ];
