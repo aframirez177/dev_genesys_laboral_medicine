@@ -1,0 +1,708 @@
+// ==========================================
+// NIVELES WIZARD FIXES - Sprint 6
+// Fixes de UI/UX para la sección de niveles y controles
+// ==========================================
+
+@use 'sass:map';
+@use 'sass:color';
+@use '../base/variables';
+
+// ==========================================
+// VARIABLES LOCALES
+// ==========================================
+$primary-green: map.get(variables.$colors, 'primary');
+$text-color: map.get(variables.$colors, 'text');
+$secondary-color: map.get(variables.$colors, 'secondary');
+$success-color: map.get(variables.$colors, 'success');
+
+// ==========================================
+// 1. LAYOUT COMPACTO PARA HEADER + PROGRESS + GES CARD
+// Antes: Todo en columna ocupando mucho espacio vertical
+// Ahora: Grid distribuido horizontalmente
+// ==========================================
+
+.niveles-form {
+  // Header compacto con layout horizontal
+  &__header-compact {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba($primary-green, 0.03) 0%, white 100%);
+    border-radius: 12px;
+    border: 1px solid rgba($primary-green, 0.15);
+    margin-bottom: 2rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      text-align: center;
+    }
+  }
+
+  &__header-left {
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: $secondary-color;
+      margin: 0 0 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+
+      i {
+        color: $primary-green;
+      }
+    }
+
+    .cargo-info-inline {
+      font-size: 1.4rem;
+      color: $text-color;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      i {
+        color: $primary-green;
+      }
+
+      strong {
+        color: $secondary-color;
+      }
+    }
+  }
+
+  &__header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  // Progress circular compacto
+  &__progress-mini {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .progress-circle {
+      width: 56px;
+      height: 56px;
+      position: relative;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+
+        circle {
+          fill: none;
+          stroke-width: 4;
+
+          &.track {
+            stroke: rgba($primary-green, 0.15);
+          }
+
+          &.fill {
+            stroke: $primary-green;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.4s ease;
+          }
+        }
+      }
+
+      .progress-number {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: $primary-green;
+        line-height: 1.1;
+
+        small {
+          font-size: 1rem;
+          font-weight: 500;
+          color: $text-color;
+          opacity: 0.7;
+        }
+      }
+    }
+
+    .progress-label {
+      font-size: 1.2rem;
+      color: $text-color;
+      line-height: 1.4;
+
+      strong {
+        display: block;
+        font-size: 1.4rem;
+        color: $secondary-color;
+      }
+    }
+  }
+}
+
+// ==========================================
+// 2. CARGO TABS CON ESTILOS IGUALES A RIESGOS
+// Tags con hover mostrando los riesgos (chulitos)
+// ==========================================
+
+.niveles-cargo-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  // Hacer sticky durante scroll
+  position: sticky;
+  top: -2.5rem;
+  z-index: 100;
+}
+
+.niveles-cargo-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.4rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  font-size: 1.35rem;
+  color: $text-color;
+
+  &:hover {
+    border-color: $primary-green;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba($primary-green, 0.15);
+  }
+
+  &.active {
+    background: linear-gradient(135deg, $primary-green 0%, color.adjust($primary-green, $lightness: 5%) 100%);
+    border-color: $primary-green;
+    color: white;
+    box-shadow: 0 4px 15px rgba($primary-green, 0.3);
+
+    .cargo-tab__count {
+      background: rgba(white, 0.2);
+      color: white;
+    }
+
+    .cargo-status-icon {
+      color: white;
+    }
+  }
+
+  // Estado completado
+  &.completed {
+    border-color: $success-color;
+
+    &:not(.active) {
+      .cargo-status-icon {
+        color: $success-color;
+      }
+    }
+  }
+
+  .cargo-tab__name {
+    font-weight: 600;
+  }
+
+  .cargo-tab__count {
+    font-size: 1.15rem;
+    padding: 0.3rem 0.7rem;
+    background: rgba($primary-green, 0.1);
+    border-radius: 12px;
+    font-weight: 700;
+    color: $primary-green;
+  }
+
+  .cargo-status-icon {
+    font-size: 1.3rem;
+    color: #aaa;
+
+    &.completed {
+      color: $success-color;
+    }
+  }
+}
+
+// ==========================================
+// 3. TOOLTIP DE CARGOS (igual que sección riesgos)
+// Con lista de riesgos y chulitos de completados
+// ==========================================
+
+.niveles-cargo-tooltip {
+  position: fixed;
+  z-index: 10005;
+  min-width: 300px;
+  max-width: 400px;
+  padding: 0;
+  background: rgba(20, 30, 40, 0.96);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba($primary-green, 0.3);
+  border-radius: 12px;
+  box-shadow:
+    0 12px 45px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba($primary-green, 0.1) inset;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.96);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.5rem;
+    background: linear-gradient(135deg, rgba($primary-green, 0.18) 0%, transparent 100%);
+    border-radius: 12px 12px 0 0;
+    border-bottom: 1px solid rgba($primary-green, 0.15);
+
+    i {
+      color: $primary-green;
+      font-size: 1.5rem;
+    }
+
+    span {
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .tooltip-stats {
+      margin-left: auto;
+      font-size: 1.2rem;
+      color: rgba(white, 0.7);
+      background: rgba($primary-green, 0.2);
+      padding: 0.3rem 0.8rem;
+      border-radius: 10px;
+    }
+  }
+
+  &__body {
+    padding: 1.2rem 1.5rem;
+    max-height: 280px;
+    overflow-y: auto;
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba($primary-green, 0.3);
+      border-radius: 3px;
+    }
+  }
+
+  &__label {
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: $primary-green;
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba($primary-green, 0.12);
+    }
+
+    // Icono de estado (check o pendiente)
+    .item-status {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+
+      &.completed {
+        background: rgba($success-color, 0.2);
+        color: $success-color;
+      }
+
+      &.pending {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+
+    .item-name {
+      flex: 1;
+      font-size: 1.25rem;
+      color: white;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-level {
+      font-size: 1.1rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 600;
+
+      &.risk-bajo { background: rgba($success-color, 0.2); color: $success-color; }
+      &.risk-medio { background: rgba(#f59e0b, 0.2); color: #f59e0b; }
+      &.risk-alto { background: rgba(#f97316, 0.2); color: #f97316; }
+      &.risk-muy-alto { background: rgba(#ef4444, 0.2); color: #ef4444; }
+    }
+  }
+}
+
+// ==========================================
+// 4. FIX BORDES Y BORDER-RADIUS DE BOTONES DE NIVELES
+// Sin bordes, esquinas solo en first/last child
+// ==========================================
+
+.nivel-bar {
+  background: linear-gradient(180deg, #d8d8d8 0%, #e8e8e8 100%);
+  border-radius: 6rem;
+  box-shadow:
+    inset 0 3px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 0;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+  max-height: 10rem;
+}
+
+.nivel-option {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.8rem 1rem;
+  background: #f0f0f0;
+  border: none !important; // ✅ Sin bordes
+  border-radius: 0 !important; // ✅ Sin border-radius por defecto
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 8rem;
+  max-height: 10rem;
+  font-family: inherit;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.15),
+    inset 0 1px 2px rgba(0, 0, 0, 0.1);
+
+  // ✅ Solo esquinas redondeadas en primer y último hijo
+  &:first-child {
+    border-radius: 6rem 0 0 6rem !important;
+  }
+
+  &:last-child {
+    border-radius: 0 6rem 6rem 0 !important;
+  }
+
+  // Overlay de color sutil
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--nivel-color, #999);
+    opacity: 0.18;
+    transition: opacity 0.25s ease;
+    border-radius: inherit;
+  }
+
+  // Hover effect
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 4px rgba(0, 0, 0, 0.1),
+      0 2px 8px rgba(0, 0, 0, 0.15);
+
+    &::before {
+      opacity: 0.3;
+    }
+  }
+
+  // Selected state
+  &--selected {
+    background: var(--nivel-color, #999);
+    transform: translateY(2px);
+    box-shadow:
+      inset 0 3px 8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 4px rgba(0, 0, 0, 0.2);
+
+    &::before {
+      opacity: 0;
+    }
+
+    .nivel-option__label,
+    .nivel-option__value {
+      color: #fff;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .nivel-option__check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    // Amarillo necesita texto oscuro
+    &[data-value="2"],
+    &[data-value="25"] {
+      .nivel-option__label,
+      .nivel-option__value {
+        color: #2d3238;
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+      }
+
+      .nivel-option__check {
+        color: #2d3238;
+      }
+    }
+  }
+
+  &:active {
+    transform: translateY(3px);
+    box-shadow:
+      inset 0 4px 10px rgba(0, 0, 0, 0.35),
+      inset 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+}
+
+.nivel-option__label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  position: relative;
+  z-index: 1;
+}
+
+.nivel-option__value {
+  font-size: 2rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.nivel-option__check {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 1.4rem;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 2;
+
+  i {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+}
+
+// ==========================================
+// 5. GES CARD COMPACTO
+// Menos padding, layout más eficiente
+// ==========================================
+
+.niveles-form__ges-card,
+.ges-card {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: 4px solid $primary-green;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  .ges-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .ges-card__name {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: $secondary-color;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0;
+
+    i {
+      color: #f59e0b;
+      font-size: 1.4rem;
+    }
+  }
+
+  .ges-card__badge {
+    font-size: 1.1rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    &--complete {
+      background: rgba($success-color, 0.12);
+      color: $success-color;
+    }
+
+    &--incomplete {
+      background: rgba(#f59e0b, 0.12);
+      color: #f59e0b;
+    }
+
+    i {
+      font-size: 1rem;
+    }
+  }
+
+  .ges-card__description {
+    font-size: 1.3rem;
+    color: $text-color;
+    line-height: 1.5;
+    margin: 0 0 0.8rem 0;
+    opacity: 0.85;
+  }
+
+  .ges-card__meta {
+    display: flex;
+    gap: 1rem;
+
+    .ges-card__category {
+      font-size: 1.15rem;
+      color: $text-color;
+      background: rgba($primary-green, 0.08);
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+
+      i {
+        color: $primary-green;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// ==========================================
+// 6. AUTOCOMPLETADO BADGE - Estilo mejorado
+// ==========================================
+
+.autocompletado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: linear-gradient(135deg, rgba($primary-green, 0.12) 0%, rgba($primary-green, 0.05) 100%);
+  border: 1px solid rgba($primary-green, 0.25);
+  border-radius: 20px;
+  font-size: 1.15rem;
+  color: color.adjust($primary-green, $lightness: -15%);
+  font-weight: 500;
+
+  i {
+    font-size: 1.1rem;
+    color: $primary-green;
+  }
+}
+
+// ==========================================
+// 7. RESPONSIVE MOBILE
+// ==========================================
+
+@media (max-width: 768px) {
+  .niveles-cargo-tabs {
+    top: -2rem;
+    padding: 1rem;
+    gap: 0.6rem;
+  }
+
+  .niveles-cargo-tab {
+    padding: 0.6rem 1rem;
+    font-size: 1.2rem;
+
+    .cargo-tab__count {
+      font-size: 1rem;
+      padding: 0.2rem 0.5rem;
+    }
+  }
+
+  .nivel-bar {
+    flex-direction: column;
+    border-radius: 12px;
+    max-height: none;
+  }
+
+  .nivel-option {
+    min-height: 7rem;
+    max-height: none;
+    padding: 1.4rem 1rem;
+
+    &:first-child {
+      border-radius: 12px 12px 0 0 !important;
+    }
+
+    &:last-child {
+      border-radius: 0 0 12px 12px !important;
+    }
+  }
+
+  .nivel-option__label {
+    font-size: 1rem;
+  }
+
+  .nivel-option__value {
+    font-size: 1.7rem;
+  }
+}
+

@@ -50,6 +50,9 @@ export class NivelesRiesgoForm {
     this.controlChangeDebounceTimer = null;
     this.controlChangeDebounceDelay = 1500; // 1.5 segundos sin tecleo
 
+    // ✅ Sprint 6 FIX: Flag para evitar renders después de destroy
+    this.isDestroyed = false;
+
     // Definiciones de niveles según GTC 45
     // ✅ ORDEN: De menor (izquierda, verde) a mayor (derecha, rojo)
     // ✅ Sprint 6 Bug Fix: ND=0 cambiado a ND=1 (multiplicador implícito)
@@ -80,8 +83,11 @@ export class NivelesRiesgoForm {
   /**
    * Initialize component
    * ✅ FASE 2: Carga sugerencias de plantillas antes de renderizar
+   * ✅ Sprint 6 FIX: Verifica si fue destruido antes de renderizar
    */
   async init() {
+    if (this.isDestroyed) return;
+    
     if (this.options.gesArray.length === 0) {
       this.renderEmpty();
       return;
@@ -89,6 +95,12 @@ export class NivelesRiesgoForm {
 
     // FASE 2: Cargar sugerencias de plantillas
     await this.loadSugerencias();
+
+    // ✅ Sprint 6 FIX: Verificar si fue destruido durante la carga async
+    if (this.isDestroyed) {
+      console.log('[NivelesForm] Componente destruido durante init, abortando render');
+      return;
+    }
 
     // Decidir qué vista mostrar
     if (this.sugerencias.length > 0) {
@@ -142,8 +154,15 @@ export class NivelesRiesgoForm {
 
   /**
    * FASE 2: Renderizar vista híbrida con tabla de sugerencias
+   * ✅ Sprint 6 FIX: Verifica si fue destruido antes de renderizar
    */
   renderVistaHibrida() {
+    // ✅ Sprint 6 FIX: Evitar render si fue destruido
+    if (this.isDestroyed || !this.container || !this.container.isConnected || !this.container.parentNode) {
+      console.log('[NivelesForm] renderVistaHibrida abortado - componente no válido');
+      return;
+    }
+
     // Separar sugerencias en auto-aprobables y que requieren revisión
     const autoAprobables = this.sugerencias.filter(s => !s.requiereRevision && s.plantillaId);
     const requierenRevision = this.sugerencias.filter(s => s.requiereRevision || !s.plantillaId);
@@ -264,7 +283,13 @@ export class NivelesRiesgoForm {
       </div>
     `;
 
-    render(template, this.container);
+    // ✅ Sprint 6 FIX: try-catch para evitar errores de lit-html
+    try {
+      render(template, this.container);
+    } catch (error) {
+      console.error('[NivelesForm] Error en renderVistaHibrida:', error.message);
+      this.isDestroyed = true;
+    }
   }
 
   /**
@@ -373,11 +398,13 @@ export class NivelesRiesgoForm {
    * FASE 2: Handlers para vista híbrida
    */
   handleCambiarFiltro = (filtro) => {
+    if (this.isDestroyed) return;
     this.filtroActivo = filtro;
     this.renderVistaHibrida();
   }
 
   handleCambiarAManual = () => {
+    if (this.isDestroyed) return;
     this.modoVista = 'step-by-step';
     this.renderComponent();
   }
@@ -449,6 +476,7 @@ export class NivelesRiesgoForm {
       }
 
       // Cambiar a modo paso a paso y navegar al GES
+      if (this.isDestroyed) return;
       this.currentGESIndex = gesIndex;
       this.modoVista = 'step-by-step';
       this.renderComponent();
@@ -530,15 +558,37 @@ export class NivelesRiesgoForm {
   /**
    * Main render method - usa lit-html para renderizado eficiente
    * ✅ Solo actualiza partes del DOM que cambiaron
+   * ✅ Sprint 6: Layout compacto con header + progress combinados
+   * ✅ Sprint 6 FIX: Verifica si el componente fue destruido antes de renderizar
    */
   renderComponent() {
+    // ✅ Sprint 6 FIX: Múltiples verificaciones para evitar errores de lit-html
+    if (this.isDestroyed) {
+      console.log('[NivelesForm] Render abortado - componente destruido');
+      return;
+    }
+    
+    if (!this.container) {
+      console.log('[NivelesForm] Render abortado - container es null');
+      return;
+    }
+    
+    if (!this.container.isConnected) {
+      console.log('[NivelesForm] Render abortado - container desconectado del DOM');
+      return;
+    }
+    
+    if (!this.container.parentNode) {
+      console.log('[NivelesForm] Render abortado - container sin parentNode');
+      return;
+    }
+
     const currentGES = this.options.gesArray[this.currentGESIndex];
     const totalGES = this.options.gesArray.length;
 
     const template = html`
       <div class="niveles-form">
-        ${this.templateHeader(currentGES, this.currentGESIndex + 1, totalGES)}
-        ${this.templateProgressIndicator()}
+        ${this.templateCompactHeader(currentGES, this.currentGESIndex + 1, totalGES)}
         ${this.templateGESInfo(currentGES)}
         ${this.templateNivelSection('ND', 'Nivel de Deficiencia', currentGES)}
         ${this.templateNivelSection('NE', 'Nivel de Exposición', currentGES)}
@@ -549,50 +599,76 @@ export class NivelesRiesgoForm {
       </div>
     `;
 
-    // ✅ lit-html render (eficiente - solo actualiza cambios)
-    render(template, this.container);
+    // ✅ lit-html render con try-catch por seguridad
+    try {
+      render(template, this.container);
+    } catch (error) {
+      console.error('[NivelesForm] Error en lit-html render:', error.message);
+      // Marcar como destruido para evitar más intentos
+      this.isDestroyed = true;
+    }
   }
 
   /**
-   * Template: Header
+   * Template: Compact Header (Sprint 6)
+   * ✅ Combina título, cargo y progreso en una sola fila
+   */
+  templateCompactHeader(currentGES, currentNum, totalGES) {
+    const completed = this.options.gesArray.filter(g => this.isGESComplete(g)).length;
+    const percentage = totalGES > 0 ? Math.round((completed / totalGES) * 100) : 0;
+    const circumference = 2 * Math.PI * 22; // radio 22
+    const strokeDasharray = `${(percentage / 100) * circumference} ${circumference}`;
+
+    return html`
+      <div class="niveles-form__header-compact">
+        <div class="niveles-form__header-left">
+          <h2>
+            <i class="fas fa-chart-bar"></i>
+            Niveles y Controles
+          </h2>
+          <p class="cargo-info-inline">
+            <i class="fas fa-briefcase"></i>
+            <strong>${this.options.cargoNombre}</strong>
+            <span>• Riesgo ${currentNum} de ${totalGES}</span>
+          </p>
+        </div>
+        
+        <div class="niveles-form__header-right">
+          <div class="niveles-form__progress-mini">
+            <div class="progress-circle">
+              <svg viewBox="0 0 50 50">
+                <circle class="track" cx="25" cy="25" r="22"></circle>
+                <circle class="fill" cx="25" cy="25" r="22" 
+                  stroke-dasharray="${strokeDasharray}"></circle>
+              </svg>
+              <div class="progress-number">
+                <span>${completed}</span>
+                <small>/${totalGES}</small>
+              </div>
+            </div>
+            <div class="progress-label">
+              <strong>${percentage}%</strong>
+              completado
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Template: Header (legacy - mantenido por compatibilidad)
    */
   templateHeader(currentGES, currentNum, totalGES) {
-    return html`
-      <div class="niveles-form__header">
-        <h2>Configuración de Niveles y Controles</h2>
-        <p class="niveles-form__cargo-info">
-          <i class="fas fa-briefcase"></i>
-          Cargo: <strong>${this.options.cargoNombre}</strong>
-        </p>
-        <div class="niveles-form__ges-counter">
-          <span class="current-ges">${currentNum}</span>
-          <span class="separator">/</span>
-          <span class="total-ges">${totalGES}</span>
-          <span class="label">GES configurados</span>
-        </div>
-      </div>
-    `;
+    return this.templateCompactHeader(currentGES, currentNum, totalGES);
   }
 
   /**
-   * Template: Progress indicator
+   * Template: Progress indicator (legacy - integrado en header compacto)
    */
   templateProgressIndicator() {
-    const total = this.options.gesArray.length;
-    const completed = this.options.gesArray.filter(g => this.isGESComplete(g)).length;
-    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-    return html`
-      <div class="niveles-form__progress">
-        <div class="progress-bar">
-          <div class="progress-bar__fill" style="width: ${percentage}%"></div>
-        </div>
-        <p class="progress-text">
-          <strong>${completed}</strong> de <strong>${total}</strong> riesgos configurados
-          <span class="progress-percentage">(${percentage}%)</span>
-        </p>
-      </div>
-    `;
+    // Ya integrado en templateCompactHeader
+    return '';
   }
 
   /**
@@ -734,6 +810,7 @@ export class NivelesRiesgoForm {
   /**
    * Buscar controles existentes de este mismo GES en otros cargos
    * Los controles existentes son generales para un GES, no específicos de un cargo
+   * ✅ FIX Sprint 6: Solo sugerir si el GES tiene EL MISMO NOMBRE exacto
    * @param {Object} currentGES - GES actual
    * @returns {Object|null} - Controles encontrados o null
    */
@@ -741,24 +818,34 @@ export class NivelesRiesgoForm {
     if (!this.options.state) return null;
 
     const allCargos = this.options.state.getCargos();
-    const currentGESName = currentGES.nombre || currentGES.ges;
+    const currentGESName = (currentGES.nombre || currentGES.ges || '').trim().toLowerCase();
+    const currentGESId = currentGES.id_ges || currentGES.idGes || currentGES.id;
 
-    // Buscar en todos los cargos (excepto el actual)
+    // Buscar en todos los cargos
     for (let cargoIndex = 0; cargoIndex < allCargos.length; cargoIndex++) {
+      // Saltar el cargo actual para evitar falsos positivos
+      if (cargoIndex === this.options.cargoIndex) continue;
+
       const cargo = allCargos[cargoIndex];
+      const gesArray = cargo.gesSeleccionados || cargo.ges || [];
 
-      if (!cargo.ges || !Array.isArray(cargo.ges)) continue;
+      if (!Array.isArray(gesArray)) continue;
 
-      // Buscar el mismo GES por nombre
-      for (const ges of cargo.ges) {
-        const gesName = ges.nombre || ges.ges;
+      // Buscar el mismo GES por ID primero, luego por nombre exacto
+      for (const ges of gesArray) {
+        const gesId = ges.id_ges || ges.idGes || ges.id;
+        const gesName = (ges.nombre || ges.ges || '').trim().toLowerCase();
 
-        if (gesName === currentGESName && ges.controles) {
+        // ✅ FIX: Comparar por ID si está disponible, o nombre exacto
+        const isMatchById = currentGESId && gesId && currentGESId === gesId;
+        const isMatchByName = currentGESName && gesName && currentGESName === gesName;
+
+        if ((isMatchById || isMatchByName) && ges.controles) {
           // Verificar que tenga al menos un control lleno
           const tieneControles = ges.controles.fuente || ges.controles.medio || ges.controles.individuo;
 
           if (tieneControles) {
-            console.log(`[NivelesForm] ✅ Autocompletando controles de "${currentGESName}" desde otro cargo`);
+            console.log(`[NivelesForm] ✅ Autocompletando controles de "${currentGES.nombre}" desde cargo: ${cargo.nombre}`);
             return { ...ges.controles };
           }
         }
@@ -771,22 +858,41 @@ export class NivelesRiesgoForm {
   /**
    * Template: Controles Section (Fuente, Medio, Individuo)
    * ✅ Autocompletado: Si este GES ya tiene controles en otro cargo, los precarga
+   * ✅ FIX Sprint 6: Solo autocompletar si el GES actual NO tiene controles propios
    */
   templateControlesSection(ges) {
-    // Buscar si este mismo GES ya tiene controles definidos en otro cargo
-    const controlesExistentesDeOtroCargo = this.findControlesFromOtherCargo(ges);
+    // ✅ FIX: Verificar si el GES actual ya tiene controles propios definidos
+    const tieneControlesPropios = ges.controles && 
+      (ges.controles.fuente || ges.controles.medio || ges.controles.individuo);
 
-    // Inicializar controles: priorizar los del GES actual, luego los de otro cargo
-    if (!ges.controles || (!ges.controles.fuente && !ges.controles.medio && !ges.controles.individuo)) {
+    // Solo buscar controles de otro cargo si este GES no tiene controles propios
+    let controlesExistentesDeOtroCargo = null;
+    let autocompletado = false;
+
+    if (!tieneControlesPropios) {
+      controlesExistentesDeOtroCargo = this.findControlesFromOtherCargo(ges);
+      
+      // Inicializar controles con los de otro cargo si existen
+      if (controlesExistentesDeOtroCargo) {
+        ges.controles = {
+          fuente: controlesExistentesDeOtroCargo.fuente || '',
+          medio: controlesExistentesDeOtroCargo.medio || '',
+          individuo: controlesExistentesDeOtroCargo.individuo || ''
+        };
+        autocompletado = true;
+      }
+    }
+
+    // Asegurar que controles exista
+    if (!ges.controles) {
       ges.controles = {
-        fuente: controlesExistentesDeOtroCargo?.fuente || '',
-        medio: controlesExistentesDeOtroCargo?.medio || '',
-        individuo: controlesExistentesDeOtroCargo?.individuo || ''
+        fuente: '',
+        medio: '',
+        individuo: ''
       };
     }
 
     const { fuente = '', medio = '', individuo = '' } = ges.controles;
-    const autocompletado = controlesExistentesDeOtroCargo && (fuente || medio || individuo);
 
     return html`
       <div class="controles-section">
@@ -929,11 +1035,31 @@ export class NivelesRiesgoForm {
   /**
    * Template: Navigation buttons
    * ✅ Usa @click para event binding automático
+   * ✅ Sprint 6: Reconoce cargos pendientes y ajusta el texto del botón
    */
   templateNavigation(currentIndex, totalGES) {
     const hasPrevious = currentIndex > 0;
     const hasNext = currentIndex < totalGES - 1;
     const isComplete = this.isGESComplete(this.options.gesArray[currentIndex]);
+    const allGESComplete = this.areAllGESComplete();
+
+    // ✅ Sprint 6: Determinar si hay más cargos pendientes
+    const nextCargoInfo = this.getNextPendingCargoInfo();
+    const isLastCargo = !nextCargoInfo.hasMoreCargos;
+    const allCargosComplete = nextCargoInfo.allCargosComplete;
+
+    // Determinar texto del botón final
+    let finalButtonText = 'Finalizar Configuración';
+    let finalButtonIcon = 'fa-check';
+    
+    if (!isLastCargo && allGESComplete) {
+      // Hay más cargos pendientes
+      finalButtonText = `Siguiente: ${nextCargoInfo.nextCargoName}`;
+      finalButtonIcon = 'fa-arrow-right';
+    } else if (allCargosComplete) {
+      finalButtonText = 'Terminar Configuración';
+      finalButtonIcon = 'fa-check-double';
+    }
 
     return html`
       <!-- Navegación tradicional (bottom sticky) -->
@@ -967,12 +1093,12 @@ export class NivelesRiesgoForm {
           </button>
         ` : html`
           <button
-            class="wizard-btn wizard-btn-success"
-            ?disabled=${!this.areAllGESComplete()}
+            class="wizard-btn ${allCargosComplete ? 'wizard-btn-success' : 'wizard-btn-primary'}"
+            ?disabled=${!allGESComplete}
             @click=${() => this.handleComplete()}
           >
-            <i class="fas fa-check"></i>
-            Finalizar Configuración
+            <i class="fas ${finalButtonIcon}"></i>
+            ${finalButtonText}
           </button>
         `}
       </div>
@@ -1011,10 +1137,55 @@ export class NivelesRiesgoForm {
   }
 
   /**
+   * ✅ Sprint 6: Obtener información sobre el siguiente cargo pendiente
+   */
+  getNextPendingCargoInfo() {
+    if (!this.options.state) {
+      return { hasMoreCargos: false, nextCargoName: '', allCargosComplete: false };
+    }
+
+    const allCargos = this.options.state.getCargos();
+    const currentCargoIndex = this.options.cargoIndex;
+
+    // Verificar si hay más cargos después del actual
+    let nextPendingCargo = null;
+    let allCargosComplete = true;
+
+    for (let i = 0; i < allCargos.length; i++) {
+      const cargo = allCargos[i];
+      const gesArray = cargo.gesSeleccionados || cargo.ges || [];
+      
+      // Verificar si este cargo tiene todos sus GES completos
+      const cargoComplete = gesArray.length > 0 && gesArray.every(ges => {
+        const niveles = ges.niveles || {};
+        return niveles.ND !== null && niveles.ND !== undefined &&
+               niveles.NE !== null && niveles.NE !== undefined &&
+               niveles.NC !== null && niveles.NC !== undefined;
+      });
+
+      if (!cargoComplete && gesArray.length > 0) {
+        allCargosComplete = false;
+        
+        // Si es un cargo después del actual y no está completo, es el siguiente pendiente
+        if (i > currentCargoIndex && !nextPendingCargo) {
+          nextPendingCargo = cargo;
+        }
+      }
+    }
+
+    return {
+      hasMoreCargos: nextPendingCargo !== null,
+      nextCargoName: nextPendingCargo?.nombre || '',
+      allCargosComplete: allCargosComplete
+    };
+  }
+
+  /**
    * Handle nivel selection
    * ✅ Arrow function para binding correcto en lit-html
    */
   handleSelectNivel = (tipo, value) => {
+    if (this.isDestroyed) return;
     console.log(`[NivelesForm] Selecting ${tipo} = ${value}`);
 
     const currentGES = this.options.gesArray[this.currentGESIndex];
@@ -1102,6 +1273,7 @@ export class NivelesRiesgoForm {
    * ✅ NO re-renderiza el componente completo - solo actualiza el state
    */
   handleControlChange = (tipo, value) => {
+    if (this.isDestroyed) return;
     console.log(`[NivelesForm] Control change (debouncing): ${tipo} = "${value.substring(0, 30)}..."`);
 
     const currentGES = this.options.gesArray[this.currentGESIndex];
@@ -1257,12 +1429,16 @@ Ejemplos:
       });
 
       // Re-renderizar para mostrar las sugerencias
-      this.renderComponent();
+      if (!this.isDestroyed) {
+        this.renderComponent();
+      }
 
       console.log('[NivelesForm] Sugerencias cargadas desde BD:', sugerencias);
     } catch (error) {
       console.error('[NivelesForm] Error al cargar sugerencias:', error);
-      alert('Error al cargar sugerencias. Por favor, intenta nuevamente.');
+      if (!this.isDestroyed) {
+        alert('Error al cargar sugerencias. Por favor, intenta nuevamente.');
+      }
     }
   }
 
@@ -1271,8 +1447,8 @@ Ejemplos:
    * ✅ Con guard para prevenir clicks múltiples
    */
   handlePreviousGES = () => {
-    if (this.isNavigating) {
-      console.log('[NivelesForm] Navigation in progress, ignoring click');
+    if (this.isDestroyed || this.isNavigating) {
+      console.log('[NivelesForm] Navigation blocked - destroyed or in progress');
       return;
     }
 
@@ -1296,8 +1472,8 @@ Ejemplos:
    * ✅ Con guard para prevenir clicks múltiples
    */
   handleNextGES = () => {
-    if (this.isNavigating) {
-      console.log('[NivelesForm] Navigation in progress, ignoring click');
+    if (this.isDestroyed || this.isNavigating) {
+      console.log('[NivelesForm] Navigation blocked - destroyed or in progress');
       return;
     }
 
@@ -1327,6 +1503,7 @@ Ejemplos:
    * Handle complete all niveles
    */
   handleComplete = () => {
+    if (this.isDestroyed) return;
     console.log('[NivelesForm] handleComplete - Verificando completitud...');
     console.log('[NivelesForm] gesArray:', this.options.gesArray);
 
@@ -1542,6 +1719,7 @@ Ejemplos:
    * Set current GES index
    */
   setCurrentGESIndex(index) {
+    if (this.isDestroyed) return;
     if (index >= 0 && index < this.options.gesArray.length) {
       this.currentGESIndex = index;
       this.renderComponent();
@@ -1552,6 +1730,7 @@ Ejemplos:
    * Update GES array (when parent state changes)
    */
   updateGESArray(gesArray) {
+    if (this.isDestroyed) return;
     this.options.gesArray = gesArray;
 
     // Ensure current index is valid
@@ -1564,8 +1743,15 @@ Ejemplos:
 
   /**
    * Render empty state
+   * ✅ Sprint 6 FIX: Verifica si fue destruido antes de renderizar
    */
   renderEmpty() {
+    // ✅ Sprint 6 FIX: Evitar render si fue destruido
+    if (this.isDestroyed || !this.container || !this.container.isConnected || !this.container.parentNode) {
+      console.log('[NivelesForm] renderEmpty abortado - componente no válido');
+      return;
+    }
+
     const template = html`
       <div class="niveles-form__empty">
         <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ffeb3b; margin-bottom: 1rem;"></i>
@@ -1581,14 +1767,35 @@ Ejemplos:
       </div>
     `;
 
-    render(template, this.container);
+    // ✅ Sprint 6 FIX: try-catch para evitar errores de lit-html
+    try {
+      render(template, this.container);
+    } catch (error) {
+      console.error('[NivelesForm] Error en renderEmpty:', error.message);
+      this.isDestroyed = true;
+    }
   }
 
   /**
    * Destroy component
+   * ✅ Sprint 6 FIX: Marca como destruido para evitar renders pendientes
    */
   destroy() {
-    this.container.innerHTML = '';
+    console.log('[NivelesForm] Destroying component');
+    
+    // ✅ Marcar como destruido primero para evitar race conditions
+    this.isDestroyed = true;
+    
+    // ✅ Cancelar cualquier timer de debounce pendiente
+    if (this.controlChangeDebounceTimer) {
+      clearTimeout(this.controlChangeDebounceTimer);
+      this.controlChangeDebounceTimer = null;
+    }
+    
+    // Limpiar el container si todavía existe
+    if (this.container && this.container.isConnected) {
+      this.container.innerHTML = '';
+    }
   }
 }
 

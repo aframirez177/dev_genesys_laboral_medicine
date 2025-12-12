@@ -24,6 +24,7 @@
 @use 'components/niveles-barras-wizard'; // Barras semaforizadas para NivelesRiesgoForm
 @use 'components/niveles-controles'; // Medidas de control (fuente, medio, individuo) - LEGACY
 @use 'components/wizard-controles'; // Sistema completo de controles - Paso 5 del wizard (UX optimizado)
+@use 'components/niveles-wizard-fixes'; // Sprint 6: Fixes de UI/UX para sección niveles
 
 // Components
 @use 'components/buttons';

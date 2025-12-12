@@ -109,6 +109,13 @@ export class WizardCore {
       // Always re-render if step changed
       if (currentStep !== this.previousStep) {
         console.log('[WizardCore] Step changed:', this.previousStep, '->', currentStep);
+        
+        // ✅ Sprint 6: Limpiar cache de niveles al salir del paso
+        if (this.previousStep === 'niveles' && currentStep !== 'niveles') {
+          console.log('[WizardCore] Saliendo de niveles, limpiando cache');
+          this.cleanupNivelesFormCache();
+        }
+        
         this.previousStep = currentStep;
         this.render();
         return;
@@ -157,7 +164,24 @@ export class WizardCore {
       destroyKeyboardTooltips(this.keyboardTooltips);
       this.keyboardTooltips = null;
     }
+    // ✅ Sprint 6: Cleanup niveles form cache
+    this.cleanupNivelesFormCache();
     console.log('[WizardCore] Destroyed');
+  }
+
+  /**
+   * ✅ Sprint 6: Limpiar cache de NivelesRiesgoForm
+   */
+  cleanupNivelesFormCache() {
+    if (this.nivelesFormCache) {
+      Object.values(this.nivelesFormCache).forEach(form => {
+        if (form && typeof form.destroy === 'function') {
+          form.destroy();
+        }
+      });
+      this.nivelesFormCache = {};
+    }
+    this.nivelesForm = null;
   }
 
   /**
@@ -1266,7 +1290,8 @@ export class WizardCore {
   }
 
   /**
-   * Step 4: Niveles (placeholder - will use NivelesRiesgoForm in T3.5)
+   * Step 4: Niveles
+   * ✅ Sprint 6: Tags de cargos con estilo mejorado y tooltips
    */
   renderNiveles() {
     const cargos = this.state.getCargos();
@@ -1274,24 +1299,40 @@ export class WizardCore {
     // Build HTML with container for each cargo
     let html = `
       <div class="wizard-step" data-step="niveles">
-        <h2>Niveles de Riesgo</h2>
-        <p>Configura los niveles de deficiencia, exposición y consecuencia para cada riesgo</p>
     `;
 
-    // If there are multiple cargos, show tabs
+    // If there are multiple cargos, show tabs with improved styling
     if (cargos.length > 1) {
       html += `
         <div class="niveles-cargo-tabs">
-          ${cargos.map((cargo, index) => `
-            <button
-              class="niveles-cargo-tab ${index === 0 ? 'active' : ''}"
-              data-action="switch-cargo-niveles"
-              data-cargo-index="${index}"
-            >
-              <span class="cargo-tab__name">${cargo.nombre}</span>
-              <span class="cargo-tab__count">${cargo.gesSeleccionados?.length || 0} GES</span>
-            </button>
-          `).join('')}
+          ${cargos.map((cargo, index) => {
+            const gesArray = cargo.gesSeleccionados || cargo.ges || [];
+            const gesCount = gesArray.length;
+            
+            // Contar GES completados
+            const gesCompleted = gesArray.filter(ges => {
+              const niveles = ges.niveles || {};
+              return niveles.ND !== null && niveles.ND !== undefined &&
+                     niveles.NE !== null && niveles.NE !== undefined &&
+                     niveles.NC !== null && niveles.NC !== undefined;
+            }).length;
+            
+            const isComplete = gesCount > 0 && gesCompleted === gesCount;
+            const statusIcon = isComplete ? 'fa-check-circle completed' : 'fa-circle';
+            
+            return `
+              <button
+                class="niveles-cargo-tab ${index === 0 ? 'active' : ''} ${isComplete ? 'completed' : ''}"
+                data-action="switch-cargo-niveles"
+                data-cargo-index="${index}"
+                data-cargo-name="${cargo.nombre}"
+              >
+                <i class="fas ${statusIcon} cargo-status-icon"></i>
+                <span class="cargo-tab__name">${cargo.nombre}</span>
+                <span class="cargo-tab__count">${gesCompleted}/${gesCount}</span>
+              </button>
+            `;
+          }).join('')}
         </div>
       `;
     }
@@ -1308,6 +1349,24 @@ export class WizardCore {
     });
 
     html += `</div>`;
+    
+    // Tooltip container (will be positioned with Floating UI)
+    html += `
+      <div id="niveles-cargo-tooltip" class="niveles-cargo-tooltip" role="tooltip">
+        <div class="niveles-cargo-tooltip__header">
+          <i class="fas fa-briefcase"></i>
+          <span id="tooltip-cargo-name">Cargo</span>
+          <span class="tooltip-stats" id="tooltip-stats">0/0</span>
+        </div>
+        <div class="niveles-cargo-tooltip__divider"></div>
+        <div class="niveles-cargo-tooltip__body">
+          <span class="niveles-cargo-tooltip__label">Riesgos (GES)</span>
+          <ul class="niveles-cargo-tooltip__list" id="tooltip-ges-list">
+          </ul>
+        </div>
+      </div>
+    `;
+    
     return html;
   }
 
@@ -2849,6 +2908,7 @@ export class WizardCore {
 
   /**
    * Attach listeners for Niveles step
+   * ✅ Sprint 6: Agrega tooltips para cargo tabs
    */
   attachNivelesListeners() {
     const cargos = this.state.getCargos();
@@ -2865,42 +2925,180 @@ export class WizardCore {
         const cargoIndex = parseInt(e.currentTarget.dataset.cargoIndex);
         this.switchCargoNivelesTab(cargoIndex);
       });
+
+      // ✅ Sprint 6: Hover tooltip para mostrar GES del cargo
+      btn.addEventListener('mouseenter', (e) => {
+        this.showNivelesCargoTooltip(e.currentTarget);
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        this.hideNivelesCargoTooltip();
+      });
     });
+  }
+
+  /**
+   * ✅ Sprint 6: Mostrar tooltip con los GES del cargo y su estado
+   */
+  showNivelesCargoTooltip(tabButton) {
+    const tooltip = document.getElementById('niveles-cargo-tooltip');
+    if (!tooltip) return;
+
+    const cargoIndex = parseInt(tabButton.dataset.cargoIndex);
+    const cargo = this.state.getCargo(cargoIndex);
+    if (!cargo) return;
+
+    const gesArray = cargo.gesSeleccionados || cargo.ges || [];
+    
+    // Actualizar contenido del tooltip
+    const titleEl = document.getElementById('tooltip-cargo-name');
+    const statsEl = document.getElementById('tooltip-stats');
+    const listEl = document.getElementById('tooltip-ges-list');
+    
+    if (titleEl) titleEl.textContent = cargo.nombre;
+    
+    // Contar completados
+    const completed = gesArray.filter(ges => {
+      const niveles = ges.niveles || {};
+      return niveles.ND !== null && niveles.ND !== undefined &&
+             niveles.NE !== null && niveles.NE !== undefined &&
+             niveles.NC !== null && niveles.NC !== undefined;
+    }).length;
+    
+    if (statsEl) statsEl.textContent = `${completed}/${gesArray.length}`;
+    
+    // Renderizar lista de GES
+    if (listEl) {
+      listEl.innerHTML = gesArray.map(ges => {
+        const niveles = ges.niveles || {};
+        const isComplete = niveles.ND !== null && niveles.ND !== undefined &&
+                          niveles.NE !== null && niveles.NE !== undefined &&
+                          niveles.NC !== null && niveles.NC !== undefined;
+        
+        const statusClass = isComplete ? 'completed' : 'pending';
+        const statusIcon = isComplete ? 'fa-check' : 'fa-circle';
+        
+        // Determinar nivel de riesgo si está completo
+        let levelBadge = '';
+        if (isComplete && niveles.NR) {
+          const nr = niveles.NR;
+          let levelClass = 'risk-bajo';
+          let levelText = 'IV';
+          if (nr >= 600) { levelClass = 'risk-muy-alto'; levelText = 'I'; }
+          else if (nr >= 150) { levelClass = 'risk-alto'; levelText = 'II'; }
+          else if (nr >= 40) { levelClass = 'risk-medio'; levelText = 'III'; }
+          levelBadge = `<span class="item-level ${levelClass}">${levelText}</span>`;
+        }
+        
+        return `
+          <li class="niveles-cargo-tooltip__item">
+            <span class="item-status ${statusClass}">
+              <i class="fas ${statusIcon}"></i>
+            </span>
+            <span class="item-name">${ges.nombre}</span>
+            ${levelBadge}
+          </li>
+        `;
+      }).join('');
+    }
+    
+    // Posicionar y mostrar tooltip
+    tooltip.classList.add('visible');
+    
+    // Usar Floating UI si está disponible
+    if (typeof computePosition !== 'undefined') {
+      computePosition(tabButton, tooltip, {
+        placement: 'bottom',
+        middleware: [offset(8), shift({ padding: 8 })]
+      }).then(({ x, y }) => {
+        tooltip.style.left = `${x}px`;
+        tooltip.style.top = `${y}px`;
+      });
+    } else {
+      // Fallback: posicionar manualmente
+      const rect = tabButton.getBoundingClientRect();
+      tooltip.style.left = `${rect.left}px`;
+      tooltip.style.top = `${rect.bottom + 8}px`;
+    }
+  }
+
+  /**
+   * ✅ Sprint 6: Ocultar tooltip
+   */
+  hideNivelesCargoTooltip() {
+    const tooltip = document.getElementById('niveles-cargo-tooltip');
+    if (tooltip) {
+      tooltip.classList.remove('visible');
+    }
   }
 
   /**
    * Initialize NivelesRiesgoForm for a specific cargo
+   * ✅ Sprint 6 FIX: Usar cache de forms por cargo para evitar errores de lit-html
    */
   initializeNivelesForm(cargoIndex) {
+    console.log(`[WizardCore] initializeNivelesForm(${cargoIndex})`);
+    
+    // ✅ FIX: Obtener datos frescos del state
     const cargo = this.state.getCargo(cargoIndex);
-    if (!cargo) return;
-
-    const container = this.container.querySelector(`#niveles-container-${cargoIndex}`);
-    if (!container) return;
-
-    // Destroy previous instance if exists
-    if (this.nivelesForm) {
-      this.nivelesForm.destroy();
+    if (!cargo) {
+      console.error(`[WizardCore] Cargo ${cargoIndex} no encontrado`);
+      return;
     }
 
+    const container = this.container.querySelector(`#niveles-container-${cargoIndex}`);
+    if (!container) {
+      console.error(`[WizardCore] Container niveles-container-${cargoIndex} no encontrado`);
+      return;
+    }
+
+    // ✅ Sprint 6 FIX: Usar cache de forms por cargo
+    // NO destruir el form anterior - cada cargo mantiene su propio form
+    if (!this.nivelesFormCache) {
+      this.nivelesFormCache = {};
+    }
+
+    // Si ya existe un form para este cargo, solo actualizarlo
+    if (this.nivelesFormCache[cargoIndex]) {
+      console.log(`[WizardCore] Reutilizando form existente para cargo ${cargoIndex}`);
+      this.nivelesForm = this.nivelesFormCache[cargoIndex];
+      // Actualizar datos si es necesario
+      const gesArray = cargo.gesSeleccionados || cargo.ges || [];
+      this.nivelesForm.updateGESArray(gesArray);
+      return;
+    }
+
+    // ✅ FIX: Obtener gesSeleccionados directamente del state (datos frescos)
+    const gesArray = cargo.gesSeleccionados || cargo.ges || [];
+    
+    console.log(`[WizardCore] Creando nuevo NivelesForm para cargo "${cargo.nombre}" con ${gesArray.length} GES`);
+
     // Create new NivelesRiesgoForm instance
-    this.nivelesForm = new NivelesRiesgoForm(container, {
+    const newForm = new NivelesRiesgoForm(container, {
       cargoIndex: cargoIndex,
       cargoNombre: cargo.nombre,
-      gesArray: cargo.gesSeleccionados || [],
+      gesArray: gesArray,
       state: this.state,
       onChange: (data) => this.handleNivelesChange(cargoIndex, data),
-      onComplete: () => this.handleNivelesComplete()
+      onComplete: () => this.handleNivelesComplete(cargoIndex)
     });
+
+    // ✅ Guardar en cache y asignar como form actual
+    this.nivelesFormCache[cargoIndex] = newForm;
+    this.nivelesForm = newForm;
   }
 
   /**
    * Handle niveles change for a cargo
+   * ✅ Sprint 6 FIX: Actualiza los indicadores de los cargo tabs
    */
   handleNivelesChange(cargoIndex, data) {
     if (data.action === 'update-niveles') {
       // State is already updated via WizardState.updateGESNiveles()
       console.log(`[WizardCore] Niveles updated for cargo ${cargoIndex}, GES ${data.gesIndex}`);
+      
+      // ✅ Sprint 6 FIX: Actualizar indicadores de cargo tabs
+      this.updateNivelesCargoTabIndicators();
     } else if (data.action === 'go-back') {
       // User wants to go back to riesgos selection
       this.state.setCurrentStep('riesgos');
@@ -2908,17 +3106,105 @@ export class WizardCore {
   }
 
   /**
-   * Handle niveles completion
+   * ✅ Sprint 6: Actualizar indicadores X/Y de los cargo tabs
    */
-  handleNivelesComplete() {
-    console.log('[WizardCore] All niveles completed, proceeding to next step');
-    this.handleNext('niveles');
+  updateNivelesCargoTabIndicators() {
+    const cargos = this.state.getCargos();
+    const tabButtons = this.container.querySelectorAll('.niveles-cargo-tab');
+    
+    tabButtons.forEach((btn, index) => {
+      if (index >= cargos.length) return;
+      
+      const cargo = cargos[index];
+      const gesArray = cargo.gesSeleccionados || cargo.ges || [];
+      
+      // Contar GES completados
+      const gesCompleted = gesArray.filter(ges => {
+        const niveles = ges.niveles || {};
+        return niveles.ND !== null && niveles.ND !== undefined &&
+               niveles.NE !== null && niveles.NE !== undefined &&
+               niveles.NC !== null && niveles.NC !== undefined;
+      }).length;
+      
+      const isComplete = gesArray.length > 0 && gesCompleted === gesArray.length;
+      
+      // Actualizar contador
+      const countEl = btn.querySelector('.cargo-tab__count');
+      if (countEl) {
+        countEl.textContent = `${gesCompleted}/${gesArray.length}`;
+      }
+      
+      // Actualizar icono de estado
+      const statusIcon = btn.querySelector('.cargo-status-icon');
+      if (statusIcon) {
+        if (isComplete) {
+          statusIcon.classList.remove('fa-circle');
+          statusIcon.classList.add('fa-check-circle', 'completed');
+        } else {
+          statusIcon.classList.remove('fa-check-circle', 'completed');
+          statusIcon.classList.add('fa-circle');
+        }
+      }
+      
+      // Actualizar clase del tab
+      if (isComplete) {
+        btn.classList.add('completed');
+      } else {
+        btn.classList.remove('completed');
+      }
+    });
+  }
+
+  /**
+   * Handle niveles completion
+   * ✅ Sprint 6: Verifica si hay más cargos pendientes
+   */
+  handleNivelesComplete(currentCargoIndex = 0) {
+    console.log(`[WizardCore] handleNivelesComplete for cargo ${currentCargoIndex}`);
+    
+    const cargos = this.state.getCargos();
+    
+    // Buscar el siguiente cargo con GES pendientes
+    let nextPendingCargoIndex = -1;
+    
+    for (let i = currentCargoIndex + 1; i < cargos.length; i++) {
+      const cargo = cargos[i];
+      const gesArray = cargo.gesSeleccionados || cargo.ges || [];
+      
+      if (gesArray.length > 0) {
+        // Verificar si tiene GES sin completar
+        const hasIncomplete = gesArray.some(ges => {
+          const niveles = ges.niveles || {};
+          return niveles.ND === null || niveles.ND === undefined ||
+                 niveles.NE === null || niveles.NE === undefined ||
+                 niveles.NC === null || niveles.NC === undefined;
+        });
+        
+        if (hasIncomplete) {
+          nextPendingCargoIndex = i;
+          break;
+        }
+      }
+    }
+    
+    if (nextPendingCargoIndex !== -1) {
+      // Hay más cargos pendientes, cambiar al siguiente
+      console.log(`[WizardCore] Switching to next pending cargo: ${nextPendingCargoIndex}`);
+      this.switchCargoNivelesTab(nextPendingCargoIndex);
+    } else {
+      // Todos los cargos completos, avanzar al siguiente paso
+      console.log('[WizardCore] All cargos completed, proceeding to next step');
+      this.handleNext('niveles');
+    }
   }
 
   /**
    * Switch cargo tab in niveles step (for multiple cargos)
+   * ✅ Sprint 6 FIX: Siempre reinicializa el form al cambiar de tab
    */
   switchCargoNivelesTab(cargoIndex) {
+    console.log(`[WizardCore] switchCargoNivelesTab(${cargoIndex})`);
+    
     // Update tab buttons
     const tabButtons = this.container.querySelectorAll('.niveles-cargo-tab');
     tabButtons.forEach((btn, index) => {
@@ -2935,8 +3221,11 @@ export class WizardCore {
       container.style.display = index === cargoIndex ? '' : 'none';
     });
 
-    // Initialize form for this cargo if not already done
-    this.initializeNivelesForm(cargoIndex);
+    // ✅ FIX: Siempre reinicializar el form para obtener datos frescos
+    // Usar setTimeout para asegurar que el DOM esté listo
+    setTimeout(() => {
+      this.initializeNivelesForm(cargoIndex);
+    }, 0);
   }
 
   // ==================== NAVIGATION HANDLERS ====================
