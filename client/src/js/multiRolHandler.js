@@ -97,6 +97,13 @@ export async function initMultiRolDashboard() {
         // Configurar handlers de página específicos
         registerRolePageHandlers();
 
+        // ✅ Cargar la página según el hash URL actual (para que funcione al recargar)
+        const currentHash = window.location.hash.replace('#', '') || 'home';
+        if (window.multiRolPageHandlers && window.multiRolPageHandlers[currentHash]) {
+            console.log('[MultiRol] 🔄 Cargando datos de página actual:', currentHash);
+            await window.multiRolPageHandlers[currentHash]();
+        }
+
         // Escuchar evento de actualización de firma digital
         window.addEventListener('firmaDigitalActualizada', (event) => {
             console.log('[MultiRol] 📝 Firma digital actualizada:', event.detail);

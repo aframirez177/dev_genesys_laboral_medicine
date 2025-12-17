@@ -89,13 +89,14 @@
         transition: opacity tokens.$transition-normal, width tokens.$transition-normal;
     }
 
-    &__brand {
-        font-family: tokens.$font-family-title;
-        font-size: tokens.$font-h4;
-        font-weight: 800;
-        color: white;
+    &__text-brand {
+        font-family: tokens.$font-family-title !important;
+        font-size: 1.6rem !important;
+        font-weight: 800 !important;
+        color: #ffffff !important;
         line-height: tokens.$leading-tight;
         white-space: nowrap;
+        letter-spacing: -0.02em;
     }
 }
 

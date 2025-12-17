@@ -16,6 +16,7 @@ export async function getCargosByEmpresa(req, res) {
         const { empresaId } = req.params;
 
         // Query cargos from all documents of this empresa
+        // ✅ Incluir campos de override del médico para aplicar modificaciones
         const cargos = await db('cargos_documento')
             .join('documentos_generados', 'cargos_documento.documento_id', 'documentos_generados.id')
             .where('documentos_generados.empresa_id', empresaId)
@@ -33,7 +34,13 @@ export async function getCargosByEmpresa(req, res) {
                 'cargos_documento.tareas_rutinarias',
                 'cargos_documento.documento_id',
                 'documentos_generados.created_at as documento_fecha',
-                'documentos_generados.estado as documento_estado'
+                'documentos_generados.estado as documento_estado',
+                // ✅ Campos de override del médico
+                'cargos_documento.examenes_ingreso',
+                'cargos_documento.examenes_periodicos',
+                'cargos_documento.examenes_retiro',
+                'cargos_documento.modificado_por_medico_id',
+                'cargos_documento.justificacion_modificacion'
             )
             .orderBy('cargos_documento.created_at', 'desc');
 
@@ -113,26 +120,81 @@ export async function getCargosByEmpresa(req, res) {
                     V: riesgosConNR.filter(r => r.nrNivel === 'V').length
                 };
 
-                // ✅ Formatear exámenes consolidados con DETALLES completos (MISMA LÓGICA QUE VIEWER)
-                const examenesConsolidados = Array.from(controles.consolidado.examenes).map(codigoExamen => {
-                    const examenDetalle = EXAM_DETAILS[codigoExamen];
-                    return {
-                        codigo: codigoExamen,
-                        nombre: examenDetalle?.fullName || codigoExamen,
-                        periodicidadMeses: examenDetalle?.periodicidadMeses || 12,
-                        periodicidad: formatearPeriodicidad(examenDetalle?.periodicidadMeses || 12),
-                        prioridad: 1, // All exams from service are required
-                        tipo: 'Obligatorio'
-                    };
-                }).sort((a, b) => a.nombre.localeCompare(b.nombre));
+                // ✅ VERIFICAR OVERRIDES DEL MÉDICO (MISMA LÓGICA QUE profesiograma-view.controller)
+                const parseJsonField = (field) => {
+                    if (!field) return null;
+                    try {
+                        const parsed = typeof field === 'string' ? JSON.parse(field) : field;
+                        return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+                    } catch {
+                        return null;
+                    }
+                };
 
-                // 🐛 DEBUG: Log exámenes consolidados
-                console.log(`🔬 [BACKEND] Cargo "${cargo.nombre_cargo}":`, {
-                    riesgosCount: riesgosDB.length,
-                    examenesCount: examenesConsolidados.length,
-                    examenes: examenesConsolidados.map(e => e.codigo),
-                    source: 'riesgosService.consolidarControlesCargo'
-                });
+                // Obtener overrides del médico (si existen)
+                const medicoOverrides = {
+                    examenes_ingreso: parseJsonField(cargo.examenes_ingreso),
+                    examenes_periodicos: parseJsonField(cargo.examenes_periodicos),
+                    examenes_retiro: parseJsonField(cargo.examenes_retiro)
+                };
+
+                const tieneMedicoOverrides = medicoOverrides.examenes_ingreso || medicoOverrides.examenes_periodicos;
+
+                // ✅ EXÁMENES: Usar override del médico si existe, sino usar generados
+                let examenesConsolidados;
+                if (tieneMedicoOverrides) {
+                    // Combinar exámenes de ingreso y periódicos (evitar duplicados)
+                    const examenesMap = new Map();
+
+                    // Agregar exámenes de ingreso
+                    (medicoOverrides.examenes_ingreso || []).forEach(ex => {
+                        examenesMap.set(ex.nombre, {
+                            codigo: ex.codigo || ex.nombre,
+                            nombre: ex.nombre,
+                            periodicidad: ex.periodicidad || 'Al ingreso',
+                            periodicidadMeses: ex.periodicidadMeses || 12,
+                            justificacion: ex.justificacion || 'Modificado por médico ocupacional',
+                            prioridad: 1,
+                            tipo: 'Obligatorio'
+                        });
+                    });
+
+                    // Agregar exámenes periódicos (sobrescribe si ya existe)
+                    (medicoOverrides.examenes_periodicos || []).forEach(ex => {
+                        examenesMap.set(ex.nombre, {
+                            codigo: ex.codigo || ex.nombre,
+                            nombre: ex.nombre,
+                            periodicidad: ex.periodicidad || 'Periódico',
+                            periodicidadMeses: ex.periodicidadMeses || 12,
+                            justificacion: ex.justificacion || 'Modificado por médico ocupacional',
+                            prioridad: 1,
+                            tipo: 'Obligatorio'
+                        });
+                    });
+
+                    examenesConsolidados = Array.from(examenesMap.values()).sort((a, b) => a.nombre.localeCompare(b.nombre));
+                    console.log(`🔬 [BACKEND] Cargo "${cargo.nombre_cargo}" - USANDO OVERRIDES DEL MÉDICO:`, {
+                        examenesCount: examenesConsolidados.length,
+                        examenes: examenesConsolidados.map(e => e.nombre)
+                    });
+                } else {
+                    // Formatear exámenes consolidados con DETALLES completos (lógica original)
+                    examenesConsolidados = Array.from(controles.consolidado.examenes).map(codigoExamen => {
+                        const examenDetalle = EXAM_DETAILS[codigoExamen];
+                        return {
+                            codigo: codigoExamen,
+                            nombre: examenDetalle?.fullName || codigoExamen,
+                            periodicidadMeses: examenDetalle?.periodicidadMeses || 12,
+                            periodicidad: formatearPeriodicidad(examenDetalle?.periodicidadMeses || 12),
+                            prioridad: 1,
+                            tipo: 'Obligatorio'
+                        };
+                    }).sort((a, b) => a.nombre.localeCompare(b.nombre));
+                    console.log(`🔬 [BACKEND] Cargo "${cargo.nombre_cargo}" - usando exámenes generados:`, {
+                        examenesCount: examenesConsolidados.length,
+                        examenes: examenesConsolidados.map(e => e.codigo)
+                    });
+                }
 
                 return {
                     ...cargo,
@@ -141,7 +203,9 @@ export async function getCargosByEmpresa(req, res) {
                     nrNivelMaximo: calcularNivelNR(nrMaximo),
                     conteoNiveles,
                     togglesActivos: getTogglesActivos(cargo),
-                    examenesMedicos: examenesConsolidados, // ✅ Usando MISMA LÓGICA que viewer
+                    examenesMedicos: examenesConsolidados,
+                    modificadoPorMedico: tieneMedicoOverrides, // ✅ Indicar si fue modificado
+                    justificacionMedico: cargo.justificacion_modificacion || null,
                     // ✅ Incluir gesSeleccionados para edición del cargo
                     gesSeleccionados: cargoParaServicio.gesSeleccionados
                 };
