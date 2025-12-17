@@ -1,0 +1,526 @@
+/**
+ * FirmaDigitalUploader Component Styles
+ * Sprint 6 - Sistema Multi-Rol
+ *
+ * Estilos para el componente de subida de firma digital del médico
+ */
+
+@use 'sass:map';
+@use 'sass:color';
+@use '../base/variables' as *;
+
+// ============================================
+// VARIABLES LOCALES
+// ============================================
+$firma-border-radius: map.get($radius, 'lg');
+$firma-transition: map.get($transitions, 'base');
+$firma-primary: map.get($colors, 'primary');
+$firma-secondary: map.get($colors, 'secondary');
+$firma-danger: map.get($colors, 'danger');
+$firma-success: map.get($colors, 'success');
+$firma-text: map.get($colors, 'text');
+$firma-border: map.get($colors, 'border-color');
+$firma-bg: map.get($colors, 'background');
+
+// ============================================
+// CONTENEDOR PRINCIPAL
+// ============================================
+.firma-uploader {
+    background: #fff;
+    border-radius: $firma-border-radius;
+    border: 1px solid $firma-border;
+    overflow: hidden;
+
+    &__header {
+        padding: 2rem 2.4rem;
+        border-bottom: 1px solid $firma-border;
+        background: $firma-bg;
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-family: map.get($fonts, 'title');
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: $firma-secondary;
+        margin: 0 0 0.8rem 0;
+
+        svg {
+            width: 2.2rem;
+            height: 2.2rem;
+            color: $firma-primary;
+        }
+    }
+
+    &__description {
+        font-size: 1.4rem;
+        color: color.adjust($firma-text, $lightness: 20%);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    &__content {
+        padding: 2.4rem;
+    }
+}
+
+// ============================================
+// DROPZONE
+// ============================================
+.firma-uploader__dropzone {
+    border: 2px dashed $firma-border;
+    border-radius: $firma-border-radius;
+    padding: 4rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: $firma-transition;
+    background: rgba($firma-bg, 0.5);
+
+    &:hover,
+    &.dragging {
+        border-color: $firma-primary;
+        background: rgba($firma-primary, 0.05);
+
+        .firma-uploader__dropzone-icon {
+            color: $firma-primary;
+            transform: translateY(-4px);
+        }
+    }
+
+    &.dragging {
+        border-style: solid;
+    }
+
+    &-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+    }
+
+    &-icon {
+        width: 4.8rem;
+        height: 4.8rem;
+        color: color.adjust($firma-text, $lightness: 30%);
+        transition: $firma-transition;
+    }
+
+    &-text {
+        font-size: 1.5rem;
+        color: $firma-text;
+        margin: 0;
+    }
+
+    &-formats {
+        font-size: 1.2rem;
+        color: color.adjust($firma-text, $lightness: 30%);
+        margin-top: 0.4rem;
+    }
+}
+
+// ============================================
+// PREVIEW DE FIRMA
+// ============================================
+.firma-uploader__preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+
+    &-image {
+        max-width: 100%;
+        border-radius: $firma-border-radius;
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+            max-width: 300px;
+            max-height: 120px;
+            object-fit: contain;
+        }
+    }
+
+    &-info {
+        display: flex;
+        gap: 1.6rem;
+        font-size: 1.3rem;
+        color: color.adjust($firma-text, $lightness: 20%);
+
+        span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+    }
+
+    &-actions {
+        display: flex;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+// Fondo de cuadros para mostrar transparencia
+.checkered-bg {
+    background-image:
+        linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
+        linear-gradient(-45deg, #e0e0e0 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
+        linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    background-color: #fff;
+}
+
+// ============================================
+// LOADING STATE
+// ============================================
+.firma-uploader__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    gap: 1.6rem;
+
+    .spinner {
+        width: 4rem;
+        height: 4rem;
+        border: 3px solid $firma-border;
+        border-top-color: $firma-primary;
+        border-radius: 50%;
+        animation: spinner-rotate 0.8s linear infinite;
+    }
+
+    span {
+        font-size: 1.4rem;
+        color: color.adjust($firma-text, $lightness: 20%);
+    }
+}
+
+@keyframes spinner-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// ============================================
+// ERRORES
+// ============================================
+.firma-uploader__errors {
+    margin-top: 1.6rem;
+}
+
+.firma-uploader__error {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.2rem 1.6rem;
+    background: rgba($firma-danger, 0.08);
+    border-radius: map.get($radius, 'md');
+    color: color.adjust($firma-danger, $lightness: -10%);
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    svg {
+        width: 1.8rem;
+        height: 1.8rem;
+        flex-shrink: 0;
+        margin-top: 0.2rem;
+    }
+}
+
+// ============================================
+// SECCIÓN DE AYUDA
+// ============================================
+.firma-uploader__help {
+    margin-top: 2.4rem;
+    border-top: 1px solid $firma-border;
+    padding-top: 2rem;
+
+    &-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1rem 1.6rem;
+        background: transparent;
+        border: 1px solid $firma-border;
+        border-radius: map.get($radius, 'md');
+        cursor: pointer;
+        font-size: 1.4rem;
+        color: $firma-text;
+        transition: $firma-transition;
+        width: 100%;
+        justify-content: center;
+
+        svg {
+            width: 1.8rem;
+            height: 1.8rem;
+            color: $firma-primary;
+        }
+
+        &:hover {
+            background: rgba($firma-primary, 0.05);
+            border-color: $firma-primary;
+        }
+
+        &.active {
+            background: rgba($firma-primary, 0.08);
+            border-color: $firma-primary;
+        }
+    }
+
+    &-content {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: $firma-bg;
+        border-radius: $firma-border-radius;
+    }
+}
+
+.firma-uploader__help-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+}
+
+.help-step {
+    display: flex;
+    gap: 1.6rem;
+    align-items: flex-start;
+
+    &__number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.8rem;
+        height: 2.8rem;
+        background: $firma-primary;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 1.4rem;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    &__content {
+        flex: 1;
+
+        strong {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: $firma-secondary;
+            margin-bottom: 0.4rem;
+        }
+
+        p {
+            font-size: 1.4rem;
+            color: color.adjust($firma-text, $lightness: 15%);
+            margin: 0;
+            line-height: 1.5;
+
+            a {
+                color: $firma-primary;
+                text-decoration: none;
+                font-weight: 500;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
+
+.firma-uploader__requirements {
+    margin-top: 2rem;
+    padding-top: 1.6rem;
+    border-top: 1px dashed $firma-border;
+
+    h4 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: $firma-secondary;
+        margin: 0 0 1rem 0;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.4rem;
+            color: $firma-text;
+            padding: 0.6rem 0;
+
+            svg {
+                width: 1.6rem;
+                height: 1.6rem;
+                color: $firma-success;
+            }
+        }
+    }
+}
+
+// ============================================
+// BOTONES (LOCALES)
+// ============================================
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1rem 2rem;
+    border-radius: map.get($radius, 'md');
+    font-size: 1.4rem;
+    font-weight: 500;
+    font-family: map.get($fonts, 'title');
+    cursor: pointer;
+    transition: $firma-transition;
+    border: none;
+    text-decoration: none;
+
+    svg {
+        width: 1.6rem;
+        height: 1.6rem;
+    }
+
+    &--primary {
+        background: $firma-primary;
+        color: #fff;
+
+        &:hover {
+            background: color.adjust($firma-primary, $lightness: -8%);
+        }
+    }
+
+    &--outline {
+        background: transparent;
+        border: 1px solid $firma-border;
+        color: $firma-text;
+
+        &:hover {
+            border-color: $firma-primary;
+            color: $firma-primary;
+            background: rgba($firma-primary, 0.05);
+        }
+    }
+
+    &--danger {
+        background: transparent;
+        border: 1px solid $firma-danger;
+        color: $firma-danger;
+
+        &:hover {
+            background: $firma-danger;
+            color: #fff;
+        }
+    }
+
+    &--sm {
+        padding: 0.8rem 1.6rem;
+        font-size: 1.3rem;
+    }
+}
+
+// ============================================
+// TOAST NOTIFICATIONS
+// ============================================
+.firma-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1.2rem 2rem;
+    border-radius: map.get($radius, 'md');
+    font-size: 1.4rem;
+    font-weight: 500;
+    box-shadow: map.get($shadows, 'lg');
+    transform: translateY(100px);
+    opacity: 0;
+    transition: $firma-transition;
+    z-index: 9999;
+
+    &--visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    &--success {
+        background: $firma-success;
+        color: #fff;
+    }
+
+    &--error {
+        background: $firma-danger;
+        color: #fff;
+    }
+
+    &--info {
+        background: $firma-secondary;
+        color: #fff;
+    }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+@media (max-width: map.get($breakpoints, 'tablet')) {
+    .firma-uploader {
+        &__header {
+            padding: 1.6rem;
+        }
+
+        &__content {
+            padding: 1.6rem;
+        }
+
+        &__title {
+            font-size: 1.6rem;
+        }
+    }
+
+    .firma-uploader__dropzone {
+        padding: 3rem 1.6rem;
+    }
+
+    .firma-uploader__preview-image img {
+        max-width: 250px;
+    }
+
+    .firma-uploader__preview-info {
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: center;
+    }
+
+    .firma-uploader__preview-actions {
+        width: 100%;
+
+        .btn {
+            flex: 1;
+        }
+    }
+
+    .help-step {
+        flex-direction: column;
+        text-align: center;
+
+        &__number {
+            align-self: center;
+        }
+    }
+}

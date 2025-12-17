@@ -1,0 +1,371 @@
+/**
+ * DataTable Component Styles
+ * Sprint 6 - Component Library
+ *
+ * Componente reutilizable para tablas de datos
+ * Principios: Sin gradientes, colores sólidos, diseño limpio
+ */
+
+@use "../base/variables" as vars;
+@use "sass:map";
+
+// =============================
+// DATATABLE CONTAINER
+// =============================
+.datatable {
+    background: map.get(vars.$colors, "input-bg");
+    border-radius: map.get(vars.$radius, "lg");
+    box-shadow: map.get(vars.$shadows, "md");
+    overflow: hidden;
+    margin-bottom: map.get(vars.$spacing, "md");
+
+    // =============================
+    // TOOLBAR
+    // =============================
+    &__toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: map.get(vars.$spacing, "sm");
+        border-bottom: 1px solid map.get(vars.$colors, "border-color");
+        background: map.get(vars.$colors, "header-bg");
+    }
+
+    &__search {
+        position: relative;
+        width: 300px;
+
+        input {
+            width: 100%;
+            padding: 0.8rem 1.2rem 0.8rem 4rem;
+            border: 1px solid map.get(vars.$colors, "input-border");
+            border-radius: map.get(vars.$radius, "md");
+            font-size: 1.4rem;
+            font-family: map.get(vars.$fonts, "body");
+            background: map.get(vars.$colors, "input-bg");
+            transition: map.get(vars.$transitions, "base");
+
+            &:focus {
+                outline: none;
+                border-color: map.get(vars.$colors, "primary");
+                box-shadow: 0 0 0 3px rgba(map.get(vars.$colors, "primary"), 0.1);
+            }
+
+            &::placeholder {
+                color: map.get(vars.$colors, "placeholder");
+            }
+        }
+
+        i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: map.get(vars.$colors, "placeholder");
+            width: 18px;
+            height: 18px;
+        }
+    }
+
+    &__info {
+        font-size: 1.3rem;
+        color: map.get(vars.$colors, "text");
+        font-family: map.get(vars.$fonts, "body");
+    }
+
+    // =============================
+    // TABLE
+    // =============================
+    &__wrapper {
+        overflow-x: auto;
+    }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th, td {
+            padding: 1.2rem 1.6rem;
+            text-align: left;
+        }
+
+        thead {
+            background: map.get(vars.$colors, "header-bg");
+            border-bottom: 2px solid map.get(vars.$colors, "border-color");
+        }
+    }
+
+    &__th {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: map.get(vars.$colors, "secondary");
+        font-family: map.get(vars.$fonts, "title");
+        white-space: nowrap;
+
+        &--sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: background map.get(vars.$transitions, "fast");
+
+            &:hover {
+                background: map.get(vars.$colors, "accordion-header-bg");
+            }
+        }
+
+        &--sorted {
+            background: rgba(map.get(vars.$colors, "success"), 0.1);
+            color: map.get(vars.$colors, "text-secondary-accessible");
+        }
+
+        &--actions {
+            text-align: center;
+            width: 120px;
+        }
+    }
+
+    &__th-content {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    &__sort-icon {
+        width: 14px;
+        height: 14px;
+        opacity: 0.5;
+        transition: opacity map.get(vars.$transitions, "fast");
+
+        .datatable__th--sorted & {
+            opacity: 1;
+        }
+    }
+
+    &__tr {
+        border-bottom: 1px solid map.get(vars.$colors, "border-color");
+        transition: background map.get(vars.$transitions, "fast");
+
+        &:hover {
+            background: rgba(map.get(vars.$colors, "primary"), 0.03);
+        }
+
+        &--clickable {
+            cursor: pointer;
+        }
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    &__td {
+        font-size: 1.4rem;
+        color: map.get(vars.$colors, "text");
+        font-family: map.get(vars.$fonts, "body");
+
+        &--actions {
+            text-align: center;
+        }
+    }
+
+    // =============================
+    // ACTIONS
+    // =============================
+    &__actions {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+    }
+
+    &__action-btn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border: 1px solid map.get(vars.$colors, "input-border");
+        border-radius: map.get(vars.$radius, "sm");
+        background: map.get(vars.$colors, "input-bg");
+        cursor: pointer;
+        transition: all map.get(vars.$transitions, "fast");
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        i {
+            width: 16px;
+            height: 16px;
+            color: map.get(vars.$colors, "text");
+        }
+
+        &:hover {
+            background: map.get(vars.$colors, "primary");
+            border-color: map.get(vars.$colors, "primary");
+
+            i {
+                color: white;
+            }
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+
+    // =============================
+    // PAGINATION
+    // =============================
+    &__pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.8rem;
+        padding: map.get(vars.$spacing, "sm");
+        background: map.get(vars.$colors, "background");
+    }
+
+    &__page-btn {
+        min-width: 36px;
+        height: 36px;
+        padding: 0.6rem 1rem;
+        border: 1px solid map.get(vars.$colors, "input-border");
+        border-radius: map.get(vars.$radius, "sm");
+        background: map.get(vars.$colors, "input-bg");
+        cursor: pointer;
+        transition: all map.get(vars.$transitions, "fast");
+        font-family: map.get(vars.$fonts, "body");
+        font-size: 1.4rem;
+        color: map.get(vars.$colors, "text");
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        i {
+            width: 16px;
+            height: 16px;
+        }
+
+        &:hover:not(:disabled) {
+            background: map.get(vars.$colors, "primary");
+            color: white;
+            border-color: map.get(vars.$colors, "primary");
+        }
+
+        &--active {
+            background: map.get(vars.$colors, "primary");
+            color: white;
+            border-color: map.get(vars.$colors, "primary");
+            font-weight: 600;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: map.get(vars.$colors, "accordion-header-bg");
+        }
+    }
+
+    &__ellipsis {
+        color: map.get(vars.$colors, "placeholder");
+        padding: 0 0.4rem;
+    }
+
+    // =============================
+    // LOADING STATE
+    // =============================
+    &__loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: map.get(vars.$spacing, "xl");
+        text-align: center;
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid map.get(vars.$colors, "border-color");
+            border-top-color: map.get(vars.$colors, "primary");
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: map.get(vars.$spacing, "sm");
+        }
+
+        p {
+            font-size: 1.4rem;
+            color: map.get(vars.$colors, "placeholder");
+            font-family: map.get(vars.$fonts, "body");
+        }
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    // =============================
+    // EMPTY STATE
+    // =============================
+    &__empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: map.get(vars.$spacing, "xl");
+        text-align: center;
+
+        i {
+            width: 48px;
+            height: 48px;
+            color: map.get(vars.$colors, "placeholder");
+            margin-bottom: map.get(vars.$spacing, "sm");
+        }
+
+        p {
+            font-size: 1.6rem;
+            color: map.get(vars.$colors, "placeholder");
+            font-family: map.get(vars.$fonts, "body");
+        }
+    }
+}
+
+// =============================
+// RESPONSIVE
+// =============================
+@media (max-width: map.get(vars.$breakpoints, "tablet")) {
+    .datatable {
+        &__toolbar {
+            flex-direction: column;
+            gap: map.get(vars.$spacing, "sm");
+        }
+
+        &__search {
+            width: 100%;
+        }
+
+        &__table {
+            font-size: 1.2rem;
+
+            th, td {
+                padding: 0.8rem 1rem;
+            }
+        }
+
+        &__actions {
+            flex-wrap: wrap;
+        }
+    }
+}
+
+@media (max-width: map.get(vars.$breakpoints, "mobile")) {
+    .datatable {
+        &__pagination {
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        &__page-btn {
+            min-width: 32px;
+            height: 32px;
+            font-size: 1.2rem;
+        }
+    }
+}

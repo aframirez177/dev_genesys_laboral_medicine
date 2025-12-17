@@ -18,12 +18,13 @@ import {
     changePassword
 } from '../controllers/auth.controller.js';
 import { authenticate, requireRole } from '../middleware/authenticate.js';
+import { loginLimiter, passwordResetLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
 
-// Rutas públicas (no requieren token)
-router.post('/login', login);
-router.post('/login-empresa', loginEmpresa);
+// Rutas públicas (no requieren token) - CON RATE LIMITING ESTRICTO
+router.post('/login', loginLimiter, login);
+router.post('/login-empresa', loginLimiter, loginEmpresa);
 
 // Rutas protegidas (requieren token válido)
 router.get('/me', authenticate, getMe);

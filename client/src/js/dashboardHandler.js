@@ -7,6 +7,7 @@
 
 import { createCargoMiniWizard } from './components/CargoMiniWizard.js';
 import MatrizRiesgosComponent from './components/matrizRiesgosComponent.js';
+import { initMultiRolDashboard, ROLES } from './multiRolHandler.js';
 
 // ============================================
 // STATE MANAGEMENT
@@ -200,6 +201,17 @@ class NavigationHandler {
             'panel-medico': loadPanelMedicoPage
         };
 
+        // Primero buscar en handlers multi-rol (si existen)
+        if (window.multiRolPageHandlers && window.multiRolPageHandlers[pageName]) {
+            try {
+                await window.multiRolPageHandlers[pageName]();
+                return;
+            } catch (error) {
+                console.error(`Error loading multi-rol page ${pageName}:`, error);
+            }
+        }
+
+        // Luego buscar en handlers estándar
         const handler = pageHandlers[pageName];
         if (handler) {
             try {
@@ -1470,19 +1482,20 @@ async function loadProfesiogramaPage() {
             </div>
 
             <div class="dashboard-section">
-                <h2 class="dashboard-section__title">Protocolo de Vigilancia por Cargo</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 class="dashboard-section__title" style="margin: 0;">Protocolo de Vigilancia por Cargo</h2>
+                    <div>
+                        <a href="/pages/wizard_riesgos.html" class="btn btn--outline mr-3">
+                            <i data-lucide="edit"></i> Editar en Wizard
+                        </a>
+                        <a href="/pages/profesiograma_view.html${documentoId ? '?documento_id=' + documentoId : ''}" class="btn btn--primary">
+                            <i data-lucide="eye"></i> Ver Profesiograma Completo
+                        </a>
+                    </div>
+                </div>
                 <div class="dashboard-grid dashboard-grid--cols-2">
                     ${cargosHTML}
                 </div>
-            </div>
-
-            <div class="text-center mt-6">
-                <a href="/pages/wizard_riesgos.html" class="btn btn--outline mr-3">
-                    <i data-lucide="edit"></i> Editar en Wizard
-                </a>
-                <a href="/pages/profesiograma_view.html${documentoId ? '?documento_id=' + documentoId : ''}" class="btn btn--primary">
-                    <i data-lucide="eye"></i> Ver Profesiograma Completo
-                </a>
             </div>
         `);
         if (window.lucide) window.lucide.createIcons();
@@ -2435,6 +2448,21 @@ function showCargoDetailsPopup(cargo) {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 Dashboard Premium initializing...');
 
+    // Detectar si es un usuario con rol especial (admin/médico)
+    const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (userStr) {
+        try {
+            const user = JSON.parse(userStr);
+            if (user.rol === 'admin_genesys' || user.rol === 'medico_ocupacional') {
+                console.log('[Dashboard] Detectado rol especial:', user.rol);
+                await initMultiRolDashboard();
+                return; // El dashboard multi-rol toma control
+            }
+        } catch (e) {
+            console.warn('[Dashboard] Error parsing user:', e);
+        }
+    }
+
     // Debug: Check localStorage immediately
     console.log('🔍 [DEBUG] Checking localStorage...');
     const wizardState = localStorage.getItem('genesys_wizard_state');
@@ -2531,6 +2559,25 @@ export { DashboardState, NavigationHandler };
 function initPaywallModal() {
     const PAYWALL_DELAY = 8000;
     const PRICE_PER_CARGO = 30000;
+
+    // NO MOSTRAR PAYWALL para admins y médicos
+    const checkIfShouldShowPaywall = () => {
+        const userStr = localStorage.getItem('genesys_user');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                const rol = user.rol;
+                // Admin y médico NO ven paywall
+                if (rol === 'admin_genesys' || rol === 'medico_ocupacional') {
+                    console.log('[Paywall] Usuario es', rol, '- Paywall deshabilitado');
+                    return false;
+                }
+            } catch (e) {
+                console.warn('[Paywall] Error leyendo rol del usuario:', e);
+            }
+        }
+        return true;
+    };
 
     const hasUserPaid = () => localStorage.getItem('genesys_payment_status') === 'paid';
 
@@ -2702,12 +2749,17 @@ function initPaywallModal() {
         });
     }
 
-    // Start paywall timer if user hasn't paid
+    // Start paywall timer if user hasn't paid AND should show paywall (not admin/medico)
+    if (!checkIfShouldShowPaywall()) {
+        console.log('[Paywall] Paywall deshabilitado para este rol.');
+        return;
+    }
+
     if (!hasUserPaid()) {
         console.log('[Paywall] User has not paid. Timer starting (' + (PAYWALL_DELAY / 1000) + 's)...');
         setTimeout(() => {
             // Check again in case user paid during the timer
-            if (!hasUserPaid()) {
+            if (!hasUserPaid() && checkIfShouldShowPaywall()) {
                 showPaywallModal();
             }
         }, PAYWALL_DELAY);
@@ -2721,4 +2773,21 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initPaywallModal);
 } else {
     initPaywallModal();
+}
+
+// ============================================
+// MULTI-ROL INITIALIZATION
+// ============================================
+/**
+ * Inicializa el sistema multi-rol para mostrar contenido
+ * específico según el rol del usuario autenticado
+ */
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('🎭 Inicializando sistema multi-rol...');
+        initMultiRolDashboard();
+    });
+} else {
+    console.log('🎭 Inicializando sistema multi-rol...');
+    initMultiRolDashboard();
 }

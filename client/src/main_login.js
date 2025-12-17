@@ -129,8 +129,8 @@ async function handleLogin(tipo, form) {
 // Check if already logged in
 const authToken = localStorage.getItem('authToken');
 if (authToken) {
-  // Verify token is still valid
-  fetch('/api/auth/verify', {
+  // Verify token is still valid using /api/auth/me endpoint
+  fetch('/api/auth/me', {
     headers: {
       'Authorization': `Bearer ${authToken}`
     }

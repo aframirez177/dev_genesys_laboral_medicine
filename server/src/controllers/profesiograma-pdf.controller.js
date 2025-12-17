@@ -89,6 +89,9 @@ class ProfesiogramaPDFGenerator {
         this.companyName = datos.contact?.companyName || datos.companyName || "Empresa";
         this.companyNit = datos.contact?.nit || datos.nit || "N/A";
 
+        // Información del médico (opcional, para sistema multi-rol)
+        this.medicoInfo = datos.medico || null;
+
         // Fechas
         this.fechaElaboracion = new Date();
         this.fechaVigencia = this.fechaElaboracion;
@@ -321,13 +324,22 @@ class ProfesiogramaPDFGenerator {
 
     /**
      * PÁGINA 2: Información del Médico
+     * Si hay medicoInfo disponible (sistema multi-rol), usa los datos reales
      */
     drawInfoMedico() {
         this.addPage();
         this.drawPageTitle("1. INFORMACIÓN DEL MÉDICO RESPONSABLE");
         this.addSpace(5);
 
-        const campos = [
+        // Usar datos del médico si están disponibles, sino placeholders
+        const medico = this.medicoInfo;
+        const campos = medico ? [
+            ["Nombre completo:", medico.full_name || "[Nombre del médico especialista]"],
+            ["Registro médico:", medico.registro_medico || "[Número de registro]"],
+            ["Especialidad:", medico.especialidad || "Medicina del Trabajo / Salud Ocupacional"],
+            ["Número de licencia en SST:", medico.licencia_sst || "[Número de licencia vigente]"],
+            ["Fecha de expedición licencia:", medico.fecha_expedicion_licencia ? formatDateShort(medico.fecha_expedicion_licencia) : "[DD/MM/AAAA]"]
+        ] : [
             ["Nombre completo:", "[Nombre del médico especialista]"],
             ["Registro médico:", "[Número de registro]"],
             ["Especialidad:", "Medicina del Trabajo / Salud Ocupacional"],
@@ -352,12 +364,54 @@ class ProfesiogramaPDFGenerator {
             margin: { left: MARGINS.left, right: MARGINS.right }
         });
 
-        this.currentY = this.doc.autoTable.previous.finalY + 20;
+        this.currentY = this.doc.autoTable.previous.finalY + 15;
 
-        // Espacio para firma
-        this.drawText("Firma: ___________________________", { bold: true });
+        // Firma del médico
+        if (medico && medico.firma_url && medico.firma_base64) {
+            // Si hay firma digital del médico, insertarla como imagen
+            try {
+                this.drawText("Firma:", { bold: true });
+                this.addSpace(3);
+
+                // Insertar imagen de firma (PNG con transparencia)
+                const firmaWidth = 50; // mm
+                const firmaHeight = 20; // mm (proporcional)
+                this.doc.addImage(
+                    medico.firma_base64,
+                    'PNG',
+                    MARGINS.left,
+                    this.currentY,
+                    firmaWidth,
+                    firmaHeight
+                );
+                this.currentY += firmaHeight + 5;
+
+                // Línea decorativa bajo la firma
+                const rgb = hexToRgb(COLORS.secondary);
+                this.doc.setDrawColor(rgb.r, rgb.g, rgb.b);
+                this.doc.line(MARGINS.left, this.currentY, MARGINS.left + 60, this.currentY);
+                this.currentY += 3;
+
+                // Nombre del médico bajo la línea
+                this.doc.setFontSize(9);
+                this.doc.setFont("Poppins", "bold");
+                this.doc.text(medico.full_name || "", MARGINS.left, this.currentY);
+                this.currentY += 4;
+                this.doc.setFont("Poppins", "normal");
+                this.doc.text(`Lic. SST: ${medico.licencia_sst || ''}`, MARGINS.left, this.currentY);
+
+            } catch (e) {
+                console.error("Error insertando firma del médico:", e);
+                // Fallback: línea para firma manual
+                this.drawText("Firma: ___________________________", { bold: true });
+            }
+        } else {
+            // Espacio para firma manual (sin médico asignado o sin firma digital)
+            this.drawText("Firma: ___________________________", { bold: true });
+        }
+
         this.addSpace(5);
-        this.drawText("Fecha: [DD/MM/AAAA]");
+        this.drawText(`Fecha: ${formatDateShort(new Date())}`);
     }
 
     /**

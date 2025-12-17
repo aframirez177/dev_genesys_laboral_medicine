@@ -62,6 +62,44 @@
               </a>
             </li>
 
+            <!-- ============================================ -->
+            <!-- PESTAÑAS ADMIN GENESYS                       -->
+            <!-- ============================================ -->
+            <!-- Gestión de Empresas (solo admin) -->
+            <li style="display: none;">
+              <a href="#" class="sidebar-nav__item" data-page="admin-empresas">
+                <span class="sidebar-nav__icon"><i data-lucide="building-2"></i></span>
+                <span class="sidebar-nav__text">Gestión de Empresas</span>
+              </a>
+            </li>
+
+            <!-- Gestión de Médicos (solo admin) -->
+            <li style="display: none;">
+              <a href="#" class="sidebar-nav__item" data-page="admin-medicos">
+                <span class="sidebar-nav__icon"><i data-lucide="user-cog"></i></span>
+                <span class="sidebar-nav__text">Gestión de Médicos</span>
+              </a>
+            </li>
+
+            <!-- Pagos Manuales (solo admin) -->
+            <li style="display: none;">
+              <a href="#" class="sidebar-nav__item" data-page="admin-pagos">
+                <span class="sidebar-nav__icon"><i data-lucide="credit-card"></i></span>
+                <span class="sidebar-nav__text">Pagos Manuales</span>
+              </a>
+            </li>
+
+            <!-- Auditoría (solo admin) -->
+            <li style="display: none;">
+              <a href="#" class="sidebar-nav__item" data-page="admin-auditoria">
+                <span class="sidebar-nav__icon"><i data-lucide="shield-check"></i></span>
+                <span class="sidebar-nav__text">Auditoría</span>
+              </a>
+            </li>
+
+            <!-- ============================================ -->
+            <!-- PESTAÑAS EMPRESA                             -->
+            <!-- ============================================ -->
             <!-- Mapa Organizacional -->
             <li>
               <a href="#" class="sidebar-nav__item" data-page="mapa-org">
@@ -232,6 +270,7 @@
               <div class="header-user__dropdown" id="user-dropdown">
                 <div class="header-user__dropdown-header">
                   <span class="header-user__dropdown-name" id="user-name">Usuario</span>
+                  <span class="header-user__dropdown-role" id="user-role" style="font-size: 1.2rem; color: #5dc4af; font-weight: 500;"></span>
                   <span class="header-user__dropdown-email" id="user-email">usuario@empresa.com</span>
                 </div>
                 <div class="header-user__dropdown-divider"></div>
@@ -845,6 +884,96 @@
                 <div class="loading-spinner"></div>
                 <p>Cargando panel médico...</p>
               </div>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PÁGINAS ADMIN GENESYS (Sprint 6 Multi-Rol)   -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-admin-home" data-page="admin-home" style="display: none;" data-role-visible="admin_genesys">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando dashboard de administrador...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-admin-empresas" data-page="admin-empresas" style="display: none;" data-role-visible="admin_genesys">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando gestión de empresas...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-admin-medicos" data-page="admin-medicos" style="display: none;" data-role-visible="admin_genesys">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando gestión de médicos...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-admin-pagos" data-page="admin-pagos" style="display: none;" data-role-visible="admin_genesys">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando gestión de pagos...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-admin-auditoria" data-page="admin-auditoria" style="display: none;" data-role-visible="admin_genesys">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando logs de auditoría...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-admin-config" data-page="admin-config" style="display: none;" data-role-visible="admin_genesys">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando configuración...</p>
+            </div>
+          </section>
+
+          <!-- ============================================ -->
+          <!-- PÁGINAS MÉDICO OCUPACIONAL (Sprint 6 Multi-Rol) -->
+          <!-- ============================================ -->
+          <section class="dashboard-page" id="page-medico-home" data-page="medico-home" style="display: none;" data-role-visible="medico_ocupacional">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando dashboard del médico...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-medico-empresas" data-page="medico-empresas" style="display: none;" data-role-visible="medico_ocupacional">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando empresas asignadas...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-medico-profesiograma" data-page="medico-profesiograma" style="display: none;" data-role-visible="medico_ocupacional">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando editor de profesiograma...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-medico-examenes" data-page="medico-examenes" style="display: none;" data-role-visible="medico_ocupacional">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando exámenes médicos...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-medico-firma" data-page="medico-firma" style="display: none;" data-role-visible="medico_ocupacional">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando configuración de firma...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-medico-config" data-page="medico-config" style="display: none;" data-role-visible="medico_ocupacional">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando configuración...</p>
             </div>
           </section>
         </div>

@@ -1209,7 +1209,7 @@ body {
 
     // Header de continuación (página 2)
     .cargo-header-continuacion {
-        background-color: lighten($primary, 35%) !important;
+        background-color: color.adjust($primary, $lightness: 35%) !important;
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
     }
@@ -1438,7 +1438,7 @@ body {
         padding-top: $spacing-lg;
 
         .cargo-header-continuacion {
-            background-color: lighten($primary, 42%);
+            background-color: color.adjust($primary, $lightness: 42%);
             margin: -$spacing-xxl;
             margin-bottom: $spacing-lg;
             padding: $spacing-md $spacing-xxl;

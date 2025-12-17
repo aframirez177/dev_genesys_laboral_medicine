@@ -1,5 +1,5 @@
 // server/src/utils/spaces.js
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import crypto from 'crypto';
 import path from 'path';
 
@@ -45,9 +45,41 @@ export const uploadToSpaces = async (buffer, originalFilename, contentType, isPr
         // Construye la URL pública manualmente
         const publicUrl = `https://${process.env.SPACES_BUCKET}.${process.env.SPACES_ENDPOINT}/${uniqueKey}`;
         console.log(`✅ Archivo subido a Spaces: ${publicUrl}`);
-        return publicUrl;
+        return { url: publicUrl, key: uniqueKey };
     } catch (error) {
         console.error("❌ Error subiendo a Spaces:", error);
         throw error; // Propaga el error para que la transacción falle
+    }
+};
+
+/**
+ * Elimina un archivo de DigitalOcean Spaces.
+ * @param {string} fileUrlOrKey La URL pública o key del archivo a eliminar.
+ * @returns {Promise<boolean>} True si se eliminó correctamente.
+ */
+export const deleteFromSpaces = async (fileUrlOrKey) => {
+    try {
+        // Extraer la key del archivo de la URL si es necesario
+        let key = fileUrlOrKey;
+
+        // Si es una URL completa, extraer la key
+        if (fileUrlOrKey.startsWith('http')) {
+            const url = new URL(fileUrlOrKey);
+            key = url.pathname.replace(/^\//, ''); // Quitar el slash inicial
+        }
+
+        const params = {
+            Bucket: process.env.SPACES_BUCKET,
+            Key: key,
+        };
+
+        const command = new DeleteObjectCommand(params);
+        await spacesClient.send(command);
+
+        console.log(`✅ Archivo eliminado de Spaces: ${key}`);
+        return true;
+    } catch (error) {
+        console.error("❌ Error eliminando de Spaces:", error);
+        throw error;
     }
 };

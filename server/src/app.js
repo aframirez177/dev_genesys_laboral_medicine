@@ -26,7 +26,10 @@ import payuRoutes from './routes/payu.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import cargosRoutes from './routes/cargos.routes.js';
 import examenesRoutes from './routes/examenes.routes.js';
+import adminRoutes from './routes/admin.routes.js';  // Rutas de administrador (Sprint 6)
+import medicoRoutes from './routes/medico.routes.js';  // Rutas de médico ocupacional (Sprint 6)
 import { metricsMiddleware, metricsHandler } from './config/metrics.js';
+import { globalLimiter } from './middleware/rateLimiter.js';  // Rate limiting (Sprint 6)
 
 
 const env = getEnvVars();
@@ -70,7 +73,7 @@ const corsOptions = {
             callback(new Error('Not allowed by CORS'));
         }
     },
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 };
 
@@ -79,15 +82,29 @@ app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(fileUpload({
-    createParentPath: true,
-    limits: {
-        fileSize: 20 * 1024 * 1024
+
+// Aplicar express-fileupload SOLO a rutas que no usan multer
+// Las rutas /api/medico usan multer, por lo que se excluyen
+app.use((req, res, next) => {
+    // Excluir rutas que usan multer
+    if (req.path.startsWith('/api/medico')) {
+        return next();
     }
-}));
+
+    // Aplicar fileUpload a todas las demás rutas
+    fileUpload({
+        createParentPath: true,
+        limits: {
+            fileSize: 20 * 1024 * 1024
+        }
+    })(req, res, next);
+});
 
 // Metrics middleware (before routes)
 app.use(metricsMiddleware);
+
+// Global rate limiting (60 requests per minute)
+app.use('/api', globalLimiter);
 
 // Rutas
 app.use('/api/matriz-riesgos', matrizRiesgosRoutes);
@@ -103,6 +120,8 @@ app.use('/api/payu', payuRoutes);  // Integración PayU Colombia
 app.use('/api/auth', authRoutes);  // Autenticación JWT (Sprint 1)
 app.use('/api/cargos', cargosRoutes);  // Cargos y Matriz GTC-45 (Sprint 2)
 app.use('/api/examenes', examenesRoutes);  // Examenes y Mapa Calor (Sprint 4)
+app.use('/api/admin', adminRoutes);  // Rutas de administrador Genesys (Sprint 6)
+app.use('/api/medico', medicoRoutes);  // Rutas de médico ocupacional (Sprint 6)
 
 app.use('/', whatsappRoutes);
 

@@ -39,9 +39,10 @@ async function getProfesiogramaData(req, res) {
             .where({ id: documento.empresa_id })
             .first();
 
-        // 3. Consultar cargos del documento con sus riesgos
+        // 3. Consultar cargos del documento con sus riesgos (ordenados por ID para mantener orden original)
         const cargosDB = await db('cargos_documento')
             .where({ documento_id: documento.id })
+            .orderBy('id', 'asc')
             .select('*');
 
         console.log(`✓ Cargos encontrados: ${cargosDB.length}`);
@@ -95,6 +96,37 @@ async function getProfesiogramaData(req, res) {
                 // Debug: mostrar resultado de controles
                 console.log(`  📊 Resultado controles: ${controles.porGES.length} GES procesados, EPP: ${controles.consolidado.epp.length}, Aptitudes: ${controles.consolidado.aptitudes.length}`);
 
+                // ✅ VERIFICAR OVERRIDES DEL MÉDICO
+                // Helper para parsear JSON de la BD
+                const parseJsonField = (field) => {
+                    if (!field) return null;
+                    try {
+                        const parsed = typeof field === 'string' ? JSON.parse(field) : field;
+                        return Array.isArray(parsed) && parsed.length > 0 ? parsed : null;
+                    } catch {
+                        return null;
+                    }
+                };
+
+                // Obtener overrides del médico (si existen)
+                const medicoOverrides = {
+                    examenes_ingreso: parseJsonField(cargoDB.examenes_ingreso),
+                    examenes_periodicos: parseJsonField(cargoDB.examenes_periodicos),
+                    examenes_retiro: parseJsonField(cargoDB.examenes_retiro),
+                    epp: parseJsonField(cargoDB.epp),
+                    aptitudes: parseJsonField(cargoDB.aptitudes),
+                    condiciones_incompatibles: parseJsonField(cargoDB.condiciones_incompatibles)
+                };
+
+                const tieneMedicoOverrides = Object.values(medicoOverrides).some(v => v !== null);
+                if (tieneMedicoOverrides) {
+                    console.log(`  🔄 Cargo tiene modificaciones del médico - usando overrides`);
+                    console.log(`     📋 examenes_ingreso raw:`, cargoDB.examenes_ingreso);
+                    console.log(`     📋 examenes_ingreso parsed:`, medicoOverrides.examenes_ingreso?.length, 'items');
+                    console.log(`     📋 examenes_periodicos raw:`, cargoDB.examenes_periodicos);
+                    console.log(`     📋 examenes_periodicos parsed:`, medicoOverrides.examenes_periodicos?.length, 'items');
+                }
+
                 // Formatear factores de riesgo con NR calculado y justificaciones
                 const factoresRiesgo = controles.porGES
                     .filter(ges => ges.controlesAplicados) // Solo mostrar los que requieren controles
@@ -130,17 +162,49 @@ async function getProfesiogramaData(req, res) {
                     peorConsecuencia: ges.peorConsecuencia || ''
                 }));
 
-                // Formatear exámenes con periodicidad
-                const examenes = controles.consolidado.examenes.map(codigoExamen => {
-                    const examenDetalle = EXAM_DETAILS[codigoExamen];
-                    const periodicidadMeses = controles.consolidado.periodicidadMinima;
+                // ✅ EXÁMENES: Usar override del médico si existe, sino usar generados
+                let examenes;
+                if (medicoOverrides.examenes_ingreso || medicoOverrides.examenes_periodicos) {
+                    // Combinar exámenes de ingreso y periódicos (evitar duplicados)
+                    const examenesMap = new Map();
 
-                    return {
-                        nombre: examenDetalle?.fullName || codigoExamen,
-                        periodicidad: formatearPeriodicidad(periodicidadMeses),
-                        justificacion: generarJustificacionExamen(codigoExamen, controles)
-                    };
-                });
+                    // Agregar exámenes de ingreso
+                    (medicoOverrides.examenes_ingreso || []).forEach(ex => {
+                        examenesMap.set(ex.nombre, {
+                            nombre: ex.nombre,
+                            periodicidad: ex.periodicidad || 'Al ingreso',
+                            justificacion: ex.justificacion || 'Modificado por médico ocupacional'
+                        });
+                    });
+
+                    // Agregar exámenes periódicos (sobrescribe si ya existe)
+                    (medicoOverrides.examenes_periodicos || []).forEach(ex => {
+                        examenesMap.set(ex.nombre, {
+                            nombre: ex.nombre,
+                            periodicidad: ex.periodicidad || 'Periódico',
+                            justificacion: ex.justificacion || 'Modificado por médico ocupacional'
+                        });
+                    });
+
+                    examenes = Array.from(examenesMap.values());
+                } else {
+                    // Usar exámenes generados
+                    examenes = controles.consolidado.examenes.map(codigoExamen => {
+                        const examenDetalle = EXAM_DETAILS[codigoExamen];
+                        const periodicidadMeses = controles.consolidado.periodicidadMinima;
+
+                        return {
+                            nombre: examenDetalle?.fullName || codigoExamen,
+                            periodicidad: formatearPeriodicidad(periodicidadMeses),
+                            justificacion: generarJustificacionExamen(codigoExamen, controles)
+                        };
+                    });
+                }
+
+                // ✅ EPP, APTITUDES, CONDICIONES: Usar override si existe, sino usar generados
+                const eppFinal = medicoOverrides.epp || controles.consolidado.epp;
+                const aptitudesFinal = medicoOverrides.aptitudes || controles.consolidado.aptitudes;
+                const condicionesIncompatiblesFinal = medicoOverrides.condiciones_incompatibles || controles.consolidado.condicionesIncompatibles;
 
                 // Calcular nivel de riesgo ARL (basado en el NR máximo)
                 const nrMaximo = controles.metadata.nrMaximo;
@@ -155,10 +219,10 @@ async function getProfesiogramaData(req, res) {
                     descripcion: cargoDB.descripcion_tareas || 'Descripción no disponible',
                     factoresRiesgo,
                     examenes,
-                    // ✅ Campos existentes
-                    epp: controles.consolidado.epp,
-                    aptitudes: controles.consolidado.aptitudes,
-                    condicionesIncompatibles: controles.consolidado.condicionesIncompatibles,
+                    // ✅ Usar datos finales (override o generado)
+                    epp: eppFinal,
+                    aptitudes: aptitudesFinal,
+                    condicionesIncompatibles: condicionesIncompatiblesFinal,
                     // ✅ NUEVOS CAMPOS: GES identificados completos con riesgos
                     gesIdentificados,
                     // ✅ Metadata adicional
@@ -171,17 +235,54 @@ async function getProfesiogramaData(req, res) {
                         conduceVehiculo: cargoDB.conduce_vehiculo,
                         trabajaEspaciosConfinados: cargoDB.trabaja_espacios_confinados,
                         tareasRutinarias: cargoDB.tareas_rutinarias
-                    }
+                    },
+                    // ✅ Indicar si fue modificado por médico
+                    modificadoPorMedico: tieneMedicoOverrides,
+                    justificacionMedico: cargoDB.justificacion_modificacion || null
                 };
             })
         );
 
-        // 5. Parsear form_data para obtener datos del médico (si están disponibles)
-        let formData = {};
-        try {
-            formData = JSON.parse(documento.form_data || '{}');
-        } catch (e) {
-            console.warn('⚠️ No se pudo parsear form_data');
+        // 5. Obtener datos del médico asignado (si existe)
+        let medicoData = {
+            nombre: 'Médico SST',
+            registro: 'N/A',
+            especialidad: 'Medicina del Trabajo y Salud Ocupacional',
+            licencia: 'N/A',
+            fechaExpedicionLicencia: 'N/A',
+            firmaUrl: null,
+            firmaMetadatos: null
+        };
+
+        // Buscar médico principal asignado a la empresa
+        const asignacionMedico = await db('medicos_empresas')
+            .where({
+                empresa_id: documento.empresa_id,
+                activo: true,
+                es_medico_principal: true
+            })
+            .first();
+
+        if (asignacionMedico) {
+            const medico = await db('users')
+                .where({ id: asignacionMedico.medico_id })
+                .select('full_name', 'licencia_sst', 'especialidad', 'firma_url', 'firma_metadatos')
+                .first();
+
+            if (medico) {
+                medicoData = {
+                    nombre: medico.full_name || 'Médico SST',
+                    registro: 'N/A', // Campo futuro
+                    especialidad: medico.especialidad || 'Medicina del Trabajo y Salud Ocupacional',
+                    licencia: medico.licencia_sst || 'N/A',
+                    fechaExpedicionLicencia: 'N/A', // Campo futuro
+                    firmaUrl: medico.firma_url || null,
+                    firmaMetadatos: typeof medico.firma_metadatos === 'string'
+                        ? JSON.parse(medico.firma_metadatos)
+                        : medico.firma_metadatos
+                };
+                console.log(`✓ Médico encontrado: ${medicoData.nombre}`);
+            }
         }
 
         // 6. Construir respuesta final
@@ -194,13 +295,7 @@ async function getProfesiogramaData(req, res) {
             version: '1.0',
             fechaElaboracion: documento.created_at || new Date().toISOString(),
             fechaVigencia: new Date(new Date(documento.created_at).getTime() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-            medico: {
-                nombre: formData.medicoNombre || 'Médico SST',
-                registro: formData.medicoRegistro || 'N/A',
-                especialidad: 'Medicina del Trabajo y Salud Ocupacional',
-                licencia: formData.medicoLicencia || 'N/A',
-                fechaExpedicionLicencia: formData.medicoFechaLicencia || 'N/A'
-            },
+            medico: medicoData,
             cargos: cargosConControles
         };
 

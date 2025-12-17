@@ -1,0 +1,208 @@
+
+> dev_genesys_laboral_medicine@1.0.0 server:dev
+> cd server && npm run dev
+
+
+> genesys-server@1.0.0 dev
+> nodemon src/app.js
+
+[33m[nodemon] 3.1.11[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src/**/*[39m
+[33m[nodemon] watching extensions: js,json[39m
+[32m[nodemon] starting `node -r dotenv/config src/app.js src/app.js`[39m
+[dotenv@17.2.3] injecting env (0) from server/.env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+⚠️  Redis: Deshabilitado vía REDIS_ENABLED=false
+   → Sistema funcionará sin cache (modo degradado)
+⚠️  BullMQ: Redis no disponible, colas deshabilitadas
+   → Jobs se procesarán síncronamente (más lento pero funcional)
+💳 PayU Service inicializado - Modo: SANDBOX
+Variables de entorno cargadas en app.js: {
+  NODE_ENV: 'development',
+  DB_HOST: 'db',
+  DB_USER: 'genesys_user',
+  DB_NAME: 'genesys_db',
+  DB_PASSWORD: '[PRESENTE]'
+}
+⚠️  Sentry no configurado (falta SENTRY_DSN)
+   Para habilitar Sentry:
+   1. Registrarse en https://sentry.io (gratis)
+   2. Crear proyecto Node.js
+   3. Agregar SENTRY_DSN=your_dsn_here a .env
+❌ Error al conectar con la base de datos: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'db'
+}
+
+❌ ERROR: Puerto 3000 ya está en uso.
+
+💡 Solución:
+   1. Mata los procesos que usan el puerto:
+      lsof -ti:3000 | xargs kill -9
+   2. O usa un puerto diferente:
+      PORT=30001000 npm run server:dev
+
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node -r dotenv/config src/app.js src/app.js`[39m
+[dotenv@17.2.3] injecting env (0) from server/.env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+⚠️  Redis: Deshabilitado vía REDIS_ENABLED=false
+   → Sistema funcionará sin cache (modo degradado)
+⚠️  BullMQ: Redis no disponible, colas deshabilitadas
+   → Jobs se procesarán síncronamente (más lento pero funcional)
+💳 PayU Service inicializado - Modo: SANDBOX
+Variables de entorno cargadas en app.js: {
+  NODE_ENV: 'development',
+  DB_HOST: 'db',
+  DB_USER: 'genesys_user',
+  DB_NAME: 'genesys_db',
+  DB_PASSWORD: '[PRESENTE]'
+}
+⚠️  Sentry no configurado (falta SENTRY_DSN)
+   Para habilitar Sentry:
+   1. Registrarse en https://sentry.io (gratis)
+   2. Crear proyecto Node.js
+   3. Agregar SENTRY_DSN=your_dsn_here a .env
+❌ Error al conectar con la base de datos: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'db'
+}
+🚀 Servidor corriendo en puerto 3000
+📊 Health check: http://localhost:3000/api/health
+📈 Metrics: http://localhost:3000/metrics
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node -r dotenv/config src/app.js src/app.js`[39m
+[dotenv@17.2.3] injecting env (0) from server/.env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+⚠️  Redis: Deshabilitado vía REDIS_ENABLED=false
+   → Sistema funcionará sin cache (modo degradado)
+⚠️  BullMQ: Redis no disponible, colas deshabilitadas
+   → Jobs se procesarán síncronamente (más lento pero funcional)
+💳 PayU Service inicializado - Modo: SANDBOX
+Variables de entorno cargadas en app.js: {
+  NODE_ENV: 'development',
+  DB_HOST: 'db',
+  DB_USER: 'genesys_user',
+  DB_NAME: 'genesys_db',
+  DB_PASSWORD: '[PRESENTE]'
+}
+⚠️  Sentry no configurado (falta SENTRY_DSN)
+   Para habilitar Sentry:
+   1. Registrarse en https://sentry.io (gratis)
+   2. Crear proyecto Node.js
+   3. Agregar SENTRY_DSN=your_dsn_here a .env
+❌ Error al conectar con la base de datos: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'db'
+}
+🚀 Servidor corriendo en puerto 3000
+📊 Health check: http://localhost:3000/api/health
+📈 Metrics: http://localhost:3000/metrics
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node -r dotenv/config src/app.js src/app.js`[39m
+[dotenv@17.2.3] injecting env (0) from server/.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+⚠️  Redis: Deshabilitado vía REDIS_ENABLED=false
+   → Sistema funcionará sin cache (modo degradado)
+⚠️  BullMQ: Redis no disponible, colas deshabilitadas
+   → Jobs se procesarán síncronamente (más lento pero funcional)
+💳 PayU Service inicializado - Modo: SANDBOX
+Variables de entorno cargadas en app.js: {
+  NODE_ENV: 'development',
+  DB_HOST: 'db',
+  DB_USER: 'genesys_user',
+  DB_NAME: 'genesys_db',
+  DB_PASSWORD: '[PRESENTE]'
+}
+⚠️  Sentry no configurado (falta SENTRY_DSN)
+   Para habilitar Sentry:
+   1. Registrarse en https://sentry.io (gratis)
+   2. Crear proyecto Node.js
+   3. Agregar SENTRY_DSN=your_dsn_here a .env
+❌ Error al conectar con la base de datos: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'db'
+}
+🚀 Servidor corriendo en puerto 3000
+📊 Health check: http://localhost:3000/api/health
+📈 Metrics: http://localhost:3000/metrics
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node -r dotenv/config src/app.js src/app.js`[39m
+[dotenv@17.2.3] injecting env (0) from server/.env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+⚠️  Redis: Deshabilitado vía REDIS_ENABLED=false
+   → Sistema funcionará sin cache (modo degradado)
+⚠️  BullMQ: Redis no disponible, colas deshabilitadas
+   → Jobs se procesarán síncronamente (más lento pero funcional)
+💳 PayU Service inicializado - Modo: SANDBOX
+Variables de entorno cargadas en app.js: {
+  NODE_ENV: 'development',
+  DB_HOST: 'db',
+  DB_USER: 'genesys_user',
+  DB_NAME: 'genesys_db',
+  DB_PASSWORD: '[PRESENTE]'
+}
+⚠️  Sentry no configurado (falta SENTRY_DSN)
+   Para habilitar Sentry:
+   1. Registrarse en https://sentry.io (gratis)
+   2. Crear proyecto Node.js
+   3. Agregar SENTRY_DSN=your_dsn_here a .env
+❌ Error al conectar con la base de datos: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'db'
+}
+🚀 Servidor corriendo en puerto 3000
+📊 Health check: http://localhost:3000/api/health
+📈 Metrics: http://localhost:3000/metrics
+Error obteniendo empresas asignadas: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'db'
+}
+[Admin/Empresas] Listando empresas...
+[Admin/Pagos] Listando pagos...
+[Admin/Empresas] Error listando empresas: getaddrinfo ENOTFOUND db
+[Admin/Empresas] Stack: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26)
+Error listando médicos: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'db'
+}
+[Admin/Pagos] Error listando pagos: getaddrinfo ENOTFOUND db
+[Admin/Pagos] Stack: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26)
+[Admin/Empresas] Listando empresas...
+[Admin/Pagos] Listando pagos...
+[Admin/Empresas] Error listando empresas: getaddrinfo ENOTFOUND db
+[Admin/Empresas] Stack: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26)
+Error listando médicos: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'db'
+}
+[Admin/Pagos] Error listando pagos: getaddrinfo ENOTFOUND db
+[Admin/Pagos] Stack: Error: getaddrinfo ENOTFOUND db
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:120:26)
+Killed
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+Killed

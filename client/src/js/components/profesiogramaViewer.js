@@ -314,6 +314,9 @@ class ProfesiogramaViewer {
             empresaNitEl.textContent = data.empresa?.nit || '[NIT]';
         }
 
+        // Populate datos del médico (Página 2)
+        this.populateMedicoInfo(data.medico || {});
+
         // Populate cargos (Sección 8 - LA MÁS IMPORTANTE)
         this.populateCargos(data.cargos || []);
 
@@ -340,6 +343,59 @@ class ProfesiogramaViewer {
 
         if (fechaVersionInicialEl) fechaVersionInicialEl.textContent = today;
         if (fechaElaboroEl) fechaElaboroEl.textContent = today;
+    }
+
+    /**
+     * Populate información del médico responsable (Página 2)
+     */
+    populateMedicoInfo(medico) {
+        // Actualizar campos de texto
+        const medicoNombre = document.querySelector('.page-info-medico .form-field:nth-child(1) .field-value');
+        if (medicoNombre) {
+            medicoNombre.textContent = medico.nombre || '[Nombre del médico especialista]';
+        }
+
+        const medicoRegistro = document.querySelector('.page-info-medico .form-field:nth-child(2) .field-value');
+        if (medicoRegistro) {
+            medicoRegistro.textContent = medico.registro || '[Número de registro]';
+        }
+
+        const medicoEspecialidad = document.querySelector('.page-info-medico .form-field:nth-child(3) .field-value');
+        if (medicoEspecialidad) {
+            medicoEspecialidad.textContent = medico.especialidad || 'Medicina del Trabajo / Salud Ocupacional';
+        }
+
+        const medicoLicencia = document.querySelector('.page-info-medico .form-field:nth-child(4) .field-value');
+        if (medicoLicencia) {
+            medicoLicencia.textContent = medico.licencia || '[Número de licencia vigente]';
+        }
+
+        const medicoFechaLicencia = document.querySelector('.page-info-medico .form-field:nth-child(5) .field-value');
+        if (medicoFechaLicencia) {
+            medicoFechaLicencia.textContent = medico.fechaExpedicionLicencia || '[DD/MM/AAAA]';
+        }
+
+        // Insertar firma digital si existe
+        const signatureBlock = document.querySelector('.signature-block');
+        if (signatureBlock && medico.firmaUrl) {
+            signatureBlock.innerHTML = `
+                <div class="signature-digital">
+                    <div class="signature-digital__image">
+                        <img src="${medico.firmaUrl}" alt="Firma ${medico.nombre}" style="max-width: 250px; max-height: 100px;">
+                    </div>
+                    <div class="signature-digital__line"></div>
+                    <div class="signature-digital__info">
+                        <p><strong>${medico.nombre}</strong></p>
+                        <p>Lic. SST: ${medico.licencia}</p>
+                        <p>${medico.especialidad}</p>
+                    </div>
+                    <div class="signature-digital__date">
+                        <div class="signature-label">Fecha:</div>
+                        <div class="signature-value">${new Date().toLocaleDateString('es-CO')}</div>
+                    </div>
+                </div>
+            `;
+        }
     }
 
     /**

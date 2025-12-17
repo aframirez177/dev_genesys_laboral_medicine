@@ -27,8 +27,11 @@ export async function login(req, res) {
     try {
         const { email, password } = req.body;
 
+        console.log('🔐 Intento de login:', { email, passwordLength: password?.length });
+
         // Validación básica
         if (!email || !password) {
+            console.log('❌ Faltan credenciales');
             return res.status(400).json({
                 success: false,
                 message: 'Email y contraseña son requeridos'
@@ -36,6 +39,7 @@ export async function login(req, res) {
         }
 
         // Buscar usuario con su rol y empresa
+        console.log('🔍 Buscando usuario en BD...');
         const user = await db('users')
             .leftJoin('roles', 'users.rol_id', 'roles.id')
             .leftJoin('empresas', 'users.empresa_id', 'empresas.id')
@@ -54,11 +58,14 @@ export async function login(req, res) {
             .first();
 
         if (!user) {
+            console.log('❌ Usuario no encontrado en BD para email:', email);
             return res.status(401).json({
                 success: false,
                 message: 'Credenciales inválidas'
             });
         }
+
+        console.log('✅ Usuario encontrado:', { id: user.id, email: user.email, rol: user.rol, hasPassword: !!user.password_hash });
 
         // Verificar que tenga password configurado
         if (!user.password_hash) {
@@ -101,10 +108,18 @@ export async function login(req, res) {
         });
 
     } catch (error) {
-        console.error('Error en login:', error);
+        console.error('❌ Error en login:', error.message);
+        console.error('Stack:', error.stack);
+
+        // Si es error de BD, dar más info
+        if (error.code) {
+            console.error('Código de error BD:', error.code);
+        }
+
         res.status(500).json({
             success: false,
-            message: 'Error interno del servidor'
+            message: 'Error interno del servidor',
+            debug: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 }

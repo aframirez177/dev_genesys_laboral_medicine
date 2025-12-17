@@ -9,6 +9,7 @@
 
 import jwt from 'jsonwebtoken';
 import { getEnvVars } from '../config/env.js';
+import knex from '../config/database.js';
 
 const env = getEnvVars();
 const JWT_SECRET = env.JWT_SECRET || 'genesys-default-secret-change-in-production';
@@ -219,9 +220,161 @@ export function requireOwnEmpresa(paramName = 'empresaId') {
     };
 }
 
+/**
+ * Middleware para verificar que un médico tiene acceso a una empresa asignada
+ * Debe usarse DESPUÉS de authenticate
+ * Verifica en la tabla medicos_empresas que exista asignación activa
+ *
+ * @param {string} paramName - Nombre del parámetro con empresa_id (default: 'empresaId')
+ */
+export function requireMedicoAccess(paramName = 'empresaId') {
+    return async (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Autenticación requerida',
+                code: 'NOT_AUTHENTICATED'
+            });
+        }
+
+        // Admins tienen acceso total
+        if (req.user.rol === 'admin_genesys') {
+            return next();
+        }
+
+        // Solo médicos pueden usar este middleware
+        if (req.user.rol !== 'medico_ocupacional') {
+            return res.status(403).json({
+                success: false,
+                message: 'Acceso denegado. Solo médicos ocupacionales.',
+                code: 'NOT_MEDICO'
+            });
+        }
+
+        const empresaId = parseInt(
+            req.params[paramName] ||
+            req.body[paramName] ||
+            req.query[paramName]
+        );
+
+        if (!empresaId) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID de empresa requerido',
+                code: 'MISSING_EMPRESA_ID'
+            });
+        }
+
+        try {
+            // Verificar asignación activa en BD
+            const asignacion = await knex('medicos_empresas')
+                .where({
+                    medico_id: req.user.id,
+                    empresa_id: empresaId,
+                    activo: true
+                })
+                .first();
+
+            if (!asignacion) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'No tiene acceso a esta empresa',
+                    code: 'NO_ACCESS_EMPRESA'
+                });
+            }
+
+            // Añadir info de asignación a request para uso en controller
+            req.asignacionMedico = asignacion;
+            req.empresaId = empresaId;
+
+            next();
+        } catch (error) {
+            console.error('Error verificando acceso médico:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error verificando permisos',
+                code: 'ACCESS_CHECK_ERROR'
+            });
+        }
+    };
+}
+
+/**
+ * Middleware para verificar permisos específicos del usuario
+ * Lee los permisos del JSON almacenado en la tabla roles
+ *
+ * @param {string} permiso - Nombre del permiso requerido
+ * @param {string} nivel - Nivel de acceso: 'read', 'write', 'full' (default: 'read')
+ */
+export function requirePermission(permiso, nivel = 'read') {
+    return async (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Autenticación requerida',
+                code: 'NOT_AUTHENTICATED'
+            });
+        }
+
+        try {
+            // Obtener permisos del rol del usuario
+            const rol = await knex('roles')
+                .where('id', req.user.rol_id)
+                .select('permisos')
+                .first();
+
+            if (!rol || !rol.permisos) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Usuario sin permisos definidos',
+                    code: 'NO_PERMISSIONS'
+                });
+            }
+
+            const permisos = typeof rol.permisos === 'string'
+                ? JSON.parse(rol.permisos)
+                : rol.permisos;
+
+            const permisoValor = permisos[permiso];
+
+            // Verificar si tiene el permiso
+            if (!permisoValor) {
+                return res.status(403).json({
+                    success: false,
+                    message: `Permiso '${permiso}' no disponible`,
+                    code: 'PERMISSION_DENIED'
+                });
+            }
+
+            // Verificar nivel de permiso
+            if (permisoValor === 'readonly' && (nivel === 'write' || nivel === 'full')) {
+                return res.status(403).json({
+                    success: false,
+                    message: `Permiso '${permiso}' es solo de lectura`,
+                    code: 'READONLY_PERMISSION'
+                });
+            }
+
+            // Añadir permisos a la request
+            req.permisos = permisos;
+
+            next();
+        } catch (error) {
+            console.error('Error verificando permisos:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error verificando permisos',
+                code: 'PERMISSION_CHECK_ERROR'
+            });
+        }
+    };
+}
+
 export default {
     authenticate,
     requireRole,
     optionalAuth,
-    requireOwnEmpresa
+    requireOwnEmpresa,
+    requireMedicoAccess,
+    requirePermission
 };
