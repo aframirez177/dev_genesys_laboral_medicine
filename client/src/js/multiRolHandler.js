@@ -416,7 +416,7 @@ async function loadAdminInitialData() {
     try {
         // Cargar resumen de empresas, médicos y pagos en paralelo
         const [empresasRes, medicosRes, pagosRes] = await Promise.all([
-            fetch(`${API_BASE}/admin/empresas?limit=10`, {
+            fetch(`${API_BASE}/admin/empresas?limit=100`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             }),
             fetch(`${API_BASE}/admin/medicos`, {
