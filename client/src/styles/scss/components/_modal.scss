@@ -108,6 +108,10 @@
         max-width: 900px;
     }
 
+    &--xl &__dialog {
+        max-width: 1100px;
+    }
+
     &--fullscreen &__dialog {
         max-width: 95vw;
         max-height: 95vh;
@@ -315,6 +319,7 @@
             max-width: 95vw;
         }
 
+        &--xl &__dialog,
         &--large &__dialog,
         &--medium &__dialog {
             max-width: 95vw;

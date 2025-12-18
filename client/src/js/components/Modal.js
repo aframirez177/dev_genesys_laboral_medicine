@@ -3,7 +3,7 @@
  * Sprint 6 - Component Library
  *
  * Modal reutilizable con:
- * - Multiple sizes (small, medium, large, fullscreen)
+ * - Multiple sizes (small, medium, large, xl, fullscreen)
  * - Confirmación antes de cerrar (si hay cambios)
  * - Backdrop click to close (opcional)
  * - ESC key to close (opcional)
@@ -19,7 +19,7 @@ class Modal {
             id: options.id || `modal-${Date.now()}`,
             title: options.title || '',
             content: options.content || '',
-            size: options.size || 'medium', // small, medium, large, fullscreen
+            size: options.size || 'medium', // small, medium, large, xl, fullscreen
             closeOnBackdrop: options.closeOnBackdrop !== false,
             closeOnEsc: options.closeOnEsc !== false,
             showCloseButton: options.showCloseButton !== false,

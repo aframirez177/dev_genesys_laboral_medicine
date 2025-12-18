@@ -11,6 +11,7 @@
 import { initFirmaDigitalUploader } from './components/FirmaDigitalUploader.js';
 import DataTable from './components/DataTable.js';
 import Modal from './components/Modal.js';
+import { Tooltip } from './components/Tooltip.js';
 
 // ============================================
 // CONSTANTES Y CONFIGURACIÓN
@@ -49,6 +50,10 @@ const MultiRolState = {
  */
 export async function initMultiRolDashboard() {
     console.log('[MultiRol] Inicializando dashboard multi-rol...');
+
+    // Inicializar sistema de tooltips con Floating UI
+    Tooltip.init();
+    console.log('[MultiRol] ✅ Tooltips inicializados');
 
     // Obtener token y usuario del localStorage
     const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
@@ -93,6 +98,13 @@ export async function initMultiRolDashboard() {
         console.log('[MultiRol] 🔄 Ejecutando loadInitialDataForRole...');
         await loadInitialDataForRole();
         console.log('[MultiRol] ✅ loadInitialDataForRole completado');
+
+        // Inicializar selector de empresas para médico (después de cargar datos)
+        if (MultiRolState.rol === ROLES.MEDICO_OCUPACIONAL) {
+            console.log('[MultiRol] 🔄 Inicializando selector de empresas del médico...');
+            initMedicoEmpresaSelector();
+            console.log('[MultiRol] ✅ Selector de empresas inicializado');
+        }
 
         // Configurar handlers de página específicos
         registerRolePageHandlers();
@@ -204,45 +216,29 @@ function updateHeaderForRole(user, rol) {
                 </div>
             `;
         } else if (rol === ROLES.MEDICO_OCUPACIONAL) {
-            // Médico: Mostrar dropdown de empresas asignadas
+            // Médico: Mostrar nombre, licencia SST y selector de empresas
             companyInfoEl.innerHTML = `
-                <div class="header-company-info__main" style="display:flex;align-items:center;gap:12px">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                    <select id="header-empresa-selector" class="header-empresa-select" style="
-                        background: rgba(255,255,255,0.1);
-                        border: 1px solid rgba(255,255,255,0.2);
-                        border-radius: 8px;
-                        padding: 8px 32px 8px 12px;
-                        font-size: 14px;
-                        font-weight: 500;
-                        color: inherit;
-                        cursor: pointer;
-                        min-width: 200px;
-                        appearance: none;
-                        background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"white\" stroke-width=\"2\"><path d=\"M6 9l6 6 6-6\"/></svg>');
-                        background-repeat: no-repeat;
-                        background-position: right 8px center;
-                    ">
-                        <option value="">Seleccionar empresa...</option>
-                    </select>
-                </div>
-                <div class="header-company-info__details" id="empresa-details" style="display:none;margin-top:4px">
-                    <span class="header-company-info__item" id="empresa-nit-header">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                        <span id="empresa-nit-value">-</span>
-                    </span>
-                    <span class="header-company-info__item" id="empresa-ciudad-header">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        <span id="empresa-ciudad-value">-</span>
-                    </span>
+                <div class="header-medico-info">
+                    <div class="header-medico-info__identity">
+                        <span class="header-medico-info__name">${user.full_name || 'Médico Ocupacional'}</span>
+                        <span class="header-medico-info__license" data-tooltip="Licencia de Seguridad y Salud en el Trabajo" data-tooltip-placement="bottom">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            Lic. SST: ${user.licencia_sst || 'No registrada'}
+                        </span>
+                    </div>
+                    <div class="header-medico-info__separator"></div>
+                    <div class="header-medico-info__empresa">
+                        <label for="header-empresa-selector">Empresa:</label>
+                        <select id="header-empresa-selector" class="header-empresa-select">
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
                 </div>
             `;
-
-            // Inicializar el selector de empresas después de que se carguen los datos
-            setTimeout(() => initMedicoEmpresaSelector(), 100);
+            // El selector se inicializa después en initMultiRolDashboard() una vez que se cargan las empresas
         } else {
             // Usuario empresa: mostrar info normal de empresa
             if (companyNameEl) {
@@ -1787,13 +1783,13 @@ async function loadProfesiogramaEditor(empresaId) {
                                     <div><strong>Trabajadores:</strong> ${cargo.num_trabajadores || 0}</div>
                                     <div><strong>Riesgos:</strong> ${cargo.total_riesgos || 0}</div>
                                     <div>
-                                        ${cargo.trabaja_alturas ? '<span class="badge badge--warning" style="font-size:10px">Alturas</span>' : ''}
-                                        ${cargo.manipula_alimentos ? '<span class="badge badge--info" style="font-size:10px">Alimentos</span>' : ''}
-                                        ${cargo.trabaja_espacios_confinados ? '<span class="badge badge--danger" style="font-size:10px">Esp. Conf.</span>' : ''}
+                                        ${cargo.trabaja_alturas ? '<span class="badge badge--warning" style="font-size:10px" data-tooltip="Requiere exámenes especiales para trabajo en alturas">Alturas</span>' : ''}
+                                        ${cargo.manipula_alimentos ? '<span class="badge badge--info" style="font-size:10px" data-tooltip="Requiere certificación de manipulación de alimentos">Alimentos</span>' : ''}
+                                        ${cargo.trabaja_espacios_confinados ? '<span class="badge badge--danger" style="font-size:10px" data-tooltip="Requiere capacitación especial para espacios confinados">Esp. Conf.</span>' : ''}
                                     </div>
                                 </div>
                                 <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f3f4f6">
-                                    <button class="btn btn--sm btn--outline" data-action="editar-cargo" data-id="${cargo.id}" style="width:100%">
+                                    <button class="btn btn--sm btn--outline" data-action="editar-cargo" data-id="${cargo.id}" style="width:100%" data-tooltip="Editar exámenes, EPP y aptitudes del cargo" data-tooltip-placement="bottom">
                                         <i data-lucide="edit-2"></i>
                                         Editar Cargo
                                     </button>
@@ -2832,7 +2828,7 @@ async function openEditarCargoModal(empresaId, cargoId) {
         // Crear modal de edición
         const modal = new Modal({
             title: `Editar: ${cargo.nombre_cargo}`,
-            size: 'large',
+            size: 'xl',
             content: renderEditarCargoContent(cargo),
             buttons: [
                 { label: 'Cancelar', className: 'btn--outline', action: 'cancel' },

@@ -50,6 +50,8 @@ export async function login(req, res) {
                 'users.phone',
                 'users.password_hash',
                 'users.empresa_id',
+                'users.licencia_sst',
+                'users.especialidad',
                 'roles.nombre as rol',
                 'empresas.nit as empresa_nit',
                 'empresas.nombre_legal as empresa_nombre'

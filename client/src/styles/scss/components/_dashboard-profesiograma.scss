@@ -462,6 +462,73 @@
 }
 
 // =====================
+// CARDS GRID (Generic utility for cargo cards)
+// =====================
+.cards-grid {
+    display: grid;
+    gap: tokens.$space-4;
+
+    // 2-column variant
+    &--2 {
+        grid-template-columns: repeat(2, 1fr);
+
+        @include tokens.respond-to('tablet') {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    // 3-column variant
+    &--3 {
+        grid-template-columns: repeat(3, 1fr);
+
+        @include tokens.respond-to('laptop') {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @include tokens.respond-to('tablet') {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+// Cargo card styling for profesiograma editor
+.cargo-card {
+    transition: all tokens.$transition-normal;
+    cursor: pointer;
+
+    &:hover {
+        border-color: tokens.$dashboard-primary;
+        box-shadow: tokens.$shadow-md;
+    }
+
+    .card__header {
+        padding-bottom: tokens.$space-2;
+        border-bottom: 1px solid tokens.$dashboard-border;
+        margin-bottom: tokens.$space-3;
+    }
+
+    .card__title {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0;
+    }
+
+    .card__body {
+        padding-top: tokens.$space-2;
+    }
+
+    .card__footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: tokens.$space-2;
+        padding-top: tokens.$space-3;
+        margin-top: tokens.$space-3;
+        border-top: 1px solid tokens.$dashboard-border;
+    }
+}
+
+// =====================
 // UTILITY CLASSES
 // =====================
 .mb-4 { margin-bottom: tokens.$space-4; }

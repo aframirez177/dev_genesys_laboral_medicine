@@ -69,6 +69,81 @@
 }
 
 // =====================
+// MÉDICO HEADER INFO
+// =====================
+.header-medico-info {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-6;
+
+    &__identity {
+        display: flex;
+        flex-direction: column;
+        gap: tokens.$space-1;
+    }
+
+    &__name {
+        font-size: tokens.$font-body;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        line-height: 1.2;
+    }
+
+    &__license {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-1;
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+
+        svg {
+            color: tokens.$dashboard-success;
+            flex-shrink: 0;
+        }
+    }
+
+    &__separator {
+        width: 1px;
+        height: 32px;
+        background: tokens.$header-border;
+    }
+
+    &__empresa {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-2;
+
+        label {
+            font-size: tokens.$font-small;
+            color: tokens.$dashboard-text-light;
+            white-space: nowrap;
+        }
+    }
+}
+
+.header-empresa-select {
+    background: tokens.$dashboard-background;
+    border: 1px solid tokens.$header-border;
+    border-radius: tokens.$radius-md;
+    padding: tokens.$space-2 tokens.$space-8 tokens.$space-2 tokens.$space-3;
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text;
+    cursor: pointer;
+    min-width: 180px;
+    transition: border-color tokens.$transition-normal, box-shadow tokens.$transition-normal;
+
+    &:hover {
+        border-color: tokens.$dashboard-primary;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: tokens.$dashboard-primary;
+        box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.1);
+    }
+}
+
+// =====================
 // COMPANY INFO
 // =====================
 .header-company-info {
@@ -671,7 +746,7 @@
 
     .header-company-selector {
         min-width: auto;
-        
+
         &__info {
             display: none;
         }
@@ -679,6 +754,24 @@
         &__chevron {
             display: none;
         }
+    }
+
+    .header-medico-info {
+        gap: tokens.$space-3;
+
+        &__separator {
+            display: none;
+        }
+
+        &__empresa {
+            label {
+                display: none;
+            }
+        }
+    }
+
+    .header-empresa-select {
+        min-width: 140px;
     }
 
     .header-notifications__dropdown,
