@@ -1,0 +1,922 @@
+// ===========================================
+// SPRINT 8: AGENDAMIENTO DE EXÁMENES MÉDICOS
+// Modal, paquetes expandibles y checkboxes
+// ===========================================
+
+@use 'sass:color';
+@use 'dashboard-tokens' as tokens;
+
+// =====================
+// MODAL OVERLAY
+// =====================
+
+.modal-overlay.modal--agendar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: tokens.$space-4;
+    animation: fadeIn 0.2s ease-out;
+
+    &.modal-closing {
+        animation: fadeOut 0.2s ease-out forwards;
+
+        .modal--agendar-content {
+            animation: slideDown 0.2s ease-out forwards;
+        }
+    }
+}
+
+// =====================
+// MODAL DE AGENDAMIENTO
+// =====================
+
+.modal--agendar-content {
+    max-width: 720px;
+    width: 100%;
+    max-height: 90vh;
+    background: white;
+    border-radius: tokens.$radius-lg;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .modal__header {
+        background: linear-gradient(135deg, tokens.$dashboard-primary 0%, color.adjust(tokens.$dashboard-primary, $lightness: -10%) 100%);
+        color: white;
+        padding: tokens.$space-5 tokens.$space-6;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
+
+    .modal__title {
+        display: flex;
+        align-items: center;
+        gap: tokens.$space-3;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-semibold;
+        margin: 0;
+
+        svg {
+            opacity: 0.9;
+        }
+    }
+
+    .modal__close {
+        color: white;
+        opacity: 0.8;
+        font-size: 2.4rem;
+        line-height: 1;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        padding: tokens.$space-2;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .modal__body {
+        padding: tokens.$space-6;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .modal__footer {
+        padding: tokens.$space-4 tokens.$space-6;
+        background: tokens.$dashboard-background;
+        border-top: 1px solid tokens.$dashboard-border;
+        display: flex;
+        justify-content: flex-end;
+        gap: tokens.$space-3;
+        flex-shrink: 0;
+    }
+}
+
+// =====================
+// FORMULARIO DE AGENDAMIENTO
+// =====================
+
+.agendar-form {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-4;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-2;
+}
+
+.form-label {
+    font-size: tokens.$font-body;
+    font-weight: tokens.$font-medium;
+    color: tokens.$dashboard-secondary;
+}
+
+.form-input {
+    padding: tokens.$space-3 tokens.$space-4;
+    border: 1px solid tokens.$dashboard-border;
+    border-radius: tokens.$radius-md;
+    font-size: tokens.$font-body;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: white;
+
+    &:focus {
+        outline: none;
+        border-color: tokens.$dashboard-primary;
+        box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.15);
+    }
+
+    &[readonly] {
+        background: tokens.$dashboard-background;
+        color: tokens.$dashboard-text-light;
+        cursor: not-allowed;
+    }
+
+    &::placeholder {
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+.form-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.form-hint {
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text-light;
+    margin-top: tokens.$space-1;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: tokens.$space-4;
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// =====================
+// SECCIONES DEL FORMULARIO
+// =====================
+
+.form-section {
+    padding: tokens.$space-4;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-md;
+    margin-bottom: tokens.$space-4;
+}
+
+.form-section-title {
+    font-size: tokens.$font-body;
+    font-weight: tokens.$font-semibold;
+    color: tokens.$dashboard-secondary;
+    margin: 0 0 tokens.$space-3 0;
+    padding-bottom: tokens.$space-2;
+    border-bottom: 1px solid tokens.$dashboard-border;
+}
+
+// =====================
+// INFO BOX DE EXAMEN
+// =====================
+
+.examen-info-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: tokens.$space-3 tokens.$space-4;
+    background: linear-gradient(135deg, rgba(tokens.$dashboard-primary, 0.1) 0%, rgba(tokens.$dashboard-primary, 0.05) 100%);
+    border: 1px solid rgba(tokens.$dashboard-primary, 0.2);
+    border-radius: tokens.$radius-md;
+    
+    strong {
+        color: tokens.$dashboard-secondary;
+        font-size: tokens.$font-body;
+    }
+}
+
+.periodicidad-badge {
+    font-size: tokens.$font-small;
+    padding: tokens.$space-1 tokens.$space-3;
+    background: tokens.$dashboard-primary;
+    color: white;
+    border-radius: tokens.$radius-full;
+    font-weight: tokens.$font-medium;
+}
+
+// =====================
+// VENCIMIENTO CALCULADO
+// =====================
+
+.vencimiento-calculado {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    padding: tokens.$space-3 tokens.$space-4;
+    background: linear-gradient(135deg, rgba(tokens.$dashboard-info, 0.1) 0%, rgba(tokens.$dashboard-info, 0.05) 100%);
+    border: 1px solid rgba(tokens.$dashboard-info, 0.2);
+    border-radius: tokens.$radius-md;
+    color: color.adjust(tokens.$dashboard-info, $lightness: -15%);
+    font-weight: tokens.$font-medium;
+
+    svg {
+        color: tokens.$dashboard-info;
+        flex-shrink: 0;
+    }
+}
+
+// =====================
+// TABLA DE EXÁMENES - MEJORAS
+// =====================
+
+.trabajador-cell {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-1;
+
+    .trabajador-nombre {
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-secondary;
+    }
+
+    .trabajador-id {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+.examen-cell {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    flex-wrap: wrap;
+
+    .examen-nombre {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text;
+    }
+}
+
+.vencimiento-cell {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-1;
+
+    .vencimiento-text {
+        font-weight: tokens.$font-medium;
+    }
+
+    .periodicidad-hint {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+.cell-cargo {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-1;
+
+    strong {
+        color: tokens.$dashboard-secondary;
+    }
+}
+
+// =====================
+// BOTÓN DE AGENDAR
+// =====================
+
+.btn--agendar-examen {
+    background: linear-gradient(135deg, tokens.$dashboard-primary 0%, color.adjust(tokens.$dashboard-primary, $lightness: -8%) 100%);
+    color: white;
+    border: none;
+    border-radius: tokens.$radius-md;
+    padding: tokens.$space-2;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    &:hover {
+        transform: scale(1.08);
+        box-shadow: 0 4px 12px rgba(tokens.$dashboard-primary, 0.3);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+// =====================
+// LOADING SPINNER INLINE
+// =====================
+
+.loading-spinner-inline {
+    width: 24px;
+    height: 24px;
+    border: 3px solid tokens.$dashboard-border;
+    border-top-color: tokens.$dashboard-primary;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: tokens.$space-3;
+}
+
+// =====================
+// BADGES PEQUEÑOS
+// =====================
+
+.badge--sm {
+    font-size: 1rem;
+    padding: tokens.$space-1 tokens.$space-2;
+}
+
+.badge--xs {
+    font-size: 0.75rem;
+    padding: 2px tokens.$space-2;
+}
+
+// =====================
+// TIPO DE EXAMEN - GRID
+// =====================
+
+.tipo-examen-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: tokens.$space-3;
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.tipo-examen-option {
+    cursor: pointer;
+
+    input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+
+        &:checked + .tipo-examen-card {
+            border-color: tokens.$dashboard-primary;
+            background: rgba(tokens.$dashboard-primary, 0.08);
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.15);
+
+            .tipo-icon {
+                transform: scale(1.2);
+            }
+        }
+
+        &:focus + .tipo-examen-card {
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.3);
+        }
+    }
+}
+
+.tipo-examen-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: tokens.$space-4;
+    border: 2px solid tokens.$dashboard-border;
+    border-radius: tokens.$radius-md;
+    transition: all 0.2s ease;
+    background: white;
+    text-align: center;
+
+    &:hover {
+        border-color: tokens.$dashboard-primary;
+        background: rgba(tokens.$dashboard-primary, 0.04);
+    }
+
+    &--ingreso {
+        .tipo-icon { color: tokens.$dashboard-primary; }
+    }
+
+    &--periodico {
+        .tipo-icon { color: tokens.$dashboard-info; }
+    }
+
+    &--retiro {
+        .tipo-icon { color: tokens.$dashboard-text-light; }
+    }
+}
+
+.tipo-icon {
+    font-size: 1.8rem;
+    margin-bottom: tokens.$space-2;
+    transition: transform 0.2s;
+}
+
+.tipo-label {
+    font-weight: tokens.$font-semibold;
+    font-size: tokens.$font-body;
+    color: tokens.$dashboard-secondary;
+}
+
+.tipo-desc {
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text-light;
+    margin-top: tokens.$space-1;
+}
+
+// =====================
+// GRUPOS DE EXÁMENES
+// =====================
+
+.examenes-grupos {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-3;
+}
+
+.examenes-grupo {
+    border: 1px solid tokens.$dashboard-border;
+    border-radius: tokens.$radius-md;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+
+    &--active {
+        opacity: 1;
+        border-color: tokens.$dashboard-primary;
+        box-shadow: 0 2px 8px rgba(tokens.$dashboard-primary, 0.15);
+    }
+
+    &--ingreso.examenes-grupo--active {
+        border-color: tokens.$dashboard-primary;
+    }
+
+    &--periodico.examenes-grupo--active {
+        border-color: tokens.$dashboard-info;
+    }
+
+    &--retiro.examenes-grupo--active {
+        border-color: tokens.$dashboard-text-light;
+    }
+}
+
+.examenes-grupo-title {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    padding: tokens.$space-3 tokens.$space-4;
+    background: tokens.$dashboard-background;
+    margin: 0;
+    font-size: tokens.$font-body;
+    font-weight: tokens.$font-medium;
+    color: tokens.$dashboard-secondary;
+    border-bottom: 1px solid tokens.$dashboard-border;
+}
+
+.examenes-checkboxes {
+    padding: tokens.$space-3 tokens.$space-4;
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-2;
+    background: white;
+}
+
+// =====================
+// CHECKBOX ITEMS
+// =====================
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-3;
+    padding: tokens.$space-2 tokens.$space-3;
+    border-radius: tokens.$radius-sm;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+        background: tokens.$dashboard-background;
+    }
+
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: tokens.$dashboard-primary;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    font-size: tokens.$font-body;
+    color: tokens.$dashboard-text;
+    flex-wrap: wrap;
+}
+
+// =====================
+// CARGO TOGGLE (TABLA)
+// =====================
+
+.cargo-toggle {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: tokens.$space-2 tokens.$space-3;
+    border-radius: tokens.$radius-sm;
+    transition: all 0.2s;
+    text-align: left;
+
+    &:hover {
+        background: rgba(tokens.$dashboard-primary, 0.08);
+    }
+
+    .paquete-chevron {
+        transition: transform 0.3s ease;
+        color: tokens.$dashboard-text-light;
+        flex-shrink: 0;
+    }
+
+    &--expanded .paquete-chevron {
+        transform: rotate(180deg);
+    }
+
+    .cargo-nombre {
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+    }
+}
+
+.cargo-expand-btn {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+
+    .paquete-chevron {
+        transition: transform 0.3s ease;
+    }
+}
+
+.area-badge {
+    display: inline-block;
+    padding: tokens.$space-1 tokens.$space-3;
+    background: rgba(tokens.$dashboard-info, 0.1);
+    color: tokens.$dashboard-info;
+    border-radius: tokens.$radius-full;
+    font-size: tokens.$font-small;
+    font-weight: tokens.$font-medium;
+}
+
+.paquete-cell {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-1;
+}
+
+.paquete-nombre-text {
+    font-weight: tokens.$font-medium;
+    color: tokens.$dashboard-primary;
+}
+
+.trabajadores-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .count-number {
+        font-size: 1.4rem;
+        font-weight: tokens.$font-bold;
+        color: tokens.$dashboard-secondary;
+    }
+
+    .count-label {
+        font-size: tokens.$font-small;
+        color: tokens.$dashboard-text-light;
+    }
+}
+
+// =====================
+// FILA DE DETALLE EXPANDIDA (CARGO)
+// =====================
+
+.cargo-detail-row {
+    background: linear-gradient(135deg, tokens.$dashboard-background 0%, rgba(tokens.$dashboard-primary, 0.02) 100%);
+
+    > td {
+        padding: 0 !important;
+        border-top: none !important;
+    }
+}
+
+.cargo-detail {
+    padding: tokens.$space-5 tokens.$space-6;
+    animation: expandIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-5;
+}
+
+.cargo-detail-section {
+    background: white;
+    border-radius: tokens.$radius-md;
+    padding: tokens.$space-4;
+    border: 1px solid tokens.$dashboard-border;
+
+    &--trabajadores {
+        border-left: 4px solid tokens.$dashboard-primary;
+    }
+
+    &--examenes {
+        border-left: 4px solid tokens.$dashboard-info;
+    }
+}
+
+.cargo-detail-section-title {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    font-size: tokens.$font-body;
+    font-weight: tokens.$font-semibold;
+    color: tokens.$dashboard-secondary;
+    margin: 0 0 tokens.$space-4 0;
+    padding-bottom: tokens.$space-3;
+    border-bottom: 1px solid tokens.$dashboard-border;
+
+    svg {
+        color: tokens.$dashboard-primary;
+    }
+}
+
+// =====================
+// LISTA DE TRABAJADORES
+// =====================
+
+.trabajadores-list {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-2;
+}
+
+.trabajador-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: tokens.$space-3 tokens.$space-4;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-md;
+    transition: all 0.2s;
+
+    &:hover {
+        background: rgba(tokens.$dashboard-primary, 0.05);
+    }
+}
+
+.trabajador-info {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-3;
+}
+
+.trabajador-numero {
+    font-weight: tokens.$font-bold;
+    color: tokens.$dashboard-primary;
+    font-size: tokens.$font-body;
+    min-width: 40px;
+}
+
+.trabajador-nombre-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-1;
+}
+
+.trabajador-nombre-inner {
+    font-weight: tokens.$font-medium;
+    color: tokens.$dashboard-secondary;
+}
+
+.trabajador-cedula {
+    font-size: tokens.$font-xs;
+    color: tokens.$dashboard-text-light;
+    font-weight: tokens.$font-regular;
+}
+
+.btn--agendar-trabajador {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    font-size: tokens.$font-small;
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+// =====================
+// LEGACY - FILA DE DETALLE VIEJA
+// =====================
+
+.examenes-detail-row {
+    background: tokens.$dashboard-background;
+
+    > td {
+        padding: 0 !important;
+        border-top: none !important;
+    }
+}
+
+.paquete-detail {
+    padding: tokens.$space-4 tokens.$space-6;
+    animation: expandIn 0.3s ease-out;
+}
+
+.paquete-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: tokens.$space-4;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.paquete-section {
+    background: white;
+    border-radius: tokens.$radius-md;
+    padding: tokens.$space-4;
+    border: 1px solid tokens.$dashboard-border;
+
+    &--ingreso {
+        border-top: 3px solid tokens.$dashboard-primary;
+    }
+
+    &--periodico {
+        border-top: 3px solid tokens.$dashboard-info;
+    }
+
+    &--retiro {
+        border-top: 3px solid tokens.$dashboard-text-light;
+    }
+}
+
+.paquete-section-title {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    font-size: tokens.$font-body;
+    font-weight: tokens.$font-semibold;
+    color: tokens.$dashboard-secondary;
+    margin: 0 0 tokens.$space-3 0;
+    padding-bottom: tokens.$space-2;
+    border-bottom: 1px solid tokens.$dashboard-border;
+}
+
+.paquete-examenes-list {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-2;
+}
+
+.examen-item {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    padding: tokens.$space-2 0;
+    flex-wrap: wrap;
+}
+
+.examen-item-nombre {
+    font-size: tokens.$font-body;
+    color: tokens.$dashboard-text;
+}
+
+.examen-item-periodo {
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text-light;
+    margin-left: auto;
+}
+
+// =====================
+// UTILIDADES
+// =====================
+
+.mb-2 {
+    margin-bottom: tokens.$space-2 !important;
+}
+
+.text-muted {
+    color: tokens.$dashboard-text-light !important;
+}
+
+// =====================
+// ANIMACIONES
+// =====================
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes expandIn {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// =====================
+// SPINNER (LOADING)
+// =====================
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+// =====================
+// RESPONSIVE
+// =====================
+
+@media (max-width: 600px) {
+    .modal--agendar {
+        .modal {
+            margin: tokens.$space-4;
+            max-width: calc(100% - #{tokens.$space-8});
+        }
+
+        .modal__body {
+            padding: tokens.$space-4;
+        }
+
+        .modal__footer {
+            flex-direction: column;
+
+            .btn {
+                width: 100%;
+            }
+        }
+    }
+}
+

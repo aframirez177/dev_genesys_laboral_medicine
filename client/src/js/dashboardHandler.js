@@ -604,30 +604,47 @@ async function loadCargosPage() {
 }
 
 /**
- * Examenes Page - Muestra exámenes recomendados por cargo desde el wizard
+ * SPRINT 8: Examenes Page - Carga paquetes de exámenes por cargo
+ * Tabla muestra cargos, al expandir se ven trabajadores y exámenes del paquete
  */
 async function loadExamenesPage() {
-    console.log('🔵 [EXAMENES] ========== Loading Examenes Page ==========');
+    console.log('🔵 [EXAMENES] ========== Loading Examenes Page (SPRINT 8) ==========');
 
-    // Get wizard data from localStorage
-    const wizardData = getWizardData();
-    console.log('🔵 [EXAMENES] wizardData:', wizardData ? 'found' : 'not found');
+    const tableBody = document.getElementById('examenes-table-body');
+    
+    // Mostrar loading
+    if (tableBody) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="table-empty">
+                    <div class="empty-state empty-state--inline">
+                        <div class="loading-spinner-inline"></div>
+                        <span>Cargando paquetes de exámenes...</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
 
-    if (!wizardData) {
+    // Obtener empresaId
+    const empresaId = localStorage.getItem('empresaId');
+    const authToken = localStorage.getItem('authToken');
+
+    if (!empresaId || !authToken) {
+        console.log('🟡 [EXAMENES] No empresaId or authToken');
         setTextContent('examenes-stat-vencidos', '0');
         setTextContent('examenes-stat-proximos', '0');
         setTextContent('examenes-stat-aldia', '0');
         setTextContent('examenes-stat-agendar', '0');
         setTextContent('examenes-showing', 'Mostrando 0 de 0');
 
-        const tableBody = document.getElementById('examenes-table-body');
         if (tableBody) {
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="7" class="table-empty">
                         <div class="empty-state empty-state--inline">
-                            <i data-lucide="clipboard-list"></i>
-                            <span>Complete el wizard para ver los exámenes recomendados por cargo</span>
+                            <i data-lucide="log-in"></i>
+                            <span>Inicie sesión para ver los exámenes médicos</span>
                         </div>
                     </td>
                 </tr>
@@ -638,26 +655,35 @@ async function loadExamenesPage() {
     }
 
     try {
-        const formData = wizardData.formData || {};
-        const cargos = formData.cargos || [];
-        console.log('🔵 [EXAMENES] Processing cargos:', cargos.length);
+        // Llamar a la API de exámenes tabla (SPRINT 8)
+        const response = await fetch(`/api/examenes/tabla/${empresaId}`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-        if (cargos.length === 0) {
-            console.log('🟡 [EXAMENES] No cargos found');
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('🔵 [EXAMENES] API result:', result);
+
+        if (!result.success || !result.filas || result.filas.length === 0) {
             setTextContent('examenes-stat-vencidos', '0');
             setTextContent('examenes-stat-proximos', '0');
             setTextContent('examenes-stat-aldia', '0');
             setTextContent('examenes-stat-agendar', '0');
-            setTextContent('examenes-showing', 'Mostrando 0 de 0');
+            setTextContent('examenes-showing', 'Mostrando 0 cargos');
 
-            const tableBody = document.getElementById('examenes-table-body');
             if (tableBody) {
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="7" class="table-empty">
                             <div class="empty-state empty-state--inline">
-                                <i data-lucide="users"></i>
-                                <span>No hay cargos configurados. Agregue cargos en el wizard.</span>
+                                <i data-lucide="clipboard-list"></i>
+                                <span>Complete el wizard y genere el profesiograma para ver los paquetes de exámenes</span>
                             </div>
                         </td>
                     </tr>
@@ -667,141 +693,255 @@ async function loadExamenesPage() {
             return;
         }
 
-        // Map de nombres de exámenes
-        const EXAMENES_NOMBRES = {
-            'EMO': 'Examen Médico Ocupacional',
-            'EMOA': 'EMO con énfasis en Alturas',
-            'EMOMP': 'EMO Manipuladores de Alimentos',
-            'OPTO': 'Visiometría',
-            'AUD': 'Audiometría',
-            'ECG': 'Electrocardiograma',
-            'GLI': 'Glicemia',
-            'PL': 'Perfil Lipídico',
-            'PE': 'Prueba de Esfuerzo',
-            'ESP': 'Espirometría',
-            'PSM': 'Prueba Psicosensométrica',
-            'PST': 'Prueba Psicotécnica',
-            'FRO': 'Frotis de Garganta',
-            'KOH': 'KOH (Examen Hongos)',
-            'COP': 'Coprológico'
-        };
+        const { filas, cargos, resumen } = result;
+        console.log('🔵 [EXAMENES] Cargos:', filas.length, 'Total trabajadores:', resumen.totalTrabajadores);
+        console.log('🔵 [EXAMENES] Sample fila:', filas[0] ? {
+            cargo: filas[0].cargoNombre,
+            area: filas[0].area,
+            paquete: filas[0].paqueteNombre,
+            trabajadores: filas[0].trabajadores?.length,
+            examenesIngreso: filas[0].examenesIngreso?.length
+        } : 'No filas');
 
-        // Paquete mínimo universal (todos los trabajadores)
-        const PAQUETE_MINIMO = ['EMO', 'OPTO', 'AUD'];
+        // Actualizar estadísticas
+        setTextContent('examenes-stat-vencidos', (resumen.vencidos || 0).toString());
+        setTextContent('examenes-stat-proximos', (resumen.proximos || 0).toString());
+        setTextContent('examenes-stat-aldia', (resumen.alDia || 0).toString());
+        setTextContent('examenes-stat-agendar', (resumen.porAgendar || 0).toString());
+        setTextContent('examenes-showing', `${filas.length} cargos · ${resumen.totalTrabajadores} trabajadores`);
 
-        // Exámenes por toggle especial
-        const EXAMENES_POR_TOGGLE = {
-            trabajaAlturas: ['EMOA', 'GLI', 'PL', 'PE', 'ESP', 'ECG'],
-            manipulaAlimentos: ['EMOMP', 'FRO', 'KOH', 'COP'],
-            conduceVehiculo: ['PSM', 'PSP', 'GLI', 'PL'], // PSM = Psicosensométrica, PSP = Sustancias Psicoactivas
-            trabajaEspaciosConfinados: ['EMO', 'ESP', 'ECG', 'GLI', 'PL', 'PSM'],
-            espaciosConfinados: ['EMO', 'ESP', 'ECG', 'GLI', 'PL', 'PSM']
-        };
-
-        // Procesar cada cargo y generar filas de exámenes
-        let totalExamenes = 0;
-        let porAgendar = 0;
-        const tableRows = [];
-
-        cargos.forEach(cargo => {
-            const examenesSet = new Set(PAQUETE_MINIMO);
-
-            // Agregar exámenes por toggles especiales
-            Object.entries(EXAMENES_POR_TOGGLE).forEach(([toggle, examenes]) => {
-                if (cargo[toggle]) {
-                    examenes.forEach(ex => examenesSet.add(ex));
-                }
-            });
-
-            // Agregar exámenes de los GES seleccionados
-            const gesArray = cargo.gesSeleccionados || cargo.ges || [];
-            gesArray.forEach(ges => {
-                if (ges.examenesMedicos) {
-                    Object.keys(ges.examenesMedicos).forEach(ex => examenesSet.add(ex));
-                }
-            });
-
-            // Generar filas para este cargo
-            const examenesArray = Array.from(examenesSet);
-            const numPersonas = cargo.numPersonas || cargo.numTrabajadores || 1;
-
-            examenesArray.forEach(examenCode => {
-                totalExamenes++;
-                porAgendar++;
-
-                tableRows.push(`
-                    <tr>
-                        <td><input type="checkbox" class="examen-checkbox" data-cargo="${cargo.nombre}" data-examen="${examenCode}" /></td>
-                        <td>--</td>
-                        <td>
-                            <div class="cell-cargo">
-                                <strong>${cargo.nombre || 'Sin nombre'}</strong>
-                                <span class="text-xs text-muted">${numPersonas} persona${numPersonas !== 1 ? 's' : ''}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge badge--primary">${examenCode}</span>
-                            <span class="text-sm">${EXAMENES_NOMBRES[examenCode] || examenCode}</span>
-                        </td>
-                        <td class="text-muted">Por programar</td>
-                        <td><span class="badge badge--warning">Por agendar</span></td>
-                        <td>
-                            <button class="btn btn--icon btn--sm" title="Agendar examen">
-                                <i data-lucide="calendar-plus"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `);
-            });
-        });
-
-        // Update stats
-        setTextContent('examenes-stat-vencidos', '0');
-        setTextContent('examenes-stat-proximos', '0');
-        setTextContent('examenes-stat-aldia', '0');
-        setTextContent('examenes-stat-agendar', porAgendar.toString());
-        setTextContent('examenes-showing', `Mostrando ${totalExamenes} de ${totalExamenes}`);
-
-        // Populate filter dropdowns with cargos
+        // Populate filter dropdown con cargos
         const filterCargo = document.getElementById('filter-cargo');
-        if (filterCargo) {
+        if (filterCargo && cargos) {
             filterCargo.innerHTML = '<option value="">Cargo: Todos</option>';
             cargos.forEach(cargo => {
                 filterCargo.innerHTML += `<option value="${cargo.nombre}">${cargo.nombre}</option>`;
             });
         }
 
-        // Populate table
-        const tableBody = document.getElementById('examenes-table-body');
-        if (tableBody) {
-            if (tableRows.length > 0) {
-                tableBody.innerHTML = tableRows.join('');
-            } else {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="table-empty">
-                            <div class="empty-state empty-state--inline">
-                                <i data-lucide="check-circle"></i>
-                                <span>No hay exámenes pendientes</span>
+        // Generar filas de la tabla - una por cargo
+        const tableRows = filas.map((fila) => {
+            const rowId = `cargo-row-${fila.cargoId}`;
+            const detailId = `cargo-detail-${fila.cargoId}`;
+            
+            // Chevron para expandir
+            const chevronIcon = `
+                <svg class="paquete-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            `;
+
+            // Determinar badge de estado
+            const estadoBadgeClass = {
+                'por_agendar': 'warning',
+                'agendado': 'info',
+                'completado': 'success',
+                'vencido': 'danger'
+            }[fila.estado] || 'muted';
+
+            // Generar HTML de lista de exámenes
+            const renderExamenesList = (examenes, tipo) => {
+                if (!examenes || examenes.length === 0) {
+                    return '<span class="text-muted">No aplica</span>';
+                }
+                return examenes.map(ex => `
+                    <div class="examen-item">
+                        <span class="badge badge--${tipo === 'ingreso' ? 'primary' : tipo === 'periodico' ? 'info' : 'muted'} badge--xs">${ex.codigo}</span>
+                        <span class="examen-item-nombre">${ex.nombre}</span>
+                        ${ex.periodicidad ? `<span class="examen-item-periodo">(${ex.periodicidad})</span>` : ''}
+                    </div>
+                `).join('');
+            };
+
+            // SVG del ícono de calendario
+            const calendarIcon = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            `;
+
+            // Generar HTML de lista de trabajadores
+            const renderTrabajadoresList = () => {
+                if (!fila.trabajadores || fila.trabajadores.length === 0) {
+                    return '<p class="text-muted">No hay trabajadores asignados</p>';
+                }
+                return fila.trabajadores.map(trab => `
+                    <div class="trabajador-item" data-trabajador-id="${trab.id}">
+                        <div class="trabajador-info">
+                            <span class="trabajador-numero">#${trab.numero}</span>
+                            <div class="trabajador-nombre-grupo">
+                                <span class="trabajador-nombre-inner">${trab.nombre || `Trabajador ${trab.numero}`}</span>
+                                ${trab.cedula ? `<span class="trabajador-cedula text-muted">CC: ${trab.cedula}</span>` : ''}
+                            </div>
+                            <span class="badge badge--${trab.estado === 'por_agendar' ? 'warning' : trab.estado === 'agendado' ? 'info' : 'success'} badge--xs">${trab.estadoLabel}</span>
+                        </div>
+                        <button
+                            type="button"
+                            class="btn btn--sm btn--primary btn--agendar-trabajador"
+                            title="Agendar exámenes para ${trab.nombre || `Trabajador ${trab.numero}`}"
+                            data-trabajador-id="${trab.id}"
+                            data-trabajador-numero="${trab.numero}"
+                            data-trabajador-nombre="${trab.nombre || `Trabajador ${trab.numero}`}"
+                            data-trabajador-cedula="${trab.cedula || ''}"
+                            data-cargo="${fila.cargoNombre}"
+                            data-paquete="${fila.paqueteNombre}"
+                            data-examenes-ingreso='${JSON.stringify(fila.examenesIngreso || [])}'
+                            data-examenes-periodicos='${JSON.stringify(fila.examenesPeriodicos || [])}'
+                            data-examenes-retiro='${JSON.stringify(fila.examenesRetiro || [])}'>
+                            ${calendarIcon}
+                            <span>Agendar</span>
+                        </button>
+                    </div>
+                `).join('');
+            };
+
+            // Fila principal (por cargo)
+            const mainRow = `
+                <tr id="${rowId}" class="cargo-row" data-cargo-id="${fila.cargoId}">
+                    <td>
+                        <input type="checkbox" class="cargo-checkbox" id="chk-cargo-${fila.cargoId}" name="cargo-${fila.cargoId}" data-cargo-id="${fila.cargoId}" aria-label="Seleccionar cargo ${fila.cargoNombre}" />
+                    </td>
+                    <td>
+                        <button type="button" class="cargo-toggle" data-target="${detailId}" aria-expanded="false" aria-controls="${detailId}">
+                            ${chevronIcon}
+                            <strong class="cargo-nombre">${fila.cargoNombre}</strong>
+                        </button>
+                    </td>
+                    <td>
+                        <span class="area-badge">${fila.area}</span>
+                    </td>
+                        <td>
+                        <div class="paquete-cell">
+                            <span class="paquete-nombre-text">${fila.paqueteNombre}</span>
+                            <span class="badge badge--muted badge--xs">${fila.numExamenes} exámenes</span>
+                            </div>
+                        </td>
+                        <td>
+                        <div class="trabajadores-count">
+                            <span class="count-number">${fila.numTrabajadores}</span>
+                            <span class="count-label">trabajadores</span>
+                        </div>
+                        </td>
+                    <td>
+                        <span class="badge badge--${estadoBadgeClass}">${fila.estadoLabel}</span>
+                    </td>
+                        <td>
+                        <button 
+                            type="button"
+                            class="btn btn--outline btn--sm cargo-expand-btn"
+                            data-target="${detailId}"
+                            title="Ver trabajadores y exámenes">
+                            <span>Ver detalle</span>
+                            ${chevronIcon}
+                            </button>
+                        </td>
+                    </tr>
+            `;
+
+            // Fila de detalle expandible
+            const detailRow = `
+                <tr id="${detailId}" class="cargo-detail-row" style="display: none;">
+                    <td colspan="7">
+                        <div class="cargo-detail">
+                            <!-- Sección Trabajadores -->
+                            <div class="cargo-detail-section cargo-detail-section--trabajadores">
+                                <h4 class="cargo-detail-section-title">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                    Trabajadores (${fila.numTrabajadores})
+                                </h4>
+                                <div class="trabajadores-list">
+                                    ${renderTrabajadoresList()}
+                                </div>
+                            </div>
+
+                            <!-- Sección Exámenes del Paquete -->
+                            <div class="cargo-detail-section cargo-detail-section--examenes">
+                                <h4 class="cargo-detail-section-title">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <line x1="10" y1="9" x2="8" y2="9"></line>
+                                    </svg>
+                                    Exámenes del ${fila.paqueteNombre}
+                                </h4>
+                                <div class="paquete-detail-grid">
+                                    <div class="paquete-section paquete-section--ingreso">
+                                        <h5 class="paquete-section-title">
+                                            <span class="badge badge--primary">Ingreso</span>
+                                            Pre-ocupacionales
+                                        </h5>
+                                        <div class="paquete-examenes-list">
+                                            ${renderExamenesList(fila.examenesIngreso, 'ingreso')}
+                                        </div>
+                                    </div>
+                                    <div class="paquete-section paquete-section--periodico">
+                                        <h5 class="paquete-section-title">
+                                            <span class="badge badge--info">Periódicos</span>
+                                            Ocupacionales
+                                        </h5>
+                                        <div class="paquete-examenes-list">
+                                            ${renderExamenesList(fila.examenesPeriodicos, 'periodico')}
+                                        </div>
+                                    </div>
+                                    <div class="paquete-section paquete-section--retiro">
+                                        <h5 class="paquete-section-title">
+                                            <span class="badge badge--muted">Retiro</span>
+                                            Post-ocupacionales
+                                        </h5>
+                                        <div class="paquete-examenes-list">
+                                            ${renderExamenesList(fila.examenesRetiro, 'retiro')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             </div>
                         </td>
                     </tr>
                 `;
-            }
+
+            return mainRow + detailRow;
+        }).join('');
+
+        // Insertar filas en la tabla
+        if (tableBody) {
+            tableBody.innerHTML = tableRows;
+            console.log('🔵 [EXAMENES] Table rendered with', filas.length, 'cargo rows');
         }
+
+        // Configurar event listeners para expandir cargos
+        setupCargoToggleListeners();
+        console.log('🔵 [EXAMENES] Cargo toggle listeners configured');
+
+        // Configurar event listeners para botones de agendar trabajadores
+        setupAgendarTrabajadorListeners();
+        console.log('🔵 [EXAMENES] Agendar trabajador listeners configured');
 
         if (window.lucide) window.lucide.createIcons();
 
     } catch (e) {
         console.error('Error loading examenes:', e);
-        const tableBody = document.getElementById('examenes-table-body');
+        setTextContent('examenes-stat-vencidos', '0');
+        setTextContent('examenes-stat-proximos', '0');
+        setTextContent('examenes-stat-aldia', '0');
+        setTextContent('examenes-stat-agendar', '0');
+
         if (tableBody) {
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="7" class="table-empty">
                         <div class="empty-state empty-state--inline">
                             <i data-lucide="alert-circle"></i>
-                            <span>Error al cargar los exámenes</span>
+                            <span>Error al cargar los exámenes: ${e.message}</span>
                         </div>
                     </td>
                 </tr>
@@ -809,6 +949,749 @@ async function loadExamenesPage() {
         }
         if (window.lucide) window.lucide.createIcons();
     }
+}
+
+/**
+ * SPRINT 8: Configura listeners para expandir/colapsar cargos
+ */
+function setupCargoToggleListeners() {
+    const toggles = document.querySelectorAll('.cargo-toggle');
+    console.log('🔵 [SETUP] Found', toggles.length, 'cargo toggle buttons');
+
+    // Toggle en el nombre del cargo
+    toggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('🔵 [TOGGLE] Cargo toggle clicked:', toggle.dataset.target);
+            toggleCargoDetail(toggle.dataset.target, toggle);
+        });
+    });
+
+    // Toggle en el botón "Ver detalle"
+    document.querySelectorAll('.cargo-expand-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const cargoToggle = btn.closest('tr').querySelector('.cargo-toggle');
+            toggleCargoDetail(btn.dataset.target, cargoToggle);
+        });
+    });
+}
+
+/**
+ * Toggle para mostrar/ocultar detalle de cargo
+ */
+function toggleCargoDetail(targetId, toggleElement) {
+    const detailRow = document.getElementById(targetId);
+    const isExpanded = toggleElement?.getAttribute('aria-expanded') === 'true';
+    
+    if (detailRow) {
+        if (isExpanded) {
+            detailRow.style.display = 'none';
+            toggleElement?.setAttribute('aria-expanded', 'false');
+            toggleElement?.classList.remove('cargo-toggle--expanded');
+        } else {
+            detailRow.style.display = 'table-row';
+            toggleElement?.setAttribute('aria-expanded', 'true');
+            toggleElement?.classList.add('cargo-toggle--expanded');
+        }
+    }
+}
+
+/**
+ * SPRINT 8: Configura listeners para botones de agendar trabajador
+ */
+function setupAgendarTrabajadorListeners() {
+    const buttons = document.querySelectorAll('.btn--agendar-trabajador');
+    console.log('🔵 [SETUP] Found', buttons.length, 'agendar trabajador buttons');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation(); // Prevenir que el evento se propague
+            console.log('🟢 [CLICK] Agendar trabajador button clicked');
+
+            const trabajadorNombre = btn.dataset.trabajadorNombre;
+            const cargo = btn.dataset.cargo;
+            const paquete = btn.dataset.paquete;
+            
+            let examenesIngreso = [];
+            let examenesPeriodicos = [];
+            let examenesRetiro = [];
+
+            try {
+                examenesIngreso = JSON.parse(btn.dataset.examenesIngreso || '[]');
+                examenesPeriodicos = JSON.parse(btn.dataset.examenesPeriodicos || '[]');
+                examenesRetiro = JSON.parse(btn.dataset.examenesRetiro || '[]');
+            } catch (err) {
+                console.error('🔴 [EXAMENES] Error parsing examenes:', err);
+            }
+
+            console.log('🔵 [EXAMENES] Agendar button clicked for:', trabajadorNombre, 'cargo:', cargo);
+
+            showAgendarModal({
+                trabajador: trabajadorNombre,
+                cargo,
+                paquete,
+                examenesIngreso,
+                examenesPeriodicos,
+                examenesRetiro
+            });
+        });
+    });
+}
+
+
+/**
+ * SPRINT 8: Muestra modal de agendamiento de examen con checkboxes automáticos
+ * Recibe un objeto con datos del paquete de exámenes
+ */
+function showAgendarModal(datos) {
+    console.log('🟢 [MODAL] showAgendarModal called with datos:', datos);
+    const { trabajador, cargo, paquete, examenesIngreso, examenesPeriodicos, examenesRetiro } = datos;
+
+    // Calcular periodicidad mínima de los exámenes periódicos
+    const periodicidadMeses = examenesPeriodicos.length > 0 
+        ? Math.min(...examenesPeriodicos.map(e => e.periodicidadMeses || 12))
+        : 12;
+
+    // Calcular fechas sugeridas
+    const hoy = new Date();
+    const proximoExamen = new Date(hoy);
+    proximoExamen.setDate(proximoExamen.getDate() + 7); // Una semana desde hoy
+    
+    const fechaVencimiento = new Date(proximoExamen);
+    fechaVencimiento.setMonth(fechaVencimiento.getMonth() + periodicidadMeses);
+
+    const formatDateInput = (date) => date.toISOString().split('T')[0];
+    const formatDateDisplay = (date) => date.toLocaleDateString('es-CO', { 
+        day: 'numeric', month: 'long', year: 'numeric' 
+    });
+
+    // Obtener datos de la empresa desde localStorage
+    let empresaNombre = '';
+    let usuarioNombre = '';
+    try {
+        const empresaData = JSON.parse(localStorage.getItem('genesys_empresa') || '{}');
+        empresaNombre = empresaData.nombre_legal || empresaData.razon_social || empresaData.nombre || '';
+        const userData = JSON.parse(localStorage.getItem('genesys_user') || '{}');
+        usuarioNombre = userData.nombre || userData.full_name || '';
+    } catch (e) { /* ignore */ }
+
+    // Función para generar checkboxes de exámenes
+    const renderExamenesCheckboxes = (examenes, tipo, index) => {
+        if (!examenes || examenes.length === 0) {
+            return '<p class="text-muted">No hay exámenes en esta categoría</p>';
+        }
+        return examenes.map((ex, i) => `
+            <label class="checkbox-item" for="examen-${tipo}-${index}-${i}">
+                <input type="checkbox" 
+                       id="examen-${tipo}-${index}-${i}" 
+                       name="examen-${tipo}[]" 
+                       value="${ex.codigo}"
+                       data-nombre="${ex.nombre}"
+                       data-periodicidad="${ex.periodicidadMeses || 12}"
+                       class="examen-check examen-check--${tipo}">
+                <span class="checkbox-label">
+                    <span class="badge badge--${tipo === 'ingreso' ? 'primary' : tipo === 'periodico' ? 'info' : 'muted'} badge--xs">${ex.codigo}</span>
+                    ${ex.nombre}
+                </span>
+            </label>
+        `).join('');
+    };
+
+    // Crear modal con campos completos
+    const modalHTML = `
+        <div class="modal-overlay modal--agendar" id="modal-agendar-examen">
+            <div class="modal--agendar-content">
+                <div class="modal__header">
+                    <h2 class="modal__title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Orden de Servicios - ${paquete}
+                    </h2>
+                    <button type="button" class="modal__close" id="close-agendar-modal" aria-label="Cerrar">&times;</button>
+                </div>
+                <form id="form-agendar-examen" class="modal__body">
+                    <div class="agendar-form">
+                        <!-- Sección: Tipo de Examen (primero para activar checkboxes) -->
+                        <div class="form-section form-section--tipo">
+                            <h4 class="form-section-title">🩺 Tipo de Examen</h4>
+                            <div class="tipo-examen-grid">
+                                <label class="tipo-examen-option" for="tipo-examen-ingreso">
+                                    <input type="radio" name="tipoExamen" id="tipo-examen-ingreso" value="Ingreso">
+                                    <span class="tipo-examen-card tipo-examen-card--ingreso">
+                                        <span class="tipo-icon">📋</span>
+                                        <span class="tipo-label">Ingreso</span>
+                                        <span class="tipo-desc">Pre-ocupacional</span>
+                                    </span>
+                                </label>
+                                <label class="tipo-examen-option" for="tipo-examen-periodico">
+                                    <input type="radio" name="tipoExamen" id="tipo-examen-periodico" value="Periódico" checked>
+                                    <span class="tipo-examen-card tipo-examen-card--periodico">
+                                        <span class="tipo-icon">🔄</span>
+                                        <span class="tipo-label">Periódico</span>
+                                        <span class="tipo-desc">Ocupacional</span>
+                                    </span>
+                                </label>
+                                <label class="tipo-examen-option" for="tipo-examen-retiro">
+                                    <input type="radio" name="tipoExamen" id="tipo-examen-retiro" value="Retiro">
+                                    <span class="tipo-examen-card tipo-examen-card--retiro">
+                                        <span class="tipo-icon">📤</span>
+                                        <span class="tipo-label">Retiro</span>
+                                        <span class="tipo-desc">Post-ocupacional</span>
+                                    </span>
+                                </label>
+                                <label class="tipo-examen-option" for="tipo-examen-post-incapacidad">
+                                    <input type="radio" name="tipoExamen" id="tipo-examen-post-incapacidad" value="Post Incapacidad">
+                                    <span class="tipo-examen-card tipo-examen-card--post-incapacidad">
+                                        <span class="tipo-icon">🏥</span>
+                                        <span class="tipo-label">Post Incapacidad</span>
+                                        <span class="tipo-desc">Después de incapacidad</span>
+                                    </span>
+                                </label>
+                                <label class="tipo-examen-option" for="tipo-examen-control">
+                                    <input type="radio" name="tipoExamen" id="tipo-examen-control" value="Control">
+                                    <span class="tipo-examen-card tipo-examen-card--control">
+                                        <span class="tipo-icon">🔍</span>
+                                        <span class="tipo-label">Control</span>
+                                        <span class="tipo-desc">Seguimiento</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Sección: Exámenes del Paquete -->
+                        <div class="form-section form-section--examenes">
+                            <h4 class="form-section-title">📦 Exámenes del Paquete</h4>
+                            <p class="form-hint mb-2">Los exámenes se seleccionan automáticamente según el tipo de examen elegido</p>
+                            
+                            <div class="examenes-grupos">
+                                <div class="examenes-grupo examenes-grupo--ingreso" id="grupo-ingreso">
+                                    <h5 class="examenes-grupo-title">
+                                        <span class="badge badge--primary">Ingreso</span>
+                                        Pre-ocupacionales
+                                    </h5>
+                                    <div class="examenes-checkboxes">
+                                        ${renderExamenesCheckboxes(examenesIngreso, 'ingreso', 0)}
+                                    </div>
+                                </div>
+                                <div class="examenes-grupo examenes-grupo--periodico" id="grupo-periodico">
+                                    <h5 class="examenes-grupo-title">
+                                        <span class="badge badge--info">Periódicos</span>
+                                        Ocupacionales
+                                    </h5>
+                                    <div class="examenes-checkboxes">
+                                        ${renderExamenesCheckboxes(examenesPeriodicos, 'periodico', 0)}
+                                    </div>
+                                </div>
+                                <div class="examenes-grupo examenes-grupo--retiro" id="grupo-retiro">
+                                    <h5 class="examenes-grupo-title">
+                                        <span class="badge badge--muted">Retiro</span>
+                                        Post-ocupacionales
+                                    </h5>
+                                    <div class="examenes-checkboxes">
+                                        ${renderExamenesCheckboxes(examenesRetiro, 'retiro', 0)}
+                                    </div>
+                                </div>
+                                <div class="examenes-grupo examenes-grupo--post-incapacidad" id="grupo-post-incapacidad">
+                                    <h5 class="examenes-grupo-title">
+                                        <span class="badge badge--warning">Post Incapacidad</span>
+                                        Después de Incapacidad
+                                    </h5>
+                                    <p class="form-hint mb-2 text-sm">
+                                        Seleccione los exámenes necesarios. Generalmente solo se requiere el EMO.
+                                    </p>
+                                    <div class="examenes-checkboxes">
+                                        <label class="examen-checkbox">
+                                            <input type="checkbox" class="examen-check examen-check--post-incapacidad"
+                                                   value="AUDIOMETRIA" data-nombre="AUDIOMETRIA" data-periodicidad="12">
+                                            <span class="examen-label">
+                                                <span class="examen-nombre">Audiometría</span>
+                                                <span class="examen-badge badge badge--sm badge--outline">Opcional</span>
+                                            </span>
+                                        </label>
+                                        <label class="examen-checkbox">
+                                            <input type="checkbox" class="examen-check examen-check--post-incapacidad"
+                                                   value="OPTOMETRÍA" data-nombre="OPTOMETRÍA" data-periodicidad="12">
+                                            <span class="examen-label">
+                                                <span class="examen-nombre">Optometría</span>
+                                                <span class="examen-badge badge badge--sm badge--outline">Opcional</span>
+                                            </span>
+                                        </label>
+                                        <label class="examen-checkbox examen-checkbox--destacado">
+                                            <input type="checkbox" class="examen-check examen-check--post-incapacidad"
+                                                   value="EMOA" data-nombre="EXAMEN MEDICO CON ENFASIS OSTEOMUSCULAR" data-periodicidad="12" checked>
+                                            <span class="examen-label">
+                                                <span class="examen-nombre">Examen Médico Osteomuscular (EMO)</span>
+                                                <span class="examen-badge badge badge--sm badge--primary">Recomendado</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="examenes-grupo examenes-grupo--control" id="grupo-control">
+                                    <h5 class="examenes-grupo-title">
+                                        <span class="badge badge--secondary">Control</span>
+                                        Seguimiento Médico
+                                    </h5>
+                                    <p class="form-hint mb-2 text-sm">
+                                        Seleccione los exámenes necesarios. Generalmente solo se requiere el EMO.
+                                    </p>
+                                    <div class="examenes-checkboxes">
+                                        <label class="examen-checkbox">
+                                            <input type="checkbox" class="examen-check examen-check--control"
+                                                   value="AUDIOMETRIA" data-nombre="AUDIOMETRIA" data-periodicidad="12">
+                                            <span class="examen-label">
+                                                <span class="examen-nombre">Audiometría</span>
+                                                <span class="examen-badge badge badge--sm badge--outline">Opcional</span>
+                                            </span>
+                                        </label>
+                                        <label class="examen-checkbox">
+                                            <input type="checkbox" class="examen-check examen-check--control"
+                                                   value="OPTOMETRÍA" data-nombre="OPTOMETRÍA" data-periodicidad="12">
+                                            <span class="examen-label">
+                                                <span class="examen-nombre">Optometría</span>
+                                                <span class="examen-badge badge badge--sm badge--outline">Opcional</span>
+                                            </span>
+                                        </label>
+                                        <label class="examen-checkbox examen-checkbox--destacado">
+                                            <input type="checkbox" class="examen-check examen-check--control"
+                                                   value="EMOA" data-nombre="EXAMEN MEDICO CON ENFASIS OSTEOMUSCULAR" data-periodicidad="12" checked>
+                                            <span class="examen-label">
+                                                <span class="examen-nombre">Examen Médico Osteomuscular (EMO)</span>
+                                                <span class="examen-badge badge badge--sm badge--primary">Recomendado</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sección: Datos del Examen -->
+                        <div class="form-section">
+                            <h4 class="form-section-title">📅 Datos de la Cita</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="agendar-fecha">Fecha del Examen *</label>
+                                    <input type="date" class="form-input" id="agendar-fecha" name="fechaExamen"
+                                           value="${formatDateInput(proximoExamen)}" 
+                                           min="${formatDateInput(hoy)}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="agendar-ciudad">Ciudad *</label>
+                                    <select class="form-input" id="agendar-ciudad" name="ciudad" required>
+                                        <option value="">Seleccione ciudad</option>
+                                        <option value="Bogotá">Bogotá</option>
+                                        <option value="Medellín">Medellín</option>
+                                        <option value="Cali">Cali</option>
+                                        <option value="Barranquilla">Barranquilla</option>
+                                        <option value="Cartagena">Cartagena</option>
+                                        <option value="Bucaramanga">Bucaramanga</option>
+                                        <option value="Pereira">Pereira</option>
+                                        <option value="Manizales">Manizales</option>
+                                        <option value="Santa Marta">Santa Marta</option>
+                                        <option value="Ibagué">Ibagué</option>
+                                        <option value="Cúcuta">Cúcuta</option>
+                                        <option value="Villavicencio">Villavicencio</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="agendar-empresa">Empresa</label>
+                                    <input type="text" class="form-input" id="agendar-empresa" name="empresa" 
+                                           value="${empresaNombre}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="agendar-autoriza">Autorizado por</label>
+                                    <input type="text" class="form-input" id="agendar-autoriza" name="autoriza"
+                                           value="${usuarioNombre}" placeholder="Nombre y cargo">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sección: Datos del Trabajador -->
+                        <div class="form-section">
+                            <h4 class="form-section-title">👤 Información del Trabajador</h4>
+                            <div class="form-group">
+                                <label class="form-label" for="agendar-nombre">Nombres y Apellidos Completos *</label>
+                                <input type="text" class="form-input" id="agendar-nombre" name="nombreTrabajador"
+                                       placeholder="Ingrese el nombre completo del trabajador" required>
+                                <span class="form-hint">Se registrará como "${trabajador}"</span>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="agendar-tipo-id">Tipo de Identificación *</label>
+                                    <select class="form-input" id="agendar-tipo-id" name="tipoIdentificacion" required>
+                                        <option value="Cédula de Ciudadanía">Cédula de Ciudadanía</option>
+                                        <option value="Cédula de Extranjería">Cédula de Extranjería</option>
+                                        <option value="Pasaporte">Pasaporte</option>
+                                        <option value="PPT">PPT</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="agendar-num-id">No. Identificación *</label>
+                                    <input type="text" class="form-input" id="agendar-num-id" name="numeroIdentificacion"
+                                           placeholder="Número de documento" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="agendar-edad">Edad</label>
+                                    <input type="number" class="form-input" id="agendar-edad" name="edad"
+                                           placeholder="Años" min="18" max="100">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="agendar-cargo">Cargo *</label>
+                                    <input type="text" class="form-input" id="agendar-cargo" name="cargo" 
+                                           value="${cargo}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sección: Información Asistencial Adicional -->
+                        <div class="form-section">
+                            <h4 class="form-section-title">🏥 Información Adicional</h4>
+                            <div class="form-group">
+                                <label class="form-label" for="agendar-enfasis">Énfasis *</label>
+                                <select class="form-input" id="agendar-enfasis" name="enfasis" required>
+                                    <option value="Medico con énfasis Osteomuscular">Osteomuscular</option>
+                                    <option value="Medico con énfasis en alturas">Alturas</option>
+                                    <option value="Medico con énfasis manipulación de Alimentos">Manipulación de Alimentos</option>
+                                    <option value="Medico con énfasis en espacios confinados">Espacios Confinados</option>
+                                    <option value="Medico con énfasis en alturas y trabajo con tensión">Alturas y Trabajo con Tensión</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Fecha de Vencimiento (calculada)</label>
+                                <div class="vencimiento-calculado">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                    </svg>
+                                    <span id="agendar-vencimiento">${formatDateDisplay(fechaVencimiento)}</span>
+                                    <span class="periodicidad-hint">(Periodicidad: ${periodicidadMeses} meses)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="form-group">
+                            <label class="form-label" for="agendar-observaciones">Observaciones</label>
+                            <textarea class="form-input form-textarea" id="agendar-observaciones" name="observaciones"
+                                      placeholder="Notas adicionales para el agendamiento..."></textarea>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal__footer">
+                    <button type="button" class="btn btn--outline" id="btn-cancelar-agendar">Cancelar</button>
+                    <button type="submit" form="form-agendar-examen" class="btn btn--primary" id="btn-confirmar-agendar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Confirmar Agendamiento
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Insertar modal en el DOM
+    const existingModal = document.getElementById('modal-agendar-examen');
+    if (existingModal) existingModal.remove();
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    console.log('🟢 [MODAL] Modal HTML inserted into DOM');
+
+    // Referencias a elementos
+    const modal = document.getElementById('modal-agendar-examen');
+
+    if (!modal) {
+        console.error('🔴 [MODAL] Modal element not found after insertion');
+        return;
+    }
+
+    console.log('🟢 [MODAL] Modal element found:', modal);
+    console.log('🟢 [MODAL] Modal display style:', window.getComputedStyle(modal).display);
+    console.log('🟢 [MODAL] Modal visibility:', window.getComputedStyle(modal).visibility);
+    console.log('🟢 [MODAL] Modal z-index:', window.getComputedStyle(modal).zIndex);
+
+    // Verificar el contenido del modal
+    const modalContent = modal.querySelector('.modal--agendar-content');
+    console.log('🟢 [MODAL] Modal content element:', modalContent);
+    if (modalContent) {
+        console.log('🟢 [MODAL] Content display:', window.getComputedStyle(modalContent).display);
+        console.log('🟢 [MODAL] Content visibility:', window.getComputedStyle(modalContent).visibility);
+        console.log('🟢 [MODAL] Content position:', window.getComputedStyle(modalContent).position);
+        console.log('🟢 [MODAL] Content width:', window.getComputedStyle(modalContent).width);
+        console.log('🟢 [MODAL] Content height:', window.getComputedStyle(modalContent).height);
+        console.log('🟢 [MODAL] Content opacity:', window.getComputedStyle(modalContent).opacity);
+    } else {
+        console.error('🔴 [MODAL] Modal content element NOT FOUND');
+    }
+
+    const form = document.getElementById('form-agendar-examen');
+    const closeBtn = document.getElementById('close-agendar-modal');
+    const cancelBtn = document.getElementById('btn-cancelar-agendar');
+    const fechaInput = document.getElementById('agendar-fecha');
+    const vencimientoSpan = document.getElementById('agendar-vencimiento');
+    const tipoExamenRadios = document.querySelectorAll('input[name="tipoExamen"]');
+
+    // Función para cerrar modal
+    const closeModal = () => {
+        modal.classList.add('modal-closing');
+        setTimeout(() => modal.remove(), 200);
+    };
+
+    // Event listeners para cerrar (con pequeño delay para evitar cierre inmediato)
+    setTimeout(() => {
+        closeBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+        console.log('🟢 [MODAL] Close listeners configured');
+    }, 100);
+
+    // Función para activar checkboxes según tipo de examen
+    const activarCheckboxesPorTipo = (tipo) => {
+        // Desmarcar todos primero
+        document.querySelectorAll('.examen-check').forEach(cb => cb.checked = false);
+
+        // Activar grupo visual
+        document.querySelectorAll('.examenes-grupo').forEach(g => g.classList.remove('examenes-grupo--active'));
+
+        // Marcar los correspondientes según tipo
+        if (tipo === 'Ingreso') {
+            document.querySelectorAll('.examen-check--ingreso').forEach(cb => cb.checked = true);
+            document.getElementById('grupo-ingreso')?.classList.add('examenes-grupo--active');
+        } else if (tipo === 'Periódico') {
+            document.querySelectorAll('.examen-check--periodico').forEach(cb => cb.checked = true);
+            document.getElementById('grupo-periodico')?.classList.add('examenes-grupo--active');
+        } else if (tipo === 'Retiro') {
+            document.querySelectorAll('.examen-check--retiro').forEach(cb => cb.checked = true);
+            document.getElementById('grupo-retiro')?.classList.add('examenes-grupo--active');
+        } else if (tipo === 'Post Incapacidad') {
+            // Solo marcar EMO por defecto (ya está checked en HTML)
+            // Audio y Opto quedan disponibles para selección manual
+            document.getElementById('grupo-post-incapacidad')?.classList.add('examenes-grupo--active');
+        } else if (tipo === 'Control') {
+            // Solo marcar EMO por defecto (ya está checked en HTML)
+            // Audio y Opto quedan disponibles para selección manual
+            document.getElementById('grupo-control')?.classList.add('examenes-grupo--active');
+        }
+    };
+
+    // Activar checkboxes iniciales (Periódico por defecto)
+    activarCheckboxesPorTipo('Periódico');
+
+    // Listener para cambio de tipo de examen
+    tipoExamenRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            activarCheckboxesPorTipo(e.target.value);
+        });
+    });
+
+    // Actualizar fecha de vencimiento cuando cambia la fecha del examen
+    fechaInput.addEventListener('change', () => {
+        const fechaExamen = new Date(fechaInput.value);
+        const nuevoVencimiento = new Date(fechaExamen);
+        nuevoVencimiento.setMonth(nuevoVencimiento.getMonth() + periodicidadMeses);
+        vencimientoSpan.textContent = formatDateDisplay(nuevoVencimiento);
+    });
+
+    // Manejar envío del formulario
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Obtener valores del formulario
+        const formData = new FormData(form);
+        const nombreTrabajador = formData.get('nombreTrabajador');
+        const fechaExamen = formData.get('fechaExamen');
+        const ciudad = formData.get('ciudad');
+        const empresa = formData.get('empresa');
+        const autoriza = formData.get('autoriza');
+        const tipoId = formData.get('tipoIdentificacion');
+        const numId = formData.get('numeroIdentificacion');
+        const edad = formData.get('edad');
+        const tipoExamen = formData.get('tipoExamen');
+        const enfasis = formData.get('enfasis');
+        const observaciones = formData.get('observaciones');
+
+        // Obtener exámenes seleccionados
+        const examenesSeleccionados = [];
+        document.querySelectorAll('.examen-check:checked').forEach(cb => {
+            examenesSeleccionados.push({
+                codigo: cb.value,
+                nombre: cb.dataset.nombre,
+                periodicidad: cb.dataset.periodicidad
+            });
+        });
+
+        // Validaciones
+        if (!nombreTrabajador) {
+            showNotification('Por favor ingrese el nombre del trabajador', 'warning');
+            document.getElementById('agendar-nombre').focus();
+            return;
+        }
+        if (!ciudad) {
+            showNotification('Por favor seleccione la ciudad', 'warning');
+            document.getElementById('agendar-ciudad').focus();
+            return;
+        }
+        if (!numId) {
+            showNotification('Por favor ingrese el número de identificación', 'warning');
+            document.getElementById('agendar-num-id').focus();
+            return;
+        }
+        if (examenesSeleccionados.length === 0) {
+            showNotification('Seleccione al menos un examen', 'warning');
+            return;
+        }
+
+        // Calcular vencimiento final
+        const fechaExamenDate = new Date(fechaExamen);
+        const fechaVencimientoFinal = new Date(fechaExamenDate);
+        fechaVencimientoFinal.setMonth(fechaVencimientoFinal.getMonth() + periodicidadMeses);
+
+        // Obtener nombres de exámenes para Google Forms
+        const examenesNombres = examenesSeleccionados.map(e => e.nombre).join(', ');
+        const paraclinicosSeleccionados = examenesSeleccionados
+            .filter(e => ['AUD', 'VIS', 'OPT', 'ESP', 'EKG'].includes(e.codigo))
+            .map(e => e.nombre);
+        const laboratoriosSeleccionados = examenesSeleccionados
+            .filter(e => ['HEM', 'GLI', 'PERF', 'COP', 'BUN', 'CRE', 'URIN', 'ALC', 'DRUG'].includes(e.codigo))
+            .map(e => e.nombre);
+
+        // =====================================================
+        // GOOGLE FORM - ENTRY IDs del formulario de Genesys
+        // =====================================================
+        const GOOGLE_FORM_ID = '1zbMzgwUSIgcgicZ9ah8TnLutFsjWNx5RROd2CBpJ4Ow';
+        
+        const ENTRY_IDS = {
+            fechaExamen: '1656075478',
+            empresa: '957130716',
+            autoriza: '1003236985',
+            nombres: '1005623235',
+            tipoId: '743443629',
+            numId: '1523351078',
+            edad: '646266221',
+            cargo: '855690085',
+            ciudad: '24748360',
+            tipoExamen: '1232570560',
+            enfasis: '1584979165',
+            paraclinicos: '1437167858',
+            laboratorio: '325014457',
+            psicologia: '578780852',
+            observaciones: '1704057399'
+        };
+
+        // Construir URL del formulario
+        const formUrl = new URL(`https://docs.google.com/forms/d/${GOOGLE_FORM_ID}/viewform`);
+        formUrl.searchParams.append('usp', 'pp_url');
+
+        console.log('🔵 [MODAL] Opening Google Form with URL:', formUrl.toString());
+        
+        // Mapear datos a Entry IDs
+        if (fechaExamen) formUrl.searchParams.append(`entry.${ENTRY_IDS.fechaExamen}`, fechaExamen);
+        if (empresa) formUrl.searchParams.append(`entry.${ENTRY_IDS.empresa}`, empresa);
+        if (autoriza) formUrl.searchParams.append(`entry.${ENTRY_IDS.autoriza}`, autoriza);
+        if (nombreTrabajador) formUrl.searchParams.append(`entry.${ENTRY_IDS.nombres}`, nombreTrabajador);
+        if (tipoId) formUrl.searchParams.append(`entry.${ENTRY_IDS.tipoId}`, tipoId);
+        if (numId) formUrl.searchParams.append(`entry.${ENTRY_IDS.numId}`, numId);
+        if (edad) formUrl.searchParams.append(`entry.${ENTRY_IDS.edad}`, edad);
+        formUrl.searchParams.append(`entry.${ENTRY_IDS.cargo}`, cargo);
+        if (ciudad) formUrl.searchParams.append(`entry.${ENTRY_IDS.ciudad}`, ciudad);
+        if (tipoExamen) formUrl.searchParams.append(`entry.${ENTRY_IDS.tipoExamen}`, tipoExamen);
+        if (enfasis) formUrl.searchParams.append(`entry.${ENTRY_IDS.enfasis}`, enfasis);
+        
+        // Agregar observaciones con info del paquete
+        const obsCompletas = `${observaciones || ''}\n\n[Paquete: ${paquete}]\nExámenes: ${examenesNombres}\nPeriodicidad: ${periodicidadMeses} meses\nVencimiento: ${formatDateDisplay(fechaVencimientoFinal)}`;
+        formUrl.searchParams.append(`entry.${ENTRY_IDS.observaciones}`, obsCompletas.trim());
+
+        // Guardar en BD y sincronizar con Google Sheets
+        const empresaId = localStorage.getItem('empresaId');
+        const authToken = localStorage.getItem('authToken');
+
+        if (!empresaId || !authToken) {
+            showNotification('Error: No se encontró información de autenticación', 'error');
+            return;
+        }
+
+        // Obtener botón y guardar texto original
+        const submitBtn = document.getElementById('btn-confirmar-agendar');
+        const originalText = submitBtn.innerHTML;
+
+        try {
+            // Mostrar loading en el botón
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spinner"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg> Guardando...';
+
+            // Enviar TODOS los exámenes en UNA sola petición
+            const response = await fetch(`/api/agendamiento/empresa/${empresaId}/batch`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    trabajadorNombre: nombreTrabajador,
+                    cargoNombre: cargo,
+                    fechaExamen: fechaExamen,
+                    // Array con todos los exámenes seleccionados
+                    examenes: examenesSeleccionados.map(examen => ({
+                        codigo: examen.codigo,
+                        nombre: examen.nombre,
+                        periodicidadMeses: parseInt(examen.periodicidad) || periodicidadMeses
+                    })),
+                    // Datos adicionales para Google Forms
+                    datosAdicionales: {
+                        tipoExamen: tipoExamen,
+                        enfasis: enfasis,
+                        ciudad: ciudad,
+                        tipoId: tipoId,
+                        numId: numId,
+                        edad: edad
+                    },
+                    observaciones: observaciones
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // Éxito - cerrar modal
+                closeModal();
+
+                // Mensaje según sincronización con Google
+                if (result.googleSheetsSync?.success) {
+                    showNotification(`✅ ${result.agendamientosCreados} exámenes agendados y sincronizados con Google Sheets`, 'success');
+                } else {
+                    showNotification(`✅ ${result.agendamientosCreados} exámenes agendados correctamente`, 'success');
+                }
+
+                // Recargar tabla
+                setTimeout(() => loadExamenesPage(), 1000);
+            } else {
+                throw new Error(result.message || 'Error al guardar agendamientos');
+            }
+
+        } catch (error) {
+            console.error('🔴 [MODAL] Error al guardar agendamiento:', error);
+            showNotification(`Error: ${error.message}`, 'error');
+
+            // Restaurar botón
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        }
+    });
 }
 
 /**

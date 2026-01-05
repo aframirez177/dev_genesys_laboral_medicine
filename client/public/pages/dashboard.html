@@ -608,25 +608,29 @@
 
             <!-- Filters -->
             <div class="filters-bar" id="examenes-filters">
-              <select class="select" id="filter-estado">
+              <label for="filter-estado" class="sr-only">Filtrar por estado</label>
+              <select class="select" id="filter-estado" name="filter-estado" aria-label="Filtrar por estado">
                 <option value="">Estado: Todos</option>
                 <option value="vencido">Vencidos</option>
                 <option value="proximo">Próximos</option>
                 <option value="aldia">Al día</option>
               </select>
-              <select class="select" id="filter-cargo">
+              <label for="filter-cargo" class="sr-only">Filtrar por cargo</label>
+              <select class="select" id="filter-cargo" name="filter-cargo" aria-label="Filtrar por cargo">
                 <option value="">Cargo: Todos</option>
               </select>
-              <select class="select" id="filter-area">
+              <label for="filter-area" class="sr-only">Filtrar por área</label>
+              <select class="select" id="filter-area" name="filter-area" aria-label="Filtrar por área">
                 <option value="">Área: Todas</option>
               </select>
-              <select class="select" id="filter-mes">
+              <label for="filter-mes" class="sr-only">Filtrar por mes</label>
+              <select class="select" id="filter-mes" name="filter-mes" aria-label="Filtrar por mes">
                 <option value="">Mes: Todos</option>
               </select>
-              <button class="btn btn--icon" id="btn-reset-filters" title="Limpiar filtros">
+              <button type="button" class="btn btn--icon" id="btn-reset-filters" title="Limpiar filtros" aria-label="Limpiar filtros">
                 <i data-lucide="refresh-cw"></i>
               </button>
-              <button class="btn btn--outline" id="btn-export-examenes">
+              <button type="button" class="btn btn--outline" id="btn-export-examenes" aria-label="Exportar exámenes">
                 <i data-lucide="download"></i>
                 Exportar
               </button>
@@ -669,11 +673,11 @@
               <table class="data-table" id="examenes-table">
                 <thead>
                   <tr>
-                    <th><input type="checkbox" id="select-all-examenes" /></th>
-                    <th>Trabajador</th>
+                    <th><input type="checkbox" id="select-all-examenes" aria-label="Seleccionar todos" /></th>
                     <th>Cargo</th>
-                    <th>Examen</th>
-                    <th>Vencimiento</th>
+                    <th>Área</th>
+                    <th>Paquete de Exámenes</th>
+                    <th>Trabajadores</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                   </tr>

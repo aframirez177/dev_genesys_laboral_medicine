@@ -28,6 +28,7 @@ import cargosRoutes from './routes/cargos.routes.js';
 import examenesRoutes from './routes/examenes.routes.js';
 import adminRoutes from './routes/admin.routes.js';  // Rutas de administrador (Sprint 6)
 import medicoRoutes from './routes/medico.routes.js';  // Rutas de médico ocupacional (Sprint 6)
+import agendamientoRoutes from './routes/agendamiento.routes.js';  // Agendamiento de exámenes (Sprint 8)
 import { metricsMiddleware, metricsHandler } from './config/metrics.js';
 import { globalLimiter } from './middleware/rateLimiter.js';  // Rate limiting (Sprint 6)
 
@@ -122,6 +123,7 @@ app.use('/api/cargos', cargosRoutes);  // Cargos y Matriz GTC-45 (Sprint 2)
 app.use('/api/examenes', examenesRoutes);  // Examenes y Mapa Calor (Sprint 4)
 app.use('/api/admin', adminRoutes);  // Rutas de administrador Genesys (Sprint 6)
 app.use('/api/medico', medicoRoutes);  // Rutas de médico ocupacional (Sprint 6)
+app.use('/api/agendamiento', agendamientoRoutes);  // Agendamiento de exámenes (Sprint 8)
 
 app.use('/', whatsappRoutes);
 

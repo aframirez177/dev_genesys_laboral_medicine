@@ -508,9 +508,344 @@ function getJustificacionExamen(codigo, controles) {
     return 'Requerido segun normativa ocupacional';
 }
 
+/**
+ * SPRINT 8: Get exámenes agrupados por cargo
+ * Cada cargo tiene su paquete de exámenes y lista de trabajadores
+ * La tabla muestra cargos, y al expandir se ven trabajadores y exámenes
+ */
+export async function getExamenesTabla(req, res) {
+    try {
+        const { empresaId } = req.params;
+        console.log('🔵 [BACKEND] getExamenesTabla - empresaId:', empresaId);
+
+        // Get all cargos with their exam overrides (from profesiograma)
+        const cargos = await db('cargos_documento')
+            .join('documentos_generados', 'cargos_documento.documento_id', 'documentos_generados.id')
+            .where('documentos_generados.empresa_id', empresaId)
+            .select(
+                'cargos_documento.id',
+                'cargos_documento.nombre_cargo',
+                'cargos_documento.area',
+                'cargos_documento.num_trabajadores',
+                'cargos_documento.trabaja_alturas',
+                'cargos_documento.manipula_alimentos',
+                'cargos_documento.conduce_vehiculo',
+                'cargos_documento.trabaja_espacios_confinados',
+                'cargos_documento.examenes_ingreso',
+                'cargos_documento.examenes_periodicos',
+                'cargos_documento.examenes_retiro'
+            );
+
+        console.log('🔵 [BACKEND] Found cargos:', cargos.length);
+
+        if (cargos.length === 0) {
+            console.log('🟡 [BACKEND] No cargos found for empresaId:', empresaId);
+            return res.json({
+                success: true,
+                filas: [],
+                resumen: {
+                    totalCargos: 0,
+                    totalTrabajadores: 0,
+                    totalExamenes: 0,
+                    porAgendar: 0
+                }
+            });
+        }
+
+        // Helper para parsear JSON
+        const parseJson = (field) => {
+            if (!field) return null;
+            try { return typeof field === 'string' ? JSON.parse(field) : field; }
+            catch { return null; }
+        };
+
+        // EXÁMENES DE RETIRO COMUNES
+        const EXAMENES_RETIRO_CODIGOS = ['EMO', 'EMOA', 'EMOMP', 'AUD', 'ESP'];
+
+        // Agrupar exámenes por área para determinar nombre del paquete
+        const examenesPorArea = {};
+        const filas = [];
+        let totalTrabajadores = 0;
+
+        // Primera pasada: Obtener exámenes de cada cargo
+        const cargosConExamenes = [];
+        for (const cargo of cargos) {
+            const riesgos = await db('riesgos_cargo')
+                .where('cargo_id', cargo.id)
+                .select('*');
+
+            const cargoParaServicio = {
+                cargoName: cargo.nombre_cargo,
+                trabajaAlturas: cargo.trabaja_alturas,
+                manipulaAlimentos: cargo.manipula_alimentos,
+                conduceVehiculo: cargo.conduce_vehiculo,
+                trabajaEspaciosConfinados: cargo.trabaja_espacios_confinados,
+                gesSeleccionados: riesgos.map(r => ({
+                    riesgo: r.tipo_riesgo,
+                    ges: r.descripcion_riesgo,
+                    niveles: {
+                        deficiencia: { value: r.nivel_deficiencia },
+                        exposicion: { value: r.nivel_exposicion },
+                        consecuencia: { value: r.nivel_consecuencia }
+                    }
+                }))
+            };
+
+            const controles = riesgosService.consolidarControlesCargo(cargoParaServicio);
+            const medicoOverrides = {
+                examenes_ingreso: parseJson(cargo.examenes_ingreso),
+                examenes_periodicos: parseJson(cargo.examenes_periodicos),
+                examenes_retiro: parseJson(cargo.examenes_retiro)
+            };
+
+            // Determinar exámenes de ingreso
+            let examenesIngreso = [];
+            if (medicoOverrides.examenes_ingreso && medicoOverrides.examenes_ingreso.length > 0) {
+                examenesIngreso = medicoOverrides.examenes_ingreso.map(ex => ({
+                    codigo: ex.codigo || ex.nombre?.substring(0, 4).toUpperCase(),
+                    nombre: ex.nombre,
+                    periodicidadMeses: ex.periodicidadMeses || 12,
+                    periodicidad: ex.periodicidad || 'Al ingreso'
+                }));
+            } else {
+                examenesIngreso = controles.consolidado.examenes.map(codigoExamen => {
+                    const detalle = EXAM_DETAILS[codigoExamen];
+                    return {
+                        codigo: codigoExamen,
+                        nombre: detalle?.fullName || codigoExamen,
+                        periodicidadMeses: controles.consolidado.periodicidadMinima,
+                        periodicidad: 'Al ingreso'
+                    };
+                });
+            }
+
+            // Determinar exámenes periódicos
+            let examenesPeriodicos = [];
+            if (medicoOverrides.examenes_periodicos && medicoOverrides.examenes_periodicos.length > 0) {
+                examenesPeriodicos = medicoOverrides.examenes_periodicos.map(ex => ({
+                    codigo: ex.codigo || ex.nombre?.substring(0, 4).toUpperCase(),
+                    nombre: ex.nombre,
+                    periodicidadMeses: ex.periodicidadMeses || 12,
+                    periodicidad: formatearPeriodicidad(ex.periodicidadMeses || 12)
+                }));
+            } else {
+                examenesPeriodicos = controles.consolidado.examenes.map(codigoExamen => {
+                    const detalle = EXAM_DETAILS[codigoExamen];
+                    return {
+                        codigo: codigoExamen,
+                        nombre: detalle?.fullName || codigoExamen,
+                        periodicidadMeses: controles.consolidado.periodicidadMinima,
+                        periodicidad: formatearPeriodicidad(controles.consolidado.periodicidadMinima)
+                    };
+                });
+            }
+
+            // Determinar exámenes de retiro
+            let examenesRetiro = [];
+            if (medicoOverrides.examenes_retiro && medicoOverrides.examenes_retiro.length > 0) {
+                examenesRetiro = medicoOverrides.examenes_retiro.map(ex => ({
+                    codigo: ex.codigo || ex.nombre?.substring(0, 4).toUpperCase(),
+                    nombre: ex.nombre,
+                    periodicidadMeses: 0,
+                    periodicidad: 'Al retiro'
+                }));
+            } else {
+                examenesRetiro = examenesIngreso.filter(ex => 
+                    EXAMENES_RETIRO_CODIGOS.includes(ex.codigo)
+                ).map(ex => ({
+                    ...ex,
+                    periodicidad: 'Al retiro'
+                }));
+            }
+
+            const area = cargo.area || 'General';
+            if (!examenesPorArea[area]) {
+                examenesPorArea[area] = [];
+            }
+            
+            const examenesCodigosIngreso = examenesIngreso.map(e => e.codigo).sort().join(',');
+            examenesPorArea[area].push({
+                cargoId: cargo.id,
+                cargoNombre: cargo.nombre_cargo,
+                examenesCodigosIngreso
+            });
+
+            cargosConExamenes.push({
+                ...cargo,
+                area,
+                examenesIngreso,
+                examenesPeriodicos,
+                examenesRetiro,
+                examenesCodigosIngreso
+            });
+        }
+
+        console.log('🔵 [BACKEND] Processing cargos con examenes:', cargosConExamenes.length);
+
+        // Segunda pasada: Crear filas por cargo (no por trabajador)
+        for (const cargoData of cargosConExamenes) {
+            const area = cargoData.area;
+            const cargosEnArea = examenesPorArea[area];
+            
+            // Verificar si todos los cargos del área tienen los mismos exámenes
+            const todosIguales = cargosEnArea.every(c => 
+                c.examenesCodigosIngreso === cargoData.examenesCodigosIngreso
+            );
+            
+            // Determinar nombre del paquete
+            let nombrePaquete;
+            if (todosIguales && cargosEnArea.length > 1) {
+                nombrePaquete = `Paquete ${area}`;
+            } else {
+                nombrePaquete = `Paquete ${cargoData.nombre_cargo}`;
+            }
+
+            const numTrabajadores = cargoData.num_trabajadores || 1;
+            totalTrabajadores += numTrabajadores;
+
+            // Obtener agendamientos reales de este cargo desde BD
+            let agendamientos = [];
+            const tableExists = await db.schema.hasTable('agendamientos_examenes');
+
+            if (tableExists) {
+                agendamientos = await db('agendamientos_examenes')
+                    .where('empresa_id', empresaId)
+                    .where('cargo_nombre', cargoData.nombre_cargo)
+                    .select('*');
+            }
+
+            // Agrupar agendamientos por trabajador
+            const trabajadoresMap = {};
+            agendamientos.forEach(ag => {
+                const key = ag.trabajador_nombre;
+                if (!trabajadoresMap[key]) {
+                    trabajadoresMap[key] = {
+                        nombre: ag.trabajador_nombre,
+                        cedula: null, // Extraer de observaciones si está
+                        examenes: [],
+                        ultimoEstado: ag.estado,
+                        ultimaFecha: ag.fecha_examen
+                    };
+
+                    // Intentar extraer cédula de observaciones
+                    if (ag.observaciones) {
+                        const cedulaMatch = ag.observaciones.match(/\[ID:\s*[^\s]+\s+(\d+)\]/);
+                        if (cedulaMatch) {
+                            trabajadoresMap[key].cedula = cedulaMatch[1];
+                        }
+                    }
+                }
+                trabajadoresMap[key].examenes.push(ag);
+                // Actualizar estado (prioridad: completado > agendado > por_agendar)
+                if (ag.estado === 'completado') {
+                    trabajadoresMap[key].ultimoEstado = 'completado';
+                } else if (ag.estado === 'agendado' && trabajadoresMap[key].ultimoEstado !== 'completado') {
+                    trabajadoresMap[key].ultimoEstado = 'agendado';
+                }
+            });
+
+            // Generar lista de trabajadores (usar datos reales si existen)
+            const trabajadores = [];
+            const trabajadoresReales = Object.values(trabajadoresMap);
+
+            // Primero agregar trabajadores con agendamientos reales
+            trabajadoresReales.forEach((trab, idx) => {
+                const estadoLabel = trab.ultimoEstado === 'completado' ? 'Completado'
+                                  : trab.ultimoEstado === 'agendado' ? 'Agendado'
+                                  : 'Por agendar';
+
+                trabajadores.push({
+                    id: `trab-${cargoData.id}-${idx + 1}`,
+                    numero: idx + 1,
+                    nombre: trab.nombre,
+                    cedula: trab.cedula,
+                    estado: trab.ultimoEstado,
+                    estadoLabel: estadoLabel,
+                    vencimiento: trab.ultimaFecha || '--',
+                    numExamenesAgendados: trab.examenes.length
+                });
+            });
+
+            // Completar con trabajadores placeholder hasta alcanzar numTrabajadores
+            for (let i = trabajadores.length + 1; i <= numTrabajadores; i++) {
+                trabajadores.push({
+                    id: `trab-${cargoData.id}-${i}`,
+                    numero: i,
+                    nombre: null, // Será mostrado como "Trabajador #i" en frontend
+                    cedula: null,
+                    estado: 'por_agendar',
+                    estadoLabel: 'Por agendar',
+                    vencimiento: '--'
+                });
+            }
+
+            // Una fila por cargo
+            filas.push({
+                id: `cargo-${cargoData.id}`,
+                cargoId: cargoData.id,
+                cargoNombre: cargoData.nombre_cargo,
+                area: area,
+                paqueteNombre: nombrePaquete,
+                numTrabajadores: numTrabajadores,
+                numExamenes: cargoData.examenesIngreso.length,
+                trabajadores: trabajadores,
+                examenesIngreso: cargoData.examenesIngreso,
+                examenesPeriodicos: cargoData.examenesPeriodicos,
+                examenesRetiro: cargoData.examenesRetiro,
+                estado: 'por_agendar',
+                estadoLabel: 'Por agendar'
+            });
+        }
+
+        // Resumen
+        const totalExamenes = filas.reduce((sum, f) => sum + (f.numExamenes * f.numTrabajadores), 0);
+
+        console.log('🔵 [BACKEND] Generated filas:', filas.length);
+        console.log('🔵 [BACKEND] Total trabajadores:', totalTrabajadores);
+        console.log('🔵 [BACKEND] Sample fila:', filas[0] ? {
+            cargo: filas[0].cargoNombre,
+            area: filas[0].area,
+            paquete: filas[0].paqueteNombre,
+            trabajadores: filas[0].trabajadores.length,
+            examenesIngreso: filas[0].examenesIngreso.length,
+            examenesPeriodicos: filas[0].examenesPeriodicos.length
+        } : 'No filas');
+
+        res.json({
+            success: true,
+            filas,
+            cargos: cargos.map(c => ({
+                id: c.id,
+                nombre: c.nombre_cargo,
+                area: c.area,
+                numTrabajadores: c.num_trabajadores
+            })),
+            resumen: {
+                totalCargos: filas.length,
+                totalTrabajadores,
+                totalExamenes,
+                porAgendar: totalTrabajadores,
+                vencidos: 0,
+                proximos: 0,
+                alDia: 0
+            }
+        });
+
+    } catch (error) {
+        console.error('🔴 [BACKEND] Error al obtener tabla de examenes:', error);
+        console.error('🔴 [BACKEND] Stack:', error.stack);
+        res.status(500).json({
+            success: false,
+            error: 'Error al cargar los examenes',
+            message: error.message
+        });
+    }
+}
+
 export default {
     getExamenesByEmpresa,
     getExamenesByCargo,
     getMapaCalorNR,
-    getDashboardKPIs
+    getDashboardKPIs,
+    getExamenesTabla
 };
