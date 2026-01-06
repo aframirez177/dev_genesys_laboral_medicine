@@ -10,6 +10,7 @@ class ProfesiogramaViewer {
         this.totalPages = 0;
         this.viewer = null;
         this.pages = [];
+        this.isPrinting = false; // Prevenir doble ejecución de print
 
         this.init();
     }
@@ -75,13 +76,14 @@ class ProfesiogramaViewer {
         const btnNext = document.getElementById('btn-next');
         btnNext.addEventListener('click', () => this.nextPage());
 
-        // Print button
+        // Print button - con prevención de doble ejecución
         const btnPrint = document.getElementById('btn-print');
-        btnPrint.addEventListener('click', () => this.print());
-
-        // Export PDF button
-        const btnExportPDF = document.getElementById('btn-export-pdf');
-        btnExportPDF.addEventListener('click', () => this.exportPDF());
+        if (btnPrint) {
+            btnPrint.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.print();
+            }, { once: false });
+        }
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
@@ -196,81 +198,18 @@ class ProfesiogramaViewer {
     }
 
     print() {
-        window.print();
-    }
-
-    async exportPDF() {
-        // Get profesiograma ID from URL (support both 'id' and 'documento_id' params)
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id') || urlParams.get('documento_id');
-
-        if (!id) {
-            alert('No se encontró el ID del profesiograma');
+        // Prevenir doble ejecución
+        if (this.isPrinting) {
             return;
         }
 
-        try {
-            const button = document.getElementById('btn-export-pdf');
-            const originalText = button.innerHTML;
+        this.isPrinting = true;
+        window.print();
 
-            // Show loading state
-            button.disabled = true;
-            button.innerHTML = `
-                <svg class="btn-icon btn-icon-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 6v6l4 2"></path>
-                </svg>
-                Generando PDF...
-            `;
-
-            // Call backend to generate PDF
-            const response = await fetch(`/api/profesiograma/${id}/export-pdf`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Error al generar PDF');
-            }
-
-            // Download PDF
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = `profesiograma_${id}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-
-            // Restore button
-            button.disabled = false;
-            button.innerHTML = originalText;
-
-            // Show success message
-            alert('PDF generado exitosamente');
-
-        } catch (error) {
-            console.error('Error al exportar PDF:', error);
-            alert('Error al generar el PDF. Por favor intente nuevamente.');
-
-            // Restore button
-            const button = document.getElementById('btn-export-pdf');
-            button.disabled = false;
-            button.innerHTML = `
-                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="12" y1="18" x2="12" y2="12"></line>
-                    <line x1="9" y1="15" x2="15" y2="15"></line>
-                </svg>
-                Exportar PDF
-            `;
-        }
+        // Reset después de un breve delay para permitir nuevo print
+        setTimeout(() => {
+            this.isPrinting = false;
+        }, 1000);
     }
 
     async loadData() {

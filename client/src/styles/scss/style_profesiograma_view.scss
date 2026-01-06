@@ -203,7 +203,7 @@ body {
     scroll-behavior: smooth;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    height: calc(100vh - 18rem); // Nav bar + footer nav
+    height: calc(100vh - 13rem); // Nav bar (~7rem) + footer nav (~6rem)
 
     // Hide scrollbar but keep functionality
     &::-webkit-scrollbar {
@@ -235,20 +235,21 @@ body {
     flex-shrink: 0;
     scroll-snap-align: start;
     display: flex;
-    align-items: center;
+    align-items: flex-start; // Contenido alineado arriba
     justify-content: center;
-    padding: $spacing-xxl $spacing-xl;
+    padding: $spacing-lg $spacing-xl; // Reducido de xxl a lg
     background-color: white;
+    overflow-y: auto; // Permitir scroll vertical en la página
 }
 
 .page-content {
     width: 100%;
     max-width: 120rem; // 1200px
-    max-height: calc(100vh - 12rem); // Altura del viewport menos nav (12rem aprox)
+    height: auto; // Sin max-height fijo, fluir natural
     margin: 0 auto;
-    overflow-y: auto; // Scroll vertical si el contenido es más alto
+    overflow-y: visible; // Sin scroll interno, el scroll es del .page
     overflow-x: hidden;
-    padding-right: 1rem; // Espacio para el scrollbar
+    padding: $spacing-md; // Padding interno
 
     // Estilo del scrollbar
     &::-webkit-scrollbar {
@@ -1179,44 +1180,63 @@ body {
     // - Página 2: Exámenes + EPP + Aptitudes + Condiciones
     // ==========================================
 
-    // Ficha general
-    .cargo-ficha {
-        page-break-inside: auto !important;
-        margin-bottom: 0;
-        box-shadow: none !important;
-        border-width: 0.2rem;
-    }
+    // ==========================================
+    // CARGO FICHA - Estilos de impresión
+    // Selectores con máxima especificidad para sobrescribir estilos base
+    // ==========================================
 
-    // PÁGINA 1 DE CADA FICHA: Inicia en nueva página
-    .cargo-ficha-pagina-1 {
-        page-break-before: always !important; // Nueva página antes de cada cargo
-        page-break-after: always !important;  // Salto después para separar de página 2
+    // Ficha general - sin bordes verdes en impresión
+    .page-protocolo-cargo #cargos-container .cargo-ficha {
         page-break-inside: auto;
+        margin-bottom: 0;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+        padding: 1.5rem;
     }
 
-    // PÁGINA 2 DE CADA FICHA: Continuación
-    .cargo-ficha-pagina-2 {
-        page-break-before: always !important; // Nueva página para protocolo médico
+    // PÁGINA 1 DE CADA FICHA - sin bordes
+    .page-protocolo-cargo #cargos-container .cargo-ficha.cargo-ficha-pagina-1 {
+        page-break-before: always;
+        page-break-after: always;
+        page-break-inside: auto;
+        border: none;
+        border-bottom: none;
+    }
+
+    // PÁGINA 2 DE CADA FICHA - sin bordes
+    .page-protocolo-cargo #cargos-container .cargo-ficha.cargo-ficha-pagina-2 {
+        page-break-before: always;
         page-break-after: auto;
         page-break-inside: auto;
+        padding-top: 0;
+        border: none;
+        border-top: none;
     }
 
     // Header del cargo debe quedarse junto
     .cargo-header {
         page-break-inside: avoid;
         page-break-after: avoid;
+        border-bottom: none;
     }
 
-    // Header de continuación (página 2)
-    .cargo-header-continuacion {
-        background-color: color.adjust($primary, $lightness: 35%) !important;
+    // Header de continuación (página 2) - SIN margins negativos que causan corte
+    .page-protocolo-cargo #cargos-container .cargo-ficha.cargo-ficha-pagina-2 .cargo-header-continuacion {
+        background-color: color.adjust($primary, $lightness: 35%);
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
+        margin: 0;
+        margin-bottom: 1.6rem;
+        padding: 1.2rem 2rem;
+        border: none;
+        border-radius: 0;
+        border-bottom: none;
     }
 
     // Secciones dentro del cargo
     .cargo-section {
-        page-break-inside: auto; // Permitir división si es muy larga
+        page-break-inside: auto;
     }
 
     // Título de sección debe quedarse con su contenido
@@ -1241,11 +1261,11 @@ body {
     }
 
     thead {
-        display: table-header-group; // Repetir header en cada página
+        display: table-header-group;
     }
 
     tbody tr {
-        page-break-inside: avoid; // No dividir filas
+        page-break-inside: avoid;
         page-break-after: auto;
     }
 
@@ -1261,9 +1281,8 @@ body {
             page-break-inside: avoid;
         }
 
-        // Asegurar que los chulitos se vean
         .check-cell {
-            color: $success !important;
+            color: $success;
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;
         }
@@ -1278,21 +1297,22 @@ body {
         font-size: 2.4rem;
     }
 
-    // Remove shadows and transitions for print
-    // También asegurar que nada oculte contenido
-    * {
-        box-shadow: none !important;
-        transition: none !important;
+    // Estilos globales de impresión
+    .profesiograma-viewer *,
+    .page *,
+    .page-content * {
+        box-shadow: none;
+        transition: none;
     }
 
-    // Asegurar overflow visible para todos los contenedores principales
+    // Contenedores principales - overflow visible
     .profesiograma-viewer,
     .page,
     .page-content,
     #cargos-container {
-        overflow: visible !important;
-        max-height: none !important;
-        height: auto !important;
+        overflow: visible;
+        max-height: none;
+        height: auto;
     }
 
     // Ensure backgrounds print
