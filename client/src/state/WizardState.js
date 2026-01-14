@@ -918,13 +918,18 @@ export class WizardState {
               idGes: gesIndex + 1000 + (index * 100), // Temporary ID for imported GES
               nombre: gesName,
               categoria: categoria,
-              // ✅ Formato que espera el wizard UI (ND, NE, NC, NP, NR)
+              // ✅ Formato dual: UI (ND/NE/NC) + exportForSubmission (deficiencia/exposicion/consecuencia)
               niveles: {
+                // Formato corto para UI
                 ND: ndValue,
                 NE: neValue,
                 NC: ncValue,
                 NP: npValue,
-                NR: nrValue
+                NR: nrValue,
+                // Formato largo para exportForSubmission()
+                deficiencia: { value: ndValue },
+                exposicion: { value: neValue },
+                consecuencia: { value: ncValue }
               },
               controles: this._parseControlesImport(gesItem.controles)
             };
