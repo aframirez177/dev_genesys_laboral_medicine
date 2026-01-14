@@ -42,19 +42,6 @@
   <div data-beasties-container>
     <!-- Main Content (header removido para UX enfocada) -->
     <main class="wizard-page">
-    <!-- Logo simple en progress bar -->
-    <div class="wizard-logo-bar">
-      <a href="../index.html" class="wizard-logo-link" aria-label="Volver al inicio">
-        <img
-          src="../assets/images/logo_negro_vectores.svg"
-          alt="Genesys Laboral Medicine"
-          class="wizard-logo"
-          width="120"
-          height="36"
-        />
-      </a>
-    </div>
-
     <!-- Wizard Container -->
     <section class="wizard-section">
       <div class="wizard-section__container">
@@ -206,6 +193,61 @@
         </div>
       </div>
     </section>
+
+    <!-- Import JSON Modal -->
+    <div id="import-json-modal" class="wizard-modal" role="dialog" aria-modal="true" aria-labelledby="import-modal-title" hidden>
+      <div class="wizard-modal__backdrop"></div>
+      <div class="wizard-modal__content">
+        <div class="wizard-modal__header">
+          <h2 id="import-modal-title" class="wizard-modal__title">
+            <i class="fas fa-file-import"></i>
+            Importar desde JSON
+          </h2>
+          <button type="button" class="wizard-modal__close" aria-label="Cerrar modal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="wizard-modal__body">
+          <p class="wizard-modal__description">
+            Sube un archivo JSON generado por la IA con los datos de la matriz de riesgos.
+            Esto cargara automaticamente la informacion de la empresa, cargos y riesgos.
+          </p>
+
+          <div class="wizard-import-dropzone" id="import-dropzone">
+            <i class="fas fa-cloud-upload-alt wizard-import-dropzone__icon"></i>
+            <p class="wizard-import-dropzone__text">
+              Arrastra tu archivo JSON aqui o
+              <label class="wizard-import-dropzone__label">
+                <span>selecciona un archivo</span>
+                <input type="file" id="import-file-input" accept=".json,application/json" hidden />
+              </label>
+            </p>
+            <p class="wizard-import-dropzone__hint">Solo archivos .json</p>
+          </div>
+
+          <div id="import-preview" class="wizard-import-preview" hidden>
+            <h3 class="wizard-import-preview__title">Vista previa</h3>
+            <div id="import-preview-content" class="wizard-import-preview__content">
+              <!-- Preview will be injected here -->
+            </div>
+          </div>
+
+          <div id="import-warnings" class="wizard-import-warnings" hidden>
+            <h4><i class="fas fa-exclamation-triangle"></i> Advertencias</h4>
+            <ul id="import-warnings-list"></ul>
+          </div>
+        </div>
+        <div class="wizard-modal__footer">
+          <button type="button" class="wizard-modal__btn wizard-modal__btn--cancel" id="btn-cancel-import">
+            Cancelar
+          </button>
+          <button type="button" class="wizard-modal__btn wizard-modal__btn--confirm" id="btn-confirm-import" disabled>
+            <i class="fas fa-check"></i>
+            Importar datos
+          </button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- FAQ Toggle Script (inline for simplicity) -->

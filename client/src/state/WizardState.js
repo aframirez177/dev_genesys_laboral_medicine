@@ -770,6 +770,250 @@ export class WizardState {
     this.updateGESControles(cargoIndex, gesIndex, controles);
   }
 
+  // ==================== DATA IMPORT ====================
+
+  /**
+   * Import data from external JSON (e.g., from AI analysis of Excel/PDF)
+   * Validates and loads the data into the wizard state
+   * @param {object} jsonData - Data in the format expected by the wizard
+   * @returns {object} - { success: boolean, message: string, warnings?: string[], cargosImportados?: number, gesImportados?: number }
+   */
+  importFromJSON(jsonData) {
+    const warnings = [];
+
+    try {
+      // Validate basic structure
+      if (!jsonData) {
+        return { success: false, message: 'El archivo JSON está vacío' };
+      }
+
+      // Extract userData and formData (support both direct format and nested)
+      const userData = jsonData.userData || jsonData;
+      const formData = jsonData.formData || jsonData;
+      const cargos = formData.cargos || [];
+
+      // === IMPORT EMPRESA INFO ===
+      if (userData.nombreEmpresa && userData.nombreEmpresa.length >= 3) {
+        this.data.formData.nombreEmpresa = userData.nombreEmpresa;
+      } else if (userData.nombreEmpresa) {
+        warnings.push('Nombre de empresa muy corto (mínimo 3 caracteres)');
+      }
+
+      if (userData.nit) {
+        const nitClean = userData.nit.replace(/[^0-9]/g, '');
+        if (/^\d{9,10}$/.test(nitClean)) {
+          this.data.formData.nit = nitClean;
+        } else {
+          warnings.push('NIT inválido (debe tener 9-10 dígitos)');
+        }
+      }
+
+      if (userData.email) {
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.email)) {
+          this.data.formData.email = userData.email;
+        } else {
+          warnings.push('Email inválido');
+        }
+      }
+
+      // Optional fields
+      if (userData.ciiuSeccion) this.data.formData.ciiuSeccion = userData.ciiuSeccion;
+      if (userData.ciiuDivision) this.data.formData.ciiuDivision = userData.ciiuDivision;
+      if (userData.ciudad) this.data.formData.ciudad = userData.ciudad;
+
+      // === IMPORT CARGOS ===
+      if (!cargos || cargos.length === 0) {
+        warnings.push('No se encontraron cargos en el JSON');
+      } else {
+        // Clear existing cargos
+        this.data.formData.cargos = [];
+        this.data.analytics.cargoCount = 0;
+        this.data.analytics.gesCount = 0;
+
+        cargos.forEach((cargo, index) => {
+          const cargoName = cargo.cargoName || cargo.nombre || `Cargo ${index + 1}`;
+
+          // Validate cargo
+          if (cargoName.length < 3) {
+            warnings.push(`Cargo ${index + 1}: nombre muy corto`);
+            return;
+          }
+
+          const newCargo = {
+            nombre: cargoName,
+            descripcion: cargo.descripcionTareas || cargo.descripcion || '',
+            numPersonas: cargo.numTrabajadores || cargo.numPersonas || 1,
+            area: cargo.area || 'General',
+            zona: cargo.zona || 'Principal',
+            tareasRutinarias: cargo.tareasRutinarias || false,
+            manipulaAlimentos: cargo.manipulaAlimentos || false,
+            trabajaAlturas: cargo.trabajaAlturas || false,
+            trabajaEspaciosConfinados: cargo.trabajaEspaciosConfinados || false,
+            conduceVehiculo: cargo.conduceVehiculo || false,
+            ges: [],
+            gesSeleccionados: []
+          };
+
+          // Import GES/riesgos
+          const gesArray = cargo.gesSeleccionados || cargo.ges || [];
+
+          if (gesArray.length === 0) {
+            warnings.push(`Cargo "${cargoName}": no tiene riesgos asignados`);
+          }
+
+          gesArray.forEach((gesItem, gesIndex) => {
+            const gesName = gesItem.ges || gesItem.nombre || `Riesgo ${gesIndex + 1}`;
+            const categoriaRaw = gesItem.riesgo || gesItem.categoria || 'Otros Riesgos';
+
+            // Mapeo de nombres simplificados (del prompt) a nombres de BD
+            const categoriaMap = {
+              'Físico': 'Riesgo Físico',
+              'Químico': 'Riesgo Químico',
+              'Biológico': 'Riesgo Biológico',
+              'Biomecánico': 'Riesgo Biomecánico',
+              'Psicosocial': 'Riesgo Psicosocial',
+              'Mecánico': 'Condiciones de Seguridad',
+              'Eléctrico': 'Condiciones de Seguridad',
+              'Locativo': 'Condiciones de Seguridad',
+              'Seguridad': 'Condiciones de Seguridad',
+              'Natural': 'Fenómenos Naturales',
+              'Tecnológico': 'Riesgo Tecnológico',
+              // Nombres completos (por si ya vienen correctos)
+              'Riesgo Físico': 'Riesgo Físico',
+              'Riesgo Químico': 'Riesgo Químico',
+              'Riesgo Biológico': 'Riesgo Biológico',
+              'Riesgo Biomecánico': 'Riesgo Biomecánico',
+              'Riesgo Psicosocial': 'Riesgo Psicosocial',
+              'Condiciones de Seguridad': 'Condiciones de Seguridad',
+              'Fenómenos Naturales': 'Fenómenos Naturales',
+              'Riesgo Tecnológico': 'Riesgo Tecnológico'
+            };
+            const categoria = categoriaMap[categoriaRaw] || categoriaRaw;
+
+            // Parse niveles
+            const niveles = gesItem.niveles || {};
+
+            // Helper to parse nivel value
+            const parseNivel = (nivel) => {
+              if (!nivel) return null;
+              if (typeof nivel === 'number') return nivel;
+              if (typeof nivel === 'object' && nivel.value !== undefined) return nivel.value;
+              return parseInt(nivel) || null;
+            };
+
+            const ndValue = parseNivel(niveles.deficiencia) || 2;
+            const neValue = parseNivel(niveles.exposicion) || 2;
+            const ncValue = parseNivel(niveles.consecuencia) || 25;
+
+            // Build nivel objects with labels
+            const ndLabels = { 1: 'Bajo / N/A', 2: 'Medio', 6: 'Alto', 10: 'Muy Alto' };
+            const neLabels = { 1: 'Esporádica (EE)', 2: 'Ocasional (EO)', 3: 'Frecuente (EF)', 4: 'Continua (EC)' };
+            const ncLabels = { 10: 'Leve', 25: 'Grave', 60: 'Muy Grave', 100: 'Mortal o Catastrófica' };
+
+            // Calcular NP y NR
+            const npValue = ndValue * neValue;
+            const nrValue = npValue * ncValue;
+
+            const newGES = {
+              idGes: gesIndex + 1000 + (index * 100), // Temporary ID for imported GES
+              nombre: gesName,
+              categoria: categoria,
+              // ✅ Formato que espera el wizard UI (ND, NE, NC, NP, NR)
+              niveles: {
+                ND: ndValue,
+                NE: neValue,
+                NC: ncValue,
+                NP: npValue,
+                NR: nrValue
+              },
+              controles: this._parseControlesImport(gesItem.controles)
+            };
+
+            // ✅ FIX: Guardar en AMBOS arrays para compatibilidad con UI
+            // La UI usa gesSeleccionados para mostrar, ges para validación
+            newCargo.ges.push(newGES);
+            newCargo.gesSeleccionados.push(newGES);
+            this.data.analytics.gesCount++;
+          });
+
+          this.data.formData.cargos.push(newCargo);
+          this.data.analytics.cargoCount++;
+        });
+      }
+
+      // Save and notify
+      this.saveToStorage();
+      this.notify();
+
+      const cargosImportados = this.data.formData.cargos.length;
+      const gesImportados = this.data.formData.cargos.reduce((sum, c) => sum + c.ges.length, 0);
+
+      if (warnings.length > 0) {
+        return {
+          success: true,
+          message: `Importación completada con ${warnings.length} advertencia(s)`,
+          warnings: warnings,
+          cargosImportados,
+          gesImportados
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Importación exitosa',
+        cargosImportados,
+        gesImportados
+      };
+
+    } catch (error) {
+      console.error('[WizardState] Error importing JSON:', error);
+      return {
+        success: false,
+        message: 'Error al procesar el archivo JSON: ' + error.message
+      };
+    }
+  }
+
+  /**
+   * Helper: Parse controles from various formats
+   * El wizard UI usa formato GTC 45: fuente, medio, individuo
+   * @private
+   */
+  _parseControlesImport(controles) {
+    if (!controles) {
+      return {
+        fuente: '',
+        medio: '',
+        individuo: ''
+      };
+    }
+
+    // If already in GTC 45 format (fuente, medio, individuo) - return as is
+    if (controles.fuente !== undefined || controles.medio !== undefined || controles.individuo !== undefined) {
+      return {
+        fuente: controles.fuente || '',
+        medio: controles.medio || '',
+        individuo: controles.individuo || ''
+      };
+    }
+
+    // If in ISO 45001 format, convert to GTC 45
+    if (controles.eliminacion !== undefined) {
+      return {
+        fuente: [controles.eliminacion, controles.sustitucion].filter(Boolean).join(' | ') || '',
+        medio: controles.ingenieria || '',
+        individuo: [controles.administrativos, controles.epp].filter(Boolean).join(' | ') || ''
+      };
+    }
+
+    // Default empty
+    return {
+      fuente: '',
+      medio: '',
+      individuo: ''
+    };
+  }
+
   // ==================== DATA EXPORT ====================
 
   /**

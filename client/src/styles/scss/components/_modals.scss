@@ -564,3 +564,334 @@
     transform: translateY(0) scale(1);
   }
 }
+
+// ============================================================================
+// IMPORT JSON MODAL & COMPONENTS
+// ============================================================================
+
+.wizard-logo-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: map.get(variables.$spacing, 'md');
+}
+
+.wizard-import-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.6rem;
+  font-size: 1.3rem;
+  font-weight: 500;
+  font-family: map.get(variables.$fonts, 'body');
+  color: map.get(variables.$colors, 'secondary');
+  background: transparent;
+  border: 1px solid rgba(map.get(variables.$colors, 'secondary'), 0.2);
+  border-radius: map.get(variables.$radius, 'md');
+  cursor: pointer;
+  transition: all map.get(variables.$transitions, 'fast');
+
+  &:hover {
+    background: rgba(map.get(variables.$colors, 'primary'), 0.08);
+    border-color: map.get(variables.$colors, 'primary');
+    color: map.get(variables.$colors, 'primary');
+  }
+
+  &:focus-visible {
+    outline: 2px solid map.get(variables.$colors, 'primary');
+    outline-offset: 2px;
+  }
+
+  i {
+    font-size: 1.4rem;
+  }
+
+  span {
+    @include mixins.respond-to('mobile') {
+      display: none;
+    }
+  }
+}
+
+// Import Modal specific styles (extends .wizard-modal)
+#import-json-modal {
+  &[hidden] {
+    display: none;
+  }
+
+  .wizard-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .wizard-modal__content {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    background: white;
+    border-radius: map.get(variables.$radius, 'lg');
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease;
+  }
+
+  .wizard-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 2.4rem;
+    border-bottom: 1px solid rgba(map.get(variables.$colors, 'secondary'), 0.1);
+  }
+
+  .wizard-modal__title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    font-family: map.get(variables.$fonts, 'title');
+    color: map.get(variables.$colors, 'secondary');
+    margin: 0;
+
+    i {
+      color: map.get(variables.$colors, 'primary');
+    }
+  }
+
+  .wizard-modal__close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: map.get(variables.$colors, 'text');
+    background: transparent;
+    border: none;
+    border-radius: map.get(variables.$radius, 'md');
+    cursor: pointer;
+    transition: all map.get(variables.$transitions, 'fast');
+
+    &:hover {
+      background: rgba(map.get(variables.$colors, 'danger'), 0.1);
+      color: map.get(variables.$colors, 'danger');
+    }
+  }
+
+  .wizard-modal__body {
+    padding: 2.4rem;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .wizard-modal__description {
+    font-size: 1.4rem;
+    line-height: 1.6;
+    color: map.get(variables.$colors, 'text');
+    margin-bottom: 2rem;
+  }
+
+  .wizard-modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.2rem;
+    padding: 1.6rem 2.4rem;
+    border-top: 1px solid rgba(map.get(variables.$colors, 'secondary'), 0.1);
+  }
+
+  .wizard-modal__btn {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 2rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+    font-family: map.get(variables.$fonts, 'body');
+    border-radius: map.get(variables.$radius, 'md');
+    cursor: pointer;
+    transition: all map.get(variables.$transitions, 'fast');
+
+    &--cancel {
+      color: map.get(variables.$colors, 'text');
+      background: transparent;
+      border: 1px solid rgba(map.get(variables.$colors, 'secondary'), 0.2);
+
+      &:hover {
+        background: rgba(map.get(variables.$colors, 'secondary'), 0.05);
+      }
+    }
+
+    &--confirm {
+      color: white;
+      background: map.get(variables.$colors, 'primary');
+      border: none;
+
+      &:hover:not(:disabled) {
+        filter: brightness(0.9);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// Dropzone
+.wizard-import-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  border: 2px dashed rgba(map.get(variables.$colors, 'secondary'), 0.2);
+  border-radius: map.get(variables.$radius, 'md');
+  background: rgba(map.get(variables.$colors, 'background'), 0.5);
+  text-align: center;
+  transition: all map.get(variables.$transitions, 'fast');
+  cursor: pointer;
+
+  &:hover,
+  &--dragover {
+    border-color: map.get(variables.$colors, 'primary');
+    background: rgba(map.get(variables.$colors, 'primary'), 0.05);
+  }
+
+  &__icon {
+    font-size: 4rem;
+    color: map.get(variables.$colors, 'primary');
+    margin-bottom: 1.6rem;
+    opacity: 0.7;
+  }
+
+  &__text {
+    font-size: 1.4rem;
+    color: map.get(variables.$colors, 'text');
+    margin-bottom: 0.8rem;
+  }
+
+  &__label {
+    cursor: pointer;
+
+    span {
+      color: map.get(variables.$colors, 'primary');
+      font-weight: 500;
+      text-decoration: underline;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+
+  &__hint {
+    font-size: 1.2rem;
+    color: rgba(map.get(variables.$colors, 'text'), 0.6);
+  }
+}
+
+// Preview
+.wizard-import-preview {
+  margin-top: 2rem;
+  padding: 1.6rem;
+  background: rgba(map.get(variables.$colors, 'background'), 0.8);
+  border-radius: map.get(variables.$radius, 'md');
+  border: 1px solid rgba(map.get(variables.$colors, 'secondary'), 0.1);
+
+  &__title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: map.get(variables.$colors, 'secondary');
+    margin-bottom: 1.2rem;
+  }
+
+  &__content {
+    font-size: 1.3rem;
+    line-height: 1.6;
+
+    .preview-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(map.get(variables.$colors, 'secondary'), 0.05);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .preview-label {
+        font-weight: 500;
+        color: map.get(variables.$colors, 'secondary');
+        min-width: 120px;
+      }
+
+      .preview-value {
+        color: map.get(variables.$colors, 'text');
+      }
+    }
+
+    .preview-cargos {
+      margin-top: 1rem;
+
+      .preview-cargo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.8rem;
+        background: white;
+        border-radius: map.get(variables.$radius, 'sm');
+        margin-bottom: 0.6rem;
+
+        .cargo-name {
+          font-weight: 500;
+          color: map.get(variables.$colors, 'secondary');
+        }
+
+        .cargo-ges-count {
+          font-size: 1.2rem;
+          color: map.get(variables.$colors, 'primary');
+          background: rgba(map.get(variables.$colors, 'primary'), 0.1);
+          padding: 0.2rem 0.8rem;
+          border-radius: 20px;
+        }
+      }
+    }
+  }
+}
+
+// Warnings
+.wizard-import-warnings {
+  margin-top: 1.6rem;
+  padding: 1.2rem 1.6rem;
+  background: rgba(map.get(variables.$colors, 'warning'), 0.1);
+  border-radius: map.get(variables.$radius, 'md');
+  border-left: 3px solid map.get(variables.$colors, 'warning');
+
+  h4 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: darken(map.get(variables.$colors, 'warning'), 20%);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 2rem;
+    font-size: 1.2rem;
+    color: map.get(variables.$colors, 'text');
+
+    li {
+      padding: 0.3rem 0;
+    }
+  }
+}

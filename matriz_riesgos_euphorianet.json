@@ -1,0 +1,1677 @@
+{
+  "userData": {
+    "nombreEmpresa": "EUPHORIANET S.A.S.",
+    "nit": "830067631",
+    "email": "info@euphoria-net.com",
+    "ciiuSeccion": "J",
+    "ciiuDivision": "6201",
+    "ciudad": "Bogotá",
+    "nombreContacto": "Hugo Fernando Amaya Aranguren"
+  },
+  "formData": {
+    "cargos": [
+      {
+        "cargoName": "Mensajeros",
+        "area": "MENSAJEROS",
+        "zona": "Calles",
+        "numTrabajadores": 1,
+        "descripcionTareas": "Movimiento de material: Cargue y descargue de material. Entrega de pedidos: Visita a empresas para entrega de pedidos. Entrega inmediata de productos: Desplazamiento a distintos sitios para entrega. Recolección y entrega de correspondencia: Contacto directo entre personas.",
+        "tareasRutinarias": true,
+        "manipulaAlimentos": false,
+        "trabajaAlturas": false,
+        "trabajaEspaciosConfinados": false,
+        "conduceVehiculo": true,
+        "gesSeleccionados": [
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Manipulación manual de cargas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación de autocuidado y ergonomía"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Violencia externa o amenaza de terceros (clientes, usuarios, público)",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 25,
+                "label": "Grave"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación de autocuidado"
+            }
+          },
+          {
+            "riesgo": "Condiciones de Seguridad",
+            "ges": "Tránsito (desplazamientos en vía pública o internos)",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 25,
+                "label": "Grave"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación de autocuidado y PESV | Casco, traje protector, botas, guantes"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Ruido (continuo, intermitente, impacto)",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación de autocuidado | Casco de moto"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Carga mental elevada - Alta demanda cognitiva",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Recompensar a los trabajadores por un buen rendimiento"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biológico",
+            "ges": "Virus, bacterias, hongos",
+            "niveles": {
+              "deficiencia": {
+                "value": 2,
+                "label": "Medio"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 25,
+                "label": "Grave"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Señalización lavado de manos | Implementación protocolos de bioseguridad | Vacunación",
+              "individuo": "Lavado de manos | Protocolo de bioseguridad | Tapabocas en caso de estado gripal"
+            }
+          }
+        ]
+      },
+      {
+        "cargoName": "Servicios Generales",
+        "area": "ASEO",
+        "zona": "Oficinas",
+        "numTrabajadores": 1,
+        "descripcionTareas": "Lavado y limpieza: Limpieza general, contacto directo entre personas, contacto con superficies. Almacenamiento de productos de aseo.",
+        "tareasRutinarias": true,
+        "manipulaAlimentos": false,
+        "trabajaAlturas": false,
+        "trabajaEspaciosConfinados": false,
+        "conduceVehiculo": false,
+        "gesSeleccionados": [
+          {
+            "riesgo": "Riesgo Químico",
+            "ges": "Líquidos (nieblas y rocíos)",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Uso obligatorio de guantes de caucho, usando debajo los guantes de tela"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biológico",
+            "ges": "Virus, bacterias, hongos",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Uso obligatorio de guantes de látex en el momento del aseo"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biológico",
+            "ges": "COVID-19 / SARS-CoV-2 (Enfermedad Respiratoria Aguda)",
+            "niveles": {
+              "deficiencia": {
+                "value": 2,
+                "label": "Medio"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 25,
+                "label": "Grave"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Señalización lavado de manos | Implementación protocolos de bioseguridad | Vacunación",
+              "individuo": "Lavado de manos | Protocolo de bioseguridad | Tapabocas en caso de estado gripal"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Movimientos repetitivos",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada"
+            }
+          },
+          {
+            "riesgo": "Condiciones de Seguridad",
+            "ges": "Caídas al mismo nivel",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Colocar señalización | Calzado antideslizante"
+            }
+          },
+          {
+            "riesgo": "Riesgo Tecnológico",
+            "ges": "Incendio o explosión - Presencia de materiales combustibles/inflamables",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Almacenar productos corrosivos bien ventilados"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Estrés laboral",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada"
+            }
+          }
+        ]
+      },
+      {
+        "cargoName": "Gerente General",
+        "area": "GERENCIA GENERAL",
+        "zona": "Oficina",
+        "numTrabajadores": 1,
+        "descripcionTareas": "Planificar, dirigir y controlar las actividades de la empresa. Ejecutar decisiones tomadas por la junta de socios. Revisión de procesos y tareas. Desarrollo y supervisión de proyectos. Atención a clientes. Velar por la ejecución permanente del SG-SST.",
+        "tareasRutinarias": true,
+        "manipulaAlimentos": false,
+        "trabajaAlturas": false,
+        "trabajaEspaciosConfinados": false,
+        "conduceVehiculo": false,
+        "gesSeleccionados": [
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Movimientos repetitivos",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada | Acomodamiento de puesto de trabajo"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Posturas prolongadas y mantenidas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada | Acomodamiento de puesto de trabajo | Capacitación en higiene postural"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Carga mental elevada - Alta demanda cognitiva",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Técnicas de conciencia | Mindfulness | Ejercicios de respiración"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Estrés laboral",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitaciones en adaptabilidad | Gestión del cambio | Verificación y redistribución de actividades"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Trabajo emocional intenso - Atención de público o situaciones críticas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Evaluaciones de desempeño | Capacitaciones técnicas"
+            }
+          },
+          {
+            "riesgo": "Condiciones de Seguridad",
+            "ges": "Almacenamiento inadecuado",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Mantener la planta en condiciones de aseo óptimas"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Ruido (continuo, intermitente, impacto)",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 1,
+                "label": "Esporádica (EE)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación higiene auditiva | Señalización"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Radiaciones no ionizantes (UV, IR, microondas, radiofrecuencias, láser)",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 1,
+                "label": "Esporádica (EE)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación"
+            }
+          },
+          {
+            "riesgo": "Riesgo Tecnológico",
+            "ges": "Incendio",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Señalización"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biológico",
+            "ges": "Virus, bacterias, hongos",
+            "niveles": {
+              "deficiencia": {
+                "value": 2,
+                "label": "Medio"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 25,
+                "label": "Grave"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Señalización lavado de manos | Implementación protocolos de bioseguridad | Vacunación",
+              "individuo": "Lavado de manos | Protocolo de bioseguridad | Tapabocas en caso de estado gripal"
+            }
+          }
+        ]
+      },
+      {
+        "cargoName": "Gerente Administrativo y Financiero",
+        "area": "GERENCIA GENERAL",
+        "zona": "Oficina",
+        "numTrabajadores": 1,
+        "descripcionTareas": "Gestionar los recursos administrativos y financieros de la empresa. Interacción con diferentes áreas. Revisión de procesos y tareas. Desarrollo y supervisión de proyectos. Atención a clientes. Velar por la ejecución permanente del SG-SST.",
+        "tareasRutinarias": true,
+        "manipulaAlimentos": false,
+        "trabajaAlturas": false,
+        "trabajaEspaciosConfinados": false,
+        "conduceVehiculo": false,
+        "gesSeleccionados": [
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Movimientos repetitivos",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada | Acomodamiento de puesto de trabajo"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Posturas prolongadas y mantenidas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada | Acomodamiento de puesto de trabajo | Capacitación en higiene postural"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Carga mental elevada - Alta demanda cognitiva",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Técnicas de conciencia | Mindfulness | Ejercicios de respiración"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Estrés laboral",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitaciones en adaptabilidad | Gestión del cambio | Verificación y redistribución de actividades"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Trabajo emocional intenso - Atención de público o situaciones críticas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Evaluaciones de desempeño | Capacitaciones técnicas"
+            }
+          },
+          {
+            "riesgo": "Condiciones de Seguridad",
+            "ges": "Almacenamiento inadecuado",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Mantener la planta en condiciones de aseo óptimas"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Ruido (continuo, intermitente, impacto)",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 1,
+                "label": "Esporádica (EE)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación higiene auditiva | Señalización"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Radiaciones no ionizantes (UV, IR, microondas, radiofrecuencias, láser)",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 1,
+                "label": "Esporádica (EE)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación"
+            }
+          },
+          {
+            "riesgo": "Riesgo Tecnológico",
+            "ges": "Incendio",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Señalización"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biológico",
+            "ges": "Virus, bacterias, hongos",
+            "niveles": {
+              "deficiencia": {
+                "value": 2,
+                "label": "Medio"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 25,
+                "label": "Grave"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Señalización lavado de manos | Implementación protocolos de bioseguridad | Vacunación",
+              "individuo": "Lavado de manos | Protocolo de bioseguridad | Tapabocas en caso de estado gripal"
+            }
+          }
+        ]
+      },
+      {
+        "cargoName": "Coordinador de Proyectos",
+        "area": "DESARROLLO",
+        "zona": "Oficina",
+        "numTrabajadores": 1,
+        "descripcionTareas": "Gestionar el buen funcionamiento del proyecto. Analizar y definir alcance de proyectos. Elaborar cronogramas y asignar recursos. Supervisar cumplimiento de trabajos entregados y pendientes. Interacción con clientes. Asignación de líderes de proyecto.",
+        "tareasRutinarias": true,
+        "manipulaAlimentos": false,
+        "trabajaAlturas": false,
+        "trabajaEspaciosConfinados": false,
+        "conduceVehiculo": false,
+        "gesSeleccionados": [
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Movimientos repetitivos",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada | Acomodamiento de puesto de trabajo"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Posturas prolongadas y mantenidas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada | Acomodamiento de puesto de trabajo | Capacitación en higiene postural"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Carga mental elevada - Alta demanda cognitiva",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Técnicas de conciencia | Mindfulness | Ejercicios de respiración"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Estrés laboral",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitaciones en adaptabilidad | Gestión del cambio | Verificación y redistribución de actividades"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Trabajo emocional intenso - Atención de público o situaciones críticas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Evaluaciones de desempeño | Capacitaciones técnicas"
+            }
+          },
+          {
+            "riesgo": "Condiciones de Seguridad",
+            "ges": "Almacenamiento inadecuado",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Mantener la planta en condiciones de aseo óptimas"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Ruido (continuo, intermitente, impacto)",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 1,
+                "label": "Esporádica (EE)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación higiene auditiva | Señalización"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Radiaciones no ionizantes (UV, IR, microondas, radiofrecuencias, láser)",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 1,
+                "label": "Esporádica (EE)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación"
+            }
+          },
+          {
+            "riesgo": "Riesgo Tecnológico",
+            "ges": "Incendio",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Señalización"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biológico",
+            "ges": "Virus, bacterias, hongos",
+            "niveles": {
+              "deficiencia": {
+                "value": 2,
+                "label": "Medio"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 25,
+                "label": "Grave"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Señalización lavado de manos | Implementación protocolos de bioseguridad | Vacunación",
+              "individuo": "Lavado de manos | Protocolo de bioseguridad | Tapabocas en caso de estado gripal"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Trabajo con pantalla de visualización de datos (PVD) - Más de 4 horas/día",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas | Acomodamiento de puesto de trabajo | Capacitación en ergonomía"
+            }
+          }
+        ]
+      },
+      {
+        "cargoName": "Desarrollador Web y Diseño Gráfico",
+        "area": "DESARROLLO",
+        "zona": "Oficina",
+        "numTrabajadores": 1,
+        "descripcionTareas": "Desarrollar y ejecutar aplicaciones web. Actualizar contenido de sitios web. Diseño gráfico y creativo. Documentar desarrollos según metodología. Paso de datos físicos a magnéticos - Digitación. Trabajo con Joomla, WordPress y Kentico.",
+        "tareasRutinarias": true,
+        "manipulaAlimentos": false,
+        "trabajaAlturas": false,
+        "trabajaEspaciosConfinados": false,
+        "conduceVehiculo": false,
+        "gesSeleccionados": [
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Movimientos repetitivos",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada | Acomodamiento de puesto de trabajo"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Posturas prolongadas y mantenidas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada | Acomodamiento de puesto de trabajo | Capacitación en higiene postural"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Carga mental elevada - Alta demanda cognitiva",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Técnicas de conciencia | Mindfulness | Ejercicios de respiración"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Estrés laboral",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitaciones en adaptabilidad | Gestión del cambio | Verificación y redistribución de actividades"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Trabajo emocional intenso - Atención de público o situaciones críticas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Evaluaciones de desempeño | Capacitaciones técnicas"
+            }
+          },
+          {
+            "riesgo": "Condiciones de Seguridad",
+            "ges": "Almacenamiento inadecuado",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Mantener la planta en condiciones de aseo óptimas"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Ruido (continuo, intermitente, impacto)",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 1,
+                "label": "Esporádica (EE)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación higiene auditiva | Señalización"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Radiaciones no ionizantes (UV, IR, microondas, radiofrecuencias, láser)",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 1,
+                "label": "Esporádica (EE)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación"
+            }
+          },
+          {
+            "riesgo": "Riesgo Tecnológico",
+            "ges": "Incendio",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Señalización"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biológico",
+            "ges": "Virus, bacterias, hongos",
+            "niveles": {
+              "deficiencia": {
+                "value": 2,
+                "label": "Medio"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 25,
+                "label": "Grave"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Señalización lavado de manos | Implementación protocolos de bioseguridad | Vacunación",
+              "individuo": "Lavado de manos | Protocolo de bioseguridad | Tapabocas en caso de estado gripal"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Trabajo con pantalla de visualización de datos (PVD) - Más de 4 horas/día",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas | Acomodamiento de puesto de trabajo | Capacitación en ergonomía"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Digitación prolongada o uso intensivo de teclado/mouse - Más de 4 horas/día",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas | Ejercicios de estiramiento | Capacitación en ergonomía"
+            }
+          }
+        ]
+      },
+      {
+        "cargoName": "Desarrollador Junior",
+        "area": "DESARROLLO",
+        "zona": "Oficina",
+        "numTrabajadores": 1,
+        "descripcionTareas": "Recibir especificaciones de software y convertirlas en código funcional. Conocer lenguajes y estándares de codificación. Desarrollar nuevas funcionalidades dentro de una web. Documentar desarrollos según metodología.",
+        "tareasRutinarias": true,
+        "manipulaAlimentos": false,
+        "trabajaAlturas": false,
+        "trabajaEspaciosConfinados": false,
+        "conduceVehiculo": false,
+        "gesSeleccionados": [
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Movimientos repetitivos",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada | Acomodamiento de puesto de trabajo"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Posturas prolongadas y mantenidas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas durante la jornada | Acomodamiento de puesto de trabajo | Capacitación en higiene postural"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Carga mental elevada - Alta demanda cognitiva",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Técnicas de conciencia | Mindfulness | Ejercicios de respiración"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Estrés laboral",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitaciones en adaptabilidad | Gestión del cambio | Verificación y redistribución de actividades"
+            }
+          },
+          {
+            "riesgo": "Riesgo Psicosocial",
+            "ges": "Trabajo emocional intenso - Atención de público o situaciones críticas",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 3,
+                "label": "Frecuente (EF)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Evaluaciones de desempeño | Capacitaciones técnicas"
+            }
+          },
+          {
+            "riesgo": "Condiciones de Seguridad",
+            "ges": "Almacenamiento inadecuado",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Mantener la planta en condiciones de aseo óptimas"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Ruido (continuo, intermitente, impacto)",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 1,
+                "label": "Esporádica (EE)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación higiene auditiva | Señalización"
+            }
+          },
+          {
+            "riesgo": "Riesgo Físico",
+            "ges": "Radiaciones no ionizantes (UV, IR, microondas, radiofrecuencias, láser)",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 1,
+                "label": "Esporádica (EE)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Capacitación"
+            }
+          },
+          {
+            "riesgo": "Riesgo Tecnológico",
+            "ges": "Incendio",
+            "niveles": {
+              "deficiencia": {
+                "value": 1,
+                "label": "Bajo / N/A"
+              },
+              "exposicion": {
+                "value": 2,
+                "label": "Ocasional (EO)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Señalización"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biológico",
+            "ges": "Virus, bacterias, hongos",
+            "niveles": {
+              "deficiencia": {
+                "value": 2,
+                "label": "Medio"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 25,
+                "label": "Grave"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Señalización lavado de manos | Implementación protocolos de bioseguridad | Vacunación",
+              "individuo": "Lavado de manos | Protocolo de bioseguridad | Tapabocas en caso de estado gripal"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Trabajo con pantalla de visualización de datos (PVD) - Más de 4 horas/día",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas | Acomodamiento de puesto de trabajo | Capacitación en ergonomía"
+            }
+          },
+          {
+            "riesgo": "Riesgo Biomecánico",
+            "ges": "Digitación prolongada o uso intensivo de teclado/mouse - Más de 4 horas/día",
+            "niveles": {
+              "deficiencia": {
+                "value": 6,
+                "label": "Alto"
+              },
+              "exposicion": {
+                "value": 4,
+                "label": "Continua (EC)"
+              },
+              "consecuencia": {
+                "value": 10,
+                "label": "Leve"
+              }
+            },
+            "controles": {
+              "fuente": "Ninguno",
+              "medio": "Ninguno",
+              "individuo": "Pausas activas | Ejercicios de estiramiento | Capacitación en ergonomía"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

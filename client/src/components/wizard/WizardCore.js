@@ -319,7 +319,7 @@ export class WizardCore {
 
   /**
    * 🎨 H4: Render branding header (Nivel 1)
-   * Logo + Título del wizard
+   * Logo + Título del wizard + Botón Importar JSON
    */
   renderBrandingHeader() {
     const brandingHeader = document.createElement('div');
@@ -327,9 +327,11 @@ export class WizardCore {
     brandingHeader.innerHTML = `
       <div class="wizard-branding-content">
         <div class="wizard-logo">
-          <img src="../assets/images/logo_negro_vectores.svg"
-               alt="Genesys Medicina Laboral"
-               loading="eager">
+          <a href="../index.html" aria-label="Volver al inicio">
+            <img src="../assets/images/logo_negro_vectores.svg"
+                 alt="Genesys Medicina Laboral"
+                 loading="eager">
+          </a>
         </div>
         <div class="wizard-title-group">
           <h1 class="wizard-title">
@@ -340,6 +342,12 @@ export class WizardCore {
             Genera tu matriz profesional en 6 pasos sencillos
           </p>
         </div>
+      </div>
+      <div class="wizard-header-actions">
+        <button id="btn-import-json" class="wizard-import-btn" type="button" title="Importar datos desde JSON">
+          <i class="fas fa-file-import"></i>
+          <span>Importar JSON</span>
+        </button>
       </div>
     `;
     return brandingHeader;

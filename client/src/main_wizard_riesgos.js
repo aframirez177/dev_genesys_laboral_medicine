@@ -376,11 +376,215 @@ function showPlaceholder() {
   `;
 }
 
+// =============================================================================
+// IMPORT JSON FUNCTIONALITY
+// =============================================================================
+
+/**
+ * Initialize JSON Import Modal functionality
+ */
+function initImportJSON() {
+  const modal = document.getElementById('import-json-modal');
+  const backdrop = modal?.querySelector('.wizard-modal__backdrop');
+  const closeBtn = modal?.querySelector('.wizard-modal__close');
+  const cancelBtn = document.getElementById('btn-cancel-import');
+  const confirmBtn = document.getElementById('btn-confirm-import');
+  const fileInput = document.getElementById('import-file-input');
+  const dropzone = document.getElementById('import-dropzone');
+  const preview = document.getElementById('import-preview');
+  const previewContent = document.getElementById('import-preview-content');
+  const warningsDiv = document.getElementById('import-warnings');
+  const warningsList = document.getElementById('import-warnings-list');
+
+  if (!modal) {
+    console.log('[Import JSON] Modal not found, skipping initialization');
+    return;
+  }
+
+  let pendingData = null;
+
+  // Open modal - Usar delegación de eventos ya que el botón se crea dinámicamente en WizardCore
+  document.addEventListener('click', (e) => {
+    const btnImport = e.target.closest('#btn-import-json');
+    if (btnImport) {
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      resetImportState();
+    }
+  });
+
+  // Close modal
+  const closeModal = () => {
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    resetImportState();
+  };
+
+  backdrop?.addEventListener('click', closeModal);
+  closeBtn?.addEventListener('click', closeModal);
+  cancelBtn?.addEventListener('click', closeModal);
+
+  // Reset state
+  const resetImportState = () => {
+    pendingData = null;
+    fileInput.value = '';
+    preview.hidden = true;
+    warningsDiv.hidden = true;
+    confirmBtn.disabled = true;
+    dropzone.classList.remove('wizard-import-dropzone--dragover');
+  };
+
+  // Drag and drop
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('wizard-import-dropzone--dragover');
+  });
+
+  dropzone.addEventListener('dragleave', () => {
+    dropzone.classList.remove('wizard-import-dropzone--dragover');
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('wizard-import-dropzone--dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/json') {
+      processFile(file);
+    }
+  });
+
+  // Click to upload
+  dropzone.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      processFile(file);
+    }
+  });
+
+  // Process uploaded file
+  const processFile = async (file) => {
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      // Validate structure
+      if (!data.formData && !data.cargos && !data.userData) {
+        throw new Error('El archivo no tiene la estructura esperada (userData/formData)');
+      }
+
+      pendingData = data;
+
+      // Show preview
+      const userData = data.userData || data;
+      const formData = data.formData || data;
+      const cargos = formData.cargos || [];
+
+      let previewHTML = '<div class="preview-items">';
+
+      if (userData.nombreEmpresa) {
+        previewHTML += `
+          <div class="preview-item">
+            <span class="preview-label">Empresa:</span>
+            <span class="preview-value">${userData.nombreEmpresa}</span>
+          </div>
+        `;
+      }
+
+      if (userData.nit) {
+        previewHTML += `
+          <div class="preview-item">
+            <span class="preview-label">NIT:</span>
+            <span class="preview-value">${userData.nit}</span>
+          </div>
+        `;
+      }
+
+      if (cargos.length > 0) {
+        previewHTML += `
+          <div class="preview-item">
+            <span class="preview-label">Cargos:</span>
+            <span class="preview-value">${cargos.length} cargo(s)</span>
+          </div>
+        `;
+
+        const totalGES = cargos.reduce((sum, c) => {
+          const ges = c.gesSeleccionados || c.ges || [];
+          return sum + ges.length;
+        }, 0);
+
+        previewHTML += `
+          <div class="preview-item">
+            <span class="preview-label">Riesgos:</span>
+            <span class="preview-value">${totalGES} GES en total</span>
+          </div>
+        `;
+
+        previewHTML += '<div class="preview-cargos">';
+        cargos.forEach(cargo => {
+          const cargoName = cargo.cargoName || cargo.nombre || 'Sin nombre';
+          const gesCount = (cargo.gesSeleccionados || cargo.ges || []).length;
+          previewHTML += `
+            <div class="preview-cargo">
+              <span class="cargo-name">${cargoName}</span>
+              <span class="cargo-ges-count">${gesCount} riesgos</span>
+            </div>
+          `;
+        });
+        previewHTML += '</div>';
+      }
+
+      previewHTML += '</div>';
+      previewContent.innerHTML = previewHTML;
+      preview.hidden = false;
+      confirmBtn.disabled = false;
+
+    } catch (error) {
+      console.error('[Import JSON] Error processing file:', error);
+      alert('Error al procesar el archivo: ' + error.message);
+      resetImportState();
+    }
+  };
+
+  // Confirm import
+  confirmBtn.addEventListener('click', () => {
+    if (!pendingData) return;
+
+    const wizardState = getWizardState();
+    const result = wizardState.importFromJSON(pendingData);
+
+    if (result.success) {
+      // Show warnings if any
+      if (result.warnings && result.warnings.length > 0) {
+        warningsList.innerHTML = result.warnings.map(w => `<li>${w}</li>`).join('');
+        warningsDiv.hidden = false;
+      }
+
+      // Show success message
+      alert(`${result.message}\n\nCargos importados: ${result.cargosImportados}\nRiesgos importados: ${result.gesImportados}`);
+
+      closeModal();
+
+      // Reload wizard to show imported data
+      window.location.reload();
+    } else {
+      alert('Error: ' + result.message);
+    }
+  });
+
+  console.log('[Import JSON] Initialized');
+}
+
 /**
  * Initialize on DOM ready
  */
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initWizardRiesgos);
+  document.addEventListener('DOMContentLoaded', () => {
+    initWizardRiesgos();
+    initImportJSON();
+  });
 } else {
   initWizardRiesgos();
+  initImportJSON();
 }

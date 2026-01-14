@@ -671,21 +671,17 @@ class CatalogoService {
   async validateRiesgoCategories() {
     try {
       // Categorías esperadas según Resolución 0312 de 2019 (SST Colombia)
+      // Nota: La BD usa nombres como "Riesgo Físico", "Condiciones de Seguridad", etc.
+      // Esta validación usa comparación flexible (includes/partial match)
       const expectedCategories = [
-        'Mecánico',
-        'Eléctrico',
-        'Físico',
-        'Químico',
-        'Biológico',
-        'Biomecánico',
-        'Factores Humanos',
-        'Psicosocial',
-        'Locativo',
-        'Natural',
-        'Seguridad',
-        'Otros Riesgos',
-        'Saneamiento Básico',
-        'Salud Pública'
+        'Físico',          // BD: "Riesgo Físico"
+        'Químico',         // BD: "Riesgo Químico"
+        'Biológico',       // BD: "Riesgo Biológico"
+        'Biomecánico',     // BD: "Riesgo Biomecánico"
+        'Psicosocial',     // BD: "Riesgo Psicosocial"
+        'Seguridad',       // BD: "Condiciones de Seguridad"
+        'Natural',         // BD: "Fenómenos Naturales"
+        'Tecnológico'      // BD: "Riesgo Tecnológico"
       ];
 
       // Consultar BD: obtener categorías existentes con conteo
@@ -694,28 +690,44 @@ class CatalogoService {
       // Mapear a array simple de nombres de categorías
       const existingCategories = results.map(r => r.riesgo_nombre || r.tipo_riesgo);
 
-      // Identificar categorías faltantes
-      const missingCategories = expectedCategories.filter(
-        cat => !existingCategories.includes(cat)
-      );
+      // Helper: verificar si una categoría esperada existe (comparación flexible)
+      const categoryExists = (expected) => {
+        return existingCategories.some(existing =>
+          existing && (
+            existing.toLowerCase().includes(expected.toLowerCase()) ||
+            expected.toLowerCase().includes(existing.toLowerCase().replace('riesgo ', '').replace('condiciones de ', '').replace('fenómenos ', ''))
+          )
+        );
+      };
+
+      // Helper: encontrar la categoría existente que coincide
+      const findMatchingCategory = (expected) => {
+        return results.find(r => {
+          const name = r.riesgo_nombre || r.tipo_riesgo || '';
+          return name.toLowerCase().includes(expected.toLowerCase()) ||
+                 expected.toLowerCase().includes(name.toLowerCase().replace('riesgo ', '').replace('condiciones de ', '').replace('fenómenos ', ''));
+        });
+      };
+
+      // Identificar categorías faltantes (usando comparación flexible)
+      const missingCategories = expectedCategories.filter(cat => !categoryExists(cat));
 
       // Generar detalles por categoría
       const details = expectedCategories.map(cat => {
-        const found = results.find(r =>
-          (r.riesgo_nombre || r.tipo_riesgo) === cat
-        );
+        const found = findMatchingCategory(cat);
 
         return {
           categoria: cat,
           existe: !!found,
-          cantidad_ges: found ? found.total : 0
+          cantidad_ges: found ? parseInt(found.total) : 0,
+          nombre_bd: found ? (found.riesgo_nombre || found.tipo_riesgo) : null
         };
       });
 
       const validationResult = {
         ok: missingCategories.length === 0,
         total: expectedCategories.length,
-        existing: existingCategories.length,
+        existing: details.filter(d => d.existe).length,
         missing: missingCategories,
         details,
         timestamp: new Date().toISOString()
@@ -725,6 +737,8 @@ class CatalogoService {
       if (!validationResult.ok) {
         console.warn(`⚠️  [CATÁLOGO] Categorías faltantes detectadas: ${missingCategories.join(', ')}`);
         console.warn(`⚠️  [CATÁLOGO] Esto puede causar compliance issues (Resolución 0312)`);
+      } else {
+        console.log(`✅ [CATÁLOGO] Todas las ${expectedCategories.length} categorías presentes`);
       }
 
       return validationResult;
