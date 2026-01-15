@@ -484,7 +484,8 @@ export async function getMatrizGTC45(req, res) {
                 const previewUrls = typeof documento.preview_urls === 'string'
                     ? JSON.parse(documento.preview_urls)
                     : documento.preview_urls;
-                excelUrl = previewUrls.matriz || null;
+                // Handle both object {key, url} and string formats
+                excelUrl = previewUrls.matriz?.url || previewUrls.matriz || null;
             } catch (e) {
                 console.error('Error parsing preview_urls:', e);
             }
