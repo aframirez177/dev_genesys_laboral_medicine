@@ -299,6 +299,12 @@ export class RiesgoSelector {
    * No bloquea UI, fetch asíncrono en background
    */
   async loadGESDetails(gesId) {
+    // Skip si ID es null/undefined (GES importados de JSON sin ID de BD)
+    if (gesId == null || typeof gesId !== 'number' || gesId < 1) {
+      console.log(`⚠️ GES sin ID válido (importado de JSON), skip fetch`);
+      return null;
+    }
+
     // Si ya está en cache, skip
     if (this.state.gesDetallesCache.has(gesId)) {
       console.log(`✅ GES ${gesId} ya en cache, skip fetch`);
@@ -353,6 +359,7 @@ export class RiesgoSelector {
   async preloadSelectedDetails() {
     const idsToLoad = this.state.seleccionados
       .map(g => g.id)
+      .filter(id => id != null && typeof id === 'number' && id > 0) // Excluir IDs null/undefined (GES importados de JSON)
       .filter(id => !this.state.gesDetallesCache.has(id));
 
     if (idsToLoad.length === 0) {

@@ -1833,7 +1833,7 @@ export class WizardCore {
         // Get form data from state
         const stateData = this.state.exportForSubmission();
 
-        // Construct payload EXACTLY like prototipo
+        // Construct payload
         const payload = {
           formData: stateData.formData,  // { cargos: [...] }
           userData: userData              // { nombreEmpresa, nit, email, password, nombre }
@@ -1841,7 +1841,8 @@ export class WizardCore {
 
         console.log('[WizardCore] 📦 Payload completo:', payload);
 
-        const response = await fetch('/api/flujo-ia/registrar-y-generar', {
+        // 🆕 Usar endpoint rápido que responde inmediato y genera en background
+        const response = await fetch('/api/flujo-ia/registrar-rapido', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1866,13 +1867,36 @@ export class WizardCore {
         // Clear saved state
         localStorage.removeItem('wizardState');
 
-        // Redirect to results
-        if (result.documentToken) {
-          console.log('[WizardCore] Redirigiendo a resultados.html?token=' + result.documentToken);
-          window.location.href = `../pages/resultados.html?token=${result.documentToken}`;
-        } else {
-          throw new Error('El backend no devolvió un documentToken');
+        // 🆕 Guardar sesión en localStorage para autenticación automática
+        if (result.sessionToken && result.user) {
+          // Tokens y auth
+          localStorage.setItem('authToken', result.sessionToken);
+          localStorage.setItem('genesys_token', result.sessionToken);
+
+          // Datos de usuario (múltiples keys para compatibilidad)
+          localStorage.setItem('user', JSON.stringify(result.user));
+          localStorage.setItem('genesys_user', JSON.stringify(result.user));
+
+          // Datos de empresa
+          localStorage.setItem('empresaId', result.user.empresaId);
+          localStorage.setItem('genesys_empresa', JSON.stringify({
+            id: result.user.empresaId,
+            nombre_legal: result.user.empresaNombre,
+            nit: userData.nit
+          }));
+
+          // Token del documento para seguimiento
+          if (result.documentToken) {
+            localStorage.setItem('genesys_pending_document_token', result.documentToken);
+          }
+
+          console.log('[WizardCore] 🔐 Sesión completa guardada en localStorage');
         }
+
+        // 🆕 Redirigir al dashboard (documentos se generan en background)
+        const redirectUrl = result.redirectUrl || '/pages/dashboard.html';
+        console.log('[WizardCore] 🚀 Redirigiendo a ' + redirectUrl);
+        window.location.href = redirectUrl;
 
       } catch (error) {
         console.error('[WizardCore] ❌ Error:', error);
@@ -3309,9 +3333,9 @@ export class WizardCore {
       }
     }
 
-    // If last step, submit
+    // If last step, show registration modal (collects password) then submit
     if (currentStep === 'resumen') {
-      this.handleSubmit();
+      this.handleGenerarDocumentos();
       return;
     }
 
