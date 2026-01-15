@@ -390,3 +390,355 @@ export const registrarYGenerar = async (req, res) => {
         });
     }
 };
+
+/**
+ * 🆕 ENDPOINT RÁPIDO: Registrar usuario y redirigir a dashboard
+ * Genera documentos en background sin bloquear
+ *
+ * POST /api/flujo-ia/registrar-rapido
+ *
+ * Flujo:
+ * 1. Registra empresa + usuario
+ * 2. Crea documento en estado 'pendiente'
+ * 3. Genera JWT de sesión
+ * 4. Responde inmediatamente (< 2 segundos)
+ * 5. Genera documentos en background
+ */
+import jwt from 'jsonwebtoken';
+import { getEnvVars } from '../config/env.js';
+
+const env = getEnvVars();
+const JWT_SECRET = env.JWT_SECRET || 'genesys-default-secret-change-in-production';
+
+export const registrarRapido = async (req, res) => {
+    const { formData, userData } = req.body;
+
+    console.log('🚀 [REGISTRO RÁPIDO] Iniciando...');
+    console.log(`   Empresa: ${userData?.nombreEmpresa}`);
+    console.log(`   Cargos: ${formData?.cargos?.length || 0}`);
+
+    // --- Validaciones básicas ---
+    if (!formData || !userData || !userData.email || !userData.password || !userData.nombreEmpresa || !userData.nit) {
+        return res.status(400).json({ success: false, message: 'Faltan datos requeridos.' });
+    }
+    if (!formData.cargos || !Array.isArray(formData.cargos) || formData.cargos.length === 0) {
+        return res.status(400).json({ success: false, message: 'Se requiere al menos un cargo.' });
+    }
+
+    const nombreResponsable = userData.nombreContacto || userData.nombre || userData.email || 'N/A';
+    const numCargos = formData.cargos.length;
+
+    // Calcular pricing
+    const precioBase = 30000;
+    const pricing = {
+        precioBase,
+        numCargos,
+        precioMatriz: precioBase * numCargos,
+        precioProfesiograma: precioBase * numCargos,
+        precioPerfil: precioBase * numCargos,
+        precioCotizacion: 0,
+        subtotal: precioBase * numCargos * 3,
+        total: precioBase * numCargos * 3
+    };
+
+    let trx;
+    try {
+        trx = await db.transaction();
+
+        // 1. Hash de contraseña
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(userData.password, salt);
+
+        // 2. Crear Empresa
+        let empresa;
+        const existingEmpresa = await trx('empresas').where({ nit: userData.nit }).first();
+
+        if (existingEmpresa) {
+            empresa = existingEmpresa;
+            console.log(`📋 Empresa existente: ${empresa.nombre_legal}`);
+        } else {
+            [empresa] = await trx('empresas').insert({
+                nombre_legal: userData.nombreEmpresa,
+                nit: userData.nit,
+                password_hash: passwordHash
+            }).returning('*');
+            console.log(`✅ Empresa creada: ${empresa.nombre_legal}`);
+        }
+
+        // 3. Crear Usuario
+        let user;
+        const existingUser = await trx('users').where({ email: userData.email.toLowerCase() }).first();
+
+        if (existingUser) {
+            user = existingUser;
+            console.log(`📋 Usuario existente: ${user.email}`);
+        } else {
+            const rolCliente = await trx('roles').where({ nombre: 'cliente_empresa' }).first();
+            if (!rolCliente) {
+                throw new Error("El rol 'cliente_empresa' no existe en la BD");
+            }
+
+            [user] = await trx('users').insert({
+                full_name: nombreResponsable,
+                email: userData.email.toLowerCase(),
+                password_hash: passwordHash,
+                empresa_id: empresa.id,
+                rol_id: rolCliente.id
+            }).returning('*');
+            console.log(`✅ Usuario creado: ${user.email}`);
+        }
+
+        // 4. Generar token de documento
+        const documentToken = crypto.randomBytes(32).toString('hex');
+
+        // 5. Crear documento en estado 'pendiente'
+        const [documento] = await trx('documentos_generados').insert({
+            empresa_id: empresa.id,
+            usuario_lead_id: user.id,
+            tipo_documento: 'paquete_inicial',
+            form_data: JSON.stringify(formData),
+            estado: 'pendiente',
+            token: documentToken,
+            preview_urls: '{}',
+            nombre_responsable: nombreResponsable,
+            num_cargos: numCargos,
+            pricing: JSON.stringify(pricing),
+            progreso: 0
+        }).returning('*');
+
+        console.log(`📄 Documento ${documento.id} creado (pendiente)`);
+
+        // 6. Commit de transacción
+        await trx.commit();
+
+        // 7. Generar JWT de sesión
+        const sessionToken = jwt.sign(
+            {
+                id: user.id,
+                email: user.email,
+                rol: 'cliente_empresa',
+                empresa_id: empresa.id,
+                type: 'user'
+            },
+            JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        console.log('✅ [REGISTRO RÁPIDO] Completado - Redirigiendo a dashboard');
+
+        // 8. Responder inmediatamente
+        res.json({
+            success: true,
+            message: 'Registro exitoso. Redirigiendo al dashboard...',
+            sessionToken,
+            documentToken,
+            user: {
+                id: user.id,
+                email: user.email,
+                fullName: user.full_name,
+                empresaId: empresa.id,
+                empresaNombre: empresa.nombre_legal
+            },
+            redirectUrl: '/pages/dashboard.html'
+        });
+
+        // 9. Generar documentos en BACKGROUND (después de responder)
+        setImmediate(async () => {
+            console.log('🔄 [BACKGROUND] Iniciando generación de documentos...');
+            try {
+                await generarDocumentosEnBackground(documento.id, documentToken, empresa, formData, userData, pricing, nombreResponsable);
+                console.log('✅ [BACKGROUND] Documentos generados exitosamente');
+            } catch (error) {
+                console.error('❌ [BACKGROUND] Error generando documentos:', error.message);
+                // Actualizar estado a 'fallido'
+                await db('documentos_generados')
+                    .where({ id: documento.id })
+                    .update({ estado: 'fallido', updated_at: new Date() });
+            }
+        });
+
+    } catch (error) {
+        if (trx) await trx.rollback();
+        console.error('❌ [REGISTRO RÁPIDO] Error:', error.message);
+
+        // Manejar errores conocidos
+        if (error.code === '23505') {
+            if (error.constraint?.includes('email')) {
+                return res.status(409).json({ success: false, message: 'El email ya está registrado.' });
+            }
+            if (error.constraint?.includes('nit')) {
+                return res.status(409).json({ success: false, message: 'El NIT ya está registrado.' });
+            }
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Error interno al procesar el registro.',
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Función auxiliar: Genera documentos en background
+ */
+async function generarDocumentosEnBackground(documentoId, documentToken, empresa, formData, userData, pricing, nombreResponsable) {
+    console.log(`📄 [BACKGROUND] Procesando documento ${documentoId}...`);
+
+    // Actualizar estado a 'procesando'
+    await db('documentos_generados')
+        .where({ id: documentoId })
+        .update({ estado: 'procesando', progreso: 5, updated_at: new Date() });
+
+    // Enriquecer formData con cálculos de NR
+    console.log('🔄 Calculando NP/NR...');
+    const formDataEnriquecido = {
+        ...formData,
+        cargos: formData.cargos.map((cargo) => {
+            try {
+                const controlesConsolidados = riesgosService.consolidarControlesCargo(cargo);
+                return {
+                    ...cargo,
+                    gesSeleccionados: (cargo.gesSeleccionados || []).map(ges => {
+                        try {
+                            const niveles = riesgosService.calcularNivelesRiesgo(ges);
+                            return { ...ges, ...niveles };
+                        } catch (error) {
+                            console.warn(`  ⚠️ Error en GES "${ges.ges}":`, error.message);
+                            return ges;
+                        }
+                    }),
+                    controlesConsolidados
+                };
+            } catch (error) {
+                console.error(`❌ Error en cargo "${cargo.cargoName}":`, error.message);
+                return cargo;
+            }
+        })
+    };
+
+    await db('documentos_generados')
+        .where({ id: documentoId })
+        .update({ progreso: 20, updated_at: new Date() });
+
+    // Guardar cargos y riesgos en BD
+    console.log('💾 Guardando cargos en BD...');
+    for (const cargo of formDataEnriquecido.cargos) {
+        const [cargoDB] = await db('cargos_documento').insert({
+            documento_id: documentoId,
+            nombre_cargo: cargo.cargoName,
+            area: cargo.area,
+            descripcion_tareas: cargo.descripcionTareas,
+            num_trabajadores: cargo.numTrabajadores || 1,
+            zona: cargo.zona || 'General',
+            trabaja_alturas: cargo.trabajaAlturas || false,
+            manipula_alimentos: cargo.manipulaAlimentos || false,
+            conduce_vehiculo: cargo.conduceVehiculo || false,
+            trabaja_espacios_confinados: cargo.trabajaEspaciosConfinados || false,
+            tareas_rutinarias: cargo.tareasRutinarias !== false
+        }).returning('*');
+
+        for (const ges of (cargo.gesSeleccionados || [])) {
+            await db('riesgos_cargo').insert({
+                cargo_id: cargoDB.id,
+                tipo_riesgo: ges.riesgo || 'Otros',
+                descripcion_riesgo: ges.ges || ges.nombre || '',
+                controles_fuente: ges.controles?.fuente || 'Ninguno',
+                controles_medio: ges.controles?.medio || 'Ninguno',
+                controles_individuo: ges.controles?.individuo || 'Ninguno',
+                nivel_deficiencia: ges.niveles?.deficiencia?.value || ges.nd || 2,
+                nivel_exposicion: ges.niveles?.exposicion?.value || ges.ne || 2,
+                nivel_consecuencia: ges.niveles?.consecuencia?.value || ges.nc || 25,
+                ges_id: ges.idGes || ges.id_ges || null
+            });
+        }
+    }
+
+    await db('documentos_generados')
+        .where({ id: documentoId })
+        .update({ progreso: 40, updated_at: new Date() });
+
+    // Generar documentos
+    console.log('📄 Generando documentos...');
+    const companyName = empresa.nombre_legal;
+    const companyNit = userData.nit;
+
+    const [matrizBuffer, profesiogramaBuffer, perfilBuffer, cotizacionBuffer] = await Promise.all([
+        generarMatrizExcel(formDataEnriquecido, { companyName, nit: companyNit, diligenciadoPor: nombreResponsable }),
+        generarProfesiogramaCompletoPDF(formDataEnriquecido, { companyName }),
+        generarPerfilCargoPDF(formDataEnriquecido, { companyName }),
+        generarCotizacionPDF(formDataEnriquecido)
+    ]);
+
+    await db('documentos_generados')
+        .where({ id: documentoId })
+        .update({ progreso: 60, updated_at: new Date() });
+
+    // Generar thumbnails (puede fallar sin bloquear)
+    console.log('🖼️ Generando thumbnails...');
+    let profesiogramaThumbnail = null, perfilThumbnail = null, cotizacionThumbnail = null;
+    try {
+        const profesiogramaHTML = await generarProfesiogramaHTML(formDataEnriquecido, { companyName });
+        [profesiogramaThumbnail, perfilThumbnail, cotizacionThumbnail] = await Promise.all([
+            generateHTMLThumbnail(profesiogramaHTML, { width: 800, quality: 95 }).catch(() => null),
+            generatePDFThumbnailFast(perfilBuffer, { width: 600, cropHeader: true, quality: 95, viewportScale: 4.0 }).catch(() => null),
+            generatePDFThumbnailFast(cotizacionBuffer, { width: 600, cropHeader: true, quality: 95, viewportScale: 4.0 }).catch(() => null)
+        ]);
+    } catch (error) {
+        console.warn('⚠️ Error generando thumbnails (continuando sin ellos):', error.message);
+    }
+
+    await db('documentos_generados')
+        .where({ id: documentoId })
+        .update({ progreso: 75, updated_at: new Date() });
+
+    // Subir a Spaces
+    console.log('☁️ Subiendo a Spaces...');
+    const fechaActual = new Date().toISOString().split('T')[0];
+    const empresaNormalizada = companyName
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9]/g, "-").replace(/-+/g, "-").toLowerCase();
+
+    const [matrizUrl, profesiogramaUrl, perfilUrl, cotizacionUrl] = await Promise.all([
+        uploadToSpaces(matrizBuffer, `matriz-riesgos-profesional-${empresaNormalizada}-${fechaActual}-${documentToken}.xlsx`, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+        uploadToSpaces(profesiogramaBuffer, `profesiograma-${empresaNormalizada}-${fechaActual}-${documentToken}.pdf`, 'application/pdf'),
+        uploadToSpaces(perfilBuffer, `perfil-cargo-${empresaNormalizada}-${fechaActual}-${documentToken}.pdf`, 'application/pdf'),
+        uploadToSpaces(cotizacionBuffer, `cotizacion-${empresaNormalizada}-${fechaActual}-${documentToken}.pdf`, 'application/pdf')
+    ]);
+
+    // Subir thumbnails si existen
+    let thumbnailUrls = {};
+    if (profesiogramaThumbnail) {
+        thumbnailUrls.profesiograma = await uploadToSpaces(profesiogramaThumbnail, `profesiograma-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg');
+    }
+    if (perfilThumbnail) {
+        thumbnailUrls.perfil = await uploadToSpaces(perfilThumbnail, `perfil-cargo-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg');
+    }
+    if (cotizacionThumbnail) {
+        thumbnailUrls.cotizacion = await uploadToSpaces(cotizacionThumbnail, `cotizacion-${empresaNormalizada}-${fechaActual}-${documentToken}-thumb.jpg`, 'image/jpeg');
+    }
+
+    await db('documentos_generados')
+        .where({ id: documentoId })
+        .update({ progreso: 90, updated_at: new Date() });
+
+    // Actualizar BD con URLs finales
+    const previewUrls = {
+        matriz: matrizUrl,
+        profesiograma: profesiogramaUrl,
+        perfil: perfilUrl,
+        cotizacion: cotizacionUrl,
+        thumbnails: thumbnailUrls
+    };
+
+    await db('documentos_generados')
+        .where({ id: documentoId })
+        .update({
+            preview_urls: JSON.stringify(previewUrls),
+            estado: 'pendiente_pago',
+            progreso: 100,
+            updated_at: new Date()
+        });
+
+    console.log(`✅ [BACKGROUND] Documento ${documentoId} completado`);
+}
