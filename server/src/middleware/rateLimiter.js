@@ -172,7 +172,7 @@ export const adminLimiter = rateLimit({
  */
 export const globalLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 60, // 60 requests per minute (1 per second average)
+    max: 200, // 200 requests per minute (wizard needs many requests)
     message: {
         success: false,
         message: 'Demasiadas solicitudes. Por favor reduzca la velocidad.',

@@ -358,7 +358,27 @@ module.exports = {
   ],
   optimization: {
     minimize: true,
-    minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
+    minimizer: [
+      new CssMinimizerPlugin({
+        parallel: false, // Reduce memory usage
+      }),
+      new TerserPlugin({
+        parallel: false, // Single thread to reduce memory
+        terserOptions: {
+          compress: {
+            drop_console: true, // Remove console.logs
+          },
+        },
+      }),
+    ],
+  },
+  // Disable source maps in production to save memory
+  devtool: false,
+  cache: {
+    type: 'filesystem', // Use filesystem cache to reduce memory
+    buildDependencies: {
+      config: [__filename],
+    },
   },
   performance: {
     hints: false, // Deshabilita los warnings de tamaño de assets

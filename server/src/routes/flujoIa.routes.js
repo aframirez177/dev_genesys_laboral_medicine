@@ -1,10 +1,14 @@
 // server/src/routes/flujoIa.routes.js
 import { Router } from 'express';
-import { registrarYGenerar } from '../controllers/flujoIa.controller.js'; // Importa la función
+import { registrarYGenerar, registrarRapido } from '../controllers/flujoIa.controller.js';
 
 const router = Router();
 
-// Define la ruta POST que llamará tu frontend
+// Endpoint original (síncrono, espera a generar todo)
 router.post('/registrar-y-generar', registrarYGenerar);
+
+// 🆕 Endpoint rápido (responde inmediato, genera en background)
+// Registra usuario → JWT → Redirige a dashboard → Genera docs en background
+router.post('/registrar-rapido', registrarRapido);
 
 export default router;

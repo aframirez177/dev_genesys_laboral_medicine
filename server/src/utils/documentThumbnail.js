@@ -305,10 +305,10 @@ export async function generateHTMLThumbnail(htmlContent, options = {}) {
             deviceScaleFactor: 2 // Retina quality
         });
 
-        // Cargar HTML
+        // Cargar HTML (timeout aumentado para empresas grandes)
         await page.setContent(htmlContent, {
             waitUntil: 'networkidle0',
-            timeout: 15000
+            timeout: 60000
         });
 
         // Esperar a que se renderice completamente
