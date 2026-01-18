@@ -178,16 +178,23 @@ export async function getCargosByEmpresa(req, res) {
                         examenes: examenesConsolidados.map(e => e.nombre)
                     });
                 } else {
-                    // Formatear exámenes consolidados con DETALLES completos (lógica original)
+                    // Formatear exámenes consolidados con DETALLES completos
+                    // MISMA LÓGICA QUE profesiograma-view.controller.js líneas 191-201
                     examenesConsolidados = Array.from(controles.consolidado.examenes).map(codigoExamen => {
                         const examenDetalle = EXAM_DETAILS[codigoExamen];
+                        const nombreExamen = examenDetalle?.fullName || codigoExamen;
+                        // ✅ USAR MISMA FUNCIÓN DE JUSTIFICACIÓN QUE EL VIEWER
+                        const justificacionGenerada = generarJustificacionExamen(codigoExamen, controles, cargo.nombre_cargo);
+                        // ✅ DETERMINAR TIPO (Ingreso/Periódico/Retiro) - MISMA LÓGICA QUE profesiogramaViewer
+                        const tipoExamen = determinarTipoExamen(nombreExamen);
                         return {
                             codigo: codigoExamen,
-                            nombre: examenDetalle?.fullName || codigoExamen,
+                            nombre: nombreExamen,
                             periodicidadMeses: examenDetalle?.periodicidadMeses || 12,
                             periodicidad: formatearPeriodicidad(examenDetalle?.periodicidadMeses || 12),
                             prioridad: 1,
-                            tipo: 'Obligatorio'
+                            tipo: tipoExamen,
+                            justificacion: justificacionGenerada
                         };
                     }).sort((a, b) => a.nombre.localeCompare(b.nombre));
                     console.log(`🔬 [BACKEND] Cargo "${cargo.nombre_cargo}" - usando exámenes generados:`, {
@@ -518,6 +525,62 @@ export async function getMatrizGTC45(req, res) {
 
 // ✅ REMOVED: consolidarExamenesMedicos function
 // Now using riesgosService.consolidarControlesCargo for consistency with profesiograma viewer
+
+/**
+ * GENERAR JUSTIFICACIÓN EXAMEN - MISMA LÓGICA QUE profesiograma-view.controller.js
+ * Genera justificación específica basada en toggles, GES o paquete mínimo
+ */
+function generarJustificacionExamen(codigoExamen, controles, nombreCargo) {
+    // Buscar si el examen viene de un toggle especial
+    if (controles.porToggle && controles.porToggle.examenes && controles.porToggle.examenes.includes(codigoExamen)) {
+        if (controles.porToggle.fundamentos && controles.porToggle.fundamentos.length > 0) {
+            return controles.porToggle.fundamentos[0];
+        }
+    }
+
+    // Buscar en los GES que aportan este examen
+    const gesQueAportanExamen = (controles.porGES || []).filter(ges =>
+        ges.controles && ges.controles.examenes && ges.controles.examenes.includes(codigoExamen)
+    );
+
+    if (gesQueAportanExamen.length > 0) {
+        const ges = gesQueAportanExamen[0];
+        if (ges.justificacion) {
+            return `Exposición a ${ges.gesNombre} - ${ges.justificacion}`;
+        }
+        return `Examen requerido por exposición a ${ges.gesNombre} (${ges.tipoRiesgo}) según GTC-45.`;
+    }
+
+    // Justificación genérica del paquete mínimo
+    if (controles.paqueteMinimo && controles.paqueteMinimo.examenes && controles.paqueteMinimo.examenes.includes(codigoExamen)) {
+        return controles.paqueteMinimo.fundamento || 'Examen base requerido para todos los trabajadores según Res. 2346/2007.';
+    }
+
+    return `Examen requerido según valoración de riesgos ocupacionales para el cargo "${nombreCargo}".`;
+}
+
+/**
+ * DETERMINAR TIPO EXAMEN (Ingreso/Periódico/Retiro) - MISMA LÓGICA QUE profesiogramaViewer.js líneas 421-439
+ * Ingreso y Periódico = todos los exámenes
+ * Retiro = solo exámenes que contengan EMO, Examen Médico, Médico Ocupacional
+ */
+function determinarTipoExamen(nombreExamen) {
+    if (!nombreExamen) return 'Periódico';
+    const nombreLower = nombreExamen.toLowerCase();
+
+    // Si contiene EMO o variantes, es para Ingreso, Periódico Y Retiro
+    const esRetiroExamen = nombreLower.includes('emo') ||
+                           nombreLower.includes('examen médico') ||
+                           nombreLower.includes('examen medico') ||
+                           nombreLower.includes('médico ocupacional') ||
+                           nombreLower.includes('medico ocupacional');
+
+    if (esRetiroExamen) {
+        return 'Ingreso/Periódico/Retiro';
+    }
+    // Todos los demás son solo Ingreso y Periódico
+    return 'Ingreso/Periódico';
+}
 
 function calcularNivelNR(nr) {
     if (nr >= 600) return 'V';

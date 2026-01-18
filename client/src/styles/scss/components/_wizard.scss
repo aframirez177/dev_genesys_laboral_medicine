@@ -83,7 +83,7 @@
       }
 
       &:hover {
-        background: darken(map.get(variables.$colors, 'primary'), 8%);
+        background: color.adjust(map.get(variables.$colors, 'primary'), $lightness: -8%);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(map.get(variables.$colors, 'primary'), 0.3);
       }

@@ -3,6 +3,7 @@
 // Sprint 6 - Fase B
 // ===========================================
 
+@use "sass:color";
 @use 'dashboard-tokens' as tokens;
 
 // =====================
@@ -720,5 +721,123 @@
 
     .exams-grid {
         grid-template-columns: 1fr; // Back to single column on mobile
+    }
+}
+
+// =====================
+// EXAMS FILTERS - Filtros por tipo de examen
+// =====================
+.exams-filters {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    margin-bottom: tokens.$space-3;
+    flex-wrap: wrap;
+}
+
+.exam-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: tokens.$space-1;
+    padding: tokens.$space-1 tokens.$space-3;
+    border: 1px solid tokens.$dashboard-border;
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-full;
+    font-size: tokens.$font-xs;
+    font-weight: tokens.$font-medium;
+    color: tokens.$dashboard-text;
+    cursor: pointer;
+    transition: all tokens.$transition-normal;
+
+    i, svg {
+        width: 12px;
+        height: 12px;
+        flex-shrink: 0;
+    }
+
+    &:hover {
+        border-color: tokens.$dashboard-primary;
+        color: tokens.$dashboard-primary;
+        background: rgba(tokens.$dashboard-primary, 0.05);
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(tokens.$dashboard-primary, 0.2);
+    }
+
+    &.active {
+        background: tokens.$dashboard-primary;
+        border-color: tokens.$dashboard-primary;
+        color: tokens.$dashboard-white;
+
+        &:hover {
+            background: color.adjust(tokens.$dashboard-primary, $lightness: -5%);
+        }
+    }
+}
+
+// =====================
+// EXAMS HINT - Indicación de tooltip
+// =====================
+.exams-hint {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-1;
+
+    i, svg {
+        width: 12px;
+        height: 12px;
+        flex-shrink: 0;
+    }
+}
+
+// =====================
+// EXAM INFO ICON - Icono de info en cada examen
+// =====================
+.exam-info-icon {
+    opacity: 0.4;
+    transition: opacity tokens.$transition-normal;
+
+    .exam-item:hover & {
+        opacity: 0.8;
+    }
+}
+
+// =====================
+// EXAM ITEM - Mejoras para hover/tooltip
+// =====================
+.exam-item {
+    cursor: help;
+
+    &:focus {
+        outline: none;
+        border-color: tokens.$dashboard-primary;
+        box-shadow: 0 0 0 2px rgba(tokens.$dashboard-primary, 0.2);
+    }
+}
+
+// =====================
+// EXAM TOOLTIP - usa estilos base de .floating-tooltip
+// =====================
+// Los tooltips de exámenes usan el estilo base existente en _floating-ui.scss
+// No se requieren estilos adicionales aquí
+
+// =====================
+// NO FILTER RESULTS - Mensaje cuando no hay resultados
+// =====================
+.no-filter-results {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    padding: tokens.$space-4;
+    text-align: center;
+    justify-content: center;
+    grid-column: 1 / -1;
+
+    i, svg {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
     }
 }

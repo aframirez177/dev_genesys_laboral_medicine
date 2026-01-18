@@ -877,7 +877,7 @@
   h4 {
     font-size: 1.3rem;
     font-weight: 600;
-    color: darken(map.get(variables.$colors, 'warning'), 20%);
+    color: color.adjust(map.get(variables.$colors, 'warning'), $lightness: -20%);
     margin-bottom: 0.8rem;
     display: flex;
     align-items: center;

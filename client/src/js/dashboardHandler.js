@@ -8,6 +8,7 @@
 import { createCargoMiniWizard } from './components/CargoMiniWizard.js';
 import MatrizRiesgosComponent from './components/matrizRiesgosComponent.js';
 import { initMultiRolDashboard, ROLES } from './multiRolHandler.js';
+import { createTooltip } from './utils/floatingUI.js';
 
 // ============================================
 // STATE MANAGEMENT
@@ -2250,12 +2251,50 @@ async function loadProfesiogramaPage() {
                     return `<span class="badge badge--${colorMap[nivel] || 'muted'}">${count} NR-${nivel}</span>`;
                 }).join(' ');
 
-            // 🆕 Medical exams HTML
+            // 🆕 Medical exams HTML with tooltip data and filter support
+            // Usar MISMA lógica de profesiogramaViewer.js (líneas 424-432)
+            const isRetiroExamen = (nombre) => {
+                if (!nombre) return false;
+                const nombreLower = nombre.toLowerCase();
+                return nombreLower.includes('emo') ||
+                       nombreLower.includes('examen médico') ||
+                       nombreLower.includes('examen medico') ||
+                       nombreLower.includes('médico ocupacional') ||
+                       nombreLower.includes('medico ocupacional');
+            };
+
             const examenesHTML = examenesMedicos.length > 0
-                ? examenesMedicos.map(examen => `
-                    <div class="exam-item">
+                ? examenesMedicos.map(examen => {
+                    // Escapar justificación para data-attribute
+                    const justificacionEscaped = (examen.justificacion || 'Sin justificación disponible')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+
+                    // Determinar tipos aplicables (LÓGICA DE profesiogramaViewer.js)
+                    // Ingreso: TODOS los exámenes
+                    // Periódico: TODOS los exámenes
+                    // Retiro: SOLO exámenes con EMO, Examen Médico, Médico Ocupacional
+                    const tiposAplicables = [];
+                    tiposAplicables.push('ingreso');
+                    tiposAplicables.push('periodico');
+                    if (isRetiroExamen(examen.nombre)) {
+                        tiposAplicables.push('retiro');
+                    }
+                    const tiposString = tiposAplicables.join(',');
+
+                    return `
+                    <div class="exam-item"
+                         data-exam-tipo="${tiposString}"
+                         data-exam-justificacion="${justificacionEscaped}"
+                         data-exam-nombre="${examen.nombre || ''}"
+                         tabindex="0"
+                         role="button"
+                         aria-label="Ver justificación de ${examen.nombre || 'examen'}">
                         <div class="exam-item__header">
-                            <span class="exam-item__name">${examen.nombre}</span>
+                            <span class="exam-item__name">
+                                ${examen.nombre}
+                                <i data-lucide="info" class="exam-info-icon" style="width:14px;height:14px;opacity:0.5;margin-left:4px;"></i>
+                            </span>
                             <span class="badge badge--${examen.prioridad === 1 ? 'danger' : 'info'} badge--sm">${examen.tipo}</span>
                         </div>
                         <div class="exam-item__footer">
@@ -2265,8 +2304,26 @@ async function loadProfesiogramaPage() {
                             </span>
                         </div>
                     </div>
-                `).join('')
+                `}).join('')
                 : '<p class="text-muted text-sm">No hay exámenes médicos asignados para este cargo.</p>';
+
+            // Filtros por tipo de examen
+            const filtrosHTML = examenesMedicos.length > 0 ? `
+                <div class="exams-filters" data-cargo-index="${index}">
+                    <button class="exam-filter-chip active" data-filter="todos" aria-pressed="true">
+                        <i data-lucide="list" style="width:12px;height:12px;"></i> Todos
+                    </button>
+                    <button class="exam-filter-chip" data-filter="ingreso" aria-pressed="false">
+                        <i data-lucide="log-in" style="width:12px;height:12px;"></i> Ingreso
+                    </button>
+                    <button class="exam-filter-chip" data-filter="periodico" aria-pressed="false">
+                        <i data-lucide="refresh-cw" style="width:12px;height:12px;"></i> Periódico
+                    </button>
+                    <button class="exam-filter-chip" data-filter="retiro" aria-pressed="false">
+                        <i data-lucide="log-out" style="width:12px;height:12px;"></i> Retiro
+                    </button>
+                </div>
+            ` : '';
 
             return `
                 <div class="card card--profesiograma">
@@ -2319,7 +2376,12 @@ async function loadProfesiogramaPage() {
                                     </button>
                                 ` : ''}
                             </div>
-                            <div class="exams-grid">
+                            ${filtrosHTML}
+                            <p class="exams-hint text-muted text-sm" style="margin-bottom:8px;font-style:italic;">
+                                <i data-lucide="info" style="width:12px;height:12px;"></i>
+                                Pase el cursor sobre un examen para ver la justificación técnica
+                            </p>
+                            <div class="exams-grid" data-cargo-index="${index}">
                                 ${examenesHTML}
                             </div>
                         </div>
@@ -2383,6 +2445,11 @@ async function loadProfesiogramaPage() {
         `);
         if (window.lucide) window.lucide.createIcons();
 
+        // Inicializar tooltips y filtros de exámenes después de que el DOM esté actualizado
+        setTimeout(() => {
+            initExamTooltipsAndFilters();
+        }, 100);
+
     } catch (e) {
         console.error('Error loading profesiograma:', e);
         showPageContent('profesiograma-content', `
@@ -2396,6 +2463,109 @@ async function loadProfesiogramaPage() {
         `);
         if (window.lucide) window.lucide.createIcons();
     }
+}
+
+/**
+ * Inicializa tooltips y filtros para exámenes médicos en la página de profesiograma
+ */
+function initExamTooltipsAndFilters() {
+    console.log('🔵 [EXAMS] Initializing tooltips and filters...');
+
+    // ===== TOOLTIPS =====
+    const examItems = document.querySelectorAll('.exam-item[data-exam-justificacion]');
+    console.log('🔵 [EXAMS] Found exam items:', examItems.length);
+
+    examItems.forEach(item => {
+        const justificacion = item.dataset.examJustificacion;
+        const nombreExamen = item.dataset.examNombre;
+
+        if (!justificacion) return;
+
+        // Crear contenido del tooltip - usar formato simple que funciona con estilos base
+        const tooltipContent = `<strong>${nombreExamen}</strong><br><br><em>Justificación:</em><br>${justificacion}`;
+
+        // Crear tooltip usando Floating UI
+        try {
+            createTooltip(item, tooltipContent, {
+                placement: 'top',
+                offset: 8,
+                trigger: 'hover',
+                delay: 200
+            });
+        } catch (err) {
+            console.warn('Error creating tooltip:', err);
+        }
+    });
+
+    // ===== FILTROS =====
+    // Adjuntar eventos directamente a cada chip
+    const allChips = document.querySelectorAll('.exam-filter-chip');
+    console.log(`🔵 [EXAMS] Found ${allChips.length} filter chips`);
+
+    allChips.forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const filter = this.dataset.filter;
+            const filterContainer = this.closest('.exams-filters');
+            const cargoIndex = filterContainer?.dataset.cargoIndex;
+
+            console.log(`🔵 [FILTER] Clicked: ${filter}, cargoIndex: ${cargoIndex}`);
+
+            // Actualizar estado visual de chips solo en este container
+            filterContainer.querySelectorAll('.exam-filter-chip').forEach(c => {
+                c.classList.remove('active');
+                c.setAttribute('aria-pressed', 'false');
+            });
+            this.classList.add('active');
+            this.setAttribute('aria-pressed', 'true');
+
+            // Encontrar el grid usando el data-cargo-index
+            const examsGrid = document.querySelector(`.exams-grid[data-cargo-index="${cargoIndex}"]`);
+            console.log(`🔵 [FILTER] Grid found:`, !!examsGrid, `cargoIndex: ${cargoIndex}`);
+
+            if (!examsGrid) {
+                console.error(`🔴 [FILTER] No grid found for cargoIndex: ${cargoIndex}`);
+                return;
+            }
+
+            const examItems = examsGrid.querySelectorAll('.exam-item');
+            let visibleCount = 0;
+
+            examItems.forEach(item => {
+                const tipo = item.dataset.examTipo || '';
+
+                if (filter === 'todos') {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    const matches = tipo.includes(filter);
+                    item.style.display = matches ? '' : 'none';
+                    if (matches) visibleCount++;
+                }
+            });
+
+            console.log(`🔵 [FILTER] Visible: ${visibleCount}/${examItems.length}`);
+
+            // Mostrar mensaje si no hay resultados
+            let noResultsMsg = examsGrid.querySelector('.no-filter-results');
+            if (visibleCount === 0 && !noResultsMsg) {
+                noResultsMsg = document.createElement('p');
+                noResultsMsg.className = 'no-filter-results text-muted text-sm';
+                noResultsMsg.style.cssText = 'text-align:center;padding:16px;grid-column:1/-1;';
+                noResultsMsg.textContent = `No hay exámenes de tipo "${filter}"`;
+                examsGrid.appendChild(noResultsMsg);
+            } else if (visibleCount > 0 && noResultsMsg) {
+                noResultsMsg.remove();
+            }
+        });
+    });
+
+    // Refresh lucide icons en tooltips
+    if (window.lucide) window.lucide.createIcons();
+
+    console.log('✅ [EXAMS] Tooltips and filters initialized');
 }
 
 /**
