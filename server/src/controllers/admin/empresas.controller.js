@@ -371,6 +371,61 @@ export async function activar(req, res) {
 }
 
 /**
+ * Marcar una empresa como pagada (pago manual directo)
+ * Temporal hasta implementar PayU
+ */
+export async function marcarPagado(req, res) {
+    try {
+        const { id } = req.params;
+        const { notas } = req.body;
+
+        const empresa = await knex('empresas').where('id', id).first();
+        if (!empresa) {
+            return res.status(404).json({
+                success: false,
+                message: 'Empresa no encontrada'
+            });
+        }
+
+        const [empresaActualizada] = await knex('empresas')
+            .where('id', id)
+            .update({
+                status: 'activa',
+                ultimo_pago: knex.fn.now(),
+                updated_at: knex.fn.now()
+            })
+            .returning('*');
+
+        // Auditoría
+        await knex('auditoria').insert({
+            user_id: req.user.id,
+            accion: 'marcar_pagado',
+            recurso: 'empresas',
+            recurso_id: id,
+            detalles: JSON.stringify({ notas: notas || 'Pago manual marcado por admin' }),
+            valores_anteriores: JSON.stringify({ status: empresa.status, ultimo_pago: empresa.ultimo_pago }),
+            valores_nuevos: JSON.stringify({ status: 'activa', ultimo_pago: new Date().toISOString() }),
+            ip_address: req.ip,
+            user_agent: req.get('User-Agent')
+        });
+
+        console.log(`[Admin/Empresas] Empresa ${id} marcada como pagada por admin ${req.user.id}`);
+
+        res.json({
+            success: true,
+            message: 'Empresa marcada como pagada',
+            empresa: empresaActualizada
+        });
+    } catch (error) {
+        console.error('Error marcando empresa como pagada:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error marcando empresa como pagada'
+        });
+    }
+}
+
+/**
  * Obtener médicos asignados a una empresa
  */
 export async function medicosAsignados(req, res) {

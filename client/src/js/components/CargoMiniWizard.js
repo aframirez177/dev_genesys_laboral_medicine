@@ -99,7 +99,7 @@ export class CargoMiniWizard {
     };
 
     this.modalElement = null;
-    this.init();
+    this._initPromise = this.init();
   }
 
   /**
@@ -119,12 +119,47 @@ export class CargoMiniWizard {
    * Load cargo data for edit mode
    */
   loadCargoData(data) {
+    const riesgosSeleccionados = data.gesSeleccionados || data.riesgos || data.riesgosSeleccionados || [];
+
+    // Reconstruir niveles y controles desde gesSeleccionados
+    const nivelesFromGES = {};
+    const controlesFromGES = {};
+    riesgosSeleccionados.forEach(ges => {
+      const gesId = String(ges.id_ges || ges.idGes || ges.id);
+      if (!gesId || gesId === 'undefined' || gesId === 'null') return;
+
+      // Extraer niveles (Number() para asegurar comparación estricta con botones)
+      if (ges.niveles) {
+        nivelesFromGES[gesId] = {
+          ND: Number(ges.niveles.deficiencia?.value ?? ges.niveles.deficiencia) || 1,
+          NE: Number(ges.niveles.exposicion?.value ?? ges.niveles.exposicion) || 1,
+          NC: Number(ges.niveles.consecuencia?.value ?? ges.niveles.consecuencia) || 10
+        };
+      } else {
+        nivelesFromGES[gesId] = { ND: 1, NE: 1, NC: 10 };
+      }
+
+      // Extraer controles
+      if (ges.controles) {
+        controlesFromGES[gesId] = {
+          fuente: ges.controles.fuente || '',
+          medio: ges.controles.medio || '',
+          individuo: ges.controles.individuo || ''
+        };
+      } else {
+        controlesFromGES[gesId] = { fuente: '', medio: '', individuo: '' };
+      }
+    });
+
+    // Usar niveles/controles del data si tienen contenido, sino los reconstruidos desde GES
+    const niveles = Object.keys(data.niveles || {}).length > 0 ? data.niveles : nivelesFromGES;
+    const controles = Object.keys(data.controles || {}).length > 0 ? data.controles : controlesFromGES;
+
     this.state.cargo = {
       ...this.state.cargo,
       nombre: data.nombre || data.nombre_cargo || '',
       area: data.area || '',
       zona: data.zona || '',
-      // Mapear descripcion desde múltiples fuentes posibles (camelCase y snake_case)
       descripcion: data.descripcion || data.descripcion_tareas || data.descripcionTareas || '',
       numPersonas: data.numPersonas || data.num_trabajadores || 1,
       tareasRutinarias: data.tareasRutinarias || data.tareas_rutinarias || false,
@@ -132,10 +167,9 @@ export class CargoMiniWizard {
       manipulaAlimentos: data.manipulaAlimentos || data.manipula_alimentos || false,
       conduceVehiculo: data.conduceVehiculo || data.conduce_vehiculo || false,
       trabajaEspaciosConfinados: data.trabajaEspaciosConfinados || data.trabaja_espacios_confinados || false,
-      // Mapear riesgos desde múltiples fuentes: gesSeleccionados tiene prioridad
-      riesgosSeleccionados: data.gesSeleccionados || data.riesgos || data.riesgosSeleccionados || [],
-      niveles: data.niveles || {},
-      controles: data.controles || {}
+      riesgosSeleccionados,
+      niveles,
+      controles
     };
 
     // Guardar valores originales para detectar cambios que requieren aprobación
@@ -148,16 +182,27 @@ export class CargoMiniWizard {
    */
   async loadCatalogos() {
     try {
-      // Load GES catalog
-      const gesResponse = await fetch('/api/catalogo/ges');
-      if (gesResponse.ok) {
+      // Load ALL GES catalog (paginated - API max 100 per page)
+      let allGES = [];
+      let page = 1;
+      let hasMore = true;
+      while (hasMore) {
+        const gesResponse = await fetch(`/api/catalogo/ges?limit=100&page=${page}`);
+        if (!gesResponse.ok) break;
         const gesData = await gesResponse.json();
-        this.state.catalogoGES = gesData.data || gesData || [];
+        const items = gesData.data || [];
+        allGES = allGES.concat(items);
+        hasMore = gesData.hasMore === true;
+        page++;
       }
+      this.state.catalogoGES = allGES;
 
       // Load existing areas and zonas from empresa's cargos
       if (this.options.empresaId) {
-        const cargosResponse = await fetch(`/api/cargos/empresa/${this.options.empresaId}`);
+        const token = localStorage.getItem('authToken') || localStorage.getItem('genesys_token');
+        const cargosResponse = await fetch(`/api/cargos/empresa/${this.options.empresaId}`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
         if (cargosResponse.ok) {
           const cargosData = await cargosResponse.json();
           const cargos = cargosData.cargos || [];
@@ -175,7 +220,10 @@ export class CargoMiniWizard {
   /**
    * Show the modal wizard
    */
-  show() {
+  async show() {
+    // Wait for catalogs to load before showing
+    await this._initPromise;
+
     // Create modal backdrop
     this.modalElement = document.createElement('div');
     this.modalElement.className = 'cargo-mini-wizard-overlay';
@@ -189,7 +237,7 @@ export class CargoMiniWizard {
     document.body.appendChild(this.modalElement);
     document.body.style.overflow = 'hidden';
 
-    // Render content
+    // Render content (catalogs are now loaded)
     this.renderContent();
 
     // Close on backdrop click
@@ -439,7 +487,6 @@ export class CargoMiniWizard {
    */
   renderRiesgosStep() {
     // Agrupar GES por categoría de riesgo
-    // Soportar múltiples nombres de campo: riesgo_nombre (API), categoria (legacy), riesgo (gesSeleccionados)
     const gesGrouped = this.state.catalogoGES.reduce((acc, ges) => {
       const cat = ges.riesgo_nombre || ges.categoria || ges.riesgo || 'Otros';
       if (!acc[cat]) acc[cat] = [];
@@ -447,56 +494,82 @@ export class CargoMiniWizard {
       return acc;
     }, {});
 
-    const selectedIds = this.state.cargo.riesgosSeleccionados.map(r => r.id_ges || r.idGes || r.id);
+    const selectedIds = this.state.cargo.riesgosSeleccionados
+      .map(r => String(r.id_ges || r.idGes || r.id))
+      .filter(v => v && v !== 'undefined' && v !== 'null');
+    const selectedNames = this.state.cargo.riesgosSeleccionados
+      .map(r => (r.nombre || r.ges || r.descripcion || '').toLowerCase().trim())
+      .filter(Boolean);
 
-    // State for expanded categories
-    if (!this.state.expandedCategories) {
-      this.state.expandedCategories = {};
-    }
+    const isGesSelected = (ges) => {
+      const gesId = String(ges.id_ges || ges.idGes || ges.id);
+      if (gesId && selectedIds.includes(gesId)) return true;
+      // Fallback: match by name
+      const gesName = (ges.nombre || '').toLowerCase().trim();
+      return gesName && selectedNames.includes(gesName);
+    };
+
+    // Sort categories: those with selected GES appear first
+    const sortedCategories = Object.entries(gesGrouped).sort(([, listA], [, listB]) => {
+      const aHasSelected = listA.some(g => isGesSelected(g));
+      const bHasSelected = listB.some(g => isGesSelected(g));
+      if (aHasSelected && !bHasSelected) return -1;
+      if (!aHasSelected && bHasSelected) return 1;
+      return 0;
+    });
 
     return html`
       <div class="mini-wizard__step-content mini-wizard__step-content--riesgos">
         <div class="riesgos-header">
           <p>Selecciona los riesgos asociados a este cargo</p>
           <span class="riesgos-count">
-            ${selectedIds.length} seleccionados
+            ${this.state.cargo.riesgosSeleccionados.length} seleccionados
           </span>
         </div>
 
-        <div class="riesgos-grid">
-          ${Object.entries(gesGrouped).map(([categoria, gesList]) => {
-            const isExpanded = this.state.expandedCategories[categoria];
-            const showLimit = 10;
-            const displayList = isExpanded ? gesList : gesList.slice(0, showLimit);
+        <div class="riesgos-carousel-list">
+          ${sortedCategories.map(([categoria, gesList]) => {
+            // Sort within category: selected GES first
+            const sortedGES = [...gesList].sort((a, b) => {
+              const aSelected = isGesSelected(a) ? 0 : 1;
+              const bSelected = isGesSelected(b) ? 0 : 1;
+              return aSelected - bSelected;
+            });
+
+            const selectedInCat = sortedGES.filter(g => isGesSelected(g)).length;
+            const carouselId = `carousel-${categoria.replace(/[^a-zA-Z0-9]/g, '-')}`;
 
             return html`
               <div class="riesgos-category">
                 <div class="riesgos-category__header">
                   <span class="riesgos-category__name">${categoria}</span>
-                  <span class="riesgos-category__count">${gesList.length}</span>
-                </div>
-                <div class="riesgos-category__items">
-                  ${displayList.map(ges => {
-                    const gesId = ges.id_ges || ges.idGes || ges.id;
-                    const isSelected = selectedIds.includes(gesId);
-                    return html`
-                      <div
-                        class="riesgo-chip ${isSelected ? 'selected' : ''}"
-                        @click=${() => this.toggleRiesgo(ges)}
-                      >
-                        <span class="riesgo-chip__name">${ges.nombre}</span>
-                        ${isSelected ? html`<i data-lucide="check"></i>` : ''}
-                      </div>
-                    `;
-                  })}
-                  ${gesList.length > showLimit ? html`
-                    <button
-                      class="riesgo-chip riesgo-chip--toggle"
-                      @click=${() => this.toggleCategoryExpanded(categoria)}
-                    >
-                      ${isExpanded ? html`<i data-lucide="chevron-up"></i> Mostrar menos` : html`<i data-lucide="chevron-down"></i> +${gesList.length - showLimit} más`}
+                  <span class="riesgos-category__count">
+                    ${selectedInCat > 0 ? html`<strong>${selectedInCat}</strong> / ` : ''}${gesList.length}
+                  </span>
+                  <div class="riesgos-category__arrows">
+                    <button class="carousel-arrow" @click=${(e) => this.scrollCarousel(carouselId, -1, e)}>
+                      <i data-lucide="chevron-left"></i>
                     </button>
-                  ` : ''}
+                    <button class="carousel-arrow" @click=${(e) => this.scrollCarousel(carouselId, 1, e)}>
+                      <i data-lucide="chevron-right"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="riesgos-carousel" id="${carouselId}">
+                  <div class="riesgos-carousel__track">
+                    ${sortedGES.map(ges => {
+                      const isSelected = isGesSelected(ges);
+                      return html`
+                        <div
+                          class="riesgo-chip ${isSelected ? 'selected' : ''}"
+                          @click=${() => this.toggleRiesgo(ges)}
+                        >
+                          <span class="riesgo-chip__name">${ges.nombre}</span>
+                          ${isSelected ? html`<i data-lucide="check"></i>` : ''}
+                        </div>
+                      `;
+                    })}
+                  </div>
                 </div>
               </div>
             `;
@@ -504,6 +577,16 @@ export class CargoMiniWizard {
         </div>
       </div>
     `;
+  }
+
+  /**
+   * Scroll carousel left (-1) or right (1)
+   */
+  scrollCarousel(carouselId, direction, event) {
+    if (event) event.preventDefault();
+    const carousel = document.getElementById(carouselId);
+    if (!carousel) return;
+    carousel.scrollBy({ left: direction * 250, behavior: 'smooth' });
   }
 
   /**
@@ -545,7 +628,7 @@ export class CargoMiniWizard {
    * Render individual nivel item
    */
   renderNivelItem(riesgo, index) {
-    const gesId = riesgo.id_ges || riesgo.idGes || riesgo.id;
+    const gesId = String(riesgo.id_ges || riesgo.idGes || riesgo.id);
     const currentNiveles = this.state.cargo.niveles[gesId] || { ND: 1, NE: 1, NC: 10 };
 
     // Calcular NP y NR
@@ -668,7 +751,7 @@ export class CargoMiniWizard {
    * Render individual control item
    */
   renderControlItem(riesgo, index) {
-    const gesId = riesgo.id_ges || riesgo.idGes || riesgo.id;
+    const gesId = String(riesgo.id_ges || riesgo.idGes || riesgo.id);
     const currentControles = this.state.cargo.controles[gesId] || {
       fuente: '',
       medio: '',
@@ -792,7 +875,7 @@ export class CargoMiniWizard {
             <div class="resumen-section__content">
               <div class="resumen-riesgos">
                 ${cargo.riesgosSeleccionados.map(riesgo => {
-                  const gesId = riesgo.id_ges || riesgo.idGes || riesgo.id;
+                  const gesId = String(riesgo.id_ges || riesgo.idGes || riesgo.id);
                   const niveles = cargo.niveles[gesId] || { ND: 1, NE: 1, NC: 10 };
                   const NR = niveles.ND * niveles.NE * niveles.NC;
                   const nrInfo = this.getNRInfo(NR);
@@ -824,9 +907,9 @@ export class CargoMiniWizard {
   }
 
   toggleRiesgo(ges) {
-    const gesId = ges.id_ges || ges.idGes || ges.id;
+    const gesId = String(ges.id_ges || ges.idGes || ges.id);
     const selected = this.state.cargo.riesgosSeleccionados;
-    const index = selected.findIndex(r => (r.id_ges || r.idGes || r.id) === gesId);
+    const index = selected.findIndex(r => String(r.id_ges || r.idGes || r.id) === gesId);
 
     if (index >= 0) {
       selected.splice(index, 1);
@@ -843,13 +926,7 @@ export class CargoMiniWizard {
     this.renderContent();
   }
 
-  toggleCategoryExpanded(categoria) {
-    if (!this.state.expandedCategories) {
-      this.state.expandedCategories = {};
-    }
-    this.state.expandedCategories[categoria] = !this.state.expandedCategories[categoria];
-    this.renderContent();
-  }
+
 
   updateNivel(gesId, tipo, value) {
     if (!this.state.cargo.niveles[gesId]) {

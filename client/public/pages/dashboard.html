@@ -545,14 +545,33 @@
               </span>
             </div>
 
-            <!-- Org Chart Canvas -->
-            <div class="org-chart-container" id="org-chart-container">
-              <div class="org-chart-canvas" id="org-chart-canvas">
-                <!-- Org chart nodes will be rendered here -->
+            <!-- Org Chart Canvas (Drawflow) -->
+            <div class="org-chart-container" id="org-chart-container" style="position: relative;">
+              <div id="org-chart-canvas">
+                <!-- Drawflow canvas will be initialized here -->
                 <div class="loading-container">
                   <div class="loading-spinner"></div>
                   <p>Cargando mapa organizacional...</p>
                 </div>
+              </div>
+              <!-- Zoom Controls -->
+              <div class="orgmap-controls" id="orgmap-controls" style="display:none;">
+                <button class="orgmap-control-btn" id="orgmap-zoom-in" title="Acercar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <button class="orgmap-control-btn" id="orgmap-zoom-out" title="Alejar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+                <button class="orgmap-control-btn" id="orgmap-zoom-reset" title="Restablecer zoom">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Cargo Palette (drag to canvas) -->
+            <div class="orgmap-palette" id="orgmap-palette">
+              <div class="orgmap-palette__empty">
+                <span>Cargando cargos...</span>
               </div>
             </div>
 

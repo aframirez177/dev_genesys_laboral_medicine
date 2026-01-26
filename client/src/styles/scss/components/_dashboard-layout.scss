@@ -332,6 +332,59 @@
 }
 
 // =====================
+// COMING SOON STATE
+// =====================
+.coming-soon {
+    @include tokens.flex-center;
+    flex-direction: column;
+    padding: tokens.$space-12;
+    text-align: center;
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-lg;
+    border: 1px solid tokens.$dashboard-border;
+
+    &__icon {
+        width: 72px;
+        height: 72px;
+        color: tokens.$dashboard-primary;
+        margin-bottom: tokens.$space-4;
+        opacity: 0.6;
+
+        svg {
+            width: 72px;
+            height: 72px;
+        }
+    }
+
+    &__badge {
+        display: inline-block;
+        padding: tokens.$space-1 tokens.$space-4;
+        background: rgba(tokens.$dashboard-primary, 0.1);
+        color: tokens.$dashboard-primary;
+        border-radius: tokens.$radius-full;
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-semibold;
+        margin-bottom: tokens.$space-4;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    &__title {
+        font-family: tokens.$font-family-title;
+        font-size: tokens.$font-h3;
+        font-weight: tokens.$font-semibold;
+        color: tokens.$dashboard-secondary;
+        margin: 0 0 tokens.$space-2 0;
+    }
+
+    &__description {
+        font-size: tokens.$font-body;
+        color: tokens.$dashboard-text-light;
+        margin: 0;
+    }
+}
+
+// =====================
 // LOADING STATES
 // =====================
 .skeleton {

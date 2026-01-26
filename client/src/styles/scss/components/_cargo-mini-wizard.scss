@@ -36,6 +36,15 @@
     overflow: hidden;
 }
 
+// Content wrapper must propagate flex layout to children
+.cargo-mini-wizard-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -62,6 +71,7 @@
     padding: tokens.$space-6;
     border-bottom: 1px solid tokens.$dashboard-border;
     background: tokens.$dashboard-background;
+    flex-shrink: 0;
 }
 
 .mini-wizard__header-left {
@@ -116,6 +126,7 @@
     padding: tokens.$space-4 tokens.$space-6;
     background: tokens.$dashboard-white;
     border-bottom: 1px solid tokens.$dashboard-border;
+    flex-shrink: 0;
 }
 
 .mini-wizard__step {
@@ -169,6 +180,7 @@
 // =====================
 .mini-wizard__body {
     flex: 1;
+    min-height: 0; // Fix flexbox scroll - prevents content from expanding beyond container
     overflow-y: auto;
     padding: tokens.$space-6;
     @include tokens.custom-scrollbar;
@@ -409,14 +421,11 @@
     font-weight: tokens.$font-semibold;
 }
 
-.riesgos-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+// Carousel list (replaces grid)
+.riesgos-carousel-list {
+    display: flex;
+    flex-direction: column;
     gap: tokens.$space-4;
-
-    @media (max-width: tokens.$breakpoint-tablet) {
-        grid-template-columns: 1fr;
-    }
 }
 
 .riesgos-category {
@@ -427,25 +436,79 @@
 
 .riesgos-category__header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: tokens.$space-3;
     margin-bottom: tokens.$space-3;
 }
 
 .riesgos-category__name {
     font-weight: tokens.$font-semibold;
     color: tokens.$dashboard-secondary;
+    flex: 1;
 }
 
 .riesgos-category__count {
     font-size: tokens.$font-small;
     color: tokens.$dashboard-text-light;
+
+    strong {
+        color: tokens.$dashboard-primary;
+        font-weight: tokens.$font-bold;
+    }
 }
 
-.riesgos-category__items {
+.riesgos-category__arrows {
     display: flex;
-    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.carousel-arrow {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid tokens.$dashboard-border;
+    background: tokens.$dashboard-white;
+    border-radius: tokens.$radius-sm;
+    cursor: pointer;
+    color: tokens.$dashboard-secondary;
+    transition: all 0.15s ease;
+    padding: 0;
+
+    &:hover {
+        background: tokens.$dashboard-primary;
+        border-color: tokens.$dashboard-primary;
+        color: tokens.$dashboard-white;
+    }
+
+    svg, i {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+// Horizontal carousel container
+.riesgos-carousel {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    @include tokens.custom-scrollbar;
+
+    // Thin horizontal scrollbar
+    &::-webkit-scrollbar {
+        height: 4px;
+    }
+}
+
+.riesgos-carousel__track {
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+    grid-auto-flow: column;
     gap: tokens.$space-2;
+    padding-bottom: tokens.$space-2;
+    width: max-content;
 }
 
 .riesgo-chip {
@@ -460,58 +523,26 @@
     display: flex;
     align-items: center;
     gap: tokens.$space-2;
+    white-space: nowrap;
+    flex-shrink: 0;
 
     &:hover {
         border-color: tokens.$dashboard-primary;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
     &.selected {
         background: tokens.$dashboard-primary;
         border-color: tokens.$dashboard-primary;
         color: tokens.$dashboard-white;
+        font-weight: tokens.$font-medium;
     }
 
     svg {
         width: 14px;
         height: 14px;
-    }
-}
-
-.riesgo-chip--more {
-    background: transparent;
-    border-style: dashed;
-    color: tokens.$dashboard-text-light;
-    cursor: default;
-
-    &:hover {
-        border-color: tokens.$dashboard-border;
-    }
-}
-
-.riesgo-chip--toggle {
-    background: tokens.$dashboard-white;
-    border: 1px solid tokens.$dashboard-border;
-    border-style: dashed;
-    color: tokens.$dashboard-primary;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: tokens.$space-2;
-    padding: tokens.$space-2 tokens.$space-3;
-    border-radius: tokens.$radius-md;
-    font-size: tokens.$font-small;
-    font-weight: tokens.$font-medium;
-    transition: all tokens.$transition-normal;
-
-    &:hover {
-        background: rgba(tokens.$dashboard-primary, 0.05);
-        border-color: tokens.$dashboard-primary;
-        border-style: solid;
-    }
-
-    svg {
-        width: 14px;
-        height: 14px;
+        flex-shrink: 0;
     }
 }
 
@@ -888,6 +919,10 @@
     padding: tokens.$space-4 tokens.$space-6;
     border-top: 1px solid tokens.$dashboard-border;
     background: tokens.$dashboard-background;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
 }
 
 .mini-wizard__footer-left,

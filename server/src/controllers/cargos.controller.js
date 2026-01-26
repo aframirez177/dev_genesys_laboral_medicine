@@ -59,6 +59,9 @@ export async function getCargosByEmpresa(req, res) {
                         'riesgos_cargo.nivel_exposicion',
                         'riesgos_cargo.nivel_consecuencia',
                         'riesgos_cargo.ges_id',
+                        'riesgos_cargo.controles_fuente',
+                        'riesgos_cargo.controles_medio',
+                        'riesgos_cargo.controles_individuo',
                         'catalogo_ges.examenes_medicos',
                         'catalogo_ges.epp_sugeridos',
                         'catalogo_ges.aptitudes_requeridas',
@@ -79,8 +82,11 @@ export async function getCargosByEmpresa(req, res) {
                     conduceVehiculo: cargo.conduce_vehiculo,
                     trabajaEspaciosConfinados: cargo.trabaja_espacios_confinados,
                     gesSeleccionados: riesgosDB.map(riesgo => ({
+                        id: riesgo.id,  // riesgos_cargo.id - siempre único
+                        id_ges: riesgo.ges_id,  // catalogo_ges.id - puede ser null
                         riesgo: riesgo.tipo_riesgo,
                         ges: riesgo.descripcion_riesgo,
+                        nombre: riesgo.ges_nombre || riesgo.descripcion_riesgo,
                         examenesMedicos: riesgo.examenes_medicos,
                         eppSugeridos: riesgo.epp_sugeridos,
                         aptitudesRequeridas: riesgo.aptitudes_requeridas,
@@ -89,6 +95,11 @@ export async function getCargosByEmpresa(req, res) {
                             deficiencia: { value: riesgo.nivel_deficiencia },
                             exposicion: { value: riesgo.nivel_exposicion },
                             consecuencia: { value: riesgo.nivel_consecuencia }
+                        },
+                        controles: {
+                            fuente: riesgo.controles_fuente || '',
+                            medio: riesgo.controles_medio || '',
+                            individuo: riesgo.controles_individuo || ''
                         }
                     }))
                 };

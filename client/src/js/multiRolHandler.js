@@ -1161,6 +1161,44 @@ async function loadAdminEmpresasPage() {
                         console.error('[MultiRol] ERROR al abrir modal:', error);
                     }
                 }
+            },
+            {
+                name: 'pago',
+                label: 'Marcar pagado',
+                icon: 'credit-card',
+                handler: async (row) => {
+                    if (row.status === 'activa' && row.ultimo_pago) {
+                        showNotification('Esta empresa ya está marcada como pagada', 'info');
+                        return;
+                    }
+                    const confirmar = confirm(`¿Marcar a "${row.nombre_legal}" como pagada?`);
+                    if (!confirmar) return;
+
+                    try {
+                        const authToken = localStorage.getItem('authToken');
+                        const response = await fetch(`${API_BASE}/admin/empresas/${row.id}/marcar-pagado`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${authToken}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ notas: 'Pago manual desde panel admin' })
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            showNotification(`Empresa "${row.nombre_legal}" marcada como pagada`, 'success');
+                            // Actualizar estado local y recargar tabla
+                            row.status = 'activa';
+                            row.ultimo_pago = new Date().toISOString();
+                            await loadAdminEmpresasPage();
+                        } else {
+                            showNotification(data.message || 'Error al marcar como pagada', 'error');
+                        }
+                    } catch (error) {
+                        console.error('[MultiRol] Error marcando pago:', error);
+                        showNotification('Error de conexión', 'error');
+                    }
+                }
             }
         ],
         pageSize: 10,

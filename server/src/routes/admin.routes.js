@@ -74,6 +74,7 @@ router.get('/empresas/:id', empresasController.obtener);
 router.put('/empresas/:id', empresasController.actualizar);
 router.post('/empresas/:id/suspender', empresasController.suspender);
 router.post('/empresas/:id/activar', empresasController.activar);
+router.post('/empresas/:id/marcar-pagado', empresasController.marcarPagado);
 router.get('/empresas/:id/medicos', empresasController.medicosAsignados);
 
 // ==========================================

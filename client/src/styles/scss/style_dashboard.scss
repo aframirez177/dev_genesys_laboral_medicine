@@ -36,6 +36,7 @@
 // 5. Page-specific styles
 @use 'components/dashboard-home';
 @use 'components/dashboard-org-map';
+@use 'components/orgmap-drawflow';
 @use 'components/dashboard-matrix';
 @use 'components/dashboard-stats';
 @use 'components/dashboard-sve';

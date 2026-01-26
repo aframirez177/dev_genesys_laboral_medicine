@@ -6,9 +6,13 @@
  */
 
 import { createCargoMiniWizard } from './components/CargoMiniWizard.js';
+import { OrgMapDrawflow } from './components/OrgMapDrawflow.js';
 import MatrizRiesgosComponent from './components/matrizRiesgosComponent.js';
 import { initMultiRolDashboard, ROLES } from './multiRolHandler.js';
 import { createTooltip } from './utils/floatingUI.js';
+
+// Org map instance (persists across tab switches)
+let orgMapInstance = null;
 
 // ============================================
 // STATE MANAGEMENT
@@ -396,36 +400,139 @@ function renderDonutChart(containerId, percentage) {
 async function loadIntelligencePage() {
     console.log('Loading Intelligence Page...');
     showPageContent('inteligencia-content', `
-        <div class="empty-state">
-            <div class="empty-state__icon">
+        <div class="coming-soon">
+            <div class="coming-soon__icon">
                 <i data-lucide="brain"></i>
             </div>
-            <h3 class="empty-state__title">Inteligencia de Salud</h3>
-            <p class="empty-state__description">Aún no hay datos disponibles. Complete el wizard de riesgos para generar análisis de salud.</p>
-            <a href="/pages/wizard_riesgos.html" class="btn btn--primary">Iniciar Wizard</a>
+            <span class="coming-soon__badge">Próximamente</span>
+            <h3 class="coming-soon__title">Inteligencia en Salud</h3>
+            <p class="coming-soon__description">En desarrollo</p>
         </div>
     `);
     if (window.lucide) window.lucide.createIcons();
 }
 
 /**
- * Org Map Page
+ * Org Map Page - Canvas de tarjetas de cargos con conectores
  */
 async function loadOrgMapPage() {
-    console.log('Loading Org Map Page...');
+    console.log('[OrgMap] Loading Org Map Page with Drawflow...');
     const container = document.getElementById('org-chart-canvas');
-    if (container) {
+    const palette = document.getElementById('orgmap-palette');
+    if (!container) return;
+
+    // Ensure cargos are loaded
+    if (!DashboardState.data.cargos || DashboardState.data.cargos.length === 0) {
+        await fetchCargosFromAPI();
+    }
+
+    const cargos = DashboardState.data.cargos || [];
+
+    if (cargos.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state__icon">
-                    <i data-lucide="network"></i>
-                </div>
+                <div class="empty-state__icon"><i data-lucide="network"></i></div>
                 <h3 class="empty-state__title">Mapa Organizacional</h3>
-                <p class="empty-state__description">Aún no hay datos disponibles. Agregue cargos para visualizar la estructura organizacional.</p>
+                <p class="empty-state__description">Agregue cargos para visualizar la estructura organizacional.</p>
             </div>
         `;
+        if (palette) palette.innerHTML = '';
         if (window.lucide) window.lucide.createIcons();
+        return;
     }
+
+    // Initialize Drawflow org map (or update if already exists)
+    if (orgMapInstance) {
+        orgMapInstance.updateCargos(cargos);
+    } else {
+        orgMapInstance = new OrgMapDrawflow({
+            container: container,
+            paletteContainer: palette,
+            cargos: cargos,
+            empresaId: DashboardState.companyId,
+            onEditCargo: (cargoData) => {
+                // Open CargoMiniWizard in edit mode
+                const wizard = createCargoMiniWizard({
+                    mode: 'edit',
+                    cargoId: cargoData.id,
+                    cargoData: cargoData,
+                    empresaId: DashboardState.companyId,
+                    onSave: async (updatedCargo) => {
+                        // Refresh cargos and update map
+                        await fetchCargosFromAPI();
+                        if (orgMapInstance) {
+                            orgMapInstance.updateCargos(DashboardState.data.cargos || []);
+                        }
+                        updateMapSummary();
+                    }
+                });
+                wizard.show();
+            },
+            onAddCargo: () => {
+                const wizard = createCargoMiniWizard({
+                    mode: 'create',
+                    empresaId: DashboardState.companyId,
+                    onSave: async () => {
+                        await fetchCargosFromAPI();
+                        if (orgMapInstance) {
+                            orgMapInstance.updateCargos(DashboardState.data.cargos || []);
+                        }
+                        updateMapSummary();
+                    }
+                });
+                wizard.show();
+            }
+        });
+        orgMapInstance.init();
+    }
+
+    // Show zoom controls
+    const controls = document.getElementById('orgmap-controls');
+    if (controls) {
+        controls.style.display = 'flex';
+        document.getElementById('orgmap-zoom-in')?.addEventListener('click', () => orgMapInstance?.zoomIn());
+        document.getElementById('orgmap-zoom-out')?.addEventListener('click', () => orgMapInstance?.zoomOut());
+        document.getElementById('orgmap-zoom-reset')?.addEventListener('click', () => orgMapInstance?.zoomReset());
+    }
+
+    // Wire up "Agregar cargo" button
+    const addBtn = document.getElementById('btn-add-cargo');
+    if (addBtn && !addBtn._orgmapBound) {
+        addBtn._orgmapBound = true;
+        addBtn.addEventListener('click', () => {
+            const wizard = createCargoMiniWizard({
+                mode: 'create',
+                empresaId: DashboardState.companyId,
+                onSave: async () => {
+                    await fetchCargosFromAPI();
+                    if (orgMapInstance) {
+                        orgMapInstance.updateCargos(DashboardState.data.cargos || []);
+                    }
+                    updateMapSummary();
+                }
+            });
+            wizard.show();
+        });
+    }
+
+    // Update summary cards
+    updateMapSummary();
+    if (window.lucide) window.lucide.createIcons();
+}
+
+function updateMapSummary() {
+    const cargos = DashboardState.data.cargos || [];
+    const areas = [...new Set(cargos.map(c => c.area).filter(Boolean))];
+
+    const totalCargosEl = document.getElementById('mapa-total-cargos');
+    const docCompletaEl = document.getElementById('mapa-doc-completa');
+    const pendientesEl = document.getElementById('mapa-pendientes');
+    const criticosEl = document.getElementById('mapa-criticos');
+
+    if (totalCargosEl) totalCargosEl.textContent = cargos.length;
+    if (docCompletaEl) docCompletaEl.textContent = areas.length;
+    if (pendientesEl) pendientesEl.textContent = cargos.reduce((sum, c) => sum + (c.num_personas || c.numPersonas || 1), 0);
+    if (criticosEl) criticosEl.textContent = cargos.reduce((sum, c) => sum + (c.riesgos || c.riesgosSeleccionados || []).length, 0);
 }
 
 /**
@@ -1805,12 +1912,13 @@ function setupMatrizExcelExport(documento) {
 async function loadEstadisticasPage() {
     console.log('Loading Estadisticas Page...');
     showPageContent('estadisticas-content', `
-        <div class="empty-state">
-            <div class="empty-state__icon">
+        <div class="coming-soon">
+            <div class="coming-soon__icon">
                 <i data-lucide="bar-chart-3"></i>
             </div>
-            <h3 class="empty-state__title">Perfil Sociodemográfico</h3>
-            <p class="empty-state__description">Aún no hay datos disponibles. El perfil se generará automáticamente con los datos de trabajadores.</p>
+            <span class="coming-soon__badge">Próximamente</span>
+            <h3 class="coming-soon__title">Estadísticas SVE</h3>
+            <p class="coming-soon__description">En desarrollo</p>
         </div>
     `);
     if (window.lucide) window.lucide.createIcons();
@@ -1822,12 +1930,13 @@ async function loadEstadisticasPage() {
 async function loadSVEPage() {
     console.log('Loading SVE Page...');
     showPageContent('sve-content', `
-        <div class="empty-state">
-            <div class="empty-state__icon">
+        <div class="coming-soon">
+            <div class="coming-soon__icon">
                 <i data-lucide="activity"></i>
             </div>
-            <h3 class="empty-state__title">Sistema de Vigilancia Epidemiológica</h3>
-            <p class="empty-state__description">Aún no hay SVE configurados. Se generarán automáticamente basados en los riesgos identificados.</p>
+            <span class="coming-soon__badge">Próximamente</span>
+            <h3 class="coming-soon__title">Sistema de Vigilancia Epidemiológica</h3>
+            <p class="coming-soon__description">En desarrollo</p>
         </div>
     `);
     if (window.lucide) window.lucide.createIcons();
@@ -1839,12 +1948,13 @@ async function loadSVEPage() {
 async function loadPsicosocialPage() {
     console.log('Loading Psicosocial Page...');
     showPageContent('psicosocial-content', `
-        <div class="empty-state">
-            <div class="empty-state__icon">
+        <div class="coming-soon">
+            <div class="coming-soon__icon">
                 <i data-lucide="flask-conical"></i>
             </div>
-            <h3 class="empty-state__title">Batería de Riesgo Psicosocial</h3>
-            <p class="empty-state__description">Aún no hay baterías aplicadas. Configure la empresa para comenzar la evaluación psicosocial.</p>
+            <span class="coming-soon__badge">Próximamente</span>
+            <h3 class="coming-soon__title">Batería de Riesgo Psicosocial</h3>
+            <p class="coming-soon__description">En desarrollo</p>
         </div>
     `);
     if (window.lucide) window.lucide.createIcons();
@@ -3634,6 +3744,27 @@ function initPaywallModal() {
 
     const hasUserPaid = () => localStorage.getItem('genesys_payment_status') === 'paid';
 
+    // Check payment status from API and sync to localStorage
+    const syncPaymentStatus = async () => {
+        try {
+            const empresaId = localStorage.getItem('empresaId');
+            const authToken = localStorage.getItem('authToken');
+            if (!empresaId || !authToken) return;
+            const response = await fetch(`/api/cargos/empresa/${empresaId}/payment-status`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.paid) {
+                    localStorage.setItem('genesys_payment_status', 'paid');
+                    console.log('[Paywall] Payment status synced from API: paid');
+                }
+            }
+        } catch (e) {
+            console.warn('[Paywall] Error syncing payment status:', e);
+        }
+    };
+
     const showPaywallModal = () => {
         const overlay = document.getElementById('paywall-overlay');
         if (!overlay) return;
@@ -3808,17 +3939,19 @@ function initPaywallModal() {
         return;
     }
 
-    if (!hasUserPaid()) {
-        console.log('[Paywall] User has not paid. Timer starting (' + (PAYWALL_DELAY / 1000) + 's)...');
-        setTimeout(() => {
-            // Check again in case user paid during the timer
-            if (!hasUserPaid() && checkIfShouldShowPaywall()) {
-                showPaywallModal();
-            }
-        }, PAYWALL_DELAY);
-    } else {
-        console.log('[Paywall] User has paid. No paywall will be shown.');
-    }
+    // Sync payment status from API first, then decide on paywall
+    syncPaymentStatus().then(() => {
+        if (!hasUserPaid()) {
+            console.log('[Paywall] User has not paid. Timer starting (' + (PAYWALL_DELAY / 1000) + 's)...');
+            setTimeout(() => {
+                if (!hasUserPaid() && checkIfShouldShowPaywall()) {
+                    showPaywallModal();
+                }
+            }, PAYWALL_DELAY);
+        } else {
+            console.log('[Paywall] User has paid. No paywall will be shown.');
+        }
+    });
 }
 
 // Initialize paywall when DOM is ready
