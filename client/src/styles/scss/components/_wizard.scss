@@ -6415,3 +6415,68 @@
 .pulse-update {
   animation: pulse-update 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+// =================================================================
+// TAREA 1: COMPACT WIZARD - Simular zoom 80%
+// Override de tipografía y spacing SOLO dentro del wizard
+// =================================================================
+.wizard-container {
+  // Headings más compactos (sin tocar tokens globales)
+  h1 {
+    font-size: 2.4rem;
+    margin-bottom: 1.2rem;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+  }
+}
+
+// Header más compacto
+.wizard-branding-header {
+  padding: 1rem 2.4rem;
+
+  .wizard-logo img {
+    height: 40px;
+  }
+
+  .wizard-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.2rem;
+
+    i {
+      font-size: 1.6rem;
+    }
+  }
+
+  .wizard-subtitle {
+    font-size: 1.2rem;
+  }
+}
+
+// Contenedores con menos padding
+.wizard-step {
+  p {
+    font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+    margin-bottom: 2rem;
+  }
+}
+
+// =================================================================
+// TAREA 2: WIZARD NAVIGATION STICKY
+// =================================================================
+.wizard-navigation {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  padding: 1.2rem 2rem;
+  margin-top: 2rem;
+}
