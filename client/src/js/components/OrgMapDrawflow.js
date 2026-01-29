@@ -593,7 +593,10 @@ export class OrgMapDrawflow {
                          data-cargo-id="${cargo.id}"
                          title="${this._escapeHtml(cargo.nombre)}">
                         <span class="orgmap-palette-card__dot orgmap-palette-card__dot--${this._getRiskLevel(cargo)}"></span>
-                        <span class="orgmap-palette-card__name">${this._escapeHtml(cargo.nombre)}</span>
+                        <div class="orgmap-palette-card__info">
+                            <span class="orgmap-palette-card__name">${this._escapeHtml(cargo.nombre)}</span>
+                            ${cargo.area ? `<span class="orgmap-palette-card__area">${this._escapeHtml(cargo.area)}</span>` : ''}
+                        </div>
                     </div>
                 `).join('')}
             </div>
@@ -628,34 +631,80 @@ export class OrgMapDrawflow {
     }
 
     /**
-     * Save editor state to localStorage
+     * Save editor state to localStorage + backend (debounced)
      */
     _saveState() {
         try {
             const exportData = this.editor.export();
             const stateKey = `orgmap_state_${this.options.empresaId || 'default'}`;
-            localStorage.setItem(stateKey, JSON.stringify({
+            const stateData = {
                 drawflow: exportData,
                 nodeCargoMap: Object.fromEntries(
                     Object.entries(this.nodeCargoMap).map(([nodeId, cargo]) => [nodeId, cargo.id])
                 ),
                 timestamp: Date.now()
-            }));
+            };
+            localStorage.setItem(stateKey, JSON.stringify(stateData));
+
+            // Debounced save to backend
+            if (this.options.empresaId) {
+                clearTimeout(this._saveDebounceTimer);
+                this._saveDebounceTimer = setTimeout(() => this._saveToDB(stateData), 2000);
+            }
         } catch (e) {
             console.warn('[OrgMap] Could not save state:', e);
         }
     }
 
     /**
-     * Load and restore saved state from localStorage
+     * Persist map state to backend
      */
-    _loadSavedState() {
+    async _saveToDB(stateData) {
         try {
-            const stateKey = `orgmap_state_${this.options.empresaId || 'default'}`;
-            const saved = localStorage.getItem(stateKey);
-            if (!saved) return;
+            const authToken = localStorage.getItem('authToken');
+            await fetch(`/api/cargos/empresa/${this.options.empresaId}/mapa-organizacional`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mapData: stateData })
+            });
+        } catch (e) {
+            console.warn('[OrgMap] Could not save to DB:', e);
+        }
+    }
 
-            const state = JSON.parse(saved);
+    /**
+     * Load and restore saved state from backend or localStorage
+     */
+    async _loadSavedState() {
+        try {
+            let state = null;
+
+            // Try backend first
+            if (this.options.empresaId) {
+                try {
+                    const authToken = localStorage.getItem('authToken');
+                    const resp = await fetch(`/api/cargos/empresa/${this.options.empresaId}/mapa-organizacional`, {
+                        headers: { 'Authorization': `Bearer ${authToken}` }
+                    });
+                    const json = await resp.json();
+                    if (json.success && json.data) {
+                        state = typeof json.data === 'string' ? JSON.parse(json.data) : json.data;
+                    }
+                } catch (e) {
+                    console.warn('[OrgMap] Backend load failed, falling back to localStorage');
+                }
+            }
+
+            // Fallback to localStorage
+            if (!state) {
+                const stateKey = `orgmap_state_${this.options.empresaId || 'default'}`;
+                const saved = localStorage.getItem(stateKey);
+                if (!saved) return;
+                state = JSON.parse(saved);
+            }
             if (!state.drawflow || !state.nodeCargoMap) return;
 
             // Restore nodes from saved state

@@ -52,4 +52,34 @@ router.post('/', authenticate, createCargo);
 // Update cargo (protected)
 router.put('/:cargoId', authenticate, updateCargo);
 
+// Save/load mapa organizacional for empresa
+router.get('/empresa/:empresaId/mapa-organizacional', authenticate, requireOwnEmpresa('empresaId'), async (req, res) => {
+    try {
+        const empresa = await knex('empresas')
+            .where('id', req.params.empresaId)
+            .select('mapa_organizacional')
+            .first();
+        res.json({ success: true, data: empresa?.mapa_organizacional || null });
+    } catch (error) {
+        console.error('Error loading mapa organizacional:', error);
+        res.status(500).json({ success: false, message: 'Error al cargar mapa' });
+    }
+});
+
+router.post('/empresa/:empresaId/mapa-organizacional', authenticate, requireOwnEmpresa('empresaId'), async (req, res) => {
+    try {
+        const { mapData } = req.body;
+        await knex('empresas')
+            .where('id', req.params.empresaId)
+            .update({
+                mapa_organizacional: JSON.stringify(mapData),
+                updated_at: knex.fn.now()
+            });
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error saving mapa organizacional:', error);
+        res.status(500).json({ success: false, message: 'Error al guardar mapa' });
+    }
+});
+
 export default router;

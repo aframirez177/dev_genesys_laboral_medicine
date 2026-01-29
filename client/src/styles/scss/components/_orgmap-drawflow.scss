@@ -356,15 +356,16 @@ $risk-colors: (
     }
 }
 
-// Palette card (compact, draggable)
+// Palette card (draggable, min 44x44 touch target)
 .orgmap-palette-card {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
+    gap: 10px;
+    padding: 10px 14px;
+    min-height: 44px;
     background: tokens.$dashboard-background;
     border: 1px solid tokens.$dashboard-border;
-    border-radius: tokens.$radius-full;
+    border-radius: tokens.$radius-lg;
     cursor: grab;
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
     user-select: none;
@@ -383,8 +384,8 @@ $risk-colors: (
     }
 
     &__dot {
-        width: 8px;
-        height: 8px;
+        width: 12px;
+        height: 12px;
         border-radius: 50%;
         flex-shrink: 0;
 
@@ -395,12 +396,28 @@ $risk-colors: (
         }
     }
 
+    &__info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
     &__name {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         font-weight: tokens.$font-medium;
         color: tokens.$dashboard-secondary;
         white-space: nowrap;
-        max-width: 150px;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__area {
+        font-size: 1.1rem;
+        color: tokens.$dashboard-text-light;
+        white-space: nowrap;
+        max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
     }
