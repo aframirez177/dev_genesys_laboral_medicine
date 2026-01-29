@@ -794,3 +794,85 @@
     }
 }
 
+// =====================
+// TOGGLE SWITCH (Admin empresas)
+// =====================
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    cursor: pointer;
+
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    &__slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        border-radius: 24px;
+        transition: background-color 0.3s ease;
+
+        &::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    input:checked + &__slider {
+        background-color: tokens.$dashboard-success;
+    }
+
+    input:checked + &__slider::before {
+        transform: translateX(20px);
+    }
+
+    input:focus-visible + &__slider {
+        outline: 2px solid tokens.$dashboard-primary;
+        outline-offset: 2px;
+    }
+}
+
+// =====================
+// BADGE PAGADO (Admin empresas)
+// =====================
+.badge-pagado {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: tokens.$radius-full;
+    font-size: tokens.$font-small;
+    font-weight: tokens.$font-semibold;
+
+    svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    &--si {
+        background-color: rgba(tokens.$dashboard-success, 0.12);
+        color: tokens.$dashboard-success;
+    }
+
+    &--no {
+        background-color: rgba(tokens.$dashboard-danger, 0.12);
+        color: tokens.$dashboard-danger;
+    }
+}
+

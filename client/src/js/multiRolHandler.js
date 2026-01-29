@@ -1136,7 +1136,27 @@ async function loadAdminEmpresasPage() {
             {
                 field: 'status',
                 label: 'Estado',
-                render: (value) => `<span class="badge ${getStatusBadgeClass(value)}">${value}</span>`
+                render: (value, row) => {
+                    const isActive = value === 'activa';
+                    return `
+                        <label class="toggle-switch" title="${isActive ? 'Activa' : 'Inactiva'}">
+                            <input type="checkbox" ${isActive ? 'checked' : ''}
+                                   data-empresa-id="${row.id}"
+                                   data-toggle-type="status"
+                                   onchange="window._toggleEmpresaStatus(this, ${row.id}, '${value}')">
+                            <span class="toggle-switch__slider"></span>
+                        </label>`;
+                }
+            },
+            {
+                field: 'ultimo_pago',
+                label: 'Pagado',
+                render: (value, row) => {
+                    const isPagado = row.status === 'activa' && value;
+                    return isPagado
+                        ? `<span class="badge-pagado badge-pagado--si" title="Último pago: ${new Date(value).toLocaleDateString('es-CO')}"><i data-lucide="check-circle"></i> Sí</span>`
+                        : `<span class="badge-pagado badge-pagado--no"><i data-lucide="x-circle"></i> No</span>`;
+                }
             }
         ],
         data: MultiRolState.data.empresas,
@@ -1209,6 +1229,36 @@ async function loadAdminEmpresasPage() {
 
     if (window.lucide) window.lucide.createIcons();
 }
+
+// Toggle de estado activa/suspendida para empresas (admin)
+window._toggleEmpresaStatus = async function(checkbox, empresaId, currentStatus) {
+    const newStatus = checkbox.checked ? 'activa' : 'suspendida';
+    const action = checkbox.checked ? 'activar' : 'suspender';
+    try {
+        const authToken = localStorage.getItem('authToken');
+        const response = await fetch(`${API_BASE}/admin/empresas/${empresaId}/${action}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        if (data.success) {
+            showNotification(`Empresa ${newStatus === 'activa' ? 'activada' : 'suspendida'}`, 'success');
+            // Update local data
+            const empresa = MultiRolState.data.empresas.find(e => e.id === empresaId);
+            if (empresa) empresa.status = newStatus;
+        } else {
+            checkbox.checked = !checkbox.checked; // revert
+            showNotification(data.message || 'Error al cambiar estado', 'error');
+        }
+    } catch (error) {
+        checkbox.checked = !checkbox.checked; // revert
+        console.error('[MultiRol] Error toggle status:', error);
+        showNotification('Error de conexión', 'error');
+    }
+};
 
 async function loadAdminMedicosPage() {
     console.log('[MultiRol] Cargando Admin Médicos...');
