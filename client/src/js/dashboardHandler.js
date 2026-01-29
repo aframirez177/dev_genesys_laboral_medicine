@@ -2218,16 +2218,135 @@ async function loadDocumentosPage() {
  */
 async function loadConfigPage() {
     console.log('Loading Config Page...');
+
+    // Get empresa data
+    let empresa = null;
+    try {
+        const raw = localStorage.getItem('genesys_empresa');
+        if (raw) empresa = JSON.parse(raw);
+    } catch (e) { /* ignore */ }
+
+    // If no empresa or not active, show placeholder
+    if (!empresa || !empresa.id) {
+        showPageContent('config-content', `
+            <div class="card">
+                <div class="card__header">
+                    <h3 class="card__title">Configuración de Empresa</h3>
+                </div>
+                <div class="card__body">
+                    <p class="text-muted">La configuración se habilitará cuando la empresa esté registrada en el sistema.</p>
+                </div>
+            </div>
+        `);
+        return;
+    }
+
+    // Fetch latest empresa data from backend
+    try {
+        const authToken = localStorage.getItem('authToken');
+        const resp = await fetch(`/api/admin/empresas/${empresa.id}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const json = await resp.json();
+        if (json.success && json.empresa) {
+            empresa = { ...empresa, ...json.empresa };
+        }
+    } catch (e) {
+        console.warn('[Config] Could not fetch latest empresa data');
+    }
+
     showPageContent('config-content', `
         <div class="card">
             <div class="card__header">
                 <h3 class="card__title">Configuración de Empresa</h3>
             </div>
             <div class="card__body">
-                <p class="text-muted">La configuración se habilitará cuando la empresa esté registrada en el sistema.</p>
+                <form id="config-empresa-form" style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.6rem;">
+                    <div class="form-group">
+                        <label class="form-label">Nombre Legal</label>
+                        <input type="text" class="form-input" name="nombre_legal" value="${empresa.nombre_legal || ''}" readonly style="opacity:0.6;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">NIT</label>
+                        <input type="text" class="form-input" name="nit" value="${empresa.nit || ''}" readonly style="opacity:0.6;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" name="email" value="${empresa.email || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" class="form-input" name="telefono" value="${empresa.telefono || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ciudad</label>
+                        <input type="text" class="form-input" name="ciudad" value="${empresa.ciudad || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-input" name="direccion" value="${empresa.direccion || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Responsable SST - Nombre</label>
+                        <input type="text" class="form-input" name="responsable_sst_nombre" value="${empresa.responsable_sst_nombre || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Responsable SST - Cargo</label>
+                        <input type="text" class="form-input" name="responsable_sst_cargo" value="${empresa.responsable_sst_cargo || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Responsable SST - Teléfono</label>
+                        <input type="text" class="form-input" name="responsable_sst_telefono" value="${empresa.responsable_sst_telefono || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Responsable SST - Email</label>
+                        <input type="email" class="form-input" name="responsable_sst_email" value="${empresa.responsable_sst_email || ''}">
+                    </div>
+                    <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-top: 1rem;">
+                        <button type="submit" class="dashboard-btn dashboard-btn--primary">Guardar cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
     `);
+
+    // Handle form submit
+    const form = document.getElementById('config-empresa-form');
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = {};
+            for (const [key, value] of formData.entries()) {
+                if (key !== 'nombre_legal' && key !== 'nit') {
+                    data[key] = value;
+                }
+            }
+            try {
+                const authToken = localStorage.getItem('authToken');
+                const resp = await fetch(`/api/admin/empresas/${empresa.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                const json = await resp.json();
+                if (json.success) {
+                    showNotification('Datos actualizados correctamente', 'success');
+                    // Update localStorage
+                    const updated = { ...empresa, ...data };
+                    localStorage.setItem('genesys_empresa', JSON.stringify(updated));
+                } else {
+                    showNotification(json.message || 'Error al guardar', 'error');
+                }
+            } catch (error) {
+                console.error('[Config] Error saving:', error);
+                showNotification('Error de conexión', 'error');
+            }
+        });
+    }
 }
 
 /**
