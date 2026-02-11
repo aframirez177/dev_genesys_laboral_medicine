@@ -55,6 +55,13 @@ router.post('/profesiograma/:empresaId/regenerar', requireMedicoAccess(), profes
 router.get('/empresas/:empresaId/cargos/:cargoId', requireMedicoAccess(), profesiogramaController.obtenerCargo);
 router.put('/empresas/:empresaId/cargos/:cargoId', profesiogramaUpdateLimiter, requireMedicoAccess(), profesiogramaController.actualizarCargo);
 
+// ==========================================
+// APROBACIÓN DE CARGOS
+// ==========================================
+router.get('/empresas/:empresaId/aprobaciones', requireMedicoAccess(), profesiogramaController.obtenerEstadosAprobacion);
+router.put('/empresas/:empresaId/cargos/:cargoId/aprobar', profesiogramaUpdateLimiter, requireMedicoAccess(), profesiogramaController.aprobarCargo);
+router.put('/empresas/:empresaId/cargos/:cargoId/desaprobar', profesiogramaUpdateLimiter, requireMedicoAccess(), profesiogramaController.desaprobarCargo);
+
 // Alias con prefijo /empresas (legacy)
 router.get('/empresas/:empresaId/profesiograma', requireMedicoAccess(), profesiogramaController.obtener);
 router.put('/empresas/:empresaId/profesiograma', profesiogramaUpdateLimiter, requireMedicoAccess(), profesiogramaController.actualizar);

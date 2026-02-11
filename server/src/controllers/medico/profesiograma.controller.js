@@ -595,3 +595,305 @@ export async function actualizarCargo(req, res) {
         res.status(500).json({ success: false, message: 'Error actualizando cargo' });
     }
 }
+
+/**
+ * Aprobar documentación de un cargo
+ *
+ * El médico marca que ha revisado y aprobado toda la documentación del cargo.
+ * Esto permite que su firma aparezca en los documentos generados.
+ *
+ * Requisitos:
+ * - El médico debe tener firma digital configurada
+ * - El médico debe estar asignado a la empresa
+ * - El cargo debe pertenecer a la empresa
+ */
+export async function aprobarCargo(req, res) {
+    try {
+        const { empresaId, cargoId } = req.params;
+        const medicoId = req.user.id;
+
+        // 1. Validar que el médico tiene firma configurada
+        const medico = await knex('users')
+            .where('id', medicoId)
+            .select('id', 'full_name', 'licencia_sst', 'firma_url')
+            .first();
+
+        if (!medico.firma_url) {
+            return res.status(400).json({
+                success: false,
+                message: 'Debe configurar su firma digital antes de aprobar documentación',
+                codigo: 'FIRMA_REQUERIDA'
+            });
+        }
+
+        if (!medico.licencia_sst) {
+            return res.status(400).json({
+                success: false,
+                message: 'Debe registrar su licencia SST antes de aprobar documentación',
+                codigo: 'LICENCIA_REQUERIDA'
+            });
+        }
+
+        // 2. Validar asignación a la empresa
+        const asignacion = await knex('medicos_empresas')
+            .where({
+                medico_id: medicoId,
+                empresa_id: empresaId,
+                activo: true
+            })
+            .first();
+
+        if (!asignacion) {
+            return res.status(403).json({
+                success: false,
+                message: 'No tiene permiso para aprobar documentación de esta empresa'
+            });
+        }
+
+        // 3. Verificar que el cargo existe y pertenece a la empresa
+        const cargo = await knex('cargos_documento as cd')
+            .join('documentos_generados as dg', 'cd.documento_id', 'dg.id')
+            .where('cd.id', cargoId)
+            .where('dg.empresa_id', empresaId)
+            .select('cd.id', 'cd.nombre_cargo', 'cd.aprobado_medico', 'cd.aprobado_por_medico_id')
+            .first();
+
+        if (!cargo) {
+            return res.status(404).json({
+                success: false,
+                message: 'Cargo no encontrado'
+            });
+        }
+
+        // 4. Verificar si ya está aprobado por este médico
+        if (cargo.aprobado_medico && cargo.aprobado_por_medico_id === medicoId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Este cargo ya fue aprobado por usted',
+                codigo: 'YA_APROBADO'
+            });
+        }
+
+        // 5. Actualizar el cargo como aprobado
+        const fechaAprobacion = new Date();
+        await knex('cargos_documento')
+            .where('id', cargoId)
+            .update({
+                aprobado_medico: true,
+                fecha_aprobacion: fechaAprobacion,
+                aprobado_por_medico_id: medicoId,
+                justificacion_desaprobacion: null, // Limpiar justificación previa si existía
+                updated_at: knex.fn.now()
+            });
+
+        // 6. Registrar auditoría
+        await knex('auditoria').insert({
+            user_id: medicoId,
+            accion: 'aprobar_cargo',
+            recurso: 'cargos_documento',
+            recurso_id: cargoId,
+            detalles: JSON.stringify({
+                empresa_id: empresaId,
+                cargo_nombre: cargo.nombre_cargo,
+                medico_nombre: medico.full_name,
+                licencia_sst: medico.licencia_sst,
+                fecha_aprobacion: fechaAprobacion.toISOString()
+            }),
+            ip_address: req.ip,
+            user_agent: req.get('User-Agent')
+        });
+
+        res.json({
+            success: true,
+            message: `Cargo "${cargo.nombre_cargo}" aprobado exitosamente`,
+            aprobacion: {
+                cargo_id: cargoId,
+                aprobado_por: medico.full_name,
+                licencia_sst: medico.licencia_sst,
+                fecha_aprobacion: fechaAprobacion.toISOString()
+            }
+        });
+
+    } catch (error) {
+        console.error('Error aprobando cargo:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al aprobar el cargo'
+        });
+    }
+}
+
+/**
+ * Desaprobar (revocar aprobación) de un cargo
+ *
+ * El médico puede revocar su aprobación previa, pero debe proporcionar
+ * una justificación obligatoria.
+ */
+export async function desaprobarCargo(req, res) {
+    try {
+        const { empresaId, cargoId } = req.params;
+        const { justificacion } = req.body;
+        const medicoId = req.user.id;
+
+        // 1. Validar justificación obligatoria
+        if (!justificacion || justificacion.trim().length < 20) {
+            return res.status(400).json({
+                success: false,
+                message: 'Debe proporcionar una justificación detallada (mínimo 20 caracteres)'
+            });
+        }
+
+        // 2. Validar asignación a la empresa
+        const asignacion = await knex('medicos_empresas')
+            .where({
+                medico_id: medicoId,
+                empresa_id: empresaId,
+                activo: true
+            })
+            .first();
+
+        if (!asignacion) {
+            return res.status(403).json({
+                success: false,
+                message: 'No tiene permiso para modificar documentación de esta empresa'
+            });
+        }
+
+        // 3. Verificar que el cargo existe y está aprobado
+        const cargo = await knex('cargos_documento as cd')
+            .join('documentos_generados as dg', 'cd.documento_id', 'dg.id')
+            .where('cd.id', cargoId)
+            .where('dg.empresa_id', empresaId)
+            .select('cd.id', 'cd.nombre_cargo', 'cd.aprobado_medico', 'cd.aprobado_por_medico_id', 'cd.fecha_aprobacion')
+            .first();
+
+        if (!cargo) {
+            return res.status(404).json({
+                success: false,
+                message: 'Cargo no encontrado'
+            });
+        }
+
+        if (!cargo.aprobado_medico) {
+            return res.status(400).json({
+                success: false,
+                message: 'Este cargo no está aprobado',
+                codigo: 'NO_APROBADO'
+            });
+        }
+
+        // 4. Verificar que el médico que desaprueba es el mismo que aprobó (o es admin)
+        if (cargo.aprobado_por_medico_id !== medicoId && req.user.rol !== 'admin_genesys') {
+            return res.status(403).json({
+                success: false,
+                message: 'Solo el médico que aprobó este cargo puede revocarlo'
+            });
+        }
+
+        // 5. Obtener datos del médico para auditoría
+        const medico = await knex('users')
+            .where('id', medicoId)
+            .select('full_name', 'licencia_sst')
+            .first();
+
+        // 6. Actualizar el cargo como desaprobado
+        await knex('cargos_documento')
+            .where('id', cargoId)
+            .update({
+                aprobado_medico: false,
+                fecha_aprobacion: null,
+                aprobado_por_medico_id: null,
+                justificacion_desaprobacion: justificacion.trim(),
+                updated_at: knex.fn.now()
+            });
+
+        // 7. Registrar auditoría
+        await knex('auditoria').insert({
+            user_id: medicoId,
+            accion: 'desaprobar_cargo',
+            recurso: 'cargos_documento',
+            recurso_id: cargoId,
+            detalles: JSON.stringify({
+                empresa_id: empresaId,
+                cargo_nombre: cargo.nombre_cargo,
+                medico_nombre: medico.full_name,
+                licencia_sst: medico.licencia_sst,
+                fecha_aprobacion_previa: cargo.fecha_aprobacion,
+                justificacion: justificacion.trim()
+            }),
+            ip_address: req.ip,
+            user_agent: req.get('User-Agent')
+        });
+
+        res.json({
+            success: true,
+            message: `Aprobación del cargo "${cargo.nombre_cargo}" revocada`,
+            justificacion: justificacion.trim()
+        });
+
+    } catch (error) {
+        console.error('Error desaprobando cargo:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al revocar la aprobación'
+        });
+    }
+}
+
+/**
+ * Obtener estado de aprobación de todos los cargos de una empresa
+ */
+export async function obtenerEstadosAprobacion(req, res) {
+    try {
+        const { empresaId } = req.params;
+
+        // Obtener cargos con su estado de aprobación
+        const cargos = await knex('cargos_documento as cd')
+            .join('documentos_generados as dg', 'cd.documento_id', 'dg.id')
+            .leftJoin('users as u', 'cd.aprobado_por_medico_id', 'u.id')
+            .where('dg.empresa_id', empresaId)
+            .select(
+                'cd.id',
+                'cd.nombre_cargo',
+                'cd.area',
+                'cd.aprobado_medico',
+                'cd.fecha_aprobacion',
+                'cd.aprobado_por_medico_id',
+                'u.full_name as medico_nombre',
+                'u.licencia_sst as medico_licencia'
+            )
+            .orderBy('cd.id', 'asc');
+
+        const totalCargos = cargos.length;
+        const cargosAprobados = cargos.filter(c => c.aprobado_medico).length;
+
+        res.json({
+            success: true,
+            estadisticas: {
+                total: totalCargos,
+                aprobados: cargosAprobados,
+                pendientes: totalCargos - cargosAprobados,
+                porcentaje_aprobacion: totalCargos > 0 ? Math.round((cargosAprobados / totalCargos) * 100) : 0
+            },
+            cargos: cargos.map(cargo => ({
+                id: cargo.id,
+                nombre_cargo: cargo.nombre_cargo,
+                area: cargo.area,
+                aprobado: cargo.aprobado_medico,
+                fecha_aprobacion: cargo.fecha_aprobacion,
+                medico: cargo.aprobado_medico ? {
+                    id: cargo.aprobado_por_medico_id,
+                    nombre: cargo.medico_nombre,
+                    licencia: cargo.medico_licencia
+                } : null
+            }))
+        });
+
+    } catch (error) {
+        console.error('Error obteniendo estados de aprobación:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener estados de aprobación'
+        });
+    }
+}

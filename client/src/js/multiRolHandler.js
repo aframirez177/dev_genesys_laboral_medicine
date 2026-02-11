@@ -104,6 +104,14 @@ export async function initMultiRolDashboard() {
             console.log('[MultiRol] 🔄 Inicializando selector de empresas del médico...');
             initMedicoEmpresaSelector();
             console.log('[MultiRol] ✅ Selector de empresas inicializado');
+
+            // Cargar contador de mensajes no leídos
+            loadConversacionesBadge();
+        }
+
+        // Cargar contador de mensajes para empresa
+        if (MultiRolState.rol === ROLES.EMPRESA) {
+            loadConversacionesBadgeEmpresa();
         }
 
         // Configurar handlers de página específicos
@@ -337,7 +345,7 @@ function configureSidebarForRole() {
             ]
         },
         [ROLES.MEDICO_OCUPACIONAL]: {
-            visible: ['home', 'profesiograma', 'examenes', 'documentos', 'config'],
+            visible: ['home', 'profesiograma', 'examenes', 'documentos', 'medico-mensajes', 'config'],
             hidden: [
                 'mapa-org', 'cargos', 'matriz', 'inteligencia', 'estadisticas', 'sve', 'psicosocial',
                 'admin-empresas', 'admin-medicos', 'admin-pagos', 'admin-auditoria'
@@ -347,7 +355,7 @@ function configureSidebarForRole() {
             visible: [
                 'home', 'mapa-org', 'cargos', 'matriz', 'profesiograma', 'examenes',
                 'documentos', 'inteligencia', 'estadisticas', 'sve', 'psicosocial',
-                'panel-medico', 'config'
+                'panel-medico', 'empresa-mensajes', 'config'
             ],
             hidden: ['admin-empresas', 'admin-medicos', 'admin-pagos', 'admin-auditoria']
         }
@@ -511,7 +519,11 @@ function registerRolePageHandlers() {
         'medico-profesiograma': loadMedicoProfesiogramaPage,
         'medico-examenes': loadMedicoExamenesPage,
         'medico-firma': loadMedicoFirmaPage,
-        'medico-config': loadMedicoConfigPage
+        'medico-mensajes': loadMedicoMensajesPage,
+        'medico-config': loadMedicoConfigPage,
+
+        // Empresa pages (mensajes)
+        'empresa-mensajes': loadEmpresaMensajesPage
     };
 
     // Sobrescribir handlers de páginas compartidas según el rol
@@ -1821,30 +1833,60 @@ async function loadProfesiogramaEditor(empresaId) {
     console.log('[MultiRol] Cargando profesiograma para empresa:', empresaId);
 
     try {
-        // Cargar los cargos de la empresa
-        const response = await fetch(`${API_BASE}/medico/empresas/${empresaId}/cargos`, {
-            headers: {
-                'Authorization': `Bearer ${MultiRolState.token}`
-            }
-        });
+        // Cargar los cargos de la empresa y estados de aprobación en paralelo
+        const [cargosResponse, aprobacionesResponse] = await Promise.all([
+            fetch(`${API_BASE}/medico/empresas/${empresaId}/cargos`, {
+                headers: { 'Authorization': `Bearer ${MultiRolState.token}` }
+            }),
+            fetch(`${API_BASE}/medico/empresas/${empresaId}/aprobaciones`, {
+                headers: { 'Authorization': `Bearer ${MultiRolState.token}` }
+            })
+        ]);
 
-        if (!response.ok) {
+        if (!cargosResponse.ok) {
             throw new Error('Error al cargar los cargos');
         }
 
-        const { cargos } = await response.json();
+        const { cargos } = await cargosResponse.json();
+
+        // Obtener estados de aprobación (puede fallar si la migración no se ha ejecutado)
+        let aprobaciones = { cargos: [], estadisticas: { aprobados: 0, pendientes: 0, total: 0 } };
+        if (aprobacionesResponse.ok) {
+            aprobaciones = await aprobacionesResponse.json();
+        }
+
+        // Crear mapa de aprobaciones para acceso rápido
+        const aprobacionMap = {};
+        if (aprobaciones.cargos) {
+            aprobaciones.cargos.forEach(a => {
+                aprobacionMap[a.id] = a;
+            });
+        }
 
         // Obtener datos de la empresa
         const empresa = MultiRolState.data.empresas.find(e => e.empresa_id == empresaId);
+
+        // Verificar si el médico tiene firma configurada
+        const tieneFirma = MultiRolState.data.tieneFirma;
 
         container.innerHTML = `
             <div class="card" style="margin-bottom:20px">
                 <div class="card__header" style="display:flex;justify-content:space-between;align-items:center">
                     <div>
                         <h3 class="card__title">${empresa?.nombre_legal || 'Empresa'}</h3>
-                        <p style="color:#6b7280;font-size:14px;margin-top:4px">${cargos.length} cargo(s) registrado(s)</p>
+                        <p style="color:#6b7280;font-size:14px;margin-top:4px">
+                            ${cargos.length} cargo(s) registrado(s)
+                            ${aprobaciones.estadisticas ? `
+                                · <span style="color:#10b981">${aprobaciones.estadisticas.aprobados} aprobado(s)</span>
+                                · <span style="color:#f59e0b">${aprobaciones.estadisticas.pendientes} pendiente(s)</span>
+                            ` : ''}
+                        </p>
                     </div>
-                    <div style="display:flex;gap:8px">
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <button class="btn btn--outline btn--sm" data-action="enviar-mensaje-empresa" data-empresa-id="${empresaId}" data-tooltip="Enviar mensaje a la empresa">
+                            <i data-lucide="message-square"></i>
+                            Mensaje
+                        </button>
                         <a href="/pages/profesiograma-view.html?empresa_id=${empresaId}" target="_blank" class="btn btn--outline btn--sm">
                             <i data-lucide="external-link"></i>
                             Ver Completo
@@ -1857,13 +1899,38 @@ async function loadProfesiogramaEditor(empresaId) {
                 </div>
             </div>
 
+            ${!tieneFirma ? `
+                <div class="alert-banner alert-banner--warning" style="margin-bottom:20px">
+                    <i data-lucide="alert-triangle"></i>
+                    <span>Configure su firma digital para poder aprobar documentación de cargos.</span>
+                    <button class="btn btn--sm btn--outline" onclick="document.querySelector('[data-page=config]').click()">
+                        Configurar Firma
+                    </button>
+                </div>
+            ` : ''}
+
             ${cargos.length > 0 ? `
                 <div class="cards-grid cards-grid--2">
-                    ${cargos.map(cargo => `
-                        <div class="card cargo-card" data-cargo-id="${cargo.id}">
-                            <div class="card__header" style="padding-bottom:8px;border-bottom:1px solid #e5e7eb">
-                                <h4 class="card__title" style="font-size:16px;margin:0">${cargo.nombre_cargo}</h4>
-                                <span class="badge badge--outline" style="font-size:11px">${cargo.area || 'Sin área'}</span>
+                    ${cargos.map(cargo => {
+                        const aprobacion = aprobacionMap[cargo.id] || { aprobado: false };
+                        const isAprobado = aprobacion.aprobado;
+                        return `
+                        <div class="card cargo-card ${isAprobado ? 'cargo-card--approved' : 'cargo-card--pending'}" data-cargo-id="${cargo.id}">
+                            <div class="card__header" style="padding-bottom:8px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:flex-start">
+                                <div>
+                                    <h4 class="card__title" style="font-size:16px;margin:0">${cargo.nombre_cargo}</h4>
+                                    <span class="badge badge--outline" style="font-size:11px">${cargo.area || 'Sin área'}</span>
+                                </div>
+                                ${isAprobado ? `
+                                    <span class="badge badge--approved" style="font-size:10px;display:flex;align-items:center;gap:4px">
+                                        <i data-lucide="check-circle" style="width:12px;height:12px"></i>
+                                        Aprobado
+                                    </span>
+                                ` : `
+                                    <span class="badge badge--pending-approval" style="font-size:10px">
+                                        Pendiente
+                                    </span>
+                                `}
                             </div>
                             <div class="card__body" style="padding-top:12px">
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;color:#4b5563">
@@ -1876,15 +1943,41 @@ async function loadProfesiogramaEditor(empresaId) {
                                         ${cargo.trabaja_espacios_confinados ? '<span class="badge badge--danger" style="font-size:10px" data-tooltip="Requiere capacitación especial para espacios confinados">Esp. Conf.</span>' : ''}
                                     </div>
                                 </div>
-                                <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f3f4f6">
-                                    <button class="btn btn--sm btn--outline" data-action="editar-cargo" data-id="${cargo.id}" style="width:100%" data-tooltip="Editar exámenes, EPP y aptitudes del cargo" data-tooltip-placement="bottom">
+
+                                <!-- Toggle de Aprobación -->
+                                <div class="approval-section ${isAprobado ? 'approval-section--approved' : ''}" style="margin-top:12px">
+                                    <div class="approval-toggle">
+                                        <label class="toggle-switch-approval" data-tooltip="${!tieneFirma ? 'Configure su firma para aprobar' : (isAprobado ? 'Revocar aprobación' : 'Aprobar documentación')}">
+                                            <input type="checkbox"
+                                                   data-action="toggle-aprobacion"
+                                                   data-cargo-id="${cargo.id}"
+                                                   ${isAprobado ? 'checked' : ''}
+                                                   ${!tieneFirma ? 'disabled' : ''}>
+                                            <span class="toggle-switch-approval__slider"></span>
+                                        </label>
+                                        <span class="approval-toggle__label">${isAprobado ? 'Aprobado' : 'Pendiente revisión'}</span>
+                                    </div>
+                                    ${isAprobado && aprobacion.medico ? `
+                                        <div class="approval-info">
+                                            <span class="approval-info__doctor">Dr. ${aprobacion.medico.nombre}</span>
+                                            <span class="approval-info__date">${new Date(aprobacion.fecha_aprobacion).toLocaleDateString('es-CO')}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+
+                                <div style="margin-top:12px;padding-top:12px;border-top:1px solid #f3f4f6;display:flex;gap:8px">
+                                    <button class="btn btn--sm btn--outline" data-action="editar-cargo" data-id="${cargo.id}" style="flex:1" data-tooltip="Editar exámenes, EPP y aptitudes del cargo" data-tooltip-placement="bottom">
                                         <i data-lucide="edit-2"></i>
-                                        Editar Cargo
+                                        Editar
+                                    </button>
+                                    <button class="btn--recommendation" data-action="enviar-recomendacion" data-cargo-id="${cargo.id}" data-cargo-nombre="${cargo.nombre_cargo}">
+                                        <i data-lucide="message-square"></i>
+                                        Recomendación
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    `).join('')}
+                    `;}).join('')}
                 </div>
             ` : `
                 <div class="card">
@@ -1907,11 +2000,38 @@ async function loadProfesiogramaEditor(empresaId) {
                 const btn = e.target.closest('[data-action]');
                 if (!btn) return;
 
+                const currentEmpresaId = container.dataset.empresaId;
+
                 if (btn.dataset.action === 'editar-cargo') {
                     const cargoId = btn.dataset.id;
-                    const currentEmpresaId = container.dataset.empresaId;
                     console.log('[MultiRol] Editar cargo:', cargoId, 'empresa:', currentEmpresaId);
                     openEditarCargoModal(currentEmpresaId, cargoId);
+                }
+
+                if (btn.dataset.action === 'enviar-recomendacion') {
+                    const cargoId = btn.dataset.cargoId;
+                    const cargoNombre = btn.dataset.cargoNombre;
+                    openEnviarRecomendacionModal(currentEmpresaId, cargoId, cargoNombre);
+                }
+
+                if (btn.dataset.action === 'enviar-mensaje-empresa') {
+                    const empId = btn.dataset.empresaId;
+                    openNuevaMensajeModal(empId);
+                }
+            });
+
+            // Handler separado para toggles de aprobación
+            container.addEventListener('change', async (e) => {
+                if (e.target.dataset.action === 'toggle-aprobacion') {
+                    const cargoId = e.target.dataset.cargoId;
+                    const isChecked = e.target.checked;
+                    const currentEmpresaId = container.dataset.empresaId;
+
+                    if (isChecked) {
+                        await handleAprobarCargo(currentEmpresaId, cargoId, e.target);
+                    } else {
+                        await handleDesaprobarCargo(currentEmpresaId, cargoId, e.target);
+                    }
                 }
             });
         }
@@ -1947,6 +2067,363 @@ async function loadProfesiogramaEditor(empresaId) {
         `;
         if (window.lucide) window.lucide.createIcons();
     }
+}
+
+/**
+ * Maneja la aprobación de un cargo
+ */
+async function handleAprobarCargo(empresaId, cargoId, toggleElement) {
+    try {
+        const response = await fetch(`${API_BASE}/medico/empresas/${empresaId}/cargos/${cargoId}/aprobar`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${MultiRolState.token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            // Revertir toggle
+            toggleElement.checked = false;
+
+            if (data.codigo === 'FIRMA_REQUERIDA') {
+                showNotification('Configure su firma digital antes de aprobar', 'warning');
+            } else if (data.codigo === 'LICENCIA_REQUERIDA') {
+                showNotification('Registre su licencia SST antes de aprobar', 'warning');
+            } else {
+                showNotification(data.message || 'Error al aprobar', 'error');
+            }
+            return;
+        }
+
+        showNotification(data.message || 'Cargo aprobado exitosamente', 'success');
+
+        // Actualizar UI de la tarjeta
+        const card = toggleElement.closest('.cargo-card');
+        if (card) {
+            card.classList.remove('cargo-card--pending');
+            card.classList.add('cargo-card--approved');
+
+            // Actualizar badge del header
+            const headerBadge = card.querySelector('.card__header .badge:not(.badge--outline)');
+            if (headerBadge) {
+                headerBadge.className = 'badge badge--approved';
+                headerBadge.style.cssText = 'font-size:10px;display:flex;align-items:center;gap:4px';
+                headerBadge.innerHTML = '<i data-lucide="check-circle" style="width:12px;height:12px"></i> Aprobado';
+            }
+
+            // Actualizar sección de aprobación
+            const approvalSection = card.querySelector('.approval-section');
+            if (approvalSection) {
+                approvalSection.classList.add('approval-section--approved');
+
+                // Actualizar label
+                const label = approvalSection.querySelector('.approval-toggle__label');
+                if (label) label.textContent = 'Aprobado';
+
+                // Agregar info del médico
+                let infoDiv = approvalSection.querySelector('.approval-info');
+                if (!infoDiv) {
+                    infoDiv = document.createElement('div');
+                    infoDiv.className = 'approval-info';
+                    approvalSection.appendChild(infoDiv);
+                }
+                infoDiv.innerHTML = `
+                    <span class="approval-info__doctor">Dr. ${MultiRolState.user.full_name}</span>
+                    <span class="approval-info__date">${new Date().toLocaleDateString('es-CO')}</span>
+                `;
+            }
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+    } catch (error) {
+        console.error('[MultiRol] Error aprobando cargo:', error);
+        toggleElement.checked = false;
+        showNotification('Error de conexión al aprobar', 'error');
+    }
+}
+
+/**
+ * Maneja la desaprobación de un cargo
+ */
+async function handleDesaprobarCargo(empresaId, cargoId, toggleElement) {
+    // Mostrar modal para justificación
+    const modal = new Modal({
+        title: 'Revocar Aprobación',
+        size: 'small',
+        content: `
+            <div class="desaprobacion-form">
+                <p style="margin-bottom:16px;color:#4b5563">
+                    Para revocar la aprobación de este cargo, debe proporcionar una justificación detallada.
+                </p>
+                <textarea id="justificacion-desaprobacion" class="desaprobacion-form__textarea"
+                    placeholder="Escriba el motivo de la revocación (mínimo 20 caracteres)..."
+                    rows="4"></textarea>
+                <p class="desaprobacion-form__hint">
+                    Esta acción quedará registrada en el historial de auditoría.
+                </p>
+            </div>
+        `,
+        buttons: [
+            {
+                label: 'Cancelar',
+                className: 'btn--outline',
+                action: 'cancel'
+            },
+            {
+                label: 'Confirmar Revocación',
+                className: 'btn--danger',
+                icon: 'x-circle',
+                action: 'confirm'
+            }
+        ]
+    });
+
+    modal.element.addEventListener('click', async (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+
+        if (btn.dataset.action === 'cancel') {
+            toggleElement.checked = true; // Revertir
+            modal.close();
+        }
+
+        if (btn.dataset.action === 'confirm') {
+            const justificacion = document.getElementById('justificacion-desaprobacion').value.trim();
+
+            if (justificacion.length < 20) {
+                showNotification('La justificación debe tener al menos 20 caracteres', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/medico/empresas/${empresaId}/cargos/${cargoId}/desaprobar`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${MultiRolState.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ justificacion })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    toggleElement.checked = true; // Revertir
+                    showNotification(data.message || 'Error al revocar', 'error');
+                    modal.close();
+                    return;
+                }
+
+                showNotification('Aprobación revocada', 'success');
+                modal.close();
+
+                // Actualizar UI de la tarjeta
+                const card = toggleElement.closest('.cargo-card');
+                if (card) {
+                    card.classList.remove('cargo-card--approved');
+                    card.classList.add('cargo-card--pending');
+
+                    const headerBadge = card.querySelector('.card__header .badge:not(.badge--outline)');
+                    if (headerBadge) {
+                        headerBadge.className = 'badge badge--pending-approval';
+                        headerBadge.style.cssText = 'font-size:10px';
+                        headerBadge.innerHTML = 'Pendiente';
+                    }
+
+                    const approvalSection = card.querySelector('.approval-section');
+                    if (approvalSection) {
+                        approvalSection.classList.remove('approval-section--approved');
+                        const label = approvalSection.querySelector('.approval-toggle__label');
+                        if (label) label.textContent = 'Pendiente revisión';
+
+                        const infoDiv = approvalSection.querySelector('.approval-info');
+                        if (infoDiv) infoDiv.remove();
+                    }
+                }
+
+            } catch (error) {
+                console.error('[MultiRol] Error desaprobando cargo:', error);
+                toggleElement.checked = true;
+                showNotification('Error de conexión', 'error');
+                modal.close();
+            }
+        }
+    });
+
+    modal.open();
+}
+
+/**
+ * Abre modal para enviar recomendación sobre un cargo
+ */
+function openEnviarRecomendacionModal(empresaId, cargoId, cargoNombre) {
+    const empresa = MultiRolState.data.empresas.find(e => e.empresa_id == empresaId);
+
+    const modal = new Modal({
+        title: 'Enviar Recomendación',
+        size: 'medium',
+        content: `
+            <div class="nueva-conversacion-form">
+                <div class="form-group">
+                    <label>Empresa</label>
+                    <input type="text" value="${empresa?.nombre_legal || 'Empresa'}" readonly style="background:#f5f5f5">
+                </div>
+                <div class="form-group">
+                    <label>Cargo</label>
+                    <input type="text" value="${cargoNombre}" readonly style="background:#f5f5f5">
+                </div>
+                <div class="form-group">
+                    <label>Asunto *</label>
+                    <input type="text" id="recomendacion-asunto" placeholder="Ej: Recomendación sobre exámenes médicos" maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label>Mensaje *</label>
+                    <textarea id="recomendacion-mensaje" placeholder="Escriba su recomendación o sugerencia..." rows="5"></textarea>
+                </div>
+            </div>
+        `,
+        buttons: [
+            { label: 'Cancelar', className: 'btn--outline', action: 'cancel' },
+            { label: 'Enviar', className: 'btn--primary', icon: 'send', action: 'send' }
+        ]
+    });
+
+    modal.element.addEventListener('click', async (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+
+        if (btn.dataset.action === 'cancel') {
+            modal.close();
+        }
+
+        if (btn.dataset.action === 'send') {
+            const asunto = document.getElementById('recomendacion-asunto').value.trim();
+            const mensaje = document.getElementById('recomendacion-mensaje').value.trim();
+
+            if (!asunto || !mensaje) {
+                showNotification('Complete todos los campos', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/medico/conversaciones`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${MultiRolState.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        empresa_id: parseInt(empresaId),
+                        cargo_id: parseInt(cargoId),
+                        asunto: asunto,
+                        mensaje_inicial: mensaje
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showNotification(data.message || 'Error al enviar', 'error');
+                    return;
+                }
+
+                showNotification('Recomendación enviada exitosamente', 'success');
+                modal.close();
+
+            } catch (error) {
+                console.error('[MultiRol] Error enviando recomendación:', error);
+                showNotification('Error de conexión', 'error');
+            }
+        }
+    });
+
+    modal.open();
+}
+
+/**
+ * Abre modal para enviar nuevo mensaje a empresa
+ */
+function openNuevaMensajeModal(empresaId) {
+    const empresa = MultiRolState.data.empresas.find(e => e.empresa_id == empresaId);
+
+    const modal = new Modal({
+        title: 'Nuevo Mensaje',
+        size: 'medium',
+        content: `
+            <div class="nueva-conversacion-form">
+                <div class="form-group">
+                    <label>Empresa</label>
+                    <input type="text" value="${empresa?.nombre_legal || 'Empresa'}" readonly style="background:#f5f5f5">
+                </div>
+                <div class="form-group">
+                    <label>Asunto *</label>
+                    <input type="text" id="mensaje-asunto" placeholder="Ej: Consulta sobre exámenes" maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label>Mensaje *</label>
+                    <textarea id="mensaje-contenido" placeholder="Escriba su mensaje..." rows="5"></textarea>
+                </div>
+            </div>
+        `,
+        buttons: [
+            { label: 'Cancelar', className: 'btn--outline', action: 'cancel' },
+            { label: 'Enviar', className: 'btn--primary', icon: 'send', action: 'send' }
+        ]
+    });
+
+    modal.element.addEventListener('click', async (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+
+        if (btn.dataset.action === 'cancel') {
+            modal.close();
+        }
+
+        if (btn.dataset.action === 'send') {
+            const asunto = document.getElementById('mensaje-asunto').value.trim();
+            const mensaje = document.getElementById('mensaje-contenido').value.trim();
+
+            if (!asunto || !mensaje) {
+                showNotification('Complete todos los campos', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/medico/conversaciones`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${MultiRolState.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        empresa_id: parseInt(empresaId),
+                        asunto: asunto,
+                        mensaje_inicial: mensaje
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showNotification(data.message || 'Error al enviar', 'error');
+                    return;
+                }
+
+                showNotification('Mensaje enviado exitosamente', 'success');
+                modal.close();
+
+            } catch (error) {
+                console.error('[MultiRol] Error enviando mensaje:', error);
+                showNotification('Error de conexión', 'error');
+            }
+        }
+    });
+
+    modal.open();
 }
 
 async function loadMedicoExamenesPage() {
@@ -1991,6 +2468,780 @@ async function loadMedicoFirmaPage() {
     // Inicializar el componente de firma
     initFirmaDigitalUploader('firma-uploader-container', MultiRolState.token);
 }
+
+/**
+ * Carga la página de mensajes del médico
+ */
+async function loadMedicoMensajesPage() {
+    console.log('[MultiRol] Cargando Médico Mensajes...');
+    const content = document.querySelector('[data-page="medico-mensajes"]');
+    if (!content) return;
+
+    content.innerHTML = `
+        <div class="page-header">
+            <h1 class="page-header__title">Mensajes</h1>
+            <p class="page-header__subtitle">Comunicación con empresas asignadas</p>
+        </div>
+
+        <div class="mensajes-container" id="mensajes-medico-container">
+            <!-- Panel izquierdo: Lista de conversaciones -->
+            <div class="conversaciones-list">
+                <div class="conversaciones-list__header">
+                    <h3>Conversaciones</h3>
+                </div>
+                <div class="conversaciones-list__search">
+                    <input type="text" placeholder="Buscar conversaciones..." id="buscar-conversacion">
+                </div>
+                <div class="conversaciones-list__items" id="lista-conversaciones">
+                    <div style="display:flex;align-items:center;justify-content:center;padding:40px">
+                        <div class="spinner" style="width:24px;height:24px;border:2px solid #e5e7eb;border-top-color:#5dc4af;border-radius:50%;animation:spin 1s linear infinite"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel derecho: Conversación activa -->
+            <div class="conversacion-panel" id="conversacion-panel">
+                <div class="conversacion-panel__empty">
+                    <i data-lucide="message-square"></i>
+                    <h4>Selecciona una conversación</h4>
+                    <p>O inicia una nueva desde el profesiograma de una empresa</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+
+    // Cargar lista de conversaciones
+    await loadConversacionesMedico();
+
+    // Configurar búsqueda
+    const searchInput = document.getElementById('buscar-conversacion');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            filterConversaciones(e.target.value);
+        });
+    }
+}
+
+/**
+ * Carga las conversaciones del médico desde el API
+ */
+async function loadConversacionesMedico() {
+    const container = document.getElementById('lista-conversaciones');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/medico/conversaciones`, {
+            headers: { 'Authorization': `Bearer ${MultiRolState.token}` }
+        });
+
+        if (!response.ok) throw new Error('Error cargando conversaciones');
+
+        const data = await response.json();
+        const { conversaciones, total_no_leidos } = data;
+
+        // Actualizar badge del sidebar
+        updateMensajesBadge(total_no_leidos);
+
+        if (conversaciones.length === 0) {
+            container.innerHTML = `
+                <div class="conversaciones-list__empty">
+                    <i data-lucide="inbox"></i>
+                    <p>No hay conversaciones</p>
+                </div>
+            `;
+            if (window.lucide) window.lucide.createIcons();
+            return;
+        }
+
+        container.innerHTML = conversaciones.map(conv => `
+            <div class="conversacion-item ${conv.no_leidos > 0 ? 'conversacion-item--unread' : ''}"
+                 data-conversacion-id="${conv.id}"
+                 onclick="selectConversacion(${conv.id})">
+                <div class="conversacion-item__avatar">
+                    ${conv.empresa_nombre.substring(0, 2).toUpperCase()}
+                </div>
+                <div class="conversacion-item__content">
+                    <div class="conversacion-item__header">
+                        <span class="conversacion-item__empresa">${conv.empresa_nombre}</span>
+                        <span class="conversacion-item__fecha">${formatRelativeDate(conv.ultimo_mensaje_at)}</span>
+                    </div>
+                    <div class="conversacion-item__asunto">${conv.asunto}</div>
+                    <div class="conversacion-item__meta">
+                        ${conv.nombre_cargo ? `<span class="conversacion-item__cargo">${conv.nombre_cargo}</span>` : ''}
+                        ${conv.no_leidos > 0 ? `<span class="conversacion-item__badge">${conv.no_leidos}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Guardar conversaciones para filtrado
+        container._conversaciones = conversaciones;
+
+    } catch (error) {
+        console.error('[MultiRol] Error cargando conversaciones:', error);
+        container.innerHTML = `
+            <div class="conversaciones-list__empty">
+                <i data-lucide="alert-circle"></i>
+                <p>Error al cargar</p>
+            </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+    }
+}
+
+/**
+ * Filtra conversaciones por término de búsqueda
+ */
+function filterConversaciones(term) {
+    const container = document.getElementById('lista-conversaciones');
+    if (!container || !container._conversaciones) return;
+
+    const items = container.querySelectorAll('.conversacion-item');
+    const termLower = term.toLowerCase();
+
+    items.forEach((item, index) => {
+        const conv = container._conversaciones[index];
+        const matches = conv.empresa_nombre.toLowerCase().includes(termLower) ||
+                       conv.asunto.toLowerCase().includes(termLower) ||
+                       (conv.nombre_cargo && conv.nombre_cargo.toLowerCase().includes(termLower));
+        item.style.display = matches ? '' : 'none';
+    });
+}
+
+/**
+ * Selecciona una conversación y carga sus mensajes
+ */
+async function selectConversacion(conversacionId) {
+    // Marcar como activa
+    document.querySelectorAll('.conversacion-item').forEach(item => {
+        item.classList.remove('conversacion-item--active');
+    });
+    const activeItem = document.querySelector(`[data-conversacion-id="${conversacionId}"]`);
+    if (activeItem) {
+        activeItem.classList.add('conversacion-item--active');
+        activeItem.classList.remove('conversacion-item--unread');
+    }
+
+    const panel = document.getElementById('conversacion-panel');
+    if (!panel) return;
+
+    panel.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;height:100%">
+            <div class="spinner" style="width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#5dc4af;border-radius:50%;animation:spin 1s linear infinite"></div>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`${API_BASE}/medico/conversaciones/${conversacionId}/mensajes`, {
+            headers: { 'Authorization': `Bearer ${MultiRolState.token}` }
+        });
+
+        if (!response.ok) throw new Error('Error cargando mensajes');
+
+        const data = await response.json();
+        const { conversacion, mensajes } = data;
+
+        panel.innerHTML = `
+            <div class="conversacion-panel__header">
+                <button class="conversacion-panel__back" onclick="closeConversacion()">
+                    <i data-lucide="arrow-left"></i>
+                    Volver
+                </button>
+                <div class="conversacion-panel__title">
+                    <h3>${conversacion.asunto}</h3>
+                    <span class="estado-badge estado-badge--${conversacion.estado}">${conversacion.estado}</span>
+                </div>
+                <div class="conversacion-panel__meta">
+                    <span><i data-lucide="building"></i> ${conversacion.empresa.nombre}</span>
+                    ${conversacion.cargo ? `<span><i data-lucide="briefcase"></i> ${conversacion.cargo.nombre}</span>` : ''}
+                </div>
+            </div>
+
+            <div class="mensajes-list" id="mensajes-list">
+                ${mensajes.map(msg => `
+                    <div class="mensaje mensaje--${msg.remitente.es_propio ? 'propio' : 'otro'}">
+                        <div class="mensaje__avatar">
+                            ${msg.remitente.nombre.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div class="mensaje__content">
+                            <div class="mensaje__burbuja">${escapeHtml(msg.contenido)}</div>
+                            <div class="mensaje__meta">
+                                <span>${formatRelativeDate(msg.fecha)}</span>
+                                ${msg.remitente.es_propio && msg.leido ? '<span class="mensaje__leido"><i data-lucide="check-check"></i></span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            ${conversacion.estado === 'abierta' ? `
+                <form class="mensaje-form" id="form-mensaje" data-conversacion="${conversacionId}">
+                    <div class="mensaje-form__container">
+                        <div class="mensaje-form__input">
+                            <textarea id="mensaje-texto" placeholder="Escriba su mensaje..." rows="1"></textarea>
+                        </div>
+                        <button type="submit" class="mensaje-form__submit">
+                            <i data-lucide="send"></i>
+                        </button>
+                    </div>
+                </form>
+            ` : `
+                <div style="padding:16px;text-align:center;color:#6b7280;background:#f5f5f5">
+                    <i data-lucide="lock" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:8px"></i>
+                    Conversación cerrada
+                </div>
+            `}
+        `;
+
+        if (window.lucide) window.lucide.createIcons();
+
+        // Scroll al final
+        const mensajesList = document.getElementById('mensajes-list');
+        if (mensajesList) {
+            mensajesList.scrollTop = mensajesList.scrollHeight;
+        }
+
+        // Handler para enviar mensaje
+        const form = document.getElementById('form-mensaje');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await enviarMensajeConversacion(conversacionId);
+            });
+        }
+
+        // Auto-resize textarea
+        const textarea = document.getElementById('mensaje-texto');
+        if (textarea) {
+            textarea.addEventListener('input', () => {
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+            });
+        }
+
+        // Actualizar badge (los mensajes fueron marcados como leídos)
+        loadConversacionesBadge();
+
+    } catch (error) {
+        console.error('[MultiRol] Error cargando conversación:', error);
+        panel.innerHTML = `
+            <div class="conversacion-panel__empty">
+                <i data-lucide="alert-circle"></i>
+                <h4>Error</h4>
+                <p>No se pudo cargar la conversación</p>
+            </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+    }
+}
+
+/**
+ * Cierra la conversación actual (móvil)
+ */
+function closeConversacion() {
+    const container = document.getElementById('mensajes-medico-container');
+    if (container) {
+        container.classList.remove('mensajes-container--viewing');
+    }
+    document.querySelectorAll('.conversacion-item').forEach(item => {
+        item.classList.remove('conversacion-item--active');
+    });
+}
+
+/**
+ * Envía un mensaje en la conversación actual
+ */
+async function enviarMensajeConversacion(conversacionId) {
+    const textarea = document.getElementById('mensaje-texto');
+    const contenido = textarea?.value.trim();
+
+    if (!contenido) return;
+
+    const submitBtn = document.querySelector('.mensaje-form__submit');
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+        const response = await fetch(`${API_BASE}/medico/conversaciones/${conversacionId}/mensajes`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${MultiRolState.token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ contenido })
+        });
+
+        if (!response.ok) throw new Error('Error enviando mensaje');
+
+        // Agregar mensaje a la lista
+        const mensajesList = document.getElementById('mensajes-list');
+        if (mensajesList) {
+            const nuevoMsg = document.createElement('div');
+            nuevoMsg.className = 'mensaje mensaje--propio';
+            nuevoMsg.innerHTML = `
+                <div class="mensaje__avatar">${MultiRolState.user.full_name.substring(0, 2).toUpperCase()}</div>
+                <div class="mensaje__content">
+                    <div class="mensaje__burbuja">${escapeHtml(contenido)}</div>
+                    <div class="mensaje__meta">
+                        <span>Ahora</span>
+                    </div>
+                </div>
+            `;
+            mensajesList.appendChild(nuevoMsg);
+            mensajesList.scrollTop = mensajesList.scrollHeight;
+        }
+
+        // Limpiar textarea
+        textarea.value = '';
+        textarea.style.height = 'auto';
+
+    } catch (error) {
+        console.error('[MultiRol] Error enviando mensaje:', error);
+        showNotification('Error al enviar mensaje', 'error');
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
+    }
+}
+
+/**
+ * Actualiza el badge de mensajes no leídos en el sidebar
+ */
+function updateMensajesBadge(count) {
+    const badge = document.getElementById('mensajes-badge');
+    if (badge) {
+        if (count > 0) {
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+/**
+ * Carga solo el contador de mensajes no leídos
+ */
+async function loadConversacionesBadge() {
+    try {
+        const response = await fetch(`${API_BASE}/medico/mensajes/no-leidos`, {
+            headers: { 'Authorization': `Bearer ${MultiRolState.token}` }
+        });
+        if (response.ok) {
+            const { no_leidos } = await response.json();
+            updateMensajesBadge(no_leidos);
+        }
+    } catch (error) {
+        console.error('[MultiRol] Error cargando badge:', error);
+    }
+}
+
+/**
+ * Formatea una fecha relativa
+ */
+function formatRelativeDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) return 'Ahora';
+    if (diffMins < 60) return `Hace ${diffMins}m`;
+    if (diffHours < 24) return `Hace ${diffHours}h`;
+    if (diffDays < 7) return `Hace ${diffDays}d`;
+    return date.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
+}
+
+/**
+ * Escapa HTML para prevenir XSS
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Exponer funciones globalmente para uso en onclick
+window.selectConversacion = selectConversacion;
+window.closeConversacion = closeConversacion;
+
+// ============================================
+// EMPRESA - MENSAJES
+// ============================================
+
+/**
+ * Carga la página de mensajes de la empresa
+ */
+async function loadEmpresaMensajesPage() {
+    console.log('[MultiRol] Cargando Empresa Mensajes...');
+    const content = document.querySelector('[data-page="empresa-mensajes"]');
+    if (!content) return;
+
+    content.innerHTML = `
+        <div class="page-header">
+            <h1 class="page-header__title">Mensajes del Médico</h1>
+            <p class="page-header__subtitle">Comunicación con su médico ocupacional</p>
+        </div>
+
+        <div class="mensajes-container" id="mensajes-empresa-container">
+            <!-- Panel izquierdo: Lista de conversaciones -->
+            <div class="conversaciones-list">
+                <div class="conversaciones-list__header">
+                    <h3>Conversaciones</h3>
+                </div>
+                <div class="conversaciones-list__search">
+                    <input type="text" placeholder="Buscar conversaciones..." id="buscar-conversacion-empresa">
+                </div>
+                <div class="conversaciones-list__items" id="lista-conversaciones-empresa">
+                    <div style="display:flex;align-items:center;justify-content:center;padding:40px">
+                        <div class="spinner" style="width:24px;height:24px;border:2px solid #e5e7eb;border-top-color:#5dc4af;border-radius:50%;animation:spin 1s linear infinite"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel derecho: Conversación activa -->
+            <div class="conversacion-panel" id="conversacion-panel-empresa">
+                <div class="conversacion-panel__empty">
+                    <i data-lucide="mail"></i>
+                    <h4>Selecciona una conversación</h4>
+                    <p>Aquí podrás ver los mensajes de tu médico ocupacional</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+
+    // Cargar lista de conversaciones
+    await loadConversacionesEmpresa();
+
+    // Configurar búsqueda
+    const searchInput = document.getElementById('buscar-conversacion-empresa');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            filterConversacionesEmpresa(e.target.value);
+        });
+    }
+}
+
+/**
+ * Carga las conversaciones de la empresa desde el API
+ */
+async function loadConversacionesEmpresa() {
+    const container = document.getElementById('lista-conversaciones-empresa');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/empresa/conversaciones`, {
+            headers: { 'Authorization': `Bearer ${MultiRolState.token}` }
+        });
+
+        if (!response.ok) throw new Error('Error cargando conversaciones');
+
+        const data = await response.json();
+        const { conversaciones, total_no_leidos } = data;
+
+        // Actualizar badge del sidebar
+        updateEmpresaMensajesBadge(total_no_leidos);
+
+        if (conversaciones.length === 0) {
+            container.innerHTML = `
+                <div class="conversaciones-list__empty">
+                    <i data-lucide="inbox"></i>
+                    <p>No hay mensajes</p>
+                </div>
+            `;
+            if (window.lucide) window.lucide.createIcons();
+            return;
+        }
+
+        container.innerHTML = conversaciones.map(conv => `
+            <div class="conversacion-item ${conv.no_leidos > 0 ? 'conversacion-item--unread' : ''}"
+                 data-conversacion-id="${conv.id}"
+                 onclick="selectConversacionEmpresa(${conv.id})">
+                <div class="conversacion-item__avatar">
+                    ${conv.medico_nombre.substring(0, 2).toUpperCase()}
+                </div>
+                <div class="conversacion-item__content">
+                    <div class="conversacion-item__header">
+                        <span class="conversacion-item__medico">Dr. ${conv.medico_nombre}</span>
+                        <span class="conversacion-item__fecha">${formatRelativeDate(conv.ultimo_mensaje_at)}</span>
+                    </div>
+                    <div class="conversacion-item__asunto">${conv.asunto}</div>
+                    <div class="conversacion-item__meta">
+                        ${conv.nombre_cargo ? `<span class="conversacion-item__cargo">${conv.nombre_cargo}</span>` : ''}
+                        ${conv.no_leidos > 0 ? `<span class="conversacion-item__badge">${conv.no_leidos}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Guardar conversaciones para filtrado
+        container._conversaciones = conversaciones;
+
+    } catch (error) {
+        console.error('[MultiRol] Error cargando conversaciones empresa:', error);
+        container.innerHTML = `
+            <div class="conversaciones-list__empty">
+                <i data-lucide="alert-circle"></i>
+                <p>Error al cargar</p>
+            </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+    }
+}
+
+/**
+ * Filtra conversaciones por término de búsqueda
+ */
+function filterConversacionesEmpresa(term) {
+    const container = document.getElementById('lista-conversaciones-empresa');
+    if (!container || !container._conversaciones) return;
+
+    const items = container.querySelectorAll('.conversacion-item');
+    const termLower = term.toLowerCase();
+
+    items.forEach((item, index) => {
+        const conv = container._conversaciones[index];
+        const matches = conv.medico_nombre.toLowerCase().includes(termLower) ||
+                       conv.asunto.toLowerCase().includes(termLower) ||
+                       (conv.nombre_cargo && conv.nombre_cargo.toLowerCase().includes(termLower));
+        item.style.display = matches ? '' : 'none';
+    });
+}
+
+/**
+ * Selecciona una conversación y carga sus mensajes (empresa)
+ */
+async function selectConversacionEmpresa(conversacionId) {
+    // Marcar como activa
+    document.querySelectorAll('#lista-conversaciones-empresa .conversacion-item').forEach(item => {
+        item.classList.remove('conversacion-item--active');
+    });
+    const activeItem = document.querySelector(`#lista-conversaciones-empresa [data-conversacion-id="${conversacionId}"]`);
+    if (activeItem) {
+        activeItem.classList.add('conversacion-item--active');
+        activeItem.classList.remove('conversacion-item--unread');
+    }
+
+    const panel = document.getElementById('conversacion-panel-empresa');
+    if (!panel) return;
+
+    panel.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;height:100%">
+            <div class="spinner" style="width:32px;height:32px;border:3px solid #e5e7eb;border-top-color:#5dc4af;border-radius:50%;animation:spin 1s linear infinite"></div>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`${API_BASE}/empresa/conversaciones/${conversacionId}/mensajes`, {
+            headers: { 'Authorization': `Bearer ${MultiRolState.token}` }
+        });
+
+        if (!response.ok) throw new Error('Error cargando mensajes');
+
+        const data = await response.json();
+        const { conversacion, mensajes } = data;
+
+        panel.innerHTML = `
+            <div class="conversacion-panel__header">
+                <button class="conversacion-panel__back" onclick="closeConversacionEmpresa()">
+                    <i data-lucide="arrow-left"></i>
+                    Volver
+                </button>
+                <div class="conversacion-panel__title">
+                    <h3>${conversacion.asunto}</h3>
+                    <span class="estado-badge estado-badge--${conversacion.estado}">${conversacion.estado}</span>
+                </div>
+                <div class="conversacion-panel__meta">
+                    <span><i data-lucide="stethoscope"></i> Dr. ${conversacion.medico.nombre}</span>
+                    ${conversacion.cargo ? `<span><i data-lucide="briefcase"></i> ${conversacion.cargo.nombre}</span>` : ''}
+                </div>
+            </div>
+
+            <div class="mensajes-list" id="mensajes-list-empresa">
+                ${mensajes.map(msg => `
+                    <div class="mensaje mensaje--${msg.remitente.es_propio ? 'propio' : 'otro'}">
+                        <div class="mensaje__avatar">
+                            ${msg.remitente.nombre.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div class="mensaje__content">
+                            <div class="mensaje__burbuja">${escapeHtml(msg.contenido)}</div>
+                            <div class="mensaje__meta">
+                                <span>${formatRelativeDate(msg.fecha)}</span>
+                                ${msg.remitente.es_propio && msg.leido ? '<span class="mensaje__leido"><i data-lucide="check-check"></i></span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+
+            ${conversacion.estado === 'abierta' ? `
+                <form class="mensaje-form" id="form-mensaje-empresa" data-conversacion="${conversacionId}">
+                    <div class="mensaje-form__container">
+                        <div class="mensaje-form__input">
+                            <textarea id="mensaje-texto-empresa" placeholder="Escriba su respuesta..." rows="1"></textarea>
+                        </div>
+                        <button type="submit" class="mensaje-form__submit">
+                            <i data-lucide="send"></i>
+                        </button>
+                    </div>
+                </form>
+            ` : `
+                <div style="padding:16px;text-align:center;color:#6b7280;background:#f5f5f5">
+                    <i data-lucide="lock" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:8px"></i>
+                    Conversación cerrada
+                </div>
+            `}
+        `;
+
+        if (window.lucide) window.lucide.createIcons();
+
+        // Scroll al final
+        const mensajesList = document.getElementById('mensajes-list-empresa');
+        if (mensajesList) {
+            mensajesList.scrollTop = mensajesList.scrollHeight;
+        }
+
+        // Handler para enviar mensaje
+        const form = document.getElementById('form-mensaje-empresa');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await enviarMensajeEmpresa(conversacionId);
+            });
+        }
+
+        // Auto-resize textarea
+        const textarea = document.getElementById('mensaje-texto-empresa');
+        if (textarea) {
+            textarea.addEventListener('input', () => {
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+            });
+        }
+
+        // Actualizar badge
+        loadConversacionesBadgeEmpresa();
+
+    } catch (error) {
+        console.error('[MultiRol] Error cargando conversación empresa:', error);
+        panel.innerHTML = `
+            <div class="conversacion-panel__empty">
+                <i data-lucide="alert-circle"></i>
+                <h4>Error</h4>
+                <p>No se pudo cargar la conversación</p>
+            </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+    }
+}
+
+/**
+ * Cierra la conversación actual (móvil - empresa)
+ */
+function closeConversacionEmpresa() {
+    const container = document.getElementById('mensajes-empresa-container');
+    if (container) {
+        container.classList.remove('mensajes-container--viewing');
+    }
+    document.querySelectorAll('#lista-conversaciones-empresa .conversacion-item').forEach(item => {
+        item.classList.remove('conversacion-item--active');
+    });
+}
+
+/**
+ * Envía un mensaje en la conversación actual (empresa)
+ */
+async function enviarMensajeEmpresa(conversacionId) {
+    const textarea = document.getElementById('mensaje-texto-empresa');
+    const contenido = textarea?.value.trim();
+
+    if (!contenido) return;
+
+    const submitBtn = document.querySelector('#form-mensaje-empresa .mensaje-form__submit');
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+        const response = await fetch(`${API_BASE}/empresa/conversaciones/${conversacionId}/mensajes`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${MultiRolState.token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ contenido })
+        });
+
+        if (!response.ok) throw new Error('Error enviando mensaje');
+
+        // Agregar mensaje a la lista
+        const mensajesList = document.getElementById('mensajes-list-empresa');
+        if (mensajesList) {
+            const nuevoMsg = document.createElement('div');
+            nuevoMsg.className = 'mensaje mensaje--propio';
+            nuevoMsg.innerHTML = `
+                <div class="mensaje__avatar">${MultiRolState.user.full_name.substring(0, 2).toUpperCase()}</div>
+                <div class="mensaje__content">
+                    <div class="mensaje__burbuja">${escapeHtml(contenido)}</div>
+                    <div class="mensaje__meta">
+                        <span>Ahora</span>
+                    </div>
+                </div>
+            `;
+            mensajesList.appendChild(nuevoMsg);
+            mensajesList.scrollTop = mensajesList.scrollHeight;
+        }
+
+        // Limpiar textarea
+        textarea.value = '';
+        textarea.style.height = 'auto';
+
+    } catch (error) {
+        console.error('[MultiRol] Error enviando mensaje empresa:', error);
+        showNotification('Error al enviar mensaje', 'error');
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
+    }
+}
+
+/**
+ * Actualiza el badge de mensajes no leídos en el sidebar (empresa)
+ */
+function updateEmpresaMensajesBadge(count) {
+    const badge = document.getElementById('empresa-mensajes-badge');
+    if (badge) {
+        if (count > 0) {
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+/**
+ * Carga solo el contador de mensajes no leídos (empresa)
+ */
+async function loadConversacionesBadgeEmpresa() {
+    try {
+        const response = await fetch(`${API_BASE}/empresa/mensajes/no-leidos`, {
+            headers: { 'Authorization': `Bearer ${MultiRolState.token}` }
+        });
+        if (response.ok) {
+            const { no_leidos } = await response.json();
+            updateEmpresaMensajesBadge(no_leidos);
+        }
+    } catch (error) {
+        console.error('[MultiRol] Error cargando badge empresa:', error);
+    }
+}
+
+// Exponer funciones de empresa globalmente
+window.selectConversacionEmpresa = selectConversacionEmpresa;
+window.closeConversacionEmpresa = closeConversacionEmpresa;
 
 async function loadMedicoConfigPage() {
     console.log('[MultiRol] Cargando Médico Config...');

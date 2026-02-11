@@ -841,3 +841,247 @@
         flex-shrink: 0;
     }
 }
+
+// =====================
+// APPROVAL TOGGLE - Toggle hermoso para aprobación de documentación
+// =====================
+.approval-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: tokens.$space-3;
+    padding: tokens.$space-3;
+    margin-top: tokens.$space-3;
+    background: tokens.$dashboard-background;
+    border-radius: tokens.$radius-md;
+    border: 1px solid tokens.$dashboard-border;
+
+    &--approved {
+        background: rgba(tokens.$dashboard-success, 0.08);
+        border-color: rgba(tokens.$dashboard-success, 0.3);
+    }
+}
+
+.approval-toggle {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-3;
+
+    &__label {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-text;
+        user-select: none;
+    }
+}
+
+.toggle-switch-approval {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    flex-shrink: 0;
+
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+
+        &:checked + .toggle-switch-approval__slider {
+            background: tokens.$dashboard-primary;
+
+            &::before {
+                transform: translateX(24px);
+                background: tokens.$dashboard-white;
+            }
+
+            &::after {
+                opacity: 1;
+                transform: translateX(4px);
+            }
+        }
+
+        &:focus + .toggle-switch-approval__slider {
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.2);
+        }
+
+        &:disabled + .toggle-switch-approval__slider {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &__slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: tokens.$dashboard-border;
+        border-radius: tokens.$radius-full;
+        transition: all tokens.$transition-normal;
+
+        &::before {
+            content: '';
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: tokens.$dashboard-white;
+            border-radius: 50%;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        // Checkmark icon when checked
+        &::after {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 6px;
+            border: 2px solid tokens.$dashboard-white;
+            border-top: none;
+            border-right: none;
+            transform: translateY(-60%) rotate(-45deg);
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+    }
+}
+
+.approval-status {
+    display: flex;
+    align-items: center;
+    gap: tokens.$space-2;
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-text-light;
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    &--pending {
+        color: tokens.$dashboard-warning;
+    }
+
+    &--approved {
+        color: tokens.$dashboard-success;
+        font-weight: tokens.$font-semibold;
+    }
+}
+
+.approval-info {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-1;
+    flex: 1;
+
+    &__date {
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+
+    &__doctor {
+        font-size: tokens.$font-small;
+        font-weight: tokens.$font-medium;
+        color: tokens.$dashboard-secondary;
+    }
+}
+
+// Badge de aprobación en la tarjeta
+.badge--approved {
+    background: rgba(tokens.$dashboard-success, 0.15);
+    color: tokens.$dashboard-success;
+    border: 1px solid rgba(tokens.$dashboard-success, 0.3);
+
+    i, svg {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+.badge--pending-approval {
+    background: rgba(tokens.$dashboard-warning, 0.15);
+    color: tokens.$dashboard-warning;
+    border: 1px solid rgba(tokens.$dashboard-warning, 0.3);
+}
+
+// Cargo card con estado de aprobación
+.cargo-card {
+    &--approved {
+        border-left: 4px solid tokens.$dashboard-success;
+
+        .card__header {
+            background: rgba(tokens.$dashboard-success, 0.03);
+        }
+    }
+
+    &--pending {
+        border-left: 4px solid tokens.$dashboard-warning;
+    }
+}
+
+// Botón de enviar recomendación
+.btn--recommendation {
+    display: inline-flex;
+    align-items: center;
+    gap: tokens.$space-1;
+    font-size: tokens.$font-small;
+    color: tokens.$dashboard-info;
+    background: rgba(tokens.$dashboard-info, 0.1);
+    border: 1px solid rgba(tokens.$dashboard-info, 0.2);
+    padding: tokens.$space-1 tokens.$space-3;
+    border-radius: tokens.$radius-sm;
+    cursor: pointer;
+    transition: all tokens.$transition-normal;
+
+    svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    &:hover {
+        background: rgba(tokens.$dashboard-info, 0.15);
+        border-color: rgba(tokens.$dashboard-info, 0.4);
+    }
+}
+
+// Modal de justificación de desaprobación
+.desaprobacion-form {
+    &__textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: tokens.$space-3;
+        border: 1px solid tokens.$dashboard-border;
+        border-radius: tokens.$radius-md;
+        font-family: tokens.$font-family-body;
+        font-size: tokens.$font-body;
+        resize: vertical;
+
+        &:focus {
+            outline: none;
+            border-color: tokens.$dashboard-primary;
+            box-shadow: 0 0 0 3px rgba(tokens.$dashboard-primary, 0.1);
+        }
+    }
+
+    &__hint {
+        margin-top: tokens.$space-2;
+        font-size: tokens.$font-xs;
+        color: tokens.$dashboard-text-light;
+    }
+}

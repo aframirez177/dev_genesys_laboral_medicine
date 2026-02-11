@@ -182,6 +182,28 @@
               </a>
             </li>
 
+            <!-- Mensajes (médico) -->
+            <li style="display: none;">
+              <a href="#" class="sidebar-nav__item" data-page="medico-mensajes">
+                <span class="sidebar-nav__icon" style="position:relative">
+                  <i data-lucide="message-square"></i>
+                  <span class="nav-badge-messages" id="mensajes-badge" style="display:none">0</span>
+                </span>
+                <span class="sidebar-nav__text">Mensajes</span>
+              </a>
+            </li>
+
+            <!-- Mensajes (empresa) -->
+            <li style="display: none;">
+              <a href="#" class="sidebar-nav__item" data-page="empresa-mensajes">
+                <span class="sidebar-nav__icon" style="position:relative">
+                  <i data-lucide="mail"></i>
+                  <span class="nav-badge-messages" id="empresa-mensajes-badge" style="display:none">0</span>
+                </span>
+                <span class="sidebar-nav__text">Mensajes Médico</span>
+              </a>
+            </li>
+
             <!-- Configuración -->
             <li>
               <a href="#" class="sidebar-nav__item" data-page="config">
@@ -990,6 +1012,20 @@
             <div class="loading-container">
               <div class="loading-spinner"></div>
               <p>Cargando configuración de firma...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-medico-mensajes" data-page="medico-mensajes" style="display: none;" data-role-visible="medico_ocupacional">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando mensajes...</p>
+            </div>
+          </section>
+
+          <section class="dashboard-page" id="page-empresa-mensajes" data-page="empresa-mensajes" style="display: none;" data-role-visible="empresa">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Cargando mensajes...</p>
             </div>
           </section>
 
